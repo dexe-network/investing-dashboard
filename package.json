@@ -79,7 +79,8 @@
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "4.0.0",
     "generate-react-cli": "https://github.com/edward-arinin-web-dev/generate-react-cli.git",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "storybook-react-router": "^1.0.8"
   },
   "resolutions": {
     "styled-components": "^5"
