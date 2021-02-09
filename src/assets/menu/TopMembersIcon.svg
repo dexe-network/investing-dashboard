@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_6131" data-name="Rectangle 6131" width="40" height="40" transform="translate(280 218)" fill="#fff"/>
+    </clipPath>
+    <filter id="user-tie-solid" x="0.882" y="7.751" width="38.337" height="41.251" filterUnits="userSpaceOnUse">
+      <feOffset input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.2"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_11772" data-name="Group 11772" transform="translate(-280 -218)">
+    <g id="TopMembersIcon" clip-path="url(#clip-path)">
+      <g id="Group_11767" data-name="Group 11767" transform="translate(171.625 -57.22)">
+        <g id="Group_11155" data-name="Group 11155" transform="translate(108.375 291.971)">
+          <path id="user-tie-solid-2" data-name="user-tie-solid" d="M7.034,8.039A4.019,4.019,0,1,0,3.015,4.019,4.019,4.019,0,0,0,7.034,8.039Zm3.008,1.024-1.5,6.01-1-4.271,1-1.758H5.527l1,1.758-1,4.271-1.5-6.01A4.213,4.213,0,0,0,0,13.264V14.57a1.508,1.508,0,0,0,1.507,1.507H12.561a1.508,1.508,0,0,0,1.507-1.507V13.264A4.213,4.213,0,0,0,10.042,9.063Z" transform="translate(0 1.235)" fill="#7fffd4"/>
+          <path id="user-tie-solid-3" data-name="user-tie-solid" d="M7.034,8.039A4.019,4.019,0,1,0,3.015,4.019,4.019,4.019,0,0,0,7.034,8.039Zm3.008,1.024-1.5,6.01-1-4.271,1-1.758H5.527l1,1.758-1,4.271-1.5-6.01A4.213,4.213,0,0,0,0,13.264V14.57a1.508,1.508,0,0,0,1.507,1.507H12.561a1.508,1.508,0,0,0,1.507-1.507V13.264A4.213,4.213,0,0,0,10.042,9.063Z" transform="translate(25.932 1.235)" fill="#7fffd4"/>
+          <g transform="matrix(1, 0, 0, 1, 0, -16.75)" filter="url(#user-tie-solid)">
+            <path id="user-tie-solid-4" data-name="user-tie-solid" d="M10.168,11.626A5.813,5.813,0,1,0,4.358,5.813,5.811,5.811,0,0,0,10.168,11.626Zm4.349,1.48L12.347,21.8l-1.453-6.176,1.453-2.543H7.99l1.453,2.543L7.99,21.8,5.82,13.106A6.092,6.092,0,0,0,0,19.182v1.889a2.18,2.18,0,0,0,2.179,2.18H18.158a2.18,2.18,0,0,0,2.179-2.18V19.182a6.092,6.092,0,0,0-5.82-6.076Z" transform="translate(9.88 16.75)" fill="#7fffd4"/>
+          </g>
+        </g>
+        <g id="Group_11157" data-name="Group 11157" transform="translate(111.019 275.22)">
+          <path id="Polygon_48" data-name="Polygon 48" d="M7.026.958a.5.5,0,0,1,.9,0L9.683,4.672a.5.5,0,0,0,.376.281L14,5.564a.5.5,0,0,1,.282.843L11.4,9.369a.5.5,0,0,0-.135.428l.668,4.148a.5.5,0,0,1-.735.518L7.719,12.547a.5.5,0,0,0-.482,0L3.754,14.462a.5.5,0,0,1-.735-.518L3.687,9.8a.5.5,0,0,0-.135-.428L.674,6.407a.5.5,0,0,1,.282-.843L4.9,4.953a.5.5,0,0,0,.376-.281Z" transform="translate(9.971)" fill="#fff57f"/>
+          <path id="Polygon_49" data-name="Polygon 49" d="M4.091.575a.3.3,0,0,1,.543,0L5.646,2.722a.3.3,0,0,0,.225.168l2.279.353a.3.3,0,0,1,.169.506L6.655,5.462a.3.3,0,0,0-.081.257l.386,2.4a.3.3,0,0,1-.441.311L4.507,7.321a.3.3,0,0,0-.289,0L2.2,8.428a.3.3,0,0,1-.441-.311l.386-2.4a.3.3,0,0,0-.081-.257L.4,3.749a.3.3,0,0,1,.169-.506L2.852,2.89a.3.3,0,0,0,.225-.168Z" transform="translate(0 3.739)" fill="#fff57f"/>
+          <path id="Polygon_50" data-name="Polygon 50" d="M4.091.575a.3.3,0,0,1,.543,0L5.646,2.722a.3.3,0,0,0,.225.168l2.279.353a.3.3,0,0,1,.169.506L6.655,5.462a.3.3,0,0,0-.081.257l.386,2.4a.3.3,0,0,1-.441.311L4.507,7.321a.3.3,0,0,0-.289,0L2.2,8.428a.3.3,0,0,1-.441-.311l.386-2.4a.3.3,0,0,0-.081-.257L.4,3.749a.3.3,0,0,1,.169-.506L2.852,2.89a.3.3,0,0,0,.225-.168Z" transform="translate(26.173 3.739)" fill="#fff57f"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

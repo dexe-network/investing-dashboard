@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_6139" data-name="Rectangle 6139" width="40" height="40" transform="translate(280 628)" fill="#fff"/>
+    </clipPath>
+  </defs>
+  <g id="NotificationsIcon" transform="translate(-280 -628)">
+    <g id="NotificationsIcon-2" data-name="NotificationsIcon" clip-path="url(#clip-path)">
+      <path id="bell-solid" d="M17.5,40a5,5,0,0,0,5-5h-10A5,5,0,0,0,17.5,40Zm16.829-11.7C32.82,26.684,30,24.244,30,16.251A12.338,12.338,0,0,0,20,4.128V2.5a2.5,2.5,0,1,0-5,0V4.128a12.338,12.338,0,0,0-10,12.123c0,7.993-2.824,10.433-4.334,12.055A2.441,2.441,0,0,0,0,30a2.5,2.5,0,0,0,2.508,2.5H32.494A2.5,2.5,0,0,0,35,30,2.44,2.44,0,0,0,34.329,28.306Z" transform="translate(282 628)" fill="#fff"/>
+    </g>
+  </g>
+</svg>

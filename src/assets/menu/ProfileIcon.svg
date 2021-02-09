@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="0 0 40 40">
+  <defs>
+    <clipPath id="clip-path">
+      <rect id="Rectangle_6130" data-name="Rectangle 6130" width="40" height="40" transform="translate(281 157)" fill="#fff" stroke="#707070" stroke-width="1"/>
+    </clipPath>
+  </defs>
+  <g id="ProfileIcon" transform="translate(-280 -157)">
+    <g id="ProfileIcon-2" data-name="ProfileIcon" transform="translate(-1)" clip-path="url(#clip-path)">
+      <path id="Exclusion_15" data-name="Exclusion 15" d="M20,40A20,20,0,0,1,5.857,5.857,19.912,19.912,0,0,1,29.7,2.543a20.971,20.971,0,0,1,6.934,6.349A19.562,19.562,0,0,1,40,20,20,20,0,0,1,20,40ZM13.917,20.1a8.551,8.551,0,0,0-8.174,8.531v2.652a2.762,2.762,0,0,0,1.429,2.163,5.143,5.143,0,0,0,2.7.9c.052.028,5.194,2.794,10.156,2.794a22.766,22.766,0,0,0,9.821-2.794,5.986,5.986,0,0,0,2.864-.9c.6-.365,1.6-1.132,1.6-2.163V28.634A8.55,8.55,0,0,0,26.132,20.1l-3.047,12.2-2.04-8.671,2.04-3.57H16.964L19,23.635l-2.04,8.671ZM20.024,1.7a8.161,8.161,0,1,0,8.161,8.161A8.17,8.17,0,0,0,20.024,1.7Z" transform="translate(281 157)" fill="#f5f5f5"/>
+    </g>
+  </g>
+</svg>
