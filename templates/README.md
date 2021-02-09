@@ -5,13 +5,9 @@ all templates stored in "/templates" folder
 available commands:
 ---
 
-YOUR_NAME - choose your name
+`yarn c COMPONENT_NAME` // creates component 
 
-`yarn ng YOUR_NAME`
-
-`yarn ng YOUR_NAME --type=action`
-
-`yarn ng YOUR_NAME --type=reducer`
+`yarn r REDUCER NAME` // creates reducer and CRUD actions
 
 more: https://www.npmjs.com/package/generate-react-cli
 
