@@ -64,6 +64,7 @@ const ContentVariants = {
 
 const StyledMenu = styled(motion.nav)`
   position: sticky;
+  z-index: 20;
   top: 0;
   height: 100vh;
   display: flex;

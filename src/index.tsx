@@ -13,7 +13,15 @@ import GlobalStyle from "theme/GlobalStyle"
 
 import getLibrary from "utils/getLibrary"
 
+import BlockNumber from "components/BlockNumber"
+
 const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
+
+const GlobalComponents = () => (
+  <>
+    <BlockNumber />
+  </>
+)
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,6 +30,7 @@ ReactDOM.render(
         <Provider store={store}>
           <Normalize />
           <GlobalStyle />
+          <GlobalComponents />
           <App />
         </Provider>
       </Web3ProviderNetwork>
