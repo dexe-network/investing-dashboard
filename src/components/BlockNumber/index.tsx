@@ -5,7 +5,7 @@ import useBlockNumber from "hooks/useBlockNumber"
 
 const StyledBlockNumber = styled(motion.div)`
   position: fixed;
-  bottom: 30px;
+  bottom: 10px;
   right: 30px;
   color: #2680eb;
   font-size: 14px;

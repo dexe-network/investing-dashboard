@@ -36,7 +36,6 @@ const Overlay = styled.div`
 
 const Content = styled.div`
   z-index: 5;
-  padding-top: 75px;
 `
 
 const App = () => {
@@ -57,7 +56,7 @@ const App = () => {
               <Route exact path="/top-members">
                 <TopMembers />
               </Route>
-              <Route exact path="/profile">
+              <Route path="/profile">
                 <Profile />
               </Route>
               <Route exact path="/">

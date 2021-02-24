@@ -1,12 +1,26 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createReducer } from "@reduxjs/toolkit"
-import { createuser, readuser, updateuser, deleteuser } from "./actions"
+import {
+  createuser,
+  readuser,
+  updateuser,
+  deleteuser,
+  updateUserProMode,
+} from "./actions"
 
-export interface userState {}
+export interface userState {
+  userProMode: boolean
+}
 
-export const initialState: userState = {}
+export const initialState: userState = {
+  userProMode: false,
+}
 
 export default createReducer(initialState, (builder) =>
   builder
+    .addCase(updateUserProMode, (state) => {
+      state.userProMode = !state.userProMode
+    })
     .addCase(createuser, (state, action) => {
       //
     })
