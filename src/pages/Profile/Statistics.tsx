@@ -168,7 +168,9 @@ const Statistics = () => {
         dir="column"
         full
       >
-        <Title>Monthly statistics</Title>
+        <Title full weight={800}>
+          Monthly statistics
+        </Title>
         <Wrapper full>
           <StatisticsCalendar />
         </Wrapper>
@@ -181,7 +183,7 @@ const Statistics = () => {
         dir="column"
         full
       >
-        <Title>
+        <Title full weight={800}>
           Detailed statistics <ProButton />
         </Title>
         <Wrapper ai="flex-start" full>

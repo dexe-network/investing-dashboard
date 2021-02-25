@@ -76,6 +76,8 @@ const overlayVariants = {
   },
 }
 
+// STATISTICS
+
 const Overlay = styled(motion.div)`
   background: linear-gradient(
     0deg,
@@ -132,14 +134,16 @@ const ChartWrapper = styled.div`
   position: relative;
 `
 
-const Title = styled.div`
+const Title = styled.div<{ weight?: number; full?: boolean }>`
   color: #dddddd;
   font-size: 16px;
-  font-weight: bold;
-  width: 100%;
+  font-weight: ${(props) => (props.weight ? props.weight : 300)};
+  width: ${(props) => (props.full ? "100%" : "fit-content")};
   padding-left: 35px;
   margin: 15px 0 10px;
   display: flex;
+  cursor: pointer;
+  user-select: none;
 `
 
 const PieWrapper = styled(motion.div)`
@@ -255,6 +259,15 @@ const DetailedStatistics = (props: {
   </Flex>
 )
 
+// HISTORY
+
+const NoData = styled.div`
+  color: #64666d;
+  font-size: 16px;
+  font-weight: 300;
+  padding: 109px 0;
+`
+
 export {
   Overlay,
   Button,
@@ -273,4 +286,5 @@ export {
   detailedVariants,
   pieVariants,
   overlayVariants,
+  NoData,
 }

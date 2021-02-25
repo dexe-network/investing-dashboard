@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { Switch, Route, Link, useLocation } from "react-router-dom"
 import ProfileAvatar from "components/ProfileAvatar"
 import Statistics from "pages/Profile/Statistics"
+import History from "pages/Profile/History"
 
 interface Props {}
 
@@ -38,7 +39,7 @@ const Header = styled.div`
 
 const Tab = styled(Link)<{ active?: boolean }>`
   font-size: 16px;
-  color: #999999;
+  color: ${(props) => (props.active ? "#F5F5F5" : "#999999")};
   user-select: none;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
@@ -84,7 +85,7 @@ function Profile(props: Props) {
           <Statistics />
         </Route>
         <Route exact path={HISTORY}>
-          history
+          <History />
         </Route>
         <Route exact path={NEWS}>
           news

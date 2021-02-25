@@ -87,7 +87,7 @@ const ProfileAvatar: React.FC<Props> = (props) => {
       animate={props.pinned ? "visible" : "hidden"}
       variants={containerVariants}
       pinned={props.pinned}
-      transition={ease}
+      transition={{ ease, duration: 0.3 }}
     >
       <Avatar src={props.url} size={props.pinned ? 41 : 60} />
       <Info>
@@ -99,7 +99,7 @@ const ProfileAvatar: React.FC<Props> = (props) => {
           </Text>
         </Main>
         <Text
-          transition={ease}
+          transition={{ ease, duration: 0.3 }}
           key="text"
           initial="hidden"
           variants={opacityVariants}
