@@ -74,14 +74,14 @@ const series = [
       60,
       70,
       91,
-      40,
-      45,
+      -40,
+      95,
       80,
-      60,
+      90,
       50,
-      60,
-      75,
-      80,
+      160,
+      175,
+      180,
       99,
       60,
       70,
@@ -90,7 +90,7 @@ const series = [
       80,
       85,
       50,
-      89,
+      189,
       90,
       100,
       121,
@@ -130,6 +130,12 @@ const Chart: React.FC<Props> = (props) => {
         blur: 20,
         opacity: 0.2,
       },
+      zoom: {
+        enabled: false,
+      },
+      selection: {
+        enabled: false,
+      },
     },
     fill: {
       colors: chartColors[isPro ? "pro" : "default"].bg,
@@ -140,7 +146,7 @@ const Chart: React.FC<Props> = (props) => {
         shadeIntensity: 0.1,
         gradientToColors: undefined,
         inverseColors: false,
-        opacityFrom: 1,
+        opacityFrom: 0.8,
         opacityTo: 0,
         stops: [0, 90],
       },
@@ -153,7 +159,7 @@ const Chart: React.FC<Props> = (props) => {
       curve: "straight",
       lineCap: "butt",
       colors: [chartColors[isPro ? "pro" : "default"].stroke],
-      width: 1.8,
+      width: 1.5,
       dashArray: 0,
     },
     xaxis: {
@@ -167,7 +173,7 @@ const Chart: React.FC<Props> = (props) => {
         show: false,
       },
       crosshairs: {
-        show: true,
+        show: false,
       },
     },
     yaxis: {
@@ -181,10 +187,13 @@ const Chart: React.FC<Props> = (props) => {
         show: false,
       },
       crosshairs: {
-        show: true,
+        show: false,
       },
     },
     plotOptions: {
+      area: {
+        fillTo: "end",
+      },
       marker: {
         radius: 1,
       },

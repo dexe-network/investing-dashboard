@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import styled from "styled-components"
+import { ease } from "theme"
 
 import { shortenAddress } from "utils"
 
@@ -23,15 +24,16 @@ const containerVariants = {
 
 const opacityVariants = {
   visible: {
-    opacity: 1,
-    display: "flex",
-    transition: { duration: 1, type: "spring" },
-  },
-  hidden: {
     opacity: 0,
+    height: 0,
     transitionEnd: {
       display: "none",
     },
+  },
+  hidden: {
+    opacity: 1,
+    height: "fit-content",
+    display: "flex",
   },
 }
 
@@ -85,6 +87,7 @@ const ProfileAvatar: React.FC<Props> = (props) => {
       animate={props.pinned ? "visible" : "hidden"}
       variants={containerVariants}
       pinned={props.pinned}
+      transition={ease}
     >
       <Avatar src={props.url} size={props.pinned ? 41 : 60} />
       <Info>
@@ -96,9 +99,10 @@ const ProfileAvatar: React.FC<Props> = (props) => {
           </Text>
         </Main>
         <Text
+          transition={ease}
+          key="text"
           initial="hidden"
           variants={opacityVariants}
-          animate={!props.pinned ? "visible" : "hidden"}
         >
           % & White List
         </Text>
