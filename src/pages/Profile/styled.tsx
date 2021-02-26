@@ -268,6 +268,132 @@ const NoData = styled.div`
   padding: 109px 0;
 `
 
+// NEWS
+
+const StyledPost = styled.div<{ border?: boolean }>`
+  max-width: 100%;
+  padding-bottom: 15px;
+  border-bottom: ${(props) => (props.border ? "1px" : "0px")} solid #707070;
+`
+
+const PostSymbol = styled.span`
+  font-size: 33px;
+  color: #dddddd;
+  font-weight: 900;
+`
+
+const PostName = styled.span`
+  font-size: 20px;
+  color: #707070;
+  font-weight: 300;
+  margin-left: 20px;
+`
+
+const PostPrice = styled.span`
+  color: #dddddd;
+  font-size: 16px;
+  font-weight: 800;
+`
+
+const PostPnl = styled.span<{ val: number }>`
+  font-size: 16px;
+  font-weight: 800;
+  color: ${(props) => (props.val && props.val >= 0 ? "#7FFFD4" : "#FF7F7F")};
+  margin-left: 20px;
+`
+
+const PostDescription = styled.p`
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 35px;
+  color: #dddddd;
+  height: 105px;
+  max-height: 105px;
+  padding: 0 30px 0 0;
+  margin: 10px 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+`
+
+const PostBottomText = styled.div`
+  color: #dddddd;
+  font-size: 14px;
+  font-weight: 300;
+  border-bottom: 1px solid transparent;
+  transition: 0.15s ease-in-out;
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    border-bottom: 1px solid #dddddd;
+  }
+`
+
+const PostGroup = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 25px;
+  grid-template-areas: ". .";
+  border-bottom: 1px solid #707070;
+`
+
+const PostFooter = styled(Flex)`
+  padding-top: 5px;
+  margin-bottom: 5px;
+`
+
+const StyledNews = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const NewsList = styled(Wrapper)`
+  height: 544px;
+  overflow-y: auto;
+  padding: 10px 20px 10px 0;
+`
+
+const PostMore = styled.div`
+  padding: 11px 8px 7px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.15s ease-in-out;
+  font-size: 20px;
+  color: #707070;
+  font-weight: 400;
+  line-height: 20px;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+`
+
+const ButtonSymbol = styled.span`
+  position: relative;
+  color: #e1e1e1;
+  font-size: 20px;
+  font-weight: bold;
+  padding-left: 15px;
+  padding-right: 15px;
+`
+
+const AngleRight = styled.div`
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 5.5px 0 5.5px 6px;
+  border-color: transparent transparent transparent #ffffff;
+  position: absolute;
+  right: 0;
+  top: 2px;
+`
+
 export {
   Overlay,
   Button,
@@ -287,4 +413,18 @@ export {
   pieVariants,
   overlayVariants,
   NoData,
+  StyledPost,
+  PostSymbol,
+  PostName,
+  PostPrice,
+  PostPnl,
+  PostDescription,
+  PostBottomText,
+  PostGroup,
+  PostFooter,
+  StyledNews,
+  PostMore,
+  ButtonSymbol,
+  AngleRight,
+  NewsList,
 }

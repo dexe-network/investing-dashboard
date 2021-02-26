@@ -4,6 +4,8 @@ import { Switch, Route, Link, useLocation } from "react-router-dom"
 import ProfileAvatar from "components/ProfileAvatar"
 import Statistics from "pages/Profile/Statistics"
 import History from "pages/Profile/History"
+import News from "pages/Profile/News"
+import { feed } from "components/PostCard/PostCard.stories"
 
 interface Props {}
 
@@ -88,7 +90,7 @@ function Profile(props: Props) {
           <History />
         </Route>
         <Route exact path={NEWS}>
-          news
+          <News data={feed} />
         </Route>
         <Route exact path={VOTING}>
           voting
