@@ -1,17 +1,10 @@
 // import React, { useState, useRef } from "react"
 
 // import { motion } from "framer-motion"
+import { IPool } from "constants/interfaces"
 import styled from "styled-components"
-import { Flex } from "theme/index"
-
-// TEMP TEST FUNCTION
-const getRandomPnl = () => {
-  const r1 = Math.random()
-  const r2 = Math.random()
-  const negative = r2 > 0.9 ? -1 : 1
-
-  return r1 * 100 * negative
-}
+import { Flex, device } from "theme"
+import { getRandomPnl } from "utils"
 
 const monthes = [
   "Jan",
@@ -28,11 +21,18 @@ const monthes = [
   "Dec",
 ]
 
-const StyledCalendar = styled(Flex)``
-
 const Cell = styled.div<{ align?: "left" | "right" }>`
   text-align: ${(props) => (props.align ? props.align : "center")};
   flex: 1;
+
+  @media only screen and (${device.sm}) {
+    &:first-child {
+      display: none;
+    }
+    &:last-child {
+      display: none;
+    }
+  }
 `
 
 const Label = styled.div`
@@ -44,39 +44,43 @@ const Label = styled.div`
 
 const Month = styled.div<{ c?: string; fw?: number; current?: boolean }>`
   font-size: 16px;
-  font-weight: ${(props) =>
-    props.current ? "bold" : props.fw ? props.fw : "500"};
+  font-weight: ${(props) => (props.fw ? props.fw : "500")};
   margin: 5px 0;
-  border-right: 1px dashed #51525c;
-  color: ${(props) =>
-    props.current ? "#7FFFD4" : props.c ? props.c : "#7F7F86"};
+  color: ${(props) => (props.c ? props.c : "#7F7F86")};
+
+  @media only screen and (${device.sm}) {
+    font-size: 12px;
+    margin: 2px 0;
+  }
 `
 
-const StatisticsCalendar: React.FC = () => {
+const StatisticsCalendar: React.FC<{
+  data: IPool["pnl"]["monthly"]
+  currentYear?: boolean
+}> = ({ data, currentYear }) => {
+  const currentMonth = new Date().getMonth()
+
   return (
-    <StyledCalendar full>
+    <Flex full op={currentYear ? 1 : 0.6}>
       <Cell align="left">
         <Label>Year</Label>
-        <Month fw={800}>2021</Month>
-        <Month c="#666666" fw={800}>
-          2020
+        <Month color="#999999" fw={800}>
+          2021
         </Month>
       </Cell>
 
-      {monthes.map((m) => {
-        const now = getRandomPnl()
-        const prev = getRandomPnl()
-
-        const col1 = now === 0 ? "#7F7F86" : now > 0 ? "#3B9C88" : "#9D4C5E"
-        const col2 = prev === 0 ? "#7F7F86" : prev > 0 ? "#3A8276" : "#824657"
+      {data.map((m, index) => {
+        const isCurrent = currentMonth === index && currentYear
+        const colorDefault = m === 0 ? "#7F7F86" : m > 0 ? "#3B9C88" : "#9D4C5E"
+        const colorActive = m === 0 ? "#bababd" : m > 0 ? "#3ed8ba" : "#b6314e"
+        const color = isCurrent ? colorActive : colorDefault
 
         return (
           <Cell key={m}>
-            <Label>{m}</Label>
-            <Month current={m === "Feb"} c={col1}>
-              {now.toFixed(2)}
+            <Label>{monthes[index]}</Label>
+            <Month fw={isCurrent ? 800 : 500} c={color}>
+              {m}
             </Month>
-            <Month c={col2}>{prev.toFixed(2)}</Month>
           </Cell>
         )
       })}
@@ -86,9 +90,8 @@ const StatisticsCalendar: React.FC = () => {
         <Month fw={800} c="#7FFFD4">
           102%
         </Month>
-        <Month fw={800}>12.2%</Month>
       </Cell>
-    </StyledCalendar>
+    </Flex>
   )
 }
 

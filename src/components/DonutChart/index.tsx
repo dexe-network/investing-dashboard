@@ -89,8 +89,8 @@ const DonutChart = () => {
         data={data}
         onMouseEnter={onHover}
         margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-        innerRadius={0.83}
-        padAngle={2}
+        innerRadius={0.87}
+        padAngle={4}
         cornerRadius={90}
         colors={[
           "#294DA1",
@@ -102,6 +102,7 @@ const DonutChart = () => {
           "#B06125",
           "#AD8230",
         ]}
+        tooltip={() => null}
         borderColor={{ from: "color", modifiers: [["darker", 0.2]] }}
         radialLabelsSkipAngle={13}
         radialLabelsTextColor="#333333"

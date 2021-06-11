@@ -216,7 +216,7 @@
           justify-content: space-evenly;
 
   /* height: 100%; */
-  padding-top: 80px;
+  padding-top: 30px;
 }
 
 .rdrStaticRange{
@@ -537,9 +537,11 @@
 
 .rdrDefinedRangesWrapper{
   font-size: 12px;
-  width: 140px;
+  width: fit-content;
+  padding: 0 10px;
   border-right: none;
-  background: transparent
+  background: transparent;
+  white-space: nowrap;
 }
 
 .rdrDefinedRangesWrapper .rdrStaticRangeSelected{
@@ -557,7 +559,7 @@
   outline: 0;
   border-bottom: none;
   padding: 0;
-  background: transparent
+  background: transparent;
 }
 
 .rdrStaticRange:hover .rdrStaticRangeLabel,.rdrStaticRange:focus .rdrStaticRangeLabel{
@@ -625,11 +627,11 @@
   }
 
 .rdrDayDisabled {
-  background-color: rgb(248, 248, 248);
+  /* background-color: rgb(248, 248, 248); */
 }
 
 .rdrDayDisabled .rdrDayNumber span{
-    color: #aeb9bf;
+    color: #4a4d4f;
   }
 
 .rdrDayDisabled .rdrInRange, .rdrDayDisabled .rdrStartEdge, .rdrDayDisabled .rdrEndEdge, .rdrDayDisabled .rdrSelected, .rdrDayDisabled .rdrDayStartPreview, .rdrDayDisabled .rdrDayInPreview, .rdrDayDisabled .rdrDayEndPreview{

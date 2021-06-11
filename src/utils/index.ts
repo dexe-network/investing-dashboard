@@ -3,13 +3,20 @@ import { BigNumber } from "@ethersproject/bignumber"
 
 export function isAddress(value: any): string | false {
   try {
-    return getAddress(value)
+    return getAddress(value).toLowerCase()
   } catch {
     return false
   }
 }
 
-export function shortenAddress(address: string, chars = 4): string {
+export function shortenAddress(
+  address: string | null | undefined,
+  chars = 4
+): string {
+  if (!address || !address.length) {
+    return ""
+  }
+
   const parsed = isAddress(address)
   if (!parsed) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
@@ -27,4 +34,13 @@ export function bigify(value: string, decimals: number) {
   const multiplier = BigNumber.from(10).pow(decimals)
 
   return BigNumber.from(value).mul(multiplier)
+}
+
+// create dummy data 90% positive number 10% negative
+export const getRandomPnl = () => {
+  const r1 = Math.random()
+  const r2 = Math.random()
+  const negative = r2 > 0.9 ? -1 : 1
+
+  return r1 * 100 * negative
 }

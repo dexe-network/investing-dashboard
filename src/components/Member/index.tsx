@@ -1,201 +1,223 @@
 // import React, { useState, useRef } from "react"
-import styled from "styled-components"
 // import { motion } from "framer-motion"
-
-import Chart from "components/Chart"
+import { useState } from "react"
+import AreaChart from "components/AreaChart"
 import BarChart from "components/BarChart"
-import { BaseButton } from "theme"
 import Funds from "components/Funds"
+import { IPool } from "constants/interfaces"
 import { Orientation } from "constants/types"
+import { ease, Flex } from "theme"
+
+import {
+  MemberCard,
+  MemberBase,
+  AvatarContainer,
+  Avatar,
+  Rank,
+  FloatingText,
+  Copiers,
+  TextBig,
+  TextSmall,
+  Row,
+  Col,
+  Button,
+  BarChartWrapper,
+  DetailedChart,
+  Fee,
+  ButtonGroup,
+  PnlGroup,
+  MiddleContent,
+  StatisticsContainer,
+  StatisticsTitle,
+  StatisticsItem,
+} from "./styled"
 
 interface Props {
-  avatar: string
-  rank: number
-  name: string
-  copiers: number
-  pnl: number
-  tradersFunds: number
-  totalFunds: number
-  traderFee: number
+  data: IPool
 }
 
-const MemberCard = styled.div`
-  position: relative;
-  background: rgb(41, 49, 52);
-  background: linear-gradient(
-    204deg,
-    rgba(41, 49, 52, 1) -10%,
-    rgba(53, 52, 75, 1) 100%
-  );
-  border-radius: 10px;
-  height: 72px;
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 4px;
-  margin-bottom: 20px;
-  transition: transform 0.3s;
+const animation = {
+  active: {
+    height: "fit-content",
+  },
+  default: {
+    height: "82px",
+    transition: { delay: 1, ease, duration: 0.2 },
+  },
+}
 
-  &:first-child {
-    margin-top: 15px;
-  }
-`
+const middleContentVariants = {
+  active: {
+    opacity: 0,
+    transitionEnd: {
+      display: "none",
+    },
+  },
+  default: {
+    display: "flex",
+    opacity: 1,
+  },
+}
 
-const AvatarContainer = styled.div`
-  height: 64px;
-  width: 64px;
-  position: relative;
-`
+const statisticsContainerVariants = {
+  active: {
+    opacity: 1,
+    display: "flex",
+    width: 250,
+    transition: { delay: 0.8 },
+  },
+  default: {
+    opacity: 0,
+    width: 0,
+    transitionEnd: {
+      display: "none",
+    },
+  },
+}
 
-const Avatar = styled.img`
-  height: 64px;
-  width: 64px;
-  border-radius: 50px;
-`
+const chartVariants = {
+  active: {
+    display: "flex",
+    opacity: 1,
+  },
+  default: {
+    opacity: 0,
+    transitionEnd: {
+      display: "none",
+    },
+  },
+}
 
-const Rank = styled.div`
-  position: absolute;
-  bottom: 0px;
-  right: -5px;
-  color: #f5f5f5;
-  font-weight: bold;
-  font-size: 16px;
-`
+const Member: React.FC<Props> = ({ data }) => {
+  const [active, setActive] = useState(false)
 
-const FloatingText = styled.span`
-  position: absolute;
-  top: -15px;
-  font-size: 14px;
-  color: #999999;
-`
+  const {
+    avatar,
+    firstName,
+    lastName,
+    copiers,
+    rank,
+    symbol,
+    price,
+    pnl,
+    commision,
+  } = data
 
-const Copiers = styled.span`
-  font-size: 14px;
-  font-weight: bold;
-  color: #7fffd4;
-  margin-left: 10px;
-`
+  const animate = active ? "active" : "default"
 
-const TextBig = styled.div<{ color?: string; align?: string }>`
-  font-size: 22px;
-  font-weight: bold;
-
-  color: ${(props) => (props.color ? props.color : "#f5f5f5")};
-  text-align: ${(props) => (props.align ? props.align : "left")};
-`
-
-const TextSmall = styled.div<{ color?: string; align?: string }>`
-  font-size: 14px;
-  font-weight: 300;
-
-  color: ${(props) => (props.color ? props.color : "#f5f5f5")};
-  text-align: ${(props) => (props.align ? props.align : "left")};
-`
-
-const Row = styled.div<{ m?: number }>`
-  display: flex;
-
-  margin: 0 ${(props) => (props.m ? props.m : 0)}px;
-`
-
-const Col = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-`
-
-// TODO: inherit from base button
-const Button = styled(BaseButton)<{ secondary?: boolean }>`
-  margin: 1px;
-  border-radius: 7px;
-  color: ${(props) => (props.secondary ? "#B2B2B2" : "#000000")};
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-
-  height: 31px;
-  padding: 0 22px;
-
-  background: ${(props) =>
-    props.secondary
-      ? "#21272A"
-      : "radial-gradient(circle,rgba(127, 255, 212, 1) 0%,rgba(64, 128, 106, 1) 120%);"};
-
-  &:hover {
-    background: ${(props) =>
-      props.secondary
-        ? "#21272A"
-        : "radial-gradient(circle,rgba(127, 255, 212, 1) 0%,rgba(64, 128, 106, 1) 120%);"};
-  }
-  &:focus {
-    background: ${(props) =>
-      props.secondary
-        ? "#21272A"
-        : "radial-gradient(circle,rgba(127, 255, 212, 1) 0%,rgba(64, 128, 106, 1) 120%);"};
-    outline: 0px solid transparent;
-  }
-`
-
-const Member: React.FC<Props> = (props) => {
   return (
-    <MemberCard>
-      <FloatingText>
-        {props.name}
-        <Copiers>{props.copiers}</Copiers> copiers
-      </FloatingText>
+    <MemberCard
+      animate={animate}
+      variants={animation}
+      initial="default"
+      transition={{ duration: 0.3 }}
+      onClick={() => setActive(!active)}
+    >
+      <Flex full dir="column" ai="flex-start">
+        <MemberBase>
+          <FloatingText>
+            {`${firstName} ${lastName}`}
+            <Copiers>{copiers}</Copiers> copiers
+          </FloatingText>
 
-      <Row>
-        <AvatarContainer>
-          <Avatar src={props.avatar} />
-          <Rank>{props.rank}</Rank>
-        </AvatarContainer>
+          <Row minW={215}>
+            <AvatarContainer>
+              <Avatar src={avatar} />
+              <Rank>{rank}</Rank>
+            </AvatarContainer>
 
-        <Row m={10}>
-          <Funds type={Orientation.vertical} />
-        </Row>
+            <Row m={10}>
+              <Funds type={Orientation.vertical} />
+            </Row>
 
-        <Col>
-          <TextBig>ISDX</TextBig>
-          <TextSmall>0.1492 ETH</TextSmall>
-          <TextSmall color="#999999">% & White List</TextSmall>
-        </Col>
-      </Row>
+            <Col>
+              <TextBig>{symbol}</TextBig>
+              <TextSmall>{price} ETH</TextSmall>
+              <TextSmall color="#999999">% & White List</TextSmall>
+            </Col>
+          </Row>
 
-      <Col>
-        <TextBig align="center">{props.pnl}%</TextBig>
-        <TextSmall align="center">P&L</TextSmall>
-      </Col>
+          <MiddleContent
+            initial="default"
+            animate={animate}
+            variants={middleContentVariants}
+            full
+            p="0 20px"
+          >
+            <PnlGroup>
+              <TextBig align="center">{pnl.total}%</TextBig>
+              <TextSmall align="center">P&L</TextSmall>
+            </PnlGroup>
 
-      <Col>
-        <TextSmall align="center">39.13 LP/∞ LP</TextSmall>
-        <TextBig align="center">122.86 ETH/439.6 ETH</TextBig>
-        <TextSmall color="#999999" align="center">
-          Traders funds/Total funds
-        </TextSmall>
-      </Col>
+            <Col>
+              <TextSmall align="center">999999 LP/∞ LP</TextSmall>
+              <TextBig align="center">
+                {999999} ETH/{999999} ETH
+              </TextBig>
+              <TextSmall color="#999999" align="center">
+                Traders funds/Total funds
+              </TextSmall>
+            </Col>
 
-      <Row>
-        <BarChart />
-      </Row>
+            <BarChartWrapper>
+              <BarChart pnlList={pnl.monthly} />
+            </BarChartWrapper>
 
-      <Row>
-        <Chart width={220} height={90} />
-      </Row>
+            <DetailedChart>
+              <AreaChart
+                tooltipSize="sm"
+                width={219}
+                height={63}
+                data={pnl.detailed}
+              />
+            </DetailedChart>
 
-      <Col>
-        <TextBig color="#999999" align="center">
-          {props.traderFee}%
-        </TextBig>
-        <TextSmall color="#999999" align="center">
-          Fee
-        </TextSmall>
-      </Col>
+            <Fee>
+              <TextBig color="#999999" align="center">
+                {commision}%
+              </TextBig>
+              <TextSmall color="#999999" align="center">
+                Fee
+              </TextSmall>
+            </Fee>
+          </MiddleContent>
 
-      <Col>
-        <Button>Invest</Button>
-        <Button secondary>Details</Button>
-      </Col>
+          <ButtonGroup>
+            <Button>Invest</Button>
+            <Button secondary>Details</Button>
+          </ButtonGroup>
+        </MemberBase>
+        <Flex initial="default" variants={chartVariants} animate={animate} full>
+          <AreaChart tooltipSize="sm" height={286} data={pnl.detailed} />
+        </Flex>
+      </Flex>
+      <StatisticsContainer
+        variants={statisticsContainerVariants}
+        animate={animate}
+        initial="default"
+      >
+        <StatisticsTitle>Detailed statistics</StatisticsTitle>
+
+        <StatisticsItem label="P&L LP-$ETH">+1 ETH</StatisticsItem>
+        <StatisticsItem label="P&L LP-$ETH percent">+100%</StatisticsItem>
+        <StatisticsItem label="P&L LP-USD">0 USD</StatisticsItem>
+        <StatisticsItem label="P&L LP-USD percent">0%</StatisticsItem>
+        <StatisticsItem label="Personal funds:">39 ETH(13%)</StatisticsItem>
+        <StatisticsItem label="Invested:">2141 ETH</StatisticsItem>
+        <StatisticsItem label="Profit Factor:">3.37</StatisticsItem>
+        <StatisticsItem label="Trades:">346</StatisticsItem>
+        <StatisticsItem label="Average trades per day:">2.1</StatisticsItem>
+        <StatisticsItem label="Average daily profit in LP:">
+          0.13%
+        </StatisticsItem>
+        <StatisticsItem label="Average order size:">6.2%</StatisticsItem>
+        <StatisticsItem label="Average time position:">28.1H</StatisticsItem>
+        <StatisticsItem label="Maximum Loss:">-13.21%</StatisticsItem>
+        <StatisticsItem label="Sortino $ETH:">7.2</StatisticsItem>
+        <StatisticsItem label="Sortino BTC:">13.8</StatisticsItem>
+        <StatisticsItem label="Circulating Supply:">220 ISDX</StatisticsItem>
+        <StatisticsItem label="Total Supply:">1000 ISDX</StatisticsItem>
+      </StatisticsContainer>
     </MemberCard>
   )
 }

@@ -1,103 +1,161 @@
-import { motion } from "framer-motion"
-import styled from "styled-components"
-import { Switch, Route, Link, useLocation } from "react-router-dom"
+import { useState, useEffect, useCallback } from "react"
 import ProfileAvatar from "components/ProfileAvatar"
 import Statistics from "pages/Profile/Statistics"
 import History from "pages/Profile/History"
 import News from "pages/Profile/News"
 import { feed } from "components/PostCard/PostCard.stories"
+import { Header, Center, Flex, Text } from "theme"
+import { GuardSpinner } from "react-spinners-kit"
+import { useMembers } from "state/members/hooks"
+import { IPool } from "constants/interfaces"
+import FavoriteCard from "components/FavoriteCard"
 
-interface Props {}
+import {
+  ProfileCard,
+  Tab,
+  ProfilePlaceholder,
+  MotionCard,
+  Parent,
+  cardVariants,
+  FavoriteContainer,
+} from "./styled"
 
-const ProfileCard = styled(motion.div)`
-  position: relative;
-  background: rgb(41, 49, 52);
-  background: linear-gradient(
-    204deg,
-    rgba(41, 49, 52, 1) -10%,
-    rgba(53, 52, 75, 1) 100%
-  );
-  border-radius: 10px;
-  max-width: 910px;
-  height: fit-content;
-  margin: auto;
-  overflow: hidden;
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.25);
-  margin-top: 74px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-`
-
-const Header = styled.div`
-  display: flex;
-  padding: 20px 0;
-  max-width: 461px;
-  width: 100%;
-  align-items: center;
-  justify-content: space-around;
-`
-
-const Tab = styled(Link)<{ active?: boolean }>`
-  font-size: 16px;
-  color: ${(props) => (props.active ? "#F5F5F5" : "#999999")};
-  user-select: none;
-  cursor: pointer;
-  transition: all 0.1s ease-in-out;
-  text-decoration: none;
-  user-select: none;
-
-  font-weight: ${(props) => (props.active ? 800 : 300)};
-`
+interface Props {
+  active?: boolean
+  data: IPool
+}
 
 function Profile(props: Props) {
-  const {} = props
-  const { pathname } = useLocation()
-
+  const { data, active } = props
   const STATISTICS = `/profile`
   const HISTORY = `/profile/history`
   const NEWS = `/profile/news`
-  const VOTING = `/profile/voting`
+
+  const [tab, setTab] = useState<string>(STATISTICS)
 
   return (
     <ProfileCard>
+      {!active ? <ProfilePlaceholder /> : null}
       <ProfileAvatar
-        url="https://i.pravatar.cc/164"
-        pinned={pathname !== STATISTICS}
+        name={`${data.firstName} ${data.lastName}`}
+        url={data.avatar}
+        pinned={tab !== STATISTICS}
       />
 
       <Header>
-        <Tab active={pathname === STATISTICS} to={STATISTICS}>
+        <Tab active={tab === STATISTICS} to={() => setTab(STATISTICS)}>
           Statistics
         </Tab>
-        <Tab active={pathname === HISTORY} to={HISTORY}>
+        <Tab active={tab === HISTORY} to={() => setTab(HISTORY)}>
           History
         </Tab>
-        <Tab active={pathname === NEWS} to={NEWS}>
+        <Tab active={tab === NEWS} to={() => setTab(NEWS)}>
           News
-        </Tab>
-        <Tab active={pathname === VOTING} to={VOTING}>
-          Voting & Authorizations
         </Tab>
       </Header>
 
-      <Switch>
-        <Route exact path={STATISTICS}>
-          <Statistics />
-        </Route>
-        <Route exact path={HISTORY}>
-          <History />
-        </Route>
-        <Route exact path={NEWS}>
-          <News data={feed} />
-        </Route>
-        <Route exact path={VOTING}>
-          voting
-        </Route>
-      </Switch>
+      {tab === STATISTICS && <Statistics data={data} />}
+      {tab === HISTORY && <History />}
+      {tab === NEWS && <News data={feed} />}
     </ProfileCard>
   )
 }
 
-export default Profile
+const Card = ({ active, i, next, prev, data }) => {
+  const offset = active - i
+
+  const handleClick = () => {
+    if (offset > 0) {
+      prev()
+    }
+
+    if (offset < 0) {
+      next()
+    }
+  }
+
+  if (offset <= 2 && offset >= -2) {
+    return (
+      <MotionCard
+        initial={`initial${offset}`}
+        transition={{ duration: 0.5 }}
+        onClick={handleClick}
+        animate={offset.toString()}
+        variants={cardVariants}
+      >
+        <Profile data={data} active={offset === 0} />
+      </MotionCard>
+    )
+  }
+
+  return null
+}
+
+const ProfileContainer = () => {
+  const [members, membersLoading, error] = useMembers()
+  const [current, setCurrent] = useState(0)
+
+  const next = useCallback(() => setCurrent(current + 1), [current])
+  const prev = useCallback(() => setCurrent(current - 1), [current])
+
+  const downHandler = useCallback(
+    ({ key }) => {
+      if (key === "ArrowRight" && current !== members.length - 1) {
+        next()
+      }
+      if (key === "ArrowLeft" && current !== 0) {
+        prev()
+      }
+    },
+    [next, prev, current, members]
+  )
+
+  useEffect(() => {
+    window.addEventListener("keydown", downHandler)
+    return () => {
+      window.removeEventListener("keydown", downHandler)
+    }
+  }, [downHandler])
+
+  if (error)
+    return (
+      <Center>
+        <p>Ooops, something went wrong</p>
+        <div>reload</div>
+      </Center>
+    )
+
+  if (membersLoading)
+    return (
+      <Center>
+        <GuardSpinner size={30} loading />
+        <Flex p="10px 0">
+          <Text fz={16} align="center" color="#7FFFD4" fw={300}>
+            Loading traders data
+          </Text>
+        </Flex>
+      </Center>
+    )
+
+  return (
+    <Parent>
+      <div></div>
+      {(members || []).map((v, i) => (
+        <Card
+          data={v}
+          i={i}
+          active={current}
+          key={v.firstName}
+          next={next}
+          prev={prev}
+        />
+      ))}
+      <FavoriteContainer>
+        <FavoriteCard />
+        <FavoriteCard />
+      </FavoriteContainer>
+    </Parent>
+  )
+}
+
+export default ProfileContainer

@@ -3,6 +3,7 @@ import { save, load } from "redux-localstorage-simple"
 
 import user from "./user/reducer"
 import transactions from "./transactions/reducer"
+import members from "./members/reducer"
 
 const PERSISTED_KEYS: string[] = ["user", "transactions"]
 
@@ -10,6 +11,7 @@ const store = configureStore({
   reducer: {
     user,
     transactions,
+    members,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),

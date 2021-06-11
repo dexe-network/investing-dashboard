@@ -3,12 +3,19 @@ import { useState, useRef } from "react"
 import { useClickAway } from "react-use"
 import { motion } from "framer-motion"
 import styled from "styled-components"
+import { device, Flex } from "theme"
 
 interface Props {
-  label?: string
-  default?: string
+  name: string
+  icon?: string
+  label?: React.ReactElement | string
   placeholder?: string
   data?: string[]
+  children?: React.ReactElement
+  position?: "right" | "left"
+  value?: string
+  onChange?: (name: string, value: string) => void
+  noClickAway?: boolean
 }
 
 export const floatingBodyVariants = {
@@ -46,20 +53,27 @@ export const StyledDropdown = styled.div`
   position: relative;
 `
 
-export const Label = styled.div`
+const Text = styled.div`
+  @media only screen and (${device.md}) {
+    display: none;
+  }
+`
+
+export const Label = styled(Text)`
   font-size: 16px;
   color: #707070;
 `
 
-export const Value = styled.div`
+export const Value = styled(Text)`
   font-size: 16px;
   font-weight: bold;
   color: #999999;
   margin-left: 15px;
   width: 126px;
+  white-space: nowrap;
 `
 
-const Body = styled(motion.div)`
+const Body = styled(motion.div)<{ position?: "right" | "left" }>`
   box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.35);
   overflow: hidden;
   background: linear-gradient(
@@ -71,9 +85,20 @@ const Body = styled(motion.div)`
   z-index: 20;
   position: absolute;
   top: 50px;
-  right: 20px;
-  width: 176px;
+  right: ${(props) => (props?.position === "left" ? "30%" : "0")};
+  left: ${(props) => (props?.position === "right" ? "30%" : "0")};
+  min-width: 176px;
+  max-width: 100vh;
+  width: fit-content;
   height: fit-content;
+
+  @media only screen and (${device.md}) {
+    margin: auto;
+    position: fixed;
+    left: 50px;
+    right: 0;
+    top: 60px;
+  }
 `
 
 const Item = styled(motion.div)<{ active?: boolean }>`
@@ -86,10 +111,19 @@ const Item = styled(motion.div)<{ active?: boolean }>`
   background: ${(props) => (props.active ? "#000000" : "transparent")};
 `
 
+export const Icon = styled.img`
+  width: 20px;
+  height: 20px;
+  display: none;
+
+  @media only screen and (${device.md}) {
+    display: block;
+  }
+`
+
 const Dropdown: React.FC<Props> = (props) => {
   const ref = useRef(null)
   const [open, setOpen] = useState(false)
-  const [active, setActive] = useState(props.default)
 
   const list = props.data || []
   const toggle = () => setOpen(!open)
@@ -98,13 +132,31 @@ const Dropdown: React.FC<Props> = (props) => {
     setOpen(false)
   })
 
+  const label =
+    typeof props.label === "string" ? (
+      <>
+        <Label>{props.label}</Label>
+
+        {!props.value ? (
+          <Value>{props.placeholder}</Value>
+        ) : (
+          <Value>{props.value}</Value>
+        )}
+      </>
+    ) : (
+      props.label
+    )
+
   return (
-    <StyledDropdown onClick={toggle} ref={ref}>
-      {props.label && <Label>{props.label}</Label>}
-      {!active ? <Value>{props.placeholder}</Value> : <Value>{active}</Value>}
+    <StyledDropdown ref={ref}>
+      <Flex onClick={toggle}>
+        {label}
+        <Icon src={props.icon} />
+      </Flex>
 
       <Body
         initial="hidden"
+        position={props.position}
         variants={floatingBodyVariants}
         animate={open ? "visible" : "hidden"}
       >
@@ -113,12 +165,16 @@ const Dropdown: React.FC<Props> = (props) => {
             key={name}
             initial="hidden"
             variants={simpleVariants}
-            active={active === name}
-            onClick={() => setActive(name)}
+            active={props.value === name}
+            onClick={() =>
+              props.onChange ? props.onChange(props.name, name) : null
+            }
           >
             {name}
           </Item>
         ))}
+
+        {props.children}
       </Body>
     </StyledDropdown>
   )

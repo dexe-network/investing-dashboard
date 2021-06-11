@@ -1,8 +1,16 @@
 import * as React from "react"
 
-function DexeIcon(props: React.SVGProps<SVGSVGElement>) {
+interface IProps {
+  size?: number
+}
+
+function DexeIcon(props: IProps) {
   return (
-    <svg width={38} height={38} {...props}>
+    <svg
+      width={38}
+      height={38}
+      transform={`scale(${props.size ? props.size / 38 : 1})`}
+    >
       <defs>
         <filter
           id="prefix__b"

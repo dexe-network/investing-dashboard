@@ -2,38 +2,25 @@
 
 import { motion } from "framer-motion"
 import styled from "styled-components"
-import { ease } from "theme"
+import { ease, Text, LinkIcon, device } from "theme"
 
 import { shortenAddress } from "utils"
 
-import link from "assets/icons/link.svg"
+import { opacityVariants } from "motion/variants"
+import star from "assets/icons/star.svg"
 
 interface Props {
   pinned: boolean
   url: string
+  name: string
 }
 
 const containerVariants = {
-  visible: {
+  hidden: {
     y: 0,
   },
-  hidden: {
-    y: 50,
-  },
-}
-
-const opacityVariants = {
   visible: {
-    opacity: 0,
-    height: 0,
-    transitionEnd: {
-      display: "none",
-    },
-  },
-  hidden: {
-    opacity: 1,
-    height: "fit-content",
-    display: "flex",
+    y: 50,
   },
 }
 
@@ -46,6 +33,11 @@ const StyledAvatar = styled(motion.div)<{ pinned?: boolean }>`
   display: flex;
   align-items: center;
   user-select: none;
+
+  @media only screen and (${device.sm}) {
+    left: 10px;
+    top: ${(props) => (props?.pinned ? "50px" : "8px")};
+  }
 `
 
 const Avatar = styled.img<{ size: number }>`
@@ -62,29 +54,50 @@ const Info = styled.div`
 `
 
 const Main = styled.div`
-  height: 31px;
+  height: 35px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 `
 
-const Text = styled(motion.div)<{ color?: string }>`
+const TextCentered = styled(Text)`
   display: flex;
-  font-size: 14px;
-  color: ${(props) => (props.color ? props.color : "#999999")};
+  align-items: center;
 `
 
-const TextIcon = styled.img`
-  width: 15px;
-  height: 15px;
-  margin-left: 5px;
-  transform: translateY(-2px);
+const TextTop = styled(Text)`
+  display: flex;
+  align-items: flex-start;
+`
+
+const AddressButton = styled.div`
+  color: #999999;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    color: #7fffd4;
+  }
+`
+
+const Star = styled.img`
+  height: 12px;
+  width: 12px;
+  margin-left: 4px;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    opacity: 0.9;
+  }
 `
 
 const ProfileAvatar: React.FC<Props> = (props) => {
   return (
     <StyledAvatar
-      animate={props.pinned ? "visible" : "hidden"}
+      animate={props.pinned ? "hidden" : "visible"}
       variants={containerVariants}
       pinned={props.pinned}
       transition={{ ease, duration: 0.3 }}
@@ -92,11 +105,16 @@ const ProfileAvatar: React.FC<Props> = (props) => {
       <Avatar src={props.url} size={props.pinned ? 41 : 60} />
       <Info>
         <Main>
-          <Text color="#F5F5F5">Irvine Smith</Text>
-          <Text>
-            {shortenAddress("0x3196d7ea7fd55001f4d26d9fbc83d8b0dbf08d21")}
-            <TextIcon src={link} />
-          </Text>
+          <TextTop color="#F5F5F5">
+            {props.name}
+            <Star src={star} />
+          </TextTop>
+          <TextCentered>
+            <AddressButton>
+              {shortenAddress("0x3196d7ea7fd55001f4d26d9fbc83d8b0dbf08d21")}
+            </AddressButton>
+            <LinkIcon side="right" />
+          </TextCentered>
         </Main>
         <Text
           transition={{ ease, duration: 0.3 }}

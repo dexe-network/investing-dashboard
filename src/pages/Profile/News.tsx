@@ -15,8 +15,10 @@ import {
   PostName,
   PostPrice,
   PostPnl,
+  PersonalPostList,
 } from "pages/Profile/styled"
 import PostCard from "components/PostCard"
+import PostBox from "components/PostBox"
 
 const PostsList: React.FC<{ d: IPostGroup[] }> = (props) => {
   return (
@@ -59,7 +61,7 @@ const News: React.FC<{ data: IPostGroup[] }> = (props) => {
 
   return (
     <StyledNews>
-      <Flex jc="flex-start" p="5px 0 0" full>
+      <Flex jc="flex-start" p="5px 35px 0" full>
         <Title
           onClick={() => setActiveTab(1)}
           weight={activeTab === 1 ? 800 : 300}
@@ -73,13 +75,26 @@ const News: React.FC<{ data: IPostGroup[] }> = (props) => {
           MY FEED
         </Title>
       </Flex>
-      <NewsList dir={Orientation.vertical} jc="flex-start" full>
+      <NewsList
+        p="0 39px"
+        dir={Orientation.vertical}
+        jc="flex-start"
+        full
+        className="scrollable-content"
+      >
         {activeTab === 1 ? (
           <PostsList d={list} />
         ) : (
-          list[0].posts.map((post: IPost) => (
-            <PostCard border key={post.created_at} data={post} />
-          ))
+          <>
+            <PostBox />
+            <PersonalPostList>
+              {[...list[0].posts, ...list[0].posts].map((post: IPost) => (
+                <Flex key={post.created_at} p="15px 0" full>
+                  <PostCard border data={post} />
+                </Flex>
+              ))}
+            </PersonalPostList>
+          </>
         )}
       </NewsList>
     </StyledNews>

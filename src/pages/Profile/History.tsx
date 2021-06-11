@@ -1,35 +1,18 @@
 import { useState } from "react"
-import { Flex } from "theme"
+import { Flex, customListStyles, device } from "theme"
+import styled from "styled-components"
 import { Orientation } from "constants/types"
-import DataTable, { createTheme } from "react-data-table-component"
+import DataTable from "react-data-table-component"
 import { Wrapper, NoData, Title } from "pages/Profile/styled"
 import data from "./sampleData"
 
-createTheme("dexe", {
-  text: {
-    primary: "#F5F5F5",
-    secondary: "#2aa198",
-  },
-  background: {
-    default: "transparent",
-  },
-  divider: {
-    default: "transparent",
-  },
-  sortFocus: {
-    default: "#F5F5F5",
-  },
-})
-
 const columns = [
   {
-    name: "",
+    name: "#",
     selector: "index",
     sortable: true,
-    width: "20px",
-    style: {
-      padding: 0,
-    },
+    width: "40px",
+    hide: 420,
   },
   {
     name: "DATE",
@@ -45,21 +28,25 @@ const columns = [
     name: "SEND",
     selector: "send",
     sortable: true,
+    hide: 800,
   },
   {
     name: "PRICE",
     selector: "price",
     sortable: true,
+    hide: 500,
   },
   {
     name: "GET",
     selector: "get",
     sortable: true,
+    hide: 1000,
   },
   {
     name: "FEE",
     selector: "fee",
     sortable: true,
+    hide: 700,
   },
   {
     name: "P&L",
@@ -68,66 +55,47 @@ const columns = [
   },
 ]
 
-const customStyled = {
-  header: {
-    style: {
-      display: "none",
-    },
-  },
-  headRow: {
-    style: {
-      minHeight: "26px",
-      borderBottomWidth: "0px",
-    },
-  },
-  rows: {
-    style: {
-      minHeight: "37px",
-      fontSize: "14px",
-      fontWeight: 300,
-      color: "#F5F5F5",
-    },
-  },
-  headCells: {
-    style: {
-      color: "#707070",
-      fontFamily: "Gilroy",
-      fontSize: "14px",
-      fontWeight: 300,
-    },
-  },
-}
+const TitleContainer = styled(Flex)`
+  @media only screen and (${device.md}) {
+    padding: 0 10px;
+  }
+`
 
-// const useState = (defaultValue) => {
-//   let currentValue = defaultValue
+const StyledHistory = styled.div`
+  width: 100%;
 
-//   const setNew = (newValue) => {
-//     currentValue = newValue
-//   }
-
-//   return [currentValue, setNew]
-// }
+  @media only screen and (${device.sm}) {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+`
 
 const History = () => {
   const [topSide, setTopSide] = useState(1)
   const [botSide, setBotSide] = useState(1)
 
   return (
-    <>
-      <Flex jc="flex-start" full>
+    <StyledHistory>
+      <TitleContainer jc="flex-start" full p="0 35px">
         <Title onClick={() => setTopSide(1)} weight={topSide === 1 ? 800 : 300}>
-          OPEN POSITIONS
+          POSITIONS
         </Title>
         <Title onClick={() => setTopSide(2)} weight={topSide === 2 ? 800 : 300}>
-          INVESTING OPEN POSITIONS
+          INVESTING
         </Title>
-      </Flex>
-      <Wrapper dir={Orientation.vertical} p="0 0 10px" full>
+      </TitleContainer>
+      <Wrapper
+        className="scrollable-content"
+        dir={Orientation.vertical}
+        p="0 10px 10px"
+        full
+      >
         {topSide === 1 ? (
           <DataTable
-            customStyles={customStyled}
+            responsive
+            customStyles={customListStyles}
             fixedHeader
-            fixedHeaderScrollHeight="210px"
+            fixedHeaderScrollHeight="200px"
             columns={columns}
             data={[]}
             noDataComponent={<NoData>You have no open positions</NoData>}
@@ -135,9 +103,10 @@ const History = () => {
           />
         ) : (
           <DataTable
-            customStyles={customStyled}
+            responsive
+            customStyles={customListStyles}
             fixedHeader
-            fixedHeaderScrollHeight="210px"
+            fixedHeaderScrollHeight="200px"
             columns={columns}
             data={data.reverse()}
             noDataComponent={<NoData>You have no open positions</NoData>}
@@ -146,31 +115,37 @@ const History = () => {
         )}
       </Wrapper>
 
-      <Flex jc="flex-start" full>
+      <TitleContainer jc="flex-start" full p="0 35px">
         <Title onClick={() => setBotSide(1)} weight={botSide === 1 ? 800 : 300}>
-          TRADING POSITIONS HISTORY
+          TRADING
         </Title>
         <Title onClick={() => setBotSide(2)} weight={botSide === 2 ? 800 : 300}>
-          INVESTING POSITIONS HISTORY
+          INVESTING
         </Title>
-      </Flex>
+      </TitleContainer>
 
-      <Wrapper dir={Orientation.vertical} p="0px 0 24px" full>
-        {botSide === 1 ? (
+      <Wrapper
+        className="scrollable-content"
+        dir={Orientation.vertical}
+        p="0px 10px 24px"
+        full
+      >
+        {botSide === 1 && (
           <DataTable
-            customStyles={customStyled}
+            customStyles={customListStyles}
             fixedHeader
-            fixedHeaderScrollHeight="210px"
+            fixedHeaderScrollHeight="200px"
             columns={columns}
             data={data}
             noDataComponent={<NoData>You have no history positions</NoData>}
             theme="dexe"
           />
-        ) : (
+        )}
+        {botSide === 2 && (
           <DataTable
-            customStyles={customStyled}
+            customStyles={customListStyles}
             fixedHeader
-            fixedHeaderScrollHeight="210px"
+            fixedHeaderScrollHeight="200px"
             columns={columns}
             data={[]}
             noDataComponent={<NoData>You have no history positions</NoData>}
@@ -178,7 +153,7 @@ const History = () => {
           />
         )}
       </Wrapper>
-    </>
+    </StyledHistory>
   )
 }
 

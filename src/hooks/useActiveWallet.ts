@@ -1,37 +1,33 @@
 import { useState, useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { connectorsByName, injected } from "constants/connectors"
+import { injected, connectorsByName } from "constants/connectors"
 
 export function useActiveWallet() {
-  const { connector } = useWeb3React()
+  const { connector, library, account } = useWeb3React()
   const [active, setActive] = useState("")
-  const { ethereum } = window
 
   useEffect(() => {
-    const isMetaMask =
-      connector === injected && !!(ethereum && ethereum.isMetaMask)
-    const isWalletConnect = connector === connectorsByName.WalletConnect
-    const isWalletLink = connector === connectorsByName.WalletLink
-    const isLedger = connector === connectorsByName.Ledger
-    const isTrezor = connector === connectorsByName.Trezor
-    const isTorus = connector === connectorsByName.Torus
-
-    if (isMetaMask) {
-      setActive("MetaMask")
-    } else if (isWalletConnect) {
-      setActive("WalletConnect")
-    } else if (isWalletLink) {
-      setActive("WalletLink")
-    } else if (isLedger) {
-      setActive("Ledger")
-    } else if (isTrezor) {
-      setActive("Trezor")
-    } else if (isTorus) {
-      setActive("Torus")
-    } else {
-      setActive("")
+    if (!connector) {
+      return
     }
-  }, [connector, ethereum])
+
+    console.log(connector, library)
+    if (library?.connection.url === "metamask") {
+      setActive("metamask")
+    }
+
+    if (library?.provider?.bnbSign) {
+      setActive("bsc")
+    }
+
+    if (connector === connectorsByName.walletconnect) {
+      setActive("walletconnect")
+    }
+
+    // if (connector === connectorsByName.arkane) {
+    //   setActive("arkane")
+    // }
+  }, [connector, account, library])
 
   return active
 }

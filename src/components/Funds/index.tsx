@@ -73,11 +73,11 @@ const Funds: React.FC<Props> = (props) => {
         />
         {props.type === Orientation.horizontal && <Ticker>ETH</Ticker>}
       </Major>
-      <Icon type={props.type} src="https://ethplorer.io/images/mcd-dai.png" />
+      {/* <Icon type={props.type} src="https://ethplorer.io/images/mcd-dai.png" />
       <Icon
         type={props.type}
         src="https://tokens.1inch.exchange/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png"
-      />
+      /> */}
     </StyledFunds>
   )
 }

@@ -6,8 +6,7 @@
   "component": {
     "default": {
       "customTemplates": {
-        "component": "templates/component.tsx",
-        "lazy": "templates/lazy.tsx"
+        "component": "templates/component.tsx"
       },
       "path": "src/components",
       "withStyle": false,

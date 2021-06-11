@@ -1,5 +1,8 @@
 import React, { useState } from "react"
 
+import { useActiveWallet } from "hooks/useActiveWallet"
+import { useWeb3React } from "@web3-react/core"
+
 import PortfolioIcon from "assets/menu/PortfolioIcon.svg"
 import ProfileIcon from "assets/menu/ProfileIcon.svg"
 import TopMembersIcon from "assets/menu/TopMembersIcon.svg"
@@ -14,6 +17,8 @@ import SupportIcon from "assets/menu/SupportIcon.svg"
 import NotificationsIcon from "assets/menu/NotificationsIcon.svg"
 import ConnectIcon from "assets/menu/ConnectIcon"
 
+import { connectorsIcons } from "constants/connectors"
+
 import {
   Text,
   transitionType,
@@ -26,11 +31,16 @@ import {
   IconContainer,
   Icon,
   Group,
+  ProviderIcon,
 } from "./styled"
 
 import { To } from "theme"
 
 import usePathname from "hooks/usePathname"
+
+import { useNotificationsContext } from "context/NotificationsContext"
+import { useConnectWalletContext } from "context/ConnectWalletContext"
+import { shortenAddress } from "utils"
 
 export interface IMenuContext {
   open: boolean
@@ -41,6 +51,10 @@ export const MenuContext = React.createContext<IMenuContext | null>(null)
 const Menu: React.FC = () => {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  const { toggleNotifications } = useNotificationsContext()
+  const { toggleConnectWallet } = useConnectWalletContext()
+  const active = useActiveWallet()
+  const { account } = useWeb3React()
 
   const onHover = () => {
     if (!open) {
@@ -202,19 +216,28 @@ const Menu: React.FC = () => {
               <Text>Support</Text>
             </MenuItem>
           </To>
-          <MenuItem>
+          <MenuItem onClick={() => toggleNotifications(undefined)}>
             <IconContainer>
               <Icon src={NotificationsIcon} />
             </IconContainer>
             <Text>Notifications</Text>
           </MenuItem>
 
-          <MenuItem>
-            <IconContainer>
-              <ConnectIcon />
-            </IconContainer>
-            <Text>Connect</Text>
-          </MenuItem>
+          {active.length ? (
+            <MenuItem onClick={() => toggleConnectWallet(undefined)}>
+              <IconContainer>
+                <ProviderIcon src={connectorsIcons[active]} />
+              </IconContainer>
+              <Text>{shortenAddress(account)}</Text>
+            </MenuItem>
+          ) : (
+            <MenuItem onClick={() => toggleConnectWallet(undefined)}>
+              <IconContainer>
+                <ConnectIcon />
+              </IconContainer>
+              <Text>Connect</Text>
+            </MenuItem>
+          )}
         </Group>
       </StyledMenu>
     </MenuContext.Provider>

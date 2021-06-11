@@ -2,4 +2,4 @@
 import { storiesOf } from '@storybook/react';
 import Search from './index';
 
-storiesOf('Search', module).add('default', () => <Search />);
+storiesOf('Search', module).add('default', () => <Search onChange={() => {}} />);

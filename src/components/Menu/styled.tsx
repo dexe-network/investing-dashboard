@@ -3,7 +3,7 @@ import { motion } from "framer-motion"
 import styled from "styled-components"
 
 import DexeIcon from "assets/menu/DexeIcon"
-import DexeInvestments from "assets/menu/DexeInvestments.svg"
+import DexeInvestments from "assets/menu/DexeInvestments"
 import ProductsIcon from "assets/menu/ProductsIcon"
 
 import { External } from "theme"
@@ -66,7 +66,7 @@ const StyledMenu = styled(motion.nav)`
   position: sticky;
   z-index: 20;
   top: 0;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -79,7 +79,10 @@ const StyledMenu = styled(motion.nav)`
   box-shadow: 6px 0px 15px rgba(0, 0, 0, 0.15);
 `
 
-const MenuItem = styled.div<{ active?: boolean }>`
+const MenuItem = styled.div<{
+  active?: boolean
+  onClick?: (value?: boolean | undefined) => void
+}>`
   position: relative;
   display: flex;
   align-items: center;
@@ -172,7 +175,7 @@ const LogoSection = () => (
           <DexeIcon />
         </IconContainer>
         <Text>
-          <Icon scale={0.8} src={DexeInvestments} />
+          <DexeInvestments scale={0.8} />
         </Text>
       </MenuItem>
     </External>
@@ -187,7 +190,13 @@ const LogoSection = () => (
   </Group>
 )
 
+const ProviderIcon = styled.img`
+  width: 30px;
+  height: 30px;
+`
+
 export {
+  ProviderIcon,
   LogoSection,
   Text,
   transitionType,

@@ -1,12 +1,17 @@
-import { Flex, ease } from "theme"
-import Chart from "components/Chart"
+import { useWeb3React } from "@web3-react/core"
+import { ease } from "theme"
 import Funds from "components/Funds"
 import { Orientation } from "constants/types"
 
+import AreaChart from "components/AreaChart"
 import StatisticsCalendar from "components/StatisticsCalendar"
 import DonutChart from "components/DonutChart"
 
 import { useUserProMode } from "state/user/hooks"
+
+import { useCreateFundContext } from "context/CreateFundContext"
+import { useConnectWalletContext } from "context/ConnectWalletContext"
+import { IPool } from "constants/interfaces"
 
 import rank from "assets/icons/rank.svg"
 import copiers from "assets/icons/copiers.svg"
@@ -32,124 +37,146 @@ import {
   detailedVariants,
   overlayVariants,
   pieVariants,
+  TraderStatistics,
+  IconsWrapper,
+  DesktopIcon,
+  CalendarWrapper,
+  DetailedWrapper,
+  Bottom,
 } from "pages/Profile/styled"
 
-const average = [
-  {
-    label: "Trades per Day:",
-    value: "2.1",
-  },
-  {
-    label: "Order size:",
-    value: "6.2%",
-  },
-  {
-    label: "Daily Profit:",
-    value: "0.13%",
-  },
-  {
-    label: "Trade position:",
-    value: "28.1H",
-  },
-  {
-    label: "Sortino (ETH):",
-    value: "7.2",
-  },
-  {
-    label: "Sortino (BTC):",
-    value: "13.8",
-  },
-  {
-    label: "Trades:",
-    value: "346",
-  },
-  {
-    label: "Maximum Loss:",
-    value: "-13.21%",
-  },
-]
+interface Props {
+  data: IPool
+}
 
-const funds = [
-  {
-    label: "Personal funds:",
-    value: "39 ETH(13%)",
-  },
-  {
-    label: "Invested:",
-    value: "2141 ETH",
-  },
-]
-
-const totalPNL = [
-  {
-    label: "ETH(%):",
-    value: "238%",
-  },
-  {
-    label: "USD(%):",
-    value: "341.2%",
-  },
-  {
-    label: "Circulating Supply:",
-    value: "220 ISDX",
-  },
-  {
-    label: "Total Supply:",
-    value: "1000 ISDX",
-  },
-]
-
-const uncategorizedStatistics = [
-  {
-    label: "Major asset:",
-    value: "ETH",
-  },
-  {
-    label: "Profit Factor:",
-    value: "3.37",
-  },
-]
-
-const Statistics = () => {
+const Statistics = ({ data }: Props) => {
+  const { account } = useWeb3React()
   const [pro] = useUserProMode()
+  const { toggleCreateFund } = useCreateFundContext()
+  const { toggleConnectWallet } = useConnectWalletContext()
   const animatePro = pro ? "visible" : "hidden"
+
+  const handleInvest = () => {
+    if (!account) {
+      toggleConnectWallet()
+      return
+    }
+
+    toggleCreateFund(true)
+  }
+
+  const average = [
+    {
+      label: "Trades per Day:",
+      value: `${data.avg.tradesPerDay}`,
+    },
+    {
+      label: "Order size:",
+      value: `${data.avg.orderSize}%`,
+    },
+    {
+      label: "Daily Profit:",
+      value: `${data.avg.dailyLpProfit}%`,
+    },
+    {
+      label: "Trade position:",
+      value: `${data.avg.timePosition}H`,
+    },
+    {
+      label: "Sortino (ETH):",
+      value: `${data.sortino.base}`,
+    },
+    {
+      label: "Sortino (BTC):",
+      value: `${data.sortino.btc}`,
+    },
+    {
+      label: "Trades:",
+      value: `${data.trades}`,
+    },
+    {
+      label: "Maximum Loss:",
+      value: `${data.maxLoss}%`,
+    },
+  ]
+
+  const funds = [
+    {
+      label: "Personal funds:",
+      value: `${data.personalFunds} ETH(${data.personalFundsPercent}%)`,
+    },
+    {
+      label: "Invested:",
+      value: `${data.invested} ETH`,
+    },
+  ]
+
+  const totalPNL = [
+    {
+      label: "ETH(%):",
+      value: `${data.pnl.lpBasicPercent}%`,
+    },
+    {
+      label: "USD(%):",
+      value: `${data.pnl.lpUsdPercent}%`,
+    },
+    {
+      label: "Circulating Supply:",
+      value: `${data.supply.circulating} ${data.symbol}`,
+    },
+    {
+      label: "Total Supply:",
+      value: `${data.supply.total} ${data.symbol}`,
+    },
+  ]
+
+  const uncategorizedStatistics = [
+    {
+      label: "Major asset:",
+      value: "ETH",
+    },
+    {
+      label: "Profit Factor:",
+      value: `${data.profitFactor}`,
+    },
+  ]
 
   return (
     <>
-      <Wrapper full>
+      <TraderStatistics full p="0px 35px 0 0">
         <AvatarPlaceholder />
 
-        <Card>
+        <IconsWrapper>
           <Funds type={Orientation.horizontal} />
 
           <Card>
             <StatisticsIcon src={rank} />
-            <Text>7.4</Text>
+            <Text>{data.rank}</Text>
           </Card>
 
           <Card>
             <StatisticsIcon src={copiers} />
-            <Text>231</Text>
+            <Text>{data.copiers}</Text>
           </Card>
 
           <Card>
             <StatisticsIcon src={fee} />
-            <Text>35%</Text>
+            <Text>{data.commision}%</Text>
           </Card>
 
-          <Card>
+          <DesktopIcon>
             <StatisticsIcon src={pie} />
             <Text>On</Text>
-          </Card>
+          </DesktopIcon>
 
-          <Card>
+          <DesktopIcon>
             <StatisticsIcon src={filled} />
             <Text>96%</Text>
-          </Card>
-        </Card>
+          </DesktopIcon>
+        </IconsWrapper>
 
-        <Button>Create a fund</Button>
-      </Wrapper>
+        <Button onClick={handleInvest}>Buy {data.symbol}</Button>
+      </TraderStatistics>
 
       <ChartWrapper>
         <Overlay
@@ -158,25 +185,33 @@ const Statistics = () => {
           animate={animatePro}
           variants={overlayVariants}
         />
-        <Chart title period width={940} height={190} />
+        <AreaChart
+          title
+          period
+          data={data.pnl.detailed}
+          width={910}
+          height={180}
+          tooltipSize="lg"
+        />
       </ChartWrapper>
 
-      <Flex
+      <CalendarWrapper
         initial={animatePro}
         variants={calendarVariants}
         animate={animatePro}
         dir="column"
         full
       >
-        <Title full weight={800}>
-          Monthly statistics
-        </Title>
-        <Wrapper full>
-          <StatisticsCalendar />
+        <Wrapper p="0px 35px" full dir="column">
+          <Title full weight={800}>
+            Monthly statistics
+          </Title>
+          <StatisticsCalendar currentYear data={data.pnl.monthly} />
         </Wrapper>
-      </Flex>
+      </CalendarWrapper>
 
-      <Flex
+      <DetailedWrapper
+        p="0px 35px"
         initial={animatePro}
         animate={animatePro}
         variants={detailedVariants}
@@ -186,7 +221,7 @@ const Statistics = () => {
         <Title full weight={800}>
           Detailed statistics <ProButton />
         </Title>
-        <Wrapper ai="flex-start" full>
+        <Bottom ai="flex-start" full>
           <StatisticsWrapper>
             <DetailedStatistics
               label=""
@@ -209,11 +244,12 @@ const Statistics = () => {
             initial={animatePro}
             animate={animatePro}
             variants={pieVariants}
+            transition={{ duration: 0.3 }}
           >
             <DonutChart />
           </PieWrapper>
-        </Wrapper>
-      </Flex>
+        </Bottom>
+      </DetailedWrapper>
     </>
   )
 }

@@ -2,7 +2,7 @@
 // import { motion } from "framer-motion"
 import styled from "styled-components"
 import ApexChart from "react-apexcharts"
-import { Flex, chartColors } from "theme"
+import { Flex, chartColors, device } from "theme"
 import { useUserProMode } from "state/user/hooks"
 
 interface Props {
@@ -12,26 +12,14 @@ interface Props {
   period?: boolean
 }
 
-const Ticker = styled.div`
-  color: #dddddd;
-  font-size: 16px;
-  font-weight: bold;
-  margin-right: 10px;
-`
+const StyledChart = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 
-const Price = styled.div`
-  font-size: 16px;
-  font-weight: 500;
-  color: #999999;
-`
-
-const Month = styled.div<{ active?: boolean }>`
-  font-size: 16px;
-  font-weight: 500;
-  color: ${(props) => (props.active ? "#999999" : "#4A4F53")};
-  margin: 0 8px;
-  user-select: none;
-  cursor: pointer;
+  @media only screen and (${device.sm}) {
+    padding: 0 10px;
+  }
 `
 
 const series = [
@@ -105,6 +93,46 @@ const Chart: React.FC<Props> = (props) => {
     dataLabels: {
       enabled: false,
     },
+    annotations: {
+      xaxis: [
+        {
+          x: 140,
+          strokeDashArray: 0,
+          borderColor: "#1751d8",
+          fillColor: "#1751d8",
+          opacity: 0.5,
+          offsetY: 5,
+          label: {
+            borderColor: "#1751d8",
+            style: {
+              fontFamily: "Gilroy",
+              fontSize: "10px",
+              color: "#7FFFD4",
+              background: "#2869FC",
+            },
+            text: "Buy ISDX",
+          },
+        },
+        {
+          x: 190,
+          strokeDashArray: 0,
+          borderColor: "#431cc1",
+          fillColor: "#431cc1",
+          opacity: 0.5,
+          offsetY: 5,
+          label: {
+            borderColor: "#431cc1",
+            style: {
+              fontFamily: "Gilroy",
+              fontSize: "10px",
+              color: "#FF7F7F",
+              background: "#824096",
+            },
+            text: "Sell ISDX",
+          },
+        },
+      ],
+    },
     grid: {
       show: false,
     },
@@ -136,6 +164,19 @@ const Chart: React.FC<Props> = (props) => {
       selection: {
         enabled: false,
       },
+      animations: {
+        enabled: false,
+        easing: "easeinout",
+        speed: 800,
+        animateGradually: {
+          enabled: false,
+          delay: 150,
+        },
+        dynamicAnimation: {
+          enabled: false,
+          speed: 350,
+        },
+      },
     },
     fill: {
       colors: chartColors[isPro ? "pro" : "default"].bg,
@@ -146,7 +187,7 @@ const Chart: React.FC<Props> = (props) => {
         shadeIntensity: 0.1,
         gradientToColors: undefined,
         inverseColors: false,
-        opacityFrom: 0.8,
+        opacityFrom: 0.1,
         opacityTo: 0,
         stops: [0, 90],
       },
@@ -209,36 +250,15 @@ const Chart: React.FC<Props> = (props) => {
   }
 
   return (
-    <div>
-      {(props.title || props.period) && (
-        <Flex full p="17px 30px 4px 30px">
-          {props.title && (
-            <Flex>
-              <Ticker>Chart IDSX</Ticker>
-              <Price>1 IDSX = 3.22 ETH ($1437.22)</Price>
-            </Flex>
-          )}
-          {props.period && (
-            <Flex>
-              <Month>1D</Month>
-              <Month>1W</Month>
-              <Month>1M</Month>
-              <Month>3M</Month>
-              <Month>1Y</Month>
-              <Month>2Y</Month>
-              <Month active>ALL</Month>
-            </Flex>
-          )}
-        </Flex>
-      )}
+    <StyledChart>
       <ApexChart
         options={options}
         series={series}
         type="area"
-        width={props.width || "100%"}
+        width={"100%"}
         height={props.height || "100%"}
       />
-    </div>
+    </StyledChart>
   )
 }
 
