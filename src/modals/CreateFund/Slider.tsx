@@ -37,16 +37,16 @@ import "./slider.css"
 const initialState = {
   _traderWallet: "", // address
   _basicToken: "", // address
-  _totalSupply: 0, // uint256
+  _totalSupply: BigNumber.from(0), // uint256
   _comm: [
-    BigNumber.from(100),
-    BigNumber.from(30),
-    BigNumber.from(100),
+    BigNumber.from(10),
     BigNumber.from(3),
-    BigNumber.from(100),
-    BigNumber.from(30),
+    BigNumber.from(10),
+    BigNumber.from(3),
+    BigNumber.from(10),
+    BigNumber.from(3),
   ],
-  _actual: true, // bool
+  _actual: false, // bool
   _investorRestricted: false, // bool
   _name: "", // string
   _symbol: "", // string

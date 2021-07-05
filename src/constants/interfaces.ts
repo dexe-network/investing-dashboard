@@ -15,20 +15,30 @@ export interface IPostGroup {
   posts: IPost[]
 }
 
+export interface IStaticRanges {
+  label: string
+  isSelected: (period: string[]) => void
+  range: () => void
+}
+
+export type ListOrCard = "list" | "card"
+
 export interface ITopMembersFilters {
   sort: string
   period: string[]
   query: string
   currency: string
+  listStyle: ListOrCard
 }
 
 export interface ITokenBase {
   address: string
-  chainId: number
   name: string
   symbol: string
   decimals: number
-  logoURI: string
+  balance?: BigNumber
+  chainId?: number
+  logoURI?: string
 }
 
 export interface INotification {
@@ -81,11 +91,11 @@ export interface IPool {
   lastName: string
   avatar: string
 
-  address: string
+  ownerAddress: string
   poolAddress: string
+  baseAddress: string
 
   symbol: string
-  baseSymbol: string
   price: string // BigNumber
   priceUsd: number
 

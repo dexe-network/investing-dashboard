@@ -6,6 +6,7 @@ import { Orientation } from "constants/types"
 
 interface Props {
   type: Orientation
+  active: string
 }
 
 const StyledFunds = styled.div<{ type: Orientation }>`
@@ -69,7 +70,7 @@ const Funds: React.FC<Props> = (props) => {
       <Major>
         <Icon
           type={props.type}
-          src="https://tokens.1inch.exchange/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png"
+          src={`https://tokens.1inch.exchange/${props.active.toLowerCase()}.png`}
         />
         {props.type === Orientation.horizontal && <Ticker>ETH</Ticker>}
       </Major>

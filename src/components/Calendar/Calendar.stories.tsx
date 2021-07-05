@@ -2,4 +2,4 @@
 import { storiesOf } from '@storybook/react';
 import Calendar from './index';
 
-storiesOf('Calendar', module).add('default', () => <Calendar value={[]} onChange={() => {}} />);
+// storiesOf('Calendar', module).add('default', () => <Calendar value={[]} onChange={() => {}} />);

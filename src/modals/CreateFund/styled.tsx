@@ -332,7 +332,7 @@ export const DropdownUI: React.FC<{
         key={token.address}
         style={style}
       >
-        <TokenIcon src={token.logoURI} />
+        <TokenIcon src={token.logoURI || ""} />
         <TokenSymbol>{token.symbol}</TokenSymbol>
         <TokenName>({token.name})</TokenName>
       </DropdownToken>

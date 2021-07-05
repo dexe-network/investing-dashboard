@@ -20,7 +20,8 @@ interface IProps {
 }
 
 const getTraderPoolAddress = (receipt: TransactionReceipt): string => {
-  const data = receipt.logs[receipt.logs.length - 1].data
+  console.log(receipt)
+  const data = receipt.logs[receipt.logs.length - 1]?.data
   const poolAddress = "0x" + data.substring(26)
   return poolAddress
 }
@@ -31,20 +32,19 @@ export default function useCreateFund() {
   const factory = useTraderPoolFactory()
   const { library } = useWeb3React()
 
-  useEffect(() => {
-    if (!factory) {
-      return
-    }
+  // useEffect(() => {
+  //   if (!factory) {
+  //     return
+  //   }
 
-    factory?.on("TraderContractCreated", (address) => {
-      console.log(address)
-      // setLoading(false)
-    })
-  }, [factory])
+  //   factory?.on("TraderContractCreated", (address) => {
+  //     console.log(address)
+  //     // setLoading(false)
+  //   })
+  // }, [factory])
 
   const submit = async (props: IProps) => {
-    // setLoading(true)
-
+    console.log(props)
     const res = await factory?.createTraderContract(
       props._traderWallet,
       props._basicToken,
@@ -55,10 +55,11 @@ export default function useCreateFund() {
       props._name,
       props._symbol
     )
+    console.log(res)
     const receipt = await library.getTransactionReceipt(res.hash)
 
-    const address = getTraderPoolAddress(receipt)
-    console.log(address)
+    // const address = getTraderPoolAddress(receipt)
+    console.log(receipt)
   }
 
   return [submit, loading, address] as const

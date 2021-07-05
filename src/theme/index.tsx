@@ -1,14 +1,24 @@
 import { Link } from "react-router-dom"
 import styled from "styled-components"
 import { motion } from "framer-motion"
+import { createBreakpoint } from "react-use"
 
 export const ease = [0.29, 0.98, 0.29, 1]
 
+const breakpoints = {
+  xs: 500,
+  sm: 768,
+  md: 1024,
+  lg: 1280,
+}
+
+export const useBreakpoint = createBreakpoint(breakpoints)
+
 const size = {
-  xs: "500px",
-  sm: "768px",
-  md: "1024px",
-  lg: "1280px",
+  xs: `${breakpoints.xs}px`,
+  sm: `${breakpoints.sm}px`,
+  md: `${breakpoints.md}px`,
+  lg: `${breakpoints.lg}px`,
 }
 
 const device = {
@@ -39,6 +49,11 @@ export const chartColors = {
     stroke: "#00C0FF",
     bg: ["#1F5281", "#2E313E"],
   },
+}
+
+export const rotateVariants = {
+  visible: { rotate: 180 },
+  hidden: { rotate: 0 },
 }
 
 export const To = styled(Link)`
@@ -226,7 +241,7 @@ export const IconButton = styled.div`
 
 export const Center = styled.div`
   display: flex;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   align-items: center;
   justify-content: center;

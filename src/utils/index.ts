@@ -44,3 +44,14 @@ export const getRandomPnl = () => {
 
   return r1 * 100 * negative
 }
+
+export const formatNumber = (amount: string) => {
+  const numArr = amount.split(".")
+
+  const floatPart = numArr[1] && numArr[1] !== "0" ? `.${numArr[1]}` : ""
+
+  return (
+    numArr[0].split(/(?=(?:\d{3})+(?!\d))/).join(",") +
+    (floatPart.length < 6 ? floatPart : floatPart.substring(0, 6))
+  )
+}

@@ -13,7 +13,7 @@ import {
 import { NoData } from "pages/Profile/styled"
 import DataTable from "react-data-table-component"
 import Calendar from "components/Calendar"
-import { setFilter } from "state/members/actions"
+import { setFilter } from "state/pools/actions"
 import { AppDispatch, AppState } from "state"
 import { format } from "date-fns"
 import { useDispatch, useSelector } from "react-redux"
@@ -258,7 +258,7 @@ const columns = [
 function Statistics(props: Props) {
   const {} = props
 
-  const filters = useSelector((state: AppState) => state.members.filters)
+  const filters = useSelector((state: AppState) => state.pools.filters)
   const dispatch = useDispatch<AppDispatch>()
   const handleChange = (name, value) => dispatch(setFilter({ name, value }))
 

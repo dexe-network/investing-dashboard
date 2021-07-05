@@ -11,7 +11,7 @@ function useTokensList(): [ITokenBase[], any] {
   const [list, set] = useState<[ITokenBase[], any]>([[], {}])
 
   useEffect(() => {
-    axios.get(lists.bsc).then((response) => {
+    axios.get(lists.eth).then((response) => {
       if (response?.data) {
         const l = Object.keys(response.data).map((a) => response.data[a])
         set([l, response.data])

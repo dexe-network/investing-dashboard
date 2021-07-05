@@ -2,6 +2,7 @@
 // import { motion } from "framer-motion"
 import styled from "styled-components"
 import star from "assets/icons/star.svg"
+import Avatar from "components/Avatar"
 
 const StyledContainer = styled.div`
   border-radius: 13px;
@@ -23,12 +24,6 @@ const StyledContainer = styled.div`
   &:hover {
     transform: scale(1.07);
   }
-`
-
-const Avatar = styled.img`
-  height: 19px;
-  width: 19px;
-  border-radius: 50px;
 `
 
 const Symbol = styled.div`
@@ -54,7 +49,10 @@ const Button = styled.img`
 const FavoriteCard: React.FC = () => {
   return (
     <StyledContainer>
-      <Avatar src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToKeNTAGsQxsIfqvAoiupyrX3px3NQP0miNw&usqp=CAU" />
+      <Avatar
+        size={19}
+        url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToKeNTAGsQxsIfqvAoiupyrX3px3NQP0miNw&usqp=CAU"
+      />
       <Symbol>ISDX</Symbol>
       <Button src={star} />
     </StyledContainer>

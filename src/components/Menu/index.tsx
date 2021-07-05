@@ -16,6 +16,7 @@ import SettingsIcon from "assets/menu/SettingsIcon.svg"
 import SupportIcon from "assets/menu/SupportIcon.svg"
 import NotificationsIcon from "assets/menu/NotificationsIcon.svg"
 import ConnectIcon from "assets/menu/ConnectIcon"
+import TradersListIcon from "assets/menu/TradersListIcon.svg"
 
 import { connectorsIcons } from "constants/connectors"
 
@@ -32,9 +33,11 @@ import {
   Icon,
   Group,
   ProviderIcon,
+  MobileMenu,
+  NavItem,
 } from "./styled"
 
-import { To } from "theme"
+import { To, useBreakpoint } from "theme"
 
 import usePathname from "hooks/usePathname"
 
@@ -56,6 +59,9 @@ const Menu: React.FC = () => {
   const active = useActiveWallet()
   const { account } = useWeb3React()
 
+  const breakpoint = useBreakpoint()
+  const isMobile = breakpoint === "xs"
+
   const onHover = () => {
     if (!open) {
       setOpen(true)
@@ -68,7 +74,19 @@ const Menu: React.FC = () => {
     }
   }
 
-  return (
+  return isMobile ? (
+    <MobileMenu>
+      <NavItem src={TradersListIcon}>Traders</NavItem>
+      <NavItem src={TradersListIcon}>Traders</NavItem>
+      <NavItem src={TradersListIcon}>Traders</NavItem>
+      <NavItem src={TradersListIcon}>Traders</NavItem>
+      <NavItem src={TradersListIcon}>Traders</NavItem>
+      {/* <NavItem></NavItem>
+      <NavItem></NavItem>
+      <NavItem></NavItem>
+      <NavItem></NavItem> */}
+    </MobileMenu>
+  ) : (
     <MenuContext.Provider
       value={{
         open,
@@ -100,7 +118,7 @@ const Menu: React.FC = () => {
               <Text>Portfolio</Text>
             </MenuItem>
           </To>
-          <To to="/profile">
+          {/* <To to="/profile">
             <MenuItem active={pathname === "/profile"}>
               <ActiveBorder
                 variants={ActiveVariants}
@@ -112,12 +130,12 @@ const Menu: React.FC = () => {
               </IconContainer>
               <Text>Profile</Text>
             </MenuItem>
-          </To>
-          <To to="/top-members">
-            <MenuItem active={pathname === "/top-members"}>
+          </To> */}
+          <To to="/pools">
+            <MenuItem active={pathname === "/pools"}>
               <ActiveBorder
                 variants={ActiveVariants}
-                animate={pathname === "/top-members" ? "visible" : "hidden"}
+                animate={pathname === "/pools" ? "visible" : "hidden"}
                 initial="hidden"
               />
               <IconContainer>
@@ -126,7 +144,7 @@ const Menu: React.FC = () => {
               <Text>TopMembers</Text>
             </MenuItem>
           </To>
-          <To to="/payments">
+          {/* <To to="/payments">
             <MenuItem active={pathname === "/payments"}>
               <ActiveBorder
                 variants={ActiveVariants}
@@ -138,7 +156,7 @@ const Menu: React.FC = () => {
               </IconContainer>
               <Text>Payments</Text>
             </MenuItem>
-          </To>
+          </To> */}
         </Group>
 
         {/* DOCUMENTS NAVIGATION */}

@@ -5,6 +5,7 @@ const GlobalStyle = createGlobalStyle`
     width:100%;
     overflow-x:hidden;
     overflow-y:hidden;
+
     height: calc(var(--vh, 1vh) * 100);
     min-height: calc(var(--vh, 1vh) * 100);
     min-height: -webkit-fill-available;
@@ -35,6 +36,24 @@ const GlobalStyle = createGlobalStyle`
   /* Firefox */
   input[type=number] {
     -moz-appearance: textfield;
+  }
+
+  @keyframes animateButton {
+    from {
+      background: linear-gradient(
+        90deg,
+        rgba(127, 255, 212, 0.75) 0%,
+        rgba(38, 128, 235, 0.75) 100%
+      );
+    }
+
+    to {
+      background: linear-gradient(
+        90deg,
+        rgba(127, 255, 212, 0.75) 0%,
+        rgba(255, 127, 127, 0.75) 100%
+      );
+    }
   }
 `
 

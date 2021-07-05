@@ -51,10 +51,11 @@ export const StyledDropdown = styled.div`
   user-select: none;
   cursor: pointer;
   position: relative;
+  padding: 0 0 0 20px;
 `
 
 const Text = styled.div`
-  @media only screen and (${device.md}) {
+  @media only screen and (${device.sm}) {
     display: none;
   }
 `
@@ -67,7 +68,7 @@ export const Label = styled(Text)`
 export const Value = styled(Text)`
   font-size: 16px;
   font-weight: bold;
-  color: #999999;
+  color: #f5f5f5;
   margin-left: 15px;
   width: 126px;
   white-space: nowrap;
@@ -111,16 +112,6 @@ const Item = styled(motion.div)<{ active?: boolean }>`
   background: ${(props) => (props.active ? "#000000" : "transparent")};
 `
 
-export const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-  display: none;
-
-  @media only screen and (${device.md}) {
-    display: block;
-  }
-`
-
 const Dropdown: React.FC<Props> = (props) => {
   const ref = useRef(null)
   const [open, setOpen] = useState(false)
@@ -149,10 +140,7 @@ const Dropdown: React.FC<Props> = (props) => {
 
   return (
     <StyledDropdown ref={ref}>
-      <Flex onClick={toggle}>
-        {label}
-        <Icon src={props.icon} />
-      </Flex>
+      <Flex onClick={toggle}>{label}</Flex>
 
       <Body
         initial="hidden"

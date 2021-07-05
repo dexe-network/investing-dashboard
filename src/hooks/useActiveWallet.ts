@@ -11,7 +11,6 @@ export function useActiveWallet() {
       return
     }
 
-    console.log(connector, library)
     if (library?.connection.url === "metamask") {
       setActive("metamask")
     }

@@ -1,6 +1,8 @@
 import { addDays, addMonths, addYears } from "date-fns"
+import { createStaticRanges } from "react-date-range"
 
 export const sortItemsList = [
+  "Trader rating",
   "P&L in %",
   "P&L in currency",
   "Personal funds",
@@ -84,5 +86,9 @@ export const defaultStaticRanges = [
     }),
   },
 ]
+
+export const calendarStaticRanges = createStaticRanges(
+  defaultStaticRanges.reverse()
+)
 
 export default {}

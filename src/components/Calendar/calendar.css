@@ -1,3 +1,28 @@
+.rdrCalendarItem {
+  display: flex;
+}
+
+@media screen and (max-width: 768px) {
+  .rdrCalendarItem {
+    display: none;
+  }
+}
+
+.rdrCalendarLabel {
+  font-size: 16px;
+  font-family: Gilroy;
+  color: #707070;
+}
+
+.rdrCalendarValue {
+  font-size: 16px;
+  color: #999999;
+  font-weight: bold;
+  font-family: Gilroy;
+  margin-left: 15px;
+  width: 133px;
+}
+
 .rdrCalendarWrapper {
   box-sizing: border-box;
   /* background: #ffffff; */
@@ -197,6 +222,7 @@
 .rdrDayActive{}
 
 .rdrDateRangePickerWrapper{
+  height: 300px;
   display: -webkit-inline-box;
   display: inline-flex;
   -webkit-user-select: none;
@@ -216,7 +242,7 @@
           justify-content: space-evenly;
 
   /* height: 100%; */
-  padding-top: 30px;
+  padding-top: 50px;
 }
 
 .rdrStaticRange{
@@ -244,6 +270,7 @@
 .rdrCalendarWrapper{
   display: flex;
   flex-direction: column-reverse;
+  justify-content: space-between;
 }
 
 .rdrDateDisplayWrapper{

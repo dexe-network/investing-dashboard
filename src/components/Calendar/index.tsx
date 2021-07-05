@@ -1,10 +1,10 @@
-import { DateRangePicker, createStaticRanges } from "react-date-range"
-
+import { useState, useEffect } from "react"
+import { DateRangePicker } from "react-date-range"
 import calendar from "assets/icons/calendar.svg"
-
-import { defaultStaticRanges } from "constants/index"
 import Dropdown from "components/Dropdown"
-import { addDays, addYears } from "date-fns"
+import { addDays, addYears, format } from "date-fns"
+import { calendarStaticRanges } from "constants/index"
+
 import "./calendar.css"
 
 interface Props {
@@ -14,15 +14,43 @@ interface Props {
 }
 
 const Calendar: React.FC<Props> = (props) => {
-  const staticRanges = createStaticRanges(defaultStaticRanges.reverse())
+  const [label, setLabel] = useState("All period")
+
+  const startDate = format(new Date(props.value[0]), "MM.dd")
+  const endDate = format(new Date(props.value[1]), "MM.dd")
+
+  const checkSelection = (item) => {
+    const selected = calendarStaticRanges.filter((range) =>
+      range.isSelected(item.period)
+    )
+
+    if (selected.length) {
+      setLabel(selected[0].label)
+    } else {
+      setLabel("")
+    }
+  }
 
   return (
-    <Dropdown noClickAway name="period" label={props.label} icon={calendar}>
+    <Dropdown
+      noClickAway
+      name="period"
+      label={
+        <div className="rdrCalendarItem">
+          <div className="rdrCalendarLabel">Time period:</div>
+          <div className="rdrCalendarValue">
+            {label.length ? label : `${startDate} / ${endDate}`}
+          </div>
+        </div>
+      }
+      icon={calendar}
+    >
       <DateRangePicker
         maxDate={addDays(new Date(), +1)}
         minDate={addYears(new Date(), -5)}
         onChange={(item) => {
-          console.log(item)
+          checkSelection(item)
+
           props.onChange("period", [
             new Date(item.period.startDate).toISOString(),
             new Date(item.period.endDate).toISOString(),
@@ -37,7 +65,7 @@ const Calendar: React.FC<Props> = (props) => {
         ]}
         showSelectionPreview
         moveRangeOnFirstSelection
-        staticRanges={window.innerWidth > 500 ? staticRanges : []}
+        staticRanges={window.innerWidth > 500 ? calendarStaticRanges : []}
         direction="horizontal"
         inputRanges={[]}
         rangeColors={["#3E90FF"]}

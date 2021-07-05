@@ -132,7 +132,7 @@ const Month = styled.div<{ active?: boolean }>`
 const Chart: React.FC<{
   data: IPool["pnl"]["detailed"]
   height?: number
-  width?: number
+  width?: number | string
   title?: boolean
   period?: boolean
   tooltipSize: "sm" | "lg"

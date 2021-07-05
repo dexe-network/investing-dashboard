@@ -5,6 +5,7 @@ import { Orientation } from "constants/types"
 
 import AreaChart from "components/AreaChart"
 import StatisticsCalendar from "components/StatisticsCalendar"
+import Button from "components/Button"
 import DonutChart from "components/DonutChart"
 
 import { useUserProMode } from "state/user/hooks"
@@ -21,7 +22,6 @@ import filled from "assets/icons/filled.svg"
 
 import {
   Overlay,
-  Button,
   AvatarPlaceholder,
   Wrapper,
   ChartWrapper,
@@ -147,7 +147,7 @@ const Statistics = ({ data }: Props) => {
         <AvatarPlaceholder />
 
         <IconsWrapper>
-          <Funds type={Orientation.horizontal} />
+          <Funds active={data.baseAddress} type={Orientation.horizontal} />
 
           <Card>
             <StatisticsIcon src={rank} />

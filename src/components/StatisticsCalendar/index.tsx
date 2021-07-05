@@ -76,7 +76,7 @@ const StatisticsCalendar: React.FC<{
         const color = isCurrent ? colorActive : colorDefault
 
         return (
-          <Cell key={m}>
+          <Cell key={index}>
             <Label>{monthes[index]}</Label>
             <Month fw={isCurrent ? 800 : 500} c={color}>
               {m}

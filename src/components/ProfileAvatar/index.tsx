@@ -8,6 +8,7 @@ import { shortenAddress } from "utils"
 
 import { opacityVariants } from "motion/variants"
 import star from "assets/icons/star.svg"
+import Avatar from "components/Avatar"
 
 interface Props {
   pinned: boolean
@@ -38,12 +39,6 @@ const StyledAvatar = styled(motion.div)<{ pinned?: boolean }>`
     left: 10px;
     top: ${(props) => (props?.pinned ? "50px" : "8px")};
   }
-`
-
-const Avatar = styled.img<{ size: number }>`
-  width: ${(props) => `${props.size}px`};
-  height: ${(props) => `${props.size}px`};
-  border-radius: 50px;
 `
 
 const Info = styled.div`
@@ -102,7 +97,7 @@ const ProfileAvatar: React.FC<Props> = (props) => {
       pinned={props.pinned}
       transition={{ ease, duration: 0.3 }}
     >
-      <Avatar src={props.url} size={props.pinned ? 41 : 60} />
+      <Avatar url={props.url} size={props.pinned ? 41 : 60} />
       <Info>
         <Main>
           <TextTop color="#F5F5F5">

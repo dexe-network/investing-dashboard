@@ -6,11 +6,13 @@ export default function useNotifications() {
   const [notifications, setNotifications] = useState<INotification[]>([])
 
   useEffect(() => {
-    axios.get("http://localhost:4040/api/notifications").then(({ data }) => {
-      if (data.length) {
-        setNotifications(data)
-      }
-    })
+    axios
+      .get(`${process.env.REACT_APP_NOTIFICATIONS_API_URL}/notifications`)
+      .then(({ data }) => {
+        if (data.length) {
+          setNotifications(data)
+        }
+      })
   }, [])
 
   return notifications

@@ -1,18 +1,28 @@
 // import React, { useState, useRef } from "react"
 // import { motion } from "framer-motion"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import AreaChart from "components/AreaChart"
 import BarChart from "components/BarChart"
 import Funds from "components/Funds"
+import Avatar from "components/Avatar"
+import StatisticsCalendar from "components/StatisticsCalendar"
+import { Title } from "pages/Profile/styled"
+import TokenIcon from "components/TokenIcon"
+
 import { IPool } from "constants/interfaces"
 import { Orientation } from "constants/types"
-import { ease, Flex } from "theme"
+
+import { useERC20 } from "hooks/useContract"
+import { ease, Flex, To } from "theme"
+import { shortenAddress, formatNumber } from "utils"
+import { useTraderPoolUpgradeable } from "hooks/useContract"
+import { BigNumber } from "@ethersproject/bignumber"
+import { ethers } from "ethers"
 
 import {
   MemberCard,
   MemberBase,
   AvatarContainer,
-  Avatar,
   Rank,
   FloatingText,
   Copiers,
@@ -30,6 +40,10 @@ import {
   StatisticsContainer,
   StatisticsTitle,
   StatisticsItem,
+  ChartContainer,
+  FundsLimitGroup,
+  PoolInfo,
+  FundContainer,
 } from "./styled"
 
 interface Props {
@@ -42,7 +56,7 @@ const animation = {
   },
   default: {
     height: "82px",
-    transition: { delay: 1, ease, duration: 0.2 },
+    transition: { delay: 0.5, ease, duration: 0.4 },
   },
 }
 
@@ -61,12 +75,14 @@ const middleContentVariants = {
 
 const statisticsContainerVariants = {
   active: {
+    padding: "15px 12px 15px 20px",
     opacity: 1,
     display: "flex",
-    width: 250,
-    transition: { delay: 0.8 },
+    width: 276,
+    transition: { delay: 0.5, ease, duration: 0.4 },
   },
   default: {
+    padding: "0",
     opacity: 0,
     width: 0,
     transitionEnd: {
@@ -79,6 +95,7 @@ const chartVariants = {
   active: {
     display: "flex",
     opacity: 1,
+    transition: { delay: 0.5, ease, duration: 0.4 },
   },
   default: {
     opacity: 0,
@@ -89,8 +106,6 @@ const chartVariants = {
 }
 
 const Member: React.FC<Props> = ({ data }) => {
-  const [active, setActive] = useState(false)
-
   const {
     avatar,
     firstName,
@@ -101,9 +116,34 @@ const Member: React.FC<Props> = ({ data }) => {
     price,
     pnl,
     commision,
+    poolAddress,
+    baseAddress,
+    ownerAddress,
   } = data
 
+  const [active, setActive] = useState(false)
+  const [_, baseTokenData] = useERC20(baseAddress)
+  const [traderDeposit, setTraderDeposit] = useState(BigNumber.from(0))
+  const [tvl, setTvl] = useState([BigNumber.from(0), BigNumber.from(0)])
+  const traderPool = useTraderPoolUpgradeable(poolAddress)
+
+  useEffect(() => {
+    if (!traderPool) return
+
+    const getData = async () => {
+      const data = await traderPool.getUserData(ownerAddress)
+      const tvl = await traderPool.getTotalValueLocked()
+      setTvl(tvl)
+      setTraderDeposit(data[2])
+    }
+    getData()
+  }, [traderPool, setTraderDeposit, ownerAddress])
+
   const animate = active ? "active" : "default"
+  const traderName =
+    firstName.length === 42
+      ? shortenAddress(firstName, 4)
+      : `${firstName} ${lastName}`
 
   return (
     <MemberCard
@@ -111,30 +151,35 @@ const Member: React.FC<Props> = ({ data }) => {
       variants={animation}
       initial="default"
       transition={{ duration: 0.3 }}
-      onClick={() => setActive(!active)}
     >
       <Flex full dir="column" ai="flex-start">
         <MemberBase>
           <FloatingText>
-            {`${firstName} ${lastName}`}
+            {traderName}
             <Copiers>{copiers}</Copiers> copiers
           </FloatingText>
 
-          <Row minW={215}>
+          <Row minW={235}>
             <AvatarContainer>
-              <Avatar src={avatar} />
+              <Avatar url={avatar} size={64} />
               <Rank>{rank}</Rank>
             </AvatarContainer>
 
-            <Row m={10}>
-              <Funds type={Orientation.vertical} />
-            </Row>
-
-            <Col>
-              <TextBig>{symbol}</TextBig>
-              <TextSmall>{price} ETH</TextSmall>
+            <PoolInfo>
+              <Flex ai="center">
+                <TextBig>{symbol}</TextBig>
+                <FundContainer>
+                  <TokenIcon
+                    src={`https://tokens.1inch.exchange/${baseAddress.toLowerCase()}.png`}
+                    size={15}
+                  />
+                </FundContainer>
+              </Flex>
+              <TextSmall>
+                {price} {baseTokenData?.symbol}
+              </TextSmall>
               <TextSmall color="#999999">% & White List</TextSmall>
-            </Col>
+            </PoolInfo>
           </Row>
 
           <MiddleContent
@@ -149,15 +194,23 @@ const Member: React.FC<Props> = ({ data }) => {
               <TextSmall align="center">P&L</TextSmall>
             </PnlGroup>
 
-            <Col>
-              <TextSmall align="center">999999 LP/∞ LP</TextSmall>
+            <FundsLimitGroup>
+              <TextSmall align="center">
+                {formatNumber(ethers.utils.formatUnits(tvl[1]).toString())} LP/∞
+                LP
+              </TextSmall>
               <TextBig align="center">
-                {999999} ETH/{999999} ETH
+                {formatNumber(
+                  ethers.utils.formatUnits(traderDeposit, 18).toString()
+                )}{" "}
+                {baseTokenData?.symbol}/
+                {formatNumber(ethers.utils.formatUnits(tvl[0]).toString())}{" "}
+                {baseTokenData?.symbol}
               </TextBig>
               <TextSmall color="#999999" align="center">
                 Traders funds/Total funds
               </TextSmall>
-            </Col>
+            </FundsLimitGroup>
 
             <BarChartWrapper>
               <BarChart pnlList={pnl.monthly} />
@@ -183,13 +236,34 @@ const Member: React.FC<Props> = ({ data }) => {
           </MiddleContent>
 
           <ButtonGroup>
-            <Button>Invest</Button>
-            <Button secondary>Details</Button>
+            <To to={`/pools/invest/${poolAddress}`}>
+              <Button>Invest</Button>
+            </To>
+            <Button onClick={() => setActive(!active)} secondary>
+              Details
+            </Button>
           </ButtonGroup>
         </MemberBase>
-        <Flex initial="default" variants={chartVariants} animate={animate} full>
-          <AreaChart tooltipSize="sm" height={286} data={pnl.detailed} />
-        </Flex>
+        <ChartContainer
+          initial="default"
+          variants={chartVariants}
+          animate={animate}
+          ai="flex-start"
+          dir="column"
+          p="0 10px"
+        >
+          {/* <AreaChart
+            title
+            period
+            tooltipSize="sm"
+            width="100%"
+            height={286}
+            data={pnl.detailed}
+          /> */}
+          <Title weight={800}>Monthly statistics</Title>
+          <StatisticsCalendar currentYear data={data.pnl.monthly} />
+          <StatisticsCalendar data={data.pnl.monthly} />
+        </ChartContainer>
       </Flex>
       <StatisticsContainer
         variants={statisticsContainerVariants}

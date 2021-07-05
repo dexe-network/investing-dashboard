@@ -18,7 +18,7 @@ export const MemberCard = styled(motion.div)`
   align-items: flex-start;
   justify-content: space-between;
   padding: 8px 4px;
-  margin: 20px 0;
+  margin: 20px 15px 0 0;
   transition: transform 0.3s;
   max-width: 100%;
 
@@ -37,9 +37,10 @@ export const MemberBase = styled(Flex)`
 `
 
 export const StatisticsContainer = styled(Flex)`
-  padding: 15px;
+  padding: 15px 12px 15px 20px;
   flex-direction: column;
   align-items: flex-start;
+  flex: none;
 `
 
 export const StatisticsTitle = styled(Text)`
@@ -61,12 +62,16 @@ const Value = styled(Text)`
   text-align: right;
 `
 
+const StatItemContainer = styled(Flex)`
+  border-bottom: 1px solid #323c3f;
+`
+
 export const StatisticsItem = ({ label, children }) => {
   return (
-    <Flex full jc="space-between" p="7px 0" ai="center">
+    <StatItemContainer full jc="space-between" p="7px 0 6px " ai="center">
       <Label>{label}</Label>
       <Value>{children}</Value>
-    </Flex>
+    </StatItemContainer>
   )
 }
 
@@ -74,12 +79,6 @@ export const AvatarContainer = styled.div`
   height: 64px;
   width: 64px;
   position: relative;
-`
-
-export const Avatar = styled.img`
-  height: 64px;
-  width: 64px;
-  border-radius: 50px;
 `
 
 export const Rank = styled.div`
@@ -110,6 +109,9 @@ export const MiddleContent = styled(Flex)``
 export const TextBig = styled.div<{ color?: string; align?: string }>`
   font-size: 22px;
   font-weight: bold;
+  height: 22px;
+  line-height: 22px;
+  transform: translateY(1px);
 
   color: ${(props) => (props.color ? props.color : "#f5f5f5")};
   text-align: ${(props) => (props.align ? props.align : "left")};
@@ -139,8 +141,13 @@ export const Col = styled.div`
   justify-content: space-around;
 `
 
+export const PoolInfo = styled(Col)`
+  padding: 0 20px 0 15px;
+`
+
 // TODO: inherit from base button
 export const Button = styled(BaseButton)<{ secondary?: boolean }>`
+  width: 100%;
   margin: 1px;
   border-radius: 7px;
   color: ${(props) => (props.secondary ? "#B2B2B2" : "#000000")};
@@ -154,19 +161,19 @@ export const Button = styled(BaseButton)<{ secondary?: boolean }>`
   background: ${(props) =>
     props.secondary
       ? "#21272A"
-      : "radial-gradient(circle,rgba(127, 255, 212, 1) 0%,rgba(64, 128, 106, 1) 120%);"};
+      : "linear-gradient(90deg,rgba(127, 255, 212, 0.75) 0%,rgba(38, 128, 235, 0.75) 100%)"};
 
   &:hover {
     background: ${(props) =>
       props.secondary
         ? "#21272A"
-        : "radial-gradient(circle,rgba(127, 255, 212, 1) 0%,rgba(64, 128, 106, 1) 120%);"};
+        : "linear-gradient(90deg,rgba(127, 255, 212, 0.75) 0%,rgba(38, 128, 235, 0.75) 100%)"};
   }
   &:focus {
     background: ${(props) =>
       props.secondary
         ? "#21272A"
-        : "radial-gradient(circle,rgba(127, 255, 212, 1) 0%,rgba(64, 128, 106, 1) 120%);"};
+        : "linear-gradient(90deg,rgba(127, 255, 212, 0.75) 0%,rgba(38, 128, 235, 0.75) 100%)"};
     outline: 0px solid transparent;
   }
 `
@@ -178,7 +185,7 @@ export const BarChartWrapper = styled(Row)`
 `
 
 export const Fee = styled(Col)`
-  @media only screen and (${device.md}) {
+  @media only screen and (${device.sm}) {
     display: none;
   }
 `
@@ -189,8 +196,24 @@ export const ButtonGroup = styled(Col)`
   }
 `
 
+export const FundsLimitGroup = styled(Col)`
+  @media only screen and (${device.md}) {
+    display: none;
+  }
+`
+
 export const PnlGroup = styled(Col)`
   @media only screen and (${device.sm}) {
     display: none;
   }
+`
+
+export const ChartContainer = styled(Flex)`
+  max-width: calc(100vw - 366px);
+  width: 100%;
+`
+
+export const FundContainer = styled.div`
+  padding-left: 10px;
+  height: 15px;
 `

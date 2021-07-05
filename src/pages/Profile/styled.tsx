@@ -1,15 +1,10 @@
 import styled from "styled-components"
-import { Flex, ease, device } from "theme"
+import { Flex, ease, device, rotateVariants } from "theme"
 import { motion } from "framer-motion"
 
 import { useUserProMode } from "state/user/hooks"
 
 import arrowDown from "assets/icons/arrow-down.svg"
-
-const rotateVariants = {
-  visible: { rotate: 180 },
-  hidden: { rotate: 0 },
-}
 
 const calendarVariants = {
   visible: {
@@ -64,12 +59,14 @@ export const cardVariants = {
     opacity: 1,
     scale: 1,
     rotateY: "0deg",
+    translateZ: 0,
   },
   initial0: {
     x: "0",
     opacity: 1,
     scale: 1,
     rotateY: "0deg",
+    translateZ: 0,
   },
 
   // RIGHT
@@ -78,12 +75,14 @@ export const cardVariants = {
     opacity: 1,
     scale: 0.9,
     rotateY: "0deg",
+    translateZ: 0,
   },
   "-2": {
     x: "100vw",
     opacity: 1,
     scale: 0,
     rotateY: "0deg",
+    translateZ: 0,
   },
 
   // LEFT
@@ -92,12 +91,14 @@ export const cardVariants = {
     opacity: 1,
     scale: 0.9,
     rotateY: "0deg",
+    translateZ: 0,
   },
   "2": {
     x: "-100vw",
     opacity: 0.9,
     scale: 0,
     rotateY: "0deg",
+    translateZ: 0,
   },
 
   // LEFT
@@ -106,12 +107,14 @@ export const cardVariants = {
     opacity: 1,
     scale: 0.95,
     rotateY: "0deg",
+    translateZ: 0,
   },
   initial2: {
     x: "-100vw",
     opacity: 0,
     scale: 1,
     rotateY: "0deg",
+    translateZ: 0,
   },
 
   // RIGHT
@@ -120,12 +123,14 @@ export const cardVariants = {
     opacity: 1,
     scale: 0.95,
     rotateY: "0deg",
+    translateZ: 0,
   },
   "initial-2": {
     x: "100vw",
     opacity: 0,
     scale: 1,
     rotateY: "0deg",
+    translateZ: 0,
   },
 }
 
@@ -160,7 +165,7 @@ const overlayVariants = {
 export const Parent = styled.div`
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 58px);
   overflow: hidden;
   transform: perspective(1000px);
   display: flex;
@@ -285,31 +290,6 @@ const Overlay = styled(motion.div)`
   left: 0;
   right: 0;
   height: 200px;
-`
-
-const Button = styled.div`
-  padding: 15px 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #202020;
-  border-radius: 5px;
-  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.5);
-  white-space: nowrap;
-  font-size: 16px;
-  color: #f5f5f5;
-  font-weight: 500;
-  user-select: none;
-  cursor: pointer;
-  transition: all 0.1s ease-in-out;
-
-  &:hover {
-    color: #7fffd4;
-  }
-
-  @media only screen and (${device.sm}) {
-    font-size: 14px;
-  }
 `
 
 const AvatarPlaceholder = styled.div`
@@ -691,7 +671,6 @@ const PersonalPostList = styled.div`
 
 export {
   Overlay,
-  Button,
   DetailedStatistics,
   ProButton,
   AvatarPlaceholder,

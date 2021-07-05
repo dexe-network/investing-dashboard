@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import styled from "styled-components"
 import { device } from "theme"
 
@@ -14,16 +14,16 @@ const StyledSearch = styled.div`
   overflow: hidden;
   min-width: 40px;
 
-  @media only screen and (${device.md}) {
+  /* @media only screen and (${device.md}) {
     width: fit-content;
-  }
+  } */
 `
 
 const Input = styled.input`
   border-radius: 7px;
   appearance: none;
   border: none;
-  background: #1a2122;
+  background: rgba(0, 0, 0, 0.3);
   height: 100%;
   width: 100%;
   outline: none;
@@ -31,9 +31,8 @@ const Input = styled.input`
   padding-top: 5px;
   transition: all 0.5s;
 
-  @media only screen and (${device.md}) {
+  @media only screen and (${device.sm}) {
     background: transparent;
-    display: none;
   }
 
   &::placeholder {
@@ -41,6 +40,10 @@ const Input = styled.input`
     line-height: 16px;
     font-size: 16px;
     color: #53575a;
+
+    @media only screen and (${device.sm}) {
+      color: #686c6f;
+    }
   }
 
   &:focus {
@@ -68,6 +71,7 @@ const Icon = styled.img`
 const Search: React.FC<{
   onChange: (value: string, name: string) => void
 }> = (props) => {
+  const ref = useRef<HTMLInputElement>(null)
   const [val, setVal] = useState("")
   const [typing, setTyping] = useState(false)
 
@@ -83,13 +87,22 @@ const Search: React.FC<{
   return (
     <StyledSearch>
       <Input
+        ref={ref}
         onChange={(e) => {
           setVal(e.target.value)
           setTyping(true)
         }}
         placeholder="Names, Ticker, Address"
       />
-      <IconWrapper>
+      <IconWrapper
+        onClick={() => {
+          const node = ref.current
+
+          if (node) {
+            node.focus()
+          }
+        }}
+      >
         {typing ? <CircleSpinner size={15} loading /> : <Icon src={search} />}
       </IconWrapper>
     </StyledSearch>
