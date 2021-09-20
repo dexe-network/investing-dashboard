@@ -1,19 +1,27 @@
-import { useReducer, useCallback, useEffect } from "react"
-import { Flex, External } from "theme"
+import { useReducer, useCallback, useEffect, useState } from "react"
+import { Flex, External, Text } from "theme"
 import { BigNumber } from "@ethersproject/bignumber"
 import { useWeb3React } from "@web3-react/core"
+import { GuardSpinner } from "react-spinners-kit"
 
 import useCreateFund from "hooks/useCreateFund"
 
 import WalletCard from "components/WalletCard"
+import Button from "components/Button"
 import AddressChips from "components/AddressChips"
 import Switch from "components/Switch"
+import TokenIcon from "components/TokenIcon"
+
+import TokenSelector from "modals/TokenSelector"
+import { commonsTokensList } from "constants/index"
 
 import { opacityVariants } from "motion/variants"
 import "rc-tooltip/assets/bootstrap.css"
 
-import ArrowDown from "assets/icons/angle-down.svg"
-
+import defaultAvatar from "assets/icons/default-avatar.svg"
+import { useERC20 } from "hooks/useContract"
+import { FullItem, Price } from "modals/TokenSelector/styled"
+import { fromBig, formatNumber } from "utils"
 import {
   Slide,
   SliderContainer,
@@ -24,13 +32,17 @@ import {
   DotsWrapper,
   Title,
   Secondary,
+  Warn,
   InputUI,
-  DropdownUI,
-  Area,
+  BaseTokenSelect,
+  CommonBasesGroup,
+  TokenWrapper,
+  Footer,
   FormLabel,
   AllocateSlider,
-  Arrow,
   TextItalic,
+  InputButton,
+  ButtonsCoontainer,
 } from "./styled"
 import "./slider.css"
 
@@ -91,10 +103,18 @@ function SliderReducer(state, action) {
   }
 }
 
-export default function Slider() {
+interface Props {
+  close: () => void
+}
+
+export default function Slider<Props>({ close }) {
   const [formState, dispatchForm] = useReducer(FormReducer, initialState)
+  const [isSelectorOpened, setSelectorModal] = useState(false)
 
   const { account } = useWeb3React()
+  const [baseTokenContract, baseTokenInfo, balance] = useERC20(
+    formState._basicToken
+  )
 
   const [submitToken, loading, address] = useCreateFund()
 
@@ -118,22 +138,82 @@ export default function Slider() {
       children: (
         <Flex key="slide-1" ai="flex-start" dir="column" full>
           <Title>Basic Information</Title>
-          <Flex p="19px 0 0 0" dir="column" ai="flex-start">
-            <Secondary>
-              <i>Basic settings for the product.</i>
-            </Secondary>
-            <Secondary fw={800}>
-              Basic settings cannot be changed after creation.
-            </Secondary>
+          <Flex dir="column" ai="flex-start">
+            <Secondary>Basic settings for your fund.</Secondary>
+            <Warn>*Basic settings cannot be changed after creation.</Warn>
           </Flex>
-          <DropdownUI
-            name="_basicToken"
-            active={formState._basicToken}
-            onSelect={setForm}
+          <TokenSelector
+            onSelect={(v) => setForm("_basicToken", v)}
+            isOpen={isSelectorOpened}
+            onRequestClose={() => setSelectorModal(false)}
           />
           <InputUI label="Token name" onChange={setForm} name="_name" />
           <InputUI label="Ticker symbol" onChange={setForm} name="_symbol" />
-          {/* <Area name="" onChange={() => {}} /> */}
+
+          <Flex p="19px 0 15px 0" dir="column" ai="flex-start">
+            <FormLabel>Choose base token.</FormLabel>
+            <TextItalic>
+              This will be the BEP-20 token that you will trade, deposit and
+              receive from investors
+            </TextItalic>
+          </Flex>
+          <BaseTokenSelect jc="space-between" full>
+            {formState._basicToken === "" ? (
+              <Button onClick={() => setSelectorModal(true)}>
+                Browse tokens
+              </Button>
+            ) : null}
+
+            {formState._basicToken === "" ? (
+              <CommonBasesGroup>
+                {commonsTokensList.map((token) => (
+                  <TokenWrapper
+                    key={token.address}
+                    onClick={() => setForm("_basicToken", token.address)}
+                  >
+                    <TokenIcon
+                      size={34}
+                      src={`https://tokens.1inch.exchange/${token.address}.png`}
+                    />
+                  </TokenWrapper>
+                ))}
+              </CommonBasesGroup>
+            ) : null}
+
+            {formState._basicToken !== "" ? (
+              <FullItem onClick={() => setSelectorModal(true)} full>
+                <TokenIcon
+                  src={`https://tokens.1inch.exchange/${formState._basicToken}.png`}
+                  size={28}
+                />
+                <Flex dir="column" ai="flex-start" p="3px 0 0">
+                  <Text color="#F7F7F7" fz={16}>
+                    {baseTokenInfo?.symbol}
+                  </Text>
+                  <Text color="#999999" fz={14}>
+                    {baseTokenInfo?.name}
+                  </Text>
+                </Flex>
+                <Price>
+                  {!baseTokenInfo?.decimals ? (
+                    <Flex>
+                      <Flex p="0 25px 0">Loading token data</Flex>
+                      <GuardSpinner size={20} loading />
+                    </Flex>
+                  ) : (
+                    formatNumber(
+                      fromBig(balance, baseTokenInfo?.decimals).toString()
+                    )
+                  )}
+                </Price>
+              </FullItem>
+            ) : null}
+          </BaseTokenSelect>
+          {/* <InputUI
+            label="Select base token"
+            onClick={() => setSelectorModal(true)}
+            name="_baseToken"
+          /> */}
         </Flex>
       ),
     },
@@ -141,8 +221,8 @@ export default function Slider() {
       id: 2,
       children: (
         <Flex key="slide-2" ai="flex-start" dir="column" full>
-          <Title>Information about managers</Title>
-          <Flex p="9px 0 18px 0" dir="column" ai="flex-start">
+          <Title>About managers</Title>
+          <Flex p="0 0 18px 0" dir="column" ai="flex-start">
             <Secondary>
               <i>The manager and the creator have equal permissions.</i>
             </Secondary>
@@ -159,7 +239,7 @@ export default function Slider() {
             name="mannager_one"
             icon={
               formState.mannager_one.length !== 42 && (
-                <TextItalic>3 left</TextItalic>
+                <InputButton>3 left</InputButton>
               )
             }
           />
@@ -170,7 +250,7 @@ export default function Slider() {
               name="mannager_two"
               icon={
                 formState.mannager_two.length !== 42 && (
-                  <TextItalic>2 left</TextItalic>
+                  <InputButton>2 left</InputButton>
                 )
               }
             />
@@ -182,7 +262,7 @@ export default function Slider() {
               name="mannager_three"
               icon={
                 formState.mannager_three.length !== 42 && (
-                  <TextItalic>1 left</TextItalic>
+                  <InputButton>1 left</InputButton>
                 )
               }
             />
@@ -195,7 +275,7 @@ export default function Slider() {
       children: (
         <Flex key="slide-3" ai="flex-start" dir="column" full>
           <Title>Investment and restrictions</Title>
-          <Flex p="19px 0 0 0" dir="column" ai="flex-start">
+          <Flex dir="column" ai="flex-start">
             <Secondary>
               It is always available to set optional limits on who can invest.
               Remember, you can change your settings in your account at any
@@ -237,7 +317,7 @@ export default function Slider() {
       children: (
         <Flex key="slide-4" ai="flex-start" dir="column" full>
           <Title>Fees</Title>
-          <Flex p="19px 0 18px 0" dir="column" ai="flex-start">
+          <Flex p="0 0 18px 0" dir="column" ai="flex-start">
             <Secondary fw={800}>
               Fees settings cannot be changed after creation.
             </Secondary>
@@ -275,6 +355,7 @@ export default function Slider() {
       children: (
         <Flex key="slide-5" ai="flex-start" dir="column" full>
           <Title>Trade restrictions</Title>
+          <Warn>*Trade settings cannot be changed after creation.</Warn>
           <Flex p="19px 0 0 0" dir="column" ai="flex-start">
             <Secondary>
               List of trading assets that you can exchange{" "}
@@ -282,66 +363,97 @@ export default function Slider() {
                 Dexe general sheets.
               </External>
             </Secondary>
-            <Secondary fw={800}>
-              Trade settings cannot be changed after creation.
-            </Secondary>
+
             <Flex p="15px 0" full ai="center">
-              <FormLabel>Add personal asset sheets</FormLabel>
+              <FormLabel>Current portfolio</FormLabel>
               <Switch
-                isOn={formState._investorRestricted}
-                name="_investorRestricted"
+                isOn={formState._actual}
+                name="_actual"
                 onChange={setForm}
               />
-            </Flex>
-            <Flex
-              initial={formState._investorRestricted ? "visible" : "hidden"}
-              variants={opacityVariants}
-              transition={{ duration: 0.4 }}
-              animate={formState._investorRestricted ? "visible" : "hidden"}
-            >
-              <Secondary>
-                <External href="https://dexe.network">
-                  DeXe general sheets
-                </External>{" "}
-                &{" "}
-                <External href="https://dexe.network">
-                  Personal asset sheets
-                </External>{" "}
-                with an internal vote between investors in the LP of your fund.
-                The fund manager will have the ability to send assets that have
-                sending permission for any address.
-              </Secondary>
-            </Flex>
-            <Flex p="15px 0" full ai="center">
-              <FormLabel>
-                Add personal asset sheets +10% on any wallets
-              </FormLabel>
-              <Switch
-                isOn={formState._investorRestricted}
-                name="_investorRestricted"
-                onChange={setForm}
-              />
-            </Flex>
-            <Flex
-              initial={formState._investorRestricted ? "visible" : "hidden"}
-              variants={opacityVariants}
-              transition={{ duration: 0.4 }}
-              animate={formState._investorRestricted ? "visible" : "hidden"}
-            >
-              <Secondary>
-                <External href="https://dexe.network">
-                  DeXe general sheets
-                </External>{" "}
-                &{" "}
-                <External href="https://dexe.network">
-                  Personal asset sheets
-                </External>{" "}
-                & 10% in free use without voting with LP tokens. the manager
-                will be able to send funds 10%, as well as those that have
-                received permission to any addresses.
-              </Secondary>
             </Flex>
           </Flex>
+        </Flex>
+      ),
+    },
+    {
+      id: 6,
+      children: (
+        <Flex key="slide-6" ai="flex-start" dir="column" full>
+          <Title>Summary</Title>
+          <Warn>*Trade settings cannot be changed after creation.</Warn>
+
+          {/* <Flex p="9px 0 0 0" dir="column" ai="flex-start">
+            <Secondary fw={800}>
+              Please make sure to check all the entered data below.
+            </Secondary>
+          </Flex> */}
+
+          <Flex p="15px 0 10px 0">
+            <Flex p="0 7px 0 0">
+              <FormLabel>Starting price: </FormLabel>
+            </Flex>
+
+            <Price>
+              1 {formState._symbol} = 1 {baseTokenInfo?.symbol}
+            </Price>
+          </Flex>
+
+          <BaseTokenSelect jc="space-between" full>
+            <FullItem full>
+              <TokenIcon src={defaultAvatar} size={28} />
+              <Flex dir="column" ai="flex-start" p="3px 0 0">
+                <Text color="#F7F7F7" fz={16}>
+                  {formState._symbol}
+                </Text>
+                <Text color="#999999" fz={14}>
+                  {formState._name}
+                </Text>
+              </Flex>
+            </FullItem>
+          </BaseTokenSelect>
+
+          <Flex p="9px 0 0 0" dir="column" ai="flex-start" full>
+            <WalletCard token={formState._basicToken} />
+          </Flex>
+
+          <Flex p="15px 0" full ai="flex-start" dir="column">
+            <FormLabel>Performance Fee</FormLabel>
+
+            <AllocateSlider
+              name="_comm"
+              initial={formState._comm}
+              onChange={() => {}}
+            />
+          </Flex>
+
+          <Flex p="15px 0" full ai="center">
+            <FormLabel>Current portfolio</FormLabel>
+            <Switch
+              isOn={formState._actual}
+              name="_actual"
+              onChange={setForm}
+            />
+          </Flex>
+
+          <Flex p="15px 0" full ai="center">
+            <FormLabel>
+              {formState._investorRestricted
+                ? "Token will be limited:"
+                : "Token will be public to all members"}
+            </FormLabel>
+          </Flex>
+
+          {/* <Flex
+            initial={formState._investorRestricted ? "visible" : "hidden"}
+            variants={opacityVariants}
+            transition={{ duration: 0.4 }}
+            animate={formState._investorRestricted ? "visible" : "hidden"}
+            full
+            dir="column"
+          >
+            <AddressChips />
+          </Flex> */}
         </Flex>
       ),
     },
@@ -378,29 +490,29 @@ export default function Slider() {
         </SliderWrapper>
       </SliderContainer>
 
-      <DotsWrapper p="10px 0 0" m="0 auto" jc="space-evenly">
-        <StepperDot onClick={() => goto(0)} type={typeByStep(0)} />
-        <StepperDot onClick={() => goto(1)} type={typeByStep(1)} />
-        <StepperDot onClick={() => goto(2)} type={typeByStep(2)} />
-        <StepperDot onClick={() => goto(3)} type={typeByStep(3)} />
-        <StepperDot onClick={() => goto(4)} type={typeByStep(4)} />
-        <StepperDot onClick={() => goto(5)} type={typeByStep(5)} />
-      </DotsWrapper>
+      <Footer>
+        <DotsWrapper>
+          <StepperDot onClick={() => goto(0)} type={typeByStep(0)} />
+          <StepperDot onClick={() => goto(1)} type={typeByStep(1)} />
+          <StepperDot onClick={() => goto(2)} type={typeByStep(2)} />
+          <StepperDot onClick={() => goto(3)} type={typeByStep(3)} />
+          <StepperDot onClick={() => goto(4)} type={typeByStep(4)} />
+          <StepperDot onClick={() => goto(5)} type={typeByStep(5)} />
+        </DotsWrapper>
 
-      <Flex p="15px 30px" full jc="space-between">
-        {state.currentIndex !== 0 ? (
-          <PrevButton onClick={prev}>
-            <Arrow src={ArrowDown} alt="" />
-          </PrevButton>
-        ) : (
-          <div />
-        )}
-        {state.currentIndex === 5 ? (
-          <NextButton onClick={finish}>Finish</NextButton>
-        ) : (
-          <NextButton onClick={next}>Next step</NextButton>
-        )}
-      </Flex>
+        <ButtonsCoontainer>
+          {state.currentIndex !== 0 ? (
+            <PrevButton onClick={prev}>Back</PrevButton>
+          ) : (
+            <PrevButton onClick={close}>Cancel</PrevButton>
+          )}
+          {state.currentIndex === 5 ? (
+            <NextButton onClick={finish}>Finish</NextButton>
+          ) : (
+            <NextButton onClick={next}>Next</NextButton>
+          )}
+        </ButtonsCoontainer>
+      </Footer>
     </div>
   )
 }

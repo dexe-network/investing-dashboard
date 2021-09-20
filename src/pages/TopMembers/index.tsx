@@ -18,6 +18,7 @@ const Profile = lazy(() => import("pages/Profile"))
 
 const StyledTopMembers = styled.div`
   padding: 0;
+  height: 100%;
 `
 
 const MembersList = styled.div`
@@ -28,6 +29,11 @@ const MembersList = styled.div`
   @media only screen and (${device.sm}) {
     padding: 0 20px 0 0;
   }
+`
+
+const MembersGrid = styled.div`
+  width: 100%;
+  overflow: auto;
 `
 
 const ListContainer = styled.div`
@@ -66,21 +72,19 @@ function TopMembers() {
       <TopMembersBar />
 
       {filters.listStyle === "card" ? (
-        <Suspense fallback={loadingIndicator}>
-          <Profile pools={pools} />
-        </Suspense>
+        <MembersGrid style={{ height: window.innerHeight - 118 }}>
+          <Suspense fallback={loadingIndicator}>
+            <Profile pools={pools} />
+          </Suspense>
+        </MembersGrid>
       ) : (
         <ListContainer>
-          <MembersList
-            style={{
-              height: window.innerHeight - 118,
-            }}
-          >
-            {pools.map((v) =>
+          <MembersList style={{ height: window.innerHeight - 118 }}>
+            {pools.map((pool) =>
               isMobile ? (
-                <MemberMobile />
+                <MemberMobile key={pool.poolAddress} data={pool} />
               ) : (
-                <Member key={v.ownerAddress} data={v} />
+                <Member key={pool.poolAddress} data={pool} />
               )
             )}
           </MembersList>

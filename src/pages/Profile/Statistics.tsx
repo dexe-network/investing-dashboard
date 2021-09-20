@@ -1,5 +1,5 @@
-import { useWeb3React } from "@web3-react/core"
-import { ease } from "theme"
+// import { useWeb3React } from "@web3-react/core"
+import { ease, To } from "theme"
 import Funds from "components/Funds"
 import { Orientation } from "constants/types"
 
@@ -10,8 +10,6 @@ import DonutChart from "components/DonutChart"
 
 import { useUserProMode } from "state/user/hooks"
 
-import { useCreateFundContext } from "context/CreateFundContext"
-import { useConnectWalletContext } from "context/ConnectWalletContext"
 import { IPool } from "constants/interfaces"
 
 import rank from "assets/icons/rank.svg"
@@ -50,20 +48,8 @@ interface Props {
 }
 
 const Statistics = ({ data }: Props) => {
-  const { account } = useWeb3React()
   const [pro] = useUserProMode()
-  const { toggleCreateFund } = useCreateFundContext()
-  const { toggleConnectWallet } = useConnectWalletContext()
   const animatePro = pro ? "visible" : "hidden"
-
-  const handleInvest = () => {
-    if (!account) {
-      toggleConnectWallet()
-      return
-    }
-
-    toggleCreateFund(true)
-  }
 
   const average = [
     {
@@ -175,7 +161,9 @@ const Statistics = ({ data }: Props) => {
           </DesktopIcon>
         </IconsWrapper>
 
-        <Button onClick={handleInvest}>Buy {data.symbol}</Button>
+        <To to={`/pool/${data.poolAddress}/invest`}>
+          <Button>Buy {data.symbol}</Button>
+        </To>
       </TraderStatistics>
 
       <ChartWrapper>

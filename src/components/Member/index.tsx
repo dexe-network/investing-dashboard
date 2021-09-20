@@ -14,7 +14,7 @@ import { Orientation } from "constants/types"
 
 import { useERC20 } from "hooks/useContract"
 import { ease, Flex, To } from "theme"
-import { shortenAddress, formatNumber } from "utils"
+import { formatBigNumber } from "utils"
 import { useTraderPoolUpgradeable } from "hooks/useContract"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ethers } from "ethers"
@@ -123,27 +123,13 @@ const Member: React.FC<Props> = ({ data }) => {
 
   const [active, setActive] = useState(false)
   const [_, baseTokenData] = useERC20(baseAddress)
-  const [traderDeposit, setTraderDeposit] = useState(BigNumber.from(0))
-  const [tvl, setTvl] = useState([BigNumber.from(0), BigNumber.from(0)])
-  const traderPool = useTraderPoolUpgradeable(poolAddress)
 
-  useEffect(() => {
-    if (!traderPool) return
-
-    const getData = async () => {
-      const data = await traderPool.getUserData(ownerAddress)
-      const tvl = await traderPool.getTotalValueLocked()
-      setTvl(tvl)
-      setTraderDeposit(data[2])
-    }
-    getData()
-  }, [traderPool, setTraderDeposit, ownerAddress])
+  const [traderPool, baseToken, tvl, userPoolData] = useTraderPoolUpgradeable(
+    poolAddress,
+    ownerAddress
+  )
 
   const animate = active ? "active" : "default"
-  const traderName =
-    firstName.length === 42
-      ? shortenAddress(firstName, 4)
-      : `${firstName} ${lastName}`
 
   return (
     <MemberCard
@@ -155,13 +141,13 @@ const Member: React.FC<Props> = ({ data }) => {
       <Flex full dir="column" ai="flex-start">
         <MemberBase>
           <FloatingText>
-            {traderName}
+            {`${firstName} ${lastName}`}
             <Copiers>{copiers}</Copiers> copiers
           </FloatingText>
 
           <Row minW={235}>
             <AvatarContainer>
-              <Avatar url={avatar} size={64} />
+              <Avatar size={64} />
               <Rank>{rank}</Rank>
             </AvatarContainer>
 
@@ -196,15 +182,11 @@ const Member: React.FC<Props> = ({ data }) => {
 
             <FundsLimitGroup>
               <TextSmall align="center">
-                {formatNumber(ethers.utils.formatUnits(tvl[1]).toString())} LP/∞
-                LP
+                {formatBigNumber(tvl[1])} LP/∞ LP
               </TextSmall>
               <TextBig align="center">
-                {formatNumber(
-                  ethers.utils.formatUnits(traderDeposit, 18).toString()
-                )}{" "}
-                {baseTokenData?.symbol}/
-                {formatNumber(ethers.utils.formatUnits(tvl[0]).toString())}{" "}
+                {formatBigNumber(userPoolData[2], 18)} {baseTokenData?.symbol}/
+                {formatBigNumber(tvl[0], baseTokenData?.decimals)}{" "}
                 {baseTokenData?.symbol}
               </TextBig>
               <TextSmall color="#999999" align="center">
@@ -236,7 +218,7 @@ const Member: React.FC<Props> = ({ data }) => {
           </MiddleContent>
 
           <ButtonGroup>
-            <To to={`/pools/invest/${poolAddress}`}>
+            <To to={`/pool/${poolAddress}/invest`}>
               <Button>Invest</Button>
             </To>
             <Button onClick={() => setActive(!active)} secondary>
@@ -244,7 +226,7 @@ const Member: React.FC<Props> = ({ data }) => {
             </Button>
           </ButtonGroup>
         </MemberBase>
-        <ChartContainer
+        {/* <ChartContainer
           initial="default"
           variants={chartVariants}
           animate={animate}
@@ -252,20 +234,20 @@ const Member: React.FC<Props> = ({ data }) => {
           dir="column"
           p="0 10px"
         >
-          {/* <AreaChart
+          <AreaChart
             title
             period
             tooltipSize="sm"
             width="100%"
             height={286}
             data={pnl.detailed}
-          /> */}
+          />
           <Title weight={800}>Monthly statistics</Title>
           <StatisticsCalendar currentYear data={data.pnl.monthly} />
           <StatisticsCalendar data={data.pnl.monthly} />
-        </ChartContainer>
+        </ChartContainer> */}
       </Flex>
-      <StatisticsContainer
+      {/* <StatisticsContainer
         variants={statisticsContainerVariants}
         animate={animate}
         initial="default"
@@ -291,7 +273,7 @@ const Member: React.FC<Props> = ({ data }) => {
         <StatisticsItem label="Sortino BTC:">13.8</StatisticsItem>
         <StatisticsItem label="Circulating Supply:">220 ISDX</StatisticsItem>
         <StatisticsItem label="Total Supply:">1000 ISDX</StatisticsItem>
-      </StatisticsContainer>
+      </StatisticsContainer> */}
     </MemberCard>
   )
 }

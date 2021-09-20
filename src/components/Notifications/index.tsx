@@ -13,7 +13,7 @@ interface IProps {
 }
 
 const Notifications: React.FC<IProps> = ({ isOpen, onRequestClose }) => {
-  const data = useNotifications()
+  // const data = useNotifications()
 
   return (
     <NotificationsStyled
@@ -42,9 +42,9 @@ const Notifications: React.FC<IProps> = ({ isOpen, onRequestClose }) => {
         </IconButton>
       </Header>
       <Body full dir="column" jc="flex-start">
-        {data.map((v) => (
+        {/* {data.map((v) => (
           <NotificationCard {...v} key={v._id} />
-        ))}
+        ))} */}
       </Body>
     </NotificationsStyled>
   )

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, ElementType } from "react"
 import styled from "styled-components"
-import { Text, Flex, BaseButton } from "theme"
+import { Text, Flex, BaseButton, device } from "theme"
 import { motion } from "framer-motion"
 import { StageSpinner } from "react-spinners-kit"
 import { List } from "react-virtualized"
@@ -22,12 +22,29 @@ export const Title = styled(Text)`
   font-size: 24px;
   font-weight: bold;
   color: #f5f5f5;
+  white-space: normal;
+  margin-bottom: 15px;
 `
 
 export const Secondary = styled(Text)`
   font-size: 16px;
-  color: #999999;
+  color: #f7f7f7;
   white-space: normal;
+
+  @media only screen and (${device.sm}) {
+    font-size: 14px;
+  }
+`
+
+export const Warn = styled(Text)`
+  font-size: 16px;
+  color: #ff7f7fb9;
+  white-space: normal;
+  font-style: italic;
+
+  @media only screen and (${device.sm}) {
+    font-size: 12px;
+  }
 `
 
 const Container = styled(Flex)`
@@ -35,14 +52,18 @@ const Container = styled(Flex)`
   border: 1px solid #2f2f2f;
   width: 100%;
   min-height: 61px;
-  transition: all 0.5s;
+  transition: all 0.3s cubic-bezier(0.63, 0.08, 0.49, 0.84);
   border-radius: 10px;
   margin-top: 15px;
-  background: ${(props) => props.theme.bgPrimary};
+  background: #373b45;
   cursor: pointer;
 
   &:hover {
-    background: ${(props) => props.theme.bgPrimaryHovered};
+    background: #3e4250;
+  }
+
+  @media only screen and (${device.sm}) {
+    min-height: 51px;
   }
 `
 
@@ -57,6 +78,11 @@ const Label = styled(LabelBase)`
   position: absolute;
   left: 15px;
   top: 18px;
+  right: 0;
+  max-width: 90%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   z-index: 1;
 `
 
@@ -84,8 +110,18 @@ const Input = styled(motion.input)`
 
   &:focus {
     color: #707070;
-    border: 1px solid #2f2f2f;
+    /* border: 1px solid #2f2f2f; */
   }
+
+  @media only screen and (${device.sm}) {
+    height: 51px;
+  }
+`
+
+export const BaseTokenWrapper = styled.div`
+  height: 61px;
+  width: 100%;
+  position: relative;
 `
 
 const labelVariants = {
@@ -113,20 +149,29 @@ export const TextItalic = styled.span`
   color: #767676;
   font-size: 16px;
   font-style: italic;
+`
+
+export const InputButton = styled.span`
+  color: #767676;
+  font-size: 16px;
+  font-style: italic;
   white-space: nowrap;
 `
 
 export const InputUI: React.FC<{
   name: string
   label: string
-  onChange: (name: string, value: string) => void
+  onChange?: (name: string, value: string) => void
   onKeyDown?: (e: any) => void
   onPaste?: (e: any) => void
   icon?: React.ReactElement | boolean
-}> = ({ name, label, onChange, onKeyDown, onPaste, icon }) => {
+  onClick?: () => void
+}> = ({ name, label, onChange, onKeyDown, onPaste, icon, onClick }) => {
   const [active, setActive] = useState(false)
 
   const handleBlur = ({ target }) => {
+    if (!onChange) return
+
     onChange(name, target.value)
 
     if (active && !target.value.length) {
@@ -134,12 +179,18 @@ export const InputUI: React.FC<{
     }
   }
 
+  const handleFocus = () => {
+    if (!onChange) return
+
+    setActive(true)
+  }
+
   return (
-    <Container>
+    <Container onClick={onClick}>
       <Input
         spellCheck={false}
         onBlur={handleBlur}
-        onFocus={() => setActive(true)}
+        onFocus={handleFocus}
         onPaste={onPaste}
         onKeyDown={onKeyDown}
         placeholder="XXX"
@@ -235,6 +286,7 @@ const DropdownSearch = styled.input`
   outline: none;
   background: transparent;
   border: none;
+  z-index: 5;
 `
 
 const IconLink = styled.a`
@@ -250,22 +302,49 @@ const Search: React.FC<{ onChange: (event: any) => void }> = ({ onChange }) => {
   const [q, setQuery] = useState("")
   const debounced = useDebounce(q, 25)
 
-  const handleSearch = ({ target }) => {
-    setQuery(target.value)
+  const handleSearch = (e) => {
+    console.log(e.target.value)
+    setQuery(e.target.value)
+    onChange(e.target.value)
   }
 
-  useEffect(() => {
-    onChange(debounced)
-  }, [onChange, debounced])
+  // useEffect(() => {
+  //   onChange(debounced)
+  // }, [onChange, debounced])
 
   return (
     <DropdownSearch
+      type="text"
       onClick={(e) => e.stopPropagation()}
       placeholder="Search symbol"
       onChange={handleSearch}
     />
   )
 }
+
+export const BaseTokenSelect = styled(Flex)`
+  border-radius: 5px;
+  border: 1px solid #2f2f2f;
+  flex-direction: row;
+  justify-content: space-between;
+  background: linear-gradient(
+    243deg,
+    rgba(41, 49, 52, 1) 0%,
+    rgba(53, 52, 75, 1) 100%
+  );
+`
+
+export const CommonBasesGroup = styled(Flex)`
+  width: calc(100% - 127px);
+  padding: 5px 25px 7px 45px;
+  overflow-x: auto;
+  justify-content: flex-start;
+  position: relative;
+`
+
+export const TokenWrapper = styled.div`
+  margin-right: 10px;
+`
 
 export const DropdownUI: React.FC<{
   active: string
@@ -470,6 +549,18 @@ export const Area = ({ name, onChange }) => {
   )
 }
 
+export const ButtonsCoontainer = styled(Flex)`
+  padding: 15px 30px;
+  justify-content: space-between;
+  width: 100%;
+
+  @media screen and (${device.xs}) {
+    padding: 0;
+    align-items: center;
+    justify-content: flex-end;
+  }
+`
+
 export const StepperBaseButton = styled(BaseButton)`
   border-radius: 10px;
   padding: 19px 44px 16px;
@@ -481,18 +572,33 @@ export const NextButton = styled(StepperBaseButton)`
   background: #202020;
   width: 100%;
   color: #7fffd4;
+
+  @media screen and (${device.xs}) {
+    background: transparent;
+    width: fit-content;
+    padding: 17px 20px 17px 25px;
+  }
 `
 
 export const PrevButton = styled(StepperBaseButton)`
-  border: 1px solid #767676;
   background: transparent;
   margin-right: 15px;
+  padding: 17px 15px 17px 25px;
+  color: #c2c3c4;
+
+  @media screen and (${device.xs}) {
+    padding: 17px 15px;
+    margin-right: 0;
+  }
 `
 
 export const DotsWrapper = styled(Flex)`
   max-width: 165px;
   min-width: 165px;
   position: relative;
+  padding: 10px 0 0;
+  margin: 0 auto;
+  justify-content: space-evenly;
 
   &:after {
     content: "";
@@ -501,6 +607,11 @@ export const DotsWrapper = styled(Flex)`
     position: absolute;
     left: 15px;
     right: 15px;
+  }
+
+  @media screen and (${device.xs}) {
+    padding: 0;
+    margin-left: 15px;
   }
 `
 
@@ -556,6 +667,10 @@ export const SliderWrapper = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
+
+  @media screen and (${device.xs}) {
+    height: 420px;
+  }
 `
 
 export const SliderItem = styled(motion.div)`
@@ -565,20 +680,20 @@ export const SliderItem = styled(motion.div)`
   left: 0;
   right: 0;
   width: 100%;
+
+  @media screen and (${device.xs}) {
+    padding: 20px 15px;
+  }
 `
 
 const slideVariants = {
   visible: {
     opacity: 1,
-    x: 0,
-    y: 0,
     display: "flex",
     transition: { delay: 0.3 },
   },
   hidden: {
     opacity: 0,
-    x: -5,
-    y: -3,
     transitionEnd: {
       display: "none",
     },
@@ -601,6 +716,7 @@ export const FormLabel = styled(Text)`
   font-size: 16px;
   font-weight: bold;
   color: #f5f5f5;
+  white-space: normal;
 `
 
 export const SliderLine = styled.div`
@@ -615,8 +731,10 @@ export const SliderLine = styled.div`
 
 const Percent = styled.input`
   background: transparent;
+  -webkit-appearance: none;
   outline: none;
   border: none;
+  border-radius: 0;
   width: 95px;
   border-bottom: 1px solid #676767;
   color: #dddddd;
@@ -654,41 +772,77 @@ export const NumberInput = ({ value, onChange }) => (
 export const AllocateSlider: React.FC<{
   name: string
   initial: number
+  hideInput?: boolean
+  customMarks?: any
+  debounce?: boolean
   onChange: (name: string, value: number) => void
-}> = ({ name, initial, onChange }) => {
+  min?: number
+  max?: number
+}> = ({
+  name,
+  initial,
+  onChange,
+  hideInput = false,
+  debounce = true,
+  min = 30,
+  max = 70,
+  customMarks = {
+    30: "30%",
+    40: "40%",
+    50: "50%",
+    60: "60%",
+    70: "70%",
+  },
+}) => {
   const [v, setV] = useState(initial)
-  const debounced = useDebounce(v, 550)
+  const debounced = useDebounce(v, 250)
 
   useEffect(() => {
-    onChange(name, debounced)
-  }, [debounced, onChange, name])
+    if (debounce) {
+      onChange(name, debounced)
+    }
+  }, [debounced, onChange, name, debounce])
+
+  const handleChange = (value) => {
+    if (debounce) {
+      setV(value)
+      return
+    }
+
+    onChange(name, value)
+  }
 
   return (
     <Flex full p="0 0 10px">
       <Flex full p="24px 0" ai="center">
         <SliderLine />
         <InputSlider
-          marks={{
-            30: "30%",
-            40: "40%",
-            50: "50%",
-            60: "60%",
-            70: "70%",
-          }}
-          min={30}
-          max={70}
-          value={v}
-          onChange={(value) => setV(value)}
+          marks={customMarks}
+          min={min}
+          max={max}
+          value={debounce ? v : initial}
+          onChange={handleChange}
         />
         <SliderLine />
       </Flex>
-      <Flex>
-        <NumberInput onChange={setV} value={v} />
-      </Flex>
+      {!hideInput && (
+        <Flex>
+          <NumberInput onChange={handleChange} value={debounce ? v : initial} />
+        </Flex>
+      )}
     </Flex>
   )
 }
 
 export const Arrow = styled.img`
   transform: rotate(90deg);
+`
+
+export const Footer = styled(Flex)`
+  flex-direction: column;
+  width: 100%;
+
+  @media screen and (${device.xs}) {
+    flex-direction: row;
+  }
 `

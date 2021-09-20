@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useReducer, useCallback } from "react"
-import styled from "styled-components"
 import { Flex } from "theme"
 import { useParams } from "react-router-dom"
+import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 
 import ExchangeFrom from "components/Exchange/From"
 import ExchangeDivider from "components/Exchange/Divider"
@@ -10,186 +10,81 @@ import Button from "components/Button"
 import tooltip from "assets/icons/tooltip.svg"
 
 import { Label, TooltipIcon, PriceText } from "components/Exchange/styled"
-
-import TokenSelector from "modals/TokenSelector"
+import { useExchange } from "pages/Swap"
 import { useSelectPoolByAddress } from "state/pools/hooks"
-import { usePoolUpgradeable, useTraderPoolUpgradeable } from "hooks/useContract"
+import {
+  usePoolUpgradeable,
+  useTraderPoolUpgradeable,
+  useUniswapExchangeTool,
+  useERC20,
+} from "hooks/useContract"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
-import { useUniswapExchangeTool, useERC20 } from "hooks/useContract"
 import { add } from "date-fns/esm"
 import { getUnixTime } from "date-fns"
 
 import { ethers } from "ethers"
 
-import { ErrorText, ApproveButton } from "./styled"
-
-const Container = styled(Flex)`
-  height: 100vh;
-`
-
-const initialState = {
-  from: {
-    address: "",
-    balance: BigNumber.from(0),
-    decimals: 18,
-    symbol: "",
-    price: BigNumber.from(0), // base token price in $
-  },
-  to: {
-    address: "",
-    balance: BigNumber.from(0),
-    decimals: 18,
-    symbol: "",
-    price: BigNumber.from(0), // Pool price in baseTokens price
-  },
-  direction: "deposit",
-  allowance: BigNumber.from(0),
-}
-
-export const InvestContext = React.createContext({
-  state: initialState,
-  setFrom: (n: any, v: any) => {},
-  setTo: (n: any, v: any) => {},
-})
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "setFrom":
-      return {
-        ...state,
-        from: {
-          ...state.from,
-          [action.name]: action.value,
-        },
-      }
-    case "setTo":
-      return {
-        ...state,
-        from: {
-          ...state.from,
-        },
-        to: {
-          ...state.to,
-          [action.name]: action.value,
-        },
-      }
-    case "setDirection":
-      return {
-        ...state,
-        direction: action.direction,
-      }
-    case "setAllowance":
-      return {
-        ...state,
-        allowance: action.allowance,
-      }
-  }
-}
+import { ErrorText, ApproveButton, Container, PriceContainer } from "./styled"
+import { useSelectPrices } from "state/rates/hooks"
+import { isStable } from "utils"
 
 export default function Invest() {
-  const [fromAmount, setFromAmount] = useState(BigNumber.from(0))
-  const [toAmount, setToAmount] = useState(BigNumber.from(0))
-  const [state, dispatch] = useReducer(reducer, initialState)
+  const [
+    { fromAmount, toAmount, toAddress, toSelectorOpened, direction },
+    { setFromAmount, setToAmount, setToAddress, setDirection, setToSelector },
+  ] = useExchange()
 
-  const setFrom = useCallback(
-    (n, v) => dispatch({ type: "setFrom", name: n, value: v }),
-    []
-  )
-
-  const setTo = useCallback(
-    (n, v) => dispatch({ type: "setTo", name: n, value: v }),
-    []
-  )
+  const [hash, setHash] = useState("")
+  const [pending, setPending] = useState(false)
+  const [allowance, setAllowance] = useState(BigNumber.from(0))
 
   const [error, setError] = useState("")
 
-  const [tokenSelectOpened, setModalOpened] = useState(false)
-  const { account } = useWeb3React()
-
+  const rates = useSelectPrices()
+  const { account, library } = useWeb3React()
   const exchangeTool = useUniswapExchangeTool()
 
-  const { address } = useParams<{ address: string }>()
-  const poolData = useSelectPoolByAddress(address)
+  const { poolAddress } = useParams<{ poolAddress: string }>()
+  const poolData = useSelectPoolByAddress(poolAddress)
 
-  const pool = usePoolUpgradeable(address)
-  const traderPool = useTraderPoolUpgradeable(address)
-  const [baseToken] = useERC20(state.from.address)
+  const pool = usePoolUpgradeable(poolAddress)
 
+  const [
+    traderPool,
+    fromAddress,
+    tvl,
+    userPoolData,
+    refreshTo,
+  ] = useTraderPoolUpgradeable(poolAddress, pool?.ownerAddress)
+  const [fromToken, fromData, fromBalance, refreshFrom] = useERC20(fromAddress)
+  const isAlloved =
+    direction === "deposit" &&
+    ethers.utils
+      .parseUnits(fromAmount.toString(), fromData?.decimals)
+      .gt(allowance) &&
+    direction === "deposit"
+
+  const isOwner =
+    poolData?.ownerAddress.toLocaleLowerCase() === account?.toLocaleLowerCase()
+
+  // check allowance
   useEffect(() => {
-    if (!pool) return
-
-    const getTokenInfo = async () => {
+    if (!fromToken || typeof account !== "string" || account.length !== 42)
+      return
+    ;(async () => {
       try {
-        const basicToken = await pool.basicToken()
-        setFrom("address", basicToken)
-      } catch (err) {
-        console.log(err)
-        setError("Invalid pool address")
-      }
-    }
-
-    getTokenInfo()
-  }, [pool, setFrom])
-
-  useEffect(() => {
-    if (!traderPool) return
-    const getPoolPrice = async () => {
-      try {
-        // const tvl = await traderPool.getTotalValueLocked()
-        // console.log(tvl)
-        // setTo("price", tvl[0].div(tvl[1]))
-      } catch (err) {
-        console.log(err)
-        setError("Price not found in pool")
-      }
-    }
-
-    getPoolPrice()
-  }, [traderPool, setTo])
-
-  useEffect(() => {
-    if (!traderPool) return
-
-    const getUserData = async () => {
-      try {
-        const data = await traderPool.getUserData(account)
-        setTo("balance", data[2])
-        console.log(data[0].toString(), data[1].toString(), data[2].toString())
-      } catch (err) {
-        console.log(err)
-      }
-    }
-
-    getUserData()
-  }, [traderPool, account, setTo])
-
-  useEffect(() => {
-    if (!poolData) return
-
-    setTo("symbol", poolData.symbol)
-  }, [poolData, setTo])
-
-  useEffect(() => {
-    setTo("address", address)
-  }, [address, setTo])
-
-  useEffect(() => {
-    if (!baseToken) return
-
-    const getAllowance = async () => {
-      try {
-        const allowance = await baseToken.allowance(account, address)
-        dispatch({ type: "setAllowance", allowance })
+        const data = await fromToken.allowance(account, poolAddress)
+        setAllowance(data)
       } catch (e) {
-        setError("Unable to get basic token allowance")
+        // console.log(e, e.message)
+        // TODO: set error unable to check allovance
       }
-    }
-
-    getAllowance()
-  }, [baseToken, account, address])
+    })()
+  }, [fromToken, account, poolAddress])
 
   const swapTokens = async () => {
-    const multiplier = BigNumber.from(10).pow(18)
+    const multiplier = BigNumber.from(10).pow(6)
 
     const amount = BigNumber.from(1000).mul(multiplier)
 
@@ -202,8 +97,9 @@ export default function Invest() {
     const receipt = await exchangeTool?.swapETHForExactTokens(
       amount.toHexString(),
       [
-        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        "0x4Fabb145d64652a948d72533023f6E7A623C7C53",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       ],
       account,
       deadline,
@@ -217,117 +113,298 @@ export default function Invest() {
   }
 
   const approve = async () => {
-    const receipt = await baseToken?.approve(
-      address,
-      fromAmount.toHexString(),
+    const receipt = await fromToken?.approve(
+      poolAddress,
+      ethers.utils
+        .parseUnits(fromAmount.toString(), fromData?.decimals)
+        .toHexString(),
       {
         from: account,
       }
     )
-
     console.log(receipt)
   }
 
+  useEffect(() => {
+    if (!hash || !library) return
+    ;(async () => {
+      try {
+        await library.waitForTransaction(hash)
+
+        setPending(false)
+        setHash("")
+        refreshFrom()
+        refreshTo()
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [hash, library, refreshFrom, refreshTo])
+
   const handleSubmit = async () => {
-    const res = await pool?.deposit(fromAmount, {
-      from: account,
-    })
-    console.log(res)
+    setPending(true)
+    if (direction === "deposit") {
+      try {
+        const receipt = await pool?.deposit(
+          ethers.utils.parseUnits(fromAmount.toString(), fromData?.decimals),
+          {
+            from: account,
+          }
+        )
+        setHash(receipt.hash)
+
+        alert(`Deposited ${fromData?.symbol}`)
+      } catch (e) {
+        setPending(false)
+        console.log(e)
+      }
+    } else {
+      try {
+        const receipt = await pool?.withdraw(
+          ethers.utils.parseUnits(fromAmount.toString(), fromData?.decimals),
+          {
+            from: account,
+          }
+        )
+
+        setHash(receipt.hash)
+
+        alert(`Withdrawn ${fromData?.symbol}`)
+      } catch (e) {
+        setPending(false)
+        console.log(e)
+      }
+    }
   }
 
   const handlePercentageChange = (percent) => {
-    const parsedAmount = state.from.balance.div(100).mul(percent)
+    const parsedAmount = fromBalance.div(100).mul(percent)
 
     if (parsedAmount._isBigNumber) {
-      setFromAmount(parsedAmount)
-      setToAmount(parsedAmount.mul(state.to.price))
+      const fromPrice = parseFloat(
+        ethers.utils.formatUnits(parsedAmount, fromData?.decimals)
+      )
+      setFromAmount(fromPrice)
+      if (tvl[1].toString() !== "0") {
+        setToAmount(fromPrice * parseFloat(tvl[0].div(tvl[1]).toString()))
+      } else {
+        setToAmount(fromPrice)
+      }
     }
   }
 
   const handleDirectionChange = () => {
-    if (state.direction === "deposit") {
-      dispatch({ type: "setDirection", direction: "withdraw" })
+    if (direction === "deposit") {
+      setDirection("withdraw")
     } else {
-      dispatch({ type: "setDirection", direction: "deposit" })
+      setDirection("deposit")
     }
   }
 
   const handleFromChange = (v) => {
-    console.log(v)
-
     try {
-      const amount = ethers.utils.parseUnits(v, state.from.decimals)
-      console.log(amount, amount.mul(state.to.price))
-      setFromAmount(amount)
-      setToAmount(amount.mul(state.to.price))
+      const am = parseFloat(v) || 0.0
+      setFromAmount(am)
+
+      if (tvl[1].toString() !== "0") {
+        setToAmount(am * parseFloat(tvl[0].div(tvl[1]).toString()))
+      } else {
+        setToAmount(am)
+      }
     } catch (e) {
       console.log(e)
     }
-    // setFromAmount()
   }
+
+  const handleToChange = (v) => {
+    try {
+      const am = parseFloat(v) || 0.0
+      setToAmount(am)
+
+      if (tvl[1].toString() !== "0") {
+        setFromAmount(am * parseFloat(tvl[0].div(tvl[1]).toString()))
+      } else {
+        setFromAmount(am)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const getPrice = () => {
+    if (tvl[1].toString() !== "0") {
+      const cap = ethers.utils.formatUnits(tvl[0], fromData?.decimals)
+      const sup = ethers.utils.formatUnits(tvl[1], 18)
+
+      return parseFloat(cap) / parseFloat(sup)
+    }
+
+    return "0"
+  }
+
+  const getButton = () => {
+    if (!fromToken || !poolData || pending) {
+      return (
+        <Button theme="disabled" fz={22} full>
+          <Flex>
+            {"loading "}
+            <Flex p="0 0 0 15px">
+              <PulseSpinner color="#03FF89" size={15} loading />
+            </Flex>
+          </Flex>
+        </Button>
+      )
+    }
+
+    if (
+      direction === "deposit" &&
+      ethers.utils
+        .parseUnits(fromAmount.toString(), fromData?.decimals)
+        .gt(fromBalance)
+    ) {
+      return (
+        <Button theme="disabled" fz={22} full>
+          Inufficient funds
+        </Button>
+      )
+    }
+
+    if (
+      direction === "withdraw" &&
+      ethers.utils.parseUnits(toAmount.toString(), 18).gt(userPoolData[2])
+    ) {
+      return (
+        <Button theme="disabled" fz={22} full>
+          Inufficient funds
+        </Button>
+      )
+    }
+
+    if (isAlloved) {
+      return (
+        <ApproveButton onClick={approve}>
+          Unlock Token {fromData?.symbol}
+        </ApproveButton>
+      )
+    }
+
+    if (tvl[1].toString() === "0" && isOwner) {
+      return (
+        <Button
+          onClick={handleSubmit}
+          theme={direction === "deposit" ? "primary" : "warn"}
+          fz={22}
+          full
+        >
+          {direction === "deposit"
+            ? `Buy ${poolData?.symbol}`
+            : `Sell ${poolData?.symbol}`}
+        </Button>
+      )
+    }
+
+    if (tvl[1].toString() === "0") {
+      return (
+        <Button theme="disabled" fz={22} full>
+          not available
+        </Button>
+      )
+    }
+
+    return (
+      <Button
+        theme={direction === "deposit" ? "primary" : "warn"}
+        onClick={swapTokens}
+        fz={22}
+        full
+      >
+        {direction === "deposit"
+          ? `Buy ${poolData?.symbol}`
+          : `Sell ${poolData?.symbol}`}
+      </Button>
+    )
+  }
+
+  const price = getPrice()
+
+  const priceTemplate =
+    price === "0" ? (
+      <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
+        <PriceText color="#F7F7F7">
+          {isOwner ? "Deposit to start" : "Pool is closed"}
+        </PriceText>
+        <TooltipIcon src={tooltip} />
+      </Flex>
+    ) : (
+      <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
+        <PriceText color="#F7F7F7">
+          1 {poolData?.symbol} = {tvl[0].div(tvl[1]).toString()}{" "}
+          {fromData?.symbol}
+        </PriceText>
+        <PriceText color="#999999">
+          (~{isStable(fromAddress) ? "1.00" : "1.00"}$)
+        </PriceText>
+        <TooltipIcon src={tooltip} />
+      </Flex>
+    )
+
+  const button = getButton()
 
   const form = (
     <div>
       <ExchangeFrom
-        setMaxAmount={() => handlePercentageChange(100)}
-        onInputChange={handleFromChange}
+        price={0}
         amount={fromAmount}
-        context={InvestContext}
+        balance={fromBalance}
+        address={fromAddress}
+        symbol={fromData?.symbol}
+        decimal={fromData?.decimals}
+        onChange={handleFromChange}
+        isAlloved={!isAlloved}
+        onSelect={() => {}}
+        isStable={isStable(fromAddress)}
       />
 
       <ExchangeDivider
-        direction={state.direction === "deposit" ? "down" : "up"}
+        direction={direction}
         changeAmount={handlePercentageChange}
         changeDirection={handleDirectionChange}
       />
 
       <ExchangeTo
+        price={0}
+        priceChange24H={0}
         amount={toAmount}
-        openSelector={() => setModalOpened(true)}
-        context={InvestContext}
+        balance={userPoolData[2]}
+        address={poolAddress}
+        symbol={poolData?.symbol}
+        decimal={18}
+        isPool
+        onChange={handleToChange}
+        onSelect={() => {}}
       />
 
-      <Flex full>
-        <Label>Price</Label>
-        <Flex p="13px 0 10px" ai="center">
-          <PriceText color="#F7F7F7">
-            1 {state.to.symbol} = {state.to.price.toString()}{" "}
-            {state.from.symbol}
-          </PriceText>
-          <PriceText color="#999999">(~0$)</PriceText>
-          <TooltipIcon src={tooltip} />
-        </Flex>
-      </Flex>
+      <PriceContainer>
+        <Label>Price: </Label>
+        {!fromData && !rates ? (
+          <StageSpinner size={12} loading />
+        ) : (
+          priceTemplate
+        )}
+      </PriceContainer>
 
-      {fromAmount.gt(state.allowance) && state.direction === "deposit" ? (
-        <ApproveButton onClick={approve}>
-          Unlock Token {state.from.symbol}
-        </ApproveButton>
-      ) : (
-        <Button
-          theme={state.direction === "deposit" ? "primary" : "warn"}
-          onClick={handleSubmit}
-          fz={22}
-          full
-        >
-          {state.direction === "deposit"
-            ? `Buy ${state.to.symbol}`
-            : `Sell ${state.to.symbol}`}
-        </Button>
-      )}
+      {button}
     </div>
   )
 
   return (
-    <InvestContext.Provider value={{ state, setFrom, setTo }}>
-      <Container ai="center" jc="center" full>
-        <TokenSelector
-          isOpen={tokenSelectOpened}
-          onRequestClose={() => setModalOpened(false)}
-        />
+    <Container ai="center" jc="center" full>
+      {/* <TokenSelector
+        isOpen={tokenSelectOpened}
+        onRequestClose={() => setModalOpened(false)}
+      /> */}
 
-        {error.length ? <ErrorText>{error}</ErrorText> : form}
-      </Container>
-    </InvestContext.Provider>
+      {error.length ? <ErrorText>{error}</ErrorText> : form}
+    </Container>
   )
 }

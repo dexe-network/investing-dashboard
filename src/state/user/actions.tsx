@@ -1,4 +1,5 @@
 import { createAction } from "@reduxjs/toolkit"
+import { IFund, IUserData } from "constants/interfaces"
 
 // export interface Iuser {}
 
@@ -10,3 +11,9 @@ export const deleteuser = createAction<{ params: any }>("user/delete")
 // CUSTOM actions
 
 export const updateUserProMode = createAction("user/update-pro-mode")
+export const addOwnedPools = createAction<{ data: IFund[] }>(
+  "user/add-owned-pools"
+)
+export const addUserData = createAction<{ data: IUserData | false | null }>(
+  "user/add-user-data"
+)

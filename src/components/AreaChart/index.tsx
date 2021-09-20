@@ -59,7 +59,7 @@ const SmallTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
       <StyledTooltipSm dir="column" jc="space-around" ai="center">
-        <TooltipText>{payload[0].payload.lpBasicPercent}%</TooltipText>
+        <TooltipText>{payload[0].payload.y.toFixed(2)}%</TooltipText>
       </StyledTooltipSm>
     )
   }
@@ -135,7 +135,7 @@ const Chart: React.FC<{
   width?: number | string
   title?: boolean
   period?: boolean
-  tooltipSize: "sm" | "lg"
+  tooltipSize?: "sm" | "lg"
 }> = (props) => {
   const [isPro] = useUserProMode()
 
@@ -166,17 +166,21 @@ const Chart: React.FC<{
         <ResponsiveContainer>
           <AreaChart data={props.data}>
             <Tooltip
-              content={({ active, payload }) =>
-                props.tooltipSize === "lg" ? (
-                  <LargeTooltip active={active} payload={payload} />
-                ) : (
-                  <SmallTooltip active={active} payload={payload} />
-                )
-              }
+              content={({ active, payload }) => {
+                if (props.tooltipSize === "lg") {
+                  return <LargeTooltip active={active} payload={payload} />
+                }
+
+                if (props.tooltipSize === "sm") {
+                  return <SmallTooltip active={active} payload={payload} />
+                }
+
+                return null
+              }}
             />
             <Area
-              type="step"
-              dataKey="lpBasicPercent"
+              type="monotoneX"
+              dataKey="y"
               stroke={chartColors[isPro ? "pro" : "default"].stroke}
               fill="#1F5281"
               fillOpacity={0}

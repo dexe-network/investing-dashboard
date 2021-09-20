@@ -16,7 +16,11 @@ import SettingsIcon from "assets/menu/SettingsIcon.svg"
 import SupportIcon from "assets/menu/SupportIcon.svg"
 import NotificationsIcon from "assets/menu/NotificationsIcon.svg"
 import ConnectIcon from "assets/menu/ConnectIcon"
-import TradersListIcon from "assets/menu/TradersListIcon.svg"
+import TradersListIcon from "assets/menu/mobile/TradersListIcon.svg"
+import MeIcon from "assets/menu/mobile/MeIcon.svg"
+import ConnectWalletIcon from "assets/menu/mobile/ConnectWalletIcon.svg"
+
+import defaultAvatar from "assets/icons/default-avatar.svg"
 
 import { connectorsIcons } from "constants/connectors"
 
@@ -37,7 +41,7 @@ import {
   NavItem,
 } from "./styled"
 
-import { To, useBreakpoint } from "theme"
+import { To } from "theme"
 
 import usePathname from "hooks/usePathname"
 
@@ -54,13 +58,10 @@ export const MenuContext = React.createContext<IMenuContext | null>(null)
 const Menu: React.FC = () => {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
-  const { toggleNotifications } = useNotificationsContext()
+  // const { toggleNotifications } = useNotificationsContext()
   const { toggleConnectWallet } = useConnectWalletContext()
   const active = useActiveWallet()
   const { account } = useWeb3React()
-
-  const breakpoint = useBreakpoint()
-  const isMobile = breakpoint === "xs"
 
   const onHover = () => {
     if (!open) {
@@ -74,19 +75,7 @@ const Menu: React.FC = () => {
     }
   }
 
-  return isMobile ? (
-    <MobileMenu>
-      <NavItem src={TradersListIcon}>Traders</NavItem>
-      <NavItem src={TradersListIcon}>Traders</NavItem>
-      <NavItem src={TradersListIcon}>Traders</NavItem>
-      <NavItem src={TradersListIcon}>Traders</NavItem>
-      <NavItem src={TradersListIcon}>Traders</NavItem>
-      {/* <NavItem></NavItem>
-      <NavItem></NavItem>
-      <NavItem></NavItem>
-      <NavItem></NavItem> */}
-    </MobileMenu>
-  ) : (
+  return (
     <MenuContext.Provider
       value={{
         open,
@@ -118,11 +107,11 @@ const Menu: React.FC = () => {
               <Text>Portfolio</Text>
             </MenuItem>
           </To>
-          {/* <To to="/profile">
-            <MenuItem active={pathname === "/profile"}>
+          <To to="/me">
+            <MenuItem active={pathname === "/me"}>
               <ActiveBorder
                 variants={ActiveVariants}
-                animate={pathname === "/profile" ? "visible" : "hidden"}
+                animate={pathname === "/me" ? "visible" : "hidden"}
                 initial="hidden"
               />
               <IconContainer>
@@ -130,7 +119,7 @@ const Menu: React.FC = () => {
               </IconContainer>
               <Text>Profile</Text>
             </MenuItem>
-          </To> */}
+          </To>
           <To to="/pools">
             <MenuItem active={pathname === "/pools"}>
               <ActiveBorder
@@ -234,12 +223,12 @@ const Menu: React.FC = () => {
               <Text>Support</Text>
             </MenuItem>
           </To>
-          <MenuItem onClick={() => toggleNotifications(undefined)}>
+          {/* <MenuItem onClick={() => toggleNotifications(undefined)}>
             <IconContainer>
               <Icon src={NotificationsIcon} />
             </IconContainer>
             <Text>Notifications</Text>
-          </MenuItem>
+          </MenuItem> */}
 
           {active.length ? (
             <MenuItem onClick={() => toggleConnectWallet(undefined)}>
@@ -259,6 +248,37 @@ const Menu: React.FC = () => {
         </Group>
       </StyledMenu>
     </MenuContext.Provider>
+  )
+}
+
+export const BottomMenu = () => {
+  const { account } = useWeb3React()
+  const { toggleConnectWallet } = useConnectWalletContext()
+
+  return (
+    <MobileMenu>
+      <To to="/profile">
+        <NavItem src={TradersListIcon}>Traders</NavItem>
+      </To>
+      <To to="/profile">
+        <NavItem src={TradersListIcon}>Traders</NavItem>
+      </To>
+      <To to="/me">
+        <NavItem src={MeIcon}>Me</NavItem>
+      </To>
+      <To to="/pools">
+        <NavItem src={TradersListIcon}>Traders</NavItem>
+      </To>
+      {account?.length ? (
+        <NavItem onClick={toggleConnectWallet} src={defaultAvatar}>
+          {shortenAddress(account, 2)}
+        </NavItem>
+      ) : (
+        <NavItem onClick={toggleConnectWallet} src={ConnectWalletIcon}>
+          Connect
+        </NavItem>
+      )}
+    </MobileMenu>
   )
 }
 

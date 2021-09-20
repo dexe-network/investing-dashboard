@@ -21,3 +21,18 @@ export const ApproveButton = styled(BaseButton)`
   width: 100%;
   border-radius: 10px;
 `
+
+export const Container = styled(Flex)`
+  width: 100%;
+  height: 100%;
+  padding: 20px 22px 33px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`
+
+export const PriceContainer = styled(Flex)`
+  width: 100%;
+  height: 38px;
+  padding-right: 15px;
+`

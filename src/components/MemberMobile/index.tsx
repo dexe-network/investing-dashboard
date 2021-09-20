@@ -1,7 +1,10 @@
 // import React, { useState, useRef } from "react"
-import { Flex } from "theme"
+import { Flex, To } from "theme"
+import styled from "styled-components"
 import Avatar from "components/Avatar"
+import AreaChart from "components/AreaChart"
 import defaultAvatar from "assets/icons/default-avatar.svg"
+import { IPool } from "constants/interfaces"
 
 import {
   Card,
@@ -18,40 +21,79 @@ import {
   CopiersCounter,
   CopiersLabel,
   CopiersPnl,
+  BuyButton,
+  ChartContainer,
+  Chart,
 } from "./styled"
+import { useERC20 } from "hooks/useContract"
 
-const MemberMobile: React.FC = () => {
+interface Props {
+  data: IPool
+}
+
+const AvatarWrapper = styled(AvatarContainer)`
+  margin-right: -48px;
+`
+
+const MemberMobile: React.FC<Props> = ({ data }) => {
+  const {
+    avatar,
+    firstName,
+    lastName,
+    copiers,
+    rank,
+    symbol,
+    price,
+    pnl,
+    commision,
+    poolAddress,
+    baseAddress,
+    ownerAddress,
+  } = data
+
+  const [baseData] = useERC20(baseAddress)
+
   return (
     <Card ai="flex-end" full>
-      <AvatarContainer>
-        <Avatar size={112} url={defaultAvatar} />
-        <TraderName>Irvin Smith</TraderName>
-      </AvatarContainer>
+      <AvatarWrapper>
+        <Avatar size={112} />
+        <TraderName>{`${firstName} ${lastName}`}</TraderName>
+      </AvatarWrapper>
       <Wrapper full>
         <Flex p="0 0 0 36px">
-          <CopiersCounter>1,241</CopiersCounter>
+          <CopiersCounter>{copiers}</CopiersCounter>
           <CopiersLabel>copiers</CopiersLabel>
-          <CopiersPnl>+2.1%</CopiersPnl>
+          <CopiersPnl>0%</CopiersPnl>
         </Flex>
         <Content>
-          <Flex p="13px 0 8px">
-            <Ticker>ISDX</Ticker>
-            <Price>$2.13</Price>
-            <Pnl>+3.14%</Pnl>
-          </Flex>
-          <Flex jc="flex-start" full p="0 8px 0 0">
-            <Tile>
-              <Value>$273k</Value>
-              <Label>TVL</Label>
-            </Tile>
-            <Tile>
-              <Value>16.1</Value>
-              <Label>Coef</Label>
-            </Tile>
-            <Tile>
-              <Value>66%</Value>
-              <Label>TFA</Label>
-            </Tile>
+          <Flex dir="column" full>
+            <Flex p="13px 0 8px" full jc="space-evenly">
+              <Ticker>{symbol}</Ticker>
+              <Flex>
+                <Price>$1</Price>
+                <Pnl>0%</Pnl>
+              </Flex>
+              <To to={`/pool/${poolAddress}/invest`}>
+                <BuyButton>Buy</BuyButton>
+              </To>
+            </Flex>
+            <ChartContainer jc="space-between" full p="0 8px 0 0">
+              <Chart>
+                <AreaChart width={219} height={47} data={pnl.detailed} />
+              </Chart>
+              <Tile>
+                <Value>$0</Value>
+                <Label>TVL</Label>
+              </Tile>
+              <Tile>
+                <Value>1.1</Value>
+                <Label>Coef</Label>
+              </Tile>
+              <Tile>
+                <Value>0%</Value>
+                <Label>TFA</Label>
+              </Tile>
+            </ChartContainer>
           </Flex>
         </Content>
       </Wrapper>

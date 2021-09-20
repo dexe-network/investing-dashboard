@@ -12,6 +12,8 @@ import arkaneIcon from "assets/wallets/arkane.svg"
 const LOCAL_NETWORK_URL = "http://localhost:8545"
 const BSC_NETWORK_URL = "https://bsc-dataseed.binance.org/"
 
+const SUPPORTED_CHAINS = [56, 97, 1337]
+
 const POLLING_INTERVAL = 12000
 const RPC_URLS = {
   56: BSC_NETWORK_URL,
@@ -20,7 +22,7 @@ const RPC_URLS = {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [56, 97, 1337],
+  supportedChainIds: SUPPORTED_CHAINS,
 })
 
 export const network = new NetworkConnector({
@@ -34,12 +36,13 @@ export const network = new NetworkConnector({
 
 export const walletconnect = new WalletConnectConnector({
   infuraId: process.env.REACT_APP_INFURA_ID,
+  supportedChainIds: SUPPORTED_CHAINS,
   qrcode: true,
   pollingInterval: POLLING_INTERVAL,
 })
 
 export const bsc = new BscConnector({
-  supportedChainIds: [56, 97, 1337],
+  supportedChainIds: SUPPORTED_CHAINS,
 })
 
 export const arkane = new ArkaneConnect("InvestingDexe")

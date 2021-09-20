@@ -15,7 +15,7 @@ import arkane from "assets/wallets/arkane.svg"
 
 import close from "assets/icons/close.svg"
 
-import { IconButton } from "theme"
+import { IconButton, device } from "theme"
 import Checkbox from "components/Checkbox"
 import check from "assets/icons/check.svg"
 
@@ -65,6 +65,8 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
     }
 
     if (provider) {
+      localStorage.setItem("dexe.network/investing/web3-auth-method", name)
+
       activate(provider, undefined, true)
         .then(onRequestClose)
         .catch((e) => {

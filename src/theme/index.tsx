@@ -38,6 +38,11 @@ export default {
   bgPrimaryHovered:
     "linear-gradient(203deg,rgba(41, 49, 52, 1) 0%,rgba(53, 52, 75, 0.9) 100%);",
   device,
+  buttonGradients: {
+    primary: "linear-gradient(90deg, #a4ebd4 0%, #63b49b 100%)",
+    warn: "linear-gradient(90deg, #e87e7e 0%, #ac5c5c 100%)",
+    disabled: "linear-gradient(90deg,#74797E 0%,#4A4343 100%)",
+  },
 }
 
 export const chartColors = {
@@ -241,7 +246,7 @@ export const IconButton = styled.div`
 
 export const Center = styled.div`
   display: flex;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   align-items: center;
   justify-content: center;

@@ -60,7 +60,8 @@ export interface ILpPnl {
 }
 
 export interface IDetailedChart extends ILpPnl {
-  timestamp: string // new Date().toIsoString()
+  x: string // new Date().toIsoString()
+  y: number
 }
 
 export interface IPnl extends ILpPnl {
@@ -113,6 +114,90 @@ export interface IPool {
   pnl: IPnl
   sortino: ISortino
   supply: ISupply
+}
+
+export interface IFund {
+  basicTokenAdr: string
+  blockNumber: number
+  createdAt: string
+  creatorAdr: string
+  date: string
+  dexeCommissionDen: number
+  dexeCommissionNum: number
+  id: number
+  investorCommissionDen: number
+  investorCommissionNum: number
+  investorRestricted: boolean
+  isActualOn: boolean
+  name: string
+  poolAdr: string
+  symbol: string
+  totalSupply: string
+  traderCommissionDen: number
+  traderCommissionNum: number
+  tx: string
+  updatedAt: string
+}
+
+export interface IPoolInfo {
+  symbol: string
+  currentPrice: string
+  priceChange24H: number
+  totalValueLocked: string
+  annualPercentageYield: number
+  profitAndLoss: number
+
+  basicTokenAdr: string
+  basicTokenDecimal: number
+  basicTokenSymbol: string
+  copiers24H: number
+  fund: number
+  investorsFundsLocked: string
+  investorsFundsLocked24H: number
+  personalFundsLocked: string
+  personalFundsLocked24H: number
+  profitAndLossByPeriod: {
+    m1: number
+    m3: number
+    all: number
+  }
+  profitAndLossChart: IDetailedChart[]
+}
+
+export interface IUserData {
+  id: number
+  avatar: string
+  createdAt: string
+  nickname: string
+  updatedAt: string
+  wallet: string
+}
+
+export interface IPoolTransaction {
+  txId: string
+  timestamp: Date
+  path: string[]
+  status: "BUY" | "SELL"
+  amount: BigNumber
+  basePrice: BigNumber
+  stablePrice: BigNumber
+}
+
+export interface IPoolPosition {
+  id: string
+  createdAt: string
+  updatedAt: string
+
+  tokenAddress: string
+  baseAddress: string
+  amount: BigNumber
+  avgBasePrice: BigNumber
+  avgStablePrice: BigNumber
+  pnlBase: BigNumber
+  pnlStable: BigNumber
+  pnl: number
+
+  transactions: IPoolTransaction[]
 }
 
 // END of POOL

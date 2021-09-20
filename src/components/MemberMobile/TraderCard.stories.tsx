@@ -2,4 +2,4 @@
 import { storiesOf } from '@storybook/react';
 import MemberMobile from './index';
 
-storiesOf('MemberMobile', module).add('default', () => <MemberMobile />);
+// storiesOf('MemberMobile', module).add('default', () => <MemberMobile />);

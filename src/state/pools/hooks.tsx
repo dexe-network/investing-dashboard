@@ -7,27 +7,28 @@ import { setFilter } from "state/pools/actions"
 import { BigNumber } from "@ethersproject/bignumber"
 import { IPool } from "constants/interfaces"
 import { addPools } from "state/pools/actions"
-import { getRandomPnl } from "utils"
+import { getRandomPnl, shortenAddress } from "utils"
+import { useWeb3React } from "@web3-react/core"
 import axios from "axios"
 
 import defaultAvatar from "assets/icons/default-avatar.svg"
 
 const responseToState = (data) => {
   return {
-    firstName: data.CreatorAdr,
+    firstName: shortenAddress(data.creatorAdr, 4),
     lastName: "",
     avatar: defaultAvatar,
 
-    ownerAddress: data.CreatorAdr,
-    poolAddress: data.PoolAdr,
-    baseAddress: data.BasicTokenAdr,
+    ownerAddress: data.creatorAdr,
+    poolAddress: data.poolAdr,
+    baseAddress: data.basicTokenAdr,
 
-    symbol: data.Symbol,
+    symbol: data.symbol,
     price: BigNumber.from((Math.random() * 100).toFixed(0)).toString(),
     priceUsd: Number((Math.random() * 100).toFixed(0)),
 
-    copiers: Number((Math.random() * 100).toFixed(0)),
-    rank: Number((Math.random() * 10).toFixed(1)),
+    copiers: 0,
+    rank: 0,
     commision: Number((Math.random() * 100).toFixed(0)),
     personalFunds: BigNumber.from(0).toString(),
     personalFundsPercent: Number((Math.random() * 100).toFixed(0)),
@@ -1256,6 +1257,7 @@ export function usePools(): [IPool[], boolean, boolean] {
   const dispatch = useDispatch<AppDispatch>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const { account } = useWeb3React()
 
   const init = useCallback(
     (v: IPool[]) => {
@@ -1277,6 +1279,43 @@ export function usePools(): [IPool[], boolean, boolean] {
     }
     getPools()
   }, [])
+
+  useEffect(() => {
+    if (!account) return
+
+    const getPoolsByAddress = async () => {
+      const {
+        data: { data },
+      } = await axios.get(
+        `${process.env.REACT_APP_STATS_API_URL}/pools/${account}`
+      )
+
+      // console.log(data)
+    }
+    getPoolsByAddress()
+
+    const getWithdrawals = async () => {
+      const {
+        data: { data },
+      } = await axios.get(
+        `${process.env.REACT_APP_STATS_API_URL}/pool-transfers/withdrawals/${account}`
+      )
+
+      // console.log(data)
+    }
+    getWithdrawals()
+
+    const getDeposits = async () => {
+      const {
+        data: { data },
+      } = await axios.get(
+        `${process.env.REACT_APP_STATS_API_URL}/pool-transfers/deposits/${account}`
+      )
+
+      // console.log(data)
+    }
+    getDeposits()
+  }, [account])
 
   const pools = useSelector<AppState, AppState["pools"]["list"]>((state) => {
     return state.pools.list
@@ -1317,4 +1356,27 @@ export function useSelectPools(): IPool[] {
   })
 
   return pools
+}
+
+export function usePoolData(poolAddress: string): any {
+  const [data, setData] = useState<null | any>(null)
+  useEffect(() => {
+    if (typeof poolAddress !== "string") return
+
+    const getPoolData = async () => {
+      const {
+        data: { data },
+      } = await axios.get(
+        `${process.env.REACT_APP_STATS_API_URL}/trader/${poolAddress}/info`
+      )
+      console.log(data)
+      setData(data)
+    }
+
+    if (poolAddress.length === 42) {
+      getPoolData()
+    }
+  }, [poolAddress])
+
+  return data
 }

@@ -3,10 +3,13 @@
 import styled from "styled-components"
 import { BaseButton, device, Text } from "theme"
 
+type ButtonThemeType = "primary" | "warn" | "disabled"
+
 const GradientButton = styled(BaseButton)<{
+  m?: string
   fz?: number
   full?: boolean
-  theme?: "primary" | "warn"
+  color: ButtonThemeType
 }>`
   position: relative;
   padding: 19px 9px 15px;
@@ -19,6 +22,8 @@ const GradientButton = styled(BaseButton)<{
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   width: ${(props) => (props.full ? "100%" : "fit-content")};
+  margin: ${(props) => props.m || "0 auto"};
+  min-width: fit-content;
   animation: changeButton 3s ease infinite;
   z-index: 20;
   overflow: hidden;
@@ -29,7 +34,7 @@ const GradientButton = styled(BaseButton)<{
 
   &:before {
     transition: all 0.3s ease-in-out;
-    opacity: ${(props) => (props.theme === "primary" ? "0.75" : "0")};
+    opacity: 0;
     z-index: 1;
     content: "";
     position: absolute;
@@ -37,16 +42,12 @@ const GradientButton = styled(BaseButton)<{
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(
-      90deg,
-      rgba(127, 255, 212, 1) 0%,
-      rgba(38, 128, 235, 1) 100%
-    );
+    background: linear-gradient(90deg, #a4ebd4 0%, #63b49b 100%);
   }
 
   &:after {
     transition: all 0.3s ease-in-out;
-    opacity: ${(props) => (props.theme === "primary" ? "0" : "1")};
+    opacity: 1;
     z-index: 1;
     content: "";
     position: absolute;
@@ -54,18 +55,17 @@ const GradientButton = styled(BaseButton)<{
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(
-      90deg,
-      rgba(127, 255, 212, 0.75) 0%,
-      rgba(255, 127, 127, 0.75) 100%
-    );
+    background: ${(props) => props.theme.buttonGradients[props.color]};
   }
 
-  &:hover {
+  /* &:hover {
     &:before {
       opacity: 1;
     }
-  }
+    &:after {
+      opacity: 0;
+    }
+  } */
 
   @media only screen and (${device.sm}) {
     font-size: 14px;
@@ -80,13 +80,14 @@ const GradientButton = styled(BaseButton)<{
 `
 
 const Button: React.FC<{
+  m?: string
   fz?: number
   full?: boolean
-  theme?: "primary" | "warn"
+  theme?: ButtonThemeType
   onClick?: () => void
-}> = ({ fz, full, theme = "primary", children, onClick }) => {
+}> = ({ m, fz, full, theme = "primary", children, onClick }) => {
   return (
-    <GradientButton onClick={onClick} fz={fz} full={full} theme={theme}>
+    <GradientButton m={m} onClick={onClick} fz={fz} full={full} color={theme}>
       <Text>{children}</Text>
     </GradientButton>
   )

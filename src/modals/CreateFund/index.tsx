@@ -1,4 +1,5 @@
 import Modal from "styled-react-modal"
+import { device } from "theme"
 
 import Slider from "./Slider"
 
@@ -12,6 +13,12 @@ const StyledModal = Modal.styled`
   border-radius: 10px;
   width: 494px;
   height: 569px;
+
+
+  @media only screen and (${device.sm}) {
+    height: 470px;
+    width: calc(100% - 44px);
+  }
 `
 
 export default function CreateFund({ isOpen, onRequestClose }) {
@@ -21,7 +28,7 @@ export default function CreateFund({ isOpen, onRequestClose }) {
       onBackgroundClick={onRequestClose}
       onEscapeKeydown={onRequestClose}
     >
-      <Slider />
+      <Slider close={onRequestClose} />
     </StyledModal>
   )
 }

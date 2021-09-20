@@ -8,42 +8,104 @@ import {
   Container,
   Price,
   Balance,
-  Max,
   Input,
-  TokenIcon,
   ActiveSymbol,
   SymbolLabel,
 } from "./styled"
+import TokenIcon from "components/TokenIcon"
+import Ripple from "components/Ripple"
 import { fromBig } from "utils"
 import { BigNumber } from "@ethersproject/bignumber"
+import poolLogo from "assets/icons/default-pool-logo.svg"
+import { DebounceInput } from "react-debounce-input"
 
-const ExchangeTo: React.FC<{
-  context: any
-  openSelector: () => void
-  amount: BigNumber
-}> = ({ context, openSelector, amount }) => {
-  const { state, setTo } = useContext(context)
+interface IToProps {
+  price: number
+  priceChange24H: number
+  amount: number
+  balance: BigNumber
+  address: string
+  symbol?: string
+  decimal?: number
+  isPool?: boolean
+  onChange: (amount: number) => void
+  onSelect: () => void
+}
+
+const ExchangeTo: React.FC<IToProps> = ({
+  price,
+  priceChange24H,
+  amount,
+  balance,
+  address,
+  symbol,
+  decimal,
+  isPool = false,
+  onChange,
+  onSelect,
+}) => {
+  const icon = isPool
+    ? poolLogo
+    : `https://tokens.1inch.exchange/${address.toLowerCase()}.png`
+
+  // const handleInputChange = (e) => {
+  //   const { value } = e.target
+
+  //   onChange(value)
+  // }
+
+  const handleInputChange = (e) => {
+    const { value } = e.target
+    const rgx = /^[0-9]*\.?[0-9]*$/
+
+    if (value.match(rgx)) {
+      onChange(value)
+    } else {
+      onChange(parseFloat(value.replace(/[^0-9.]/g, "")) || 0.0)
+    }
+  }
+
+  if (!decimal || !symbol) {
+    return (
+      <Container dir="column" full>
+        <Flex p="0 0 5px" full>
+          <Price>
+            <Ripple width="67px" />
+          </Price>
+          <Balance>
+            <Ripple width="80px" />
+          </Balance>
+        </Flex>
+        <Flex full ai="center">
+          <Ripple width="120px" />
+          <Ripple width="60px" />
+        </Flex>
+      </Container>
+    )
+  }
 
   return (
     <Container dir="column" full>
       <Flex p="0 0 5px" full>
-        <Price>≈$0</Price>
+        <Price>
+          ≈${price.toFixed(2)} ({priceChange24H.toFixed(2)}%)
+        </Price>
         <Balance>
-          <Text color="#F7F7F7">
-            {fromBig(state.to.balance, state.to.decimals)}
-          </Text>
-          <Text color="#999999">{state.to.symbol}</Text>
+          <Text color="#F7F7F7">{fromBig(balance, decimal)}</Text>
+          <Text color="#999999">{symbol}</Text>
         </Balance>
       </Flex>
       <Flex full ai="center">
-        <Input
-          value={ethers.utils.formatUnits(amount, state.to.decimals).toString()}
-          type="text"
-          placeholder="0"
+        <DebounceInput
+          element={Input}
+          minLength={0}
+          debounceTimeout={500}
+          onChange={handleInputChange}
+          value={amount}
         />
-        <ActiveSymbol onClick={openSelector}>
-          {/* <TokenIcon src="https://tokens.1inch.exchange/0x4fabb145d64652a948d72533023f6e7a623c7c53.png" /> */}
-          <SymbolLabel>{state.to.symbol}</SymbolLabel>
+        <ActiveSymbol onClick={onSelect}>
+          <TokenIcon size={22} src={icon} />
+          <SymbolLabel>{symbol}</SymbolLabel>
         </ActiveSymbol>
       </Flex>
     </Container>

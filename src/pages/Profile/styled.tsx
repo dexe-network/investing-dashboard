@@ -229,7 +229,9 @@ export const LinkWrap = styled.div<{ c: string; fw: number }>`
   transition: all 0.1s ease-in-out;
   text-decoration: none;
   user-select: none;
+  text-align: center;
   padding: 0 20px;
+  width: 100px;
 
   font-weight: ${(props) => props.fw};
 
@@ -246,7 +248,7 @@ export const Tab = ({ children, active, to }) => (
   <LinkWrap
     c={active ? "#F5F5F5" : "#999999"}
     onClick={to}
-    fw={active ? 800 : 300}
+    fw={active ? 800 : 500}
   >
     {children}
   </LinkWrap>

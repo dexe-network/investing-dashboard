@@ -63,6 +63,7 @@ const ContentVariants = {
 }
 
 const StyledMenu = styled(motion.nav)`
+  grid-area: menu;
   position: sticky;
   z-index: 20;
   top: 0;
@@ -77,6 +78,7 @@ const StyledMenu = styled(motion.nav)`
     rgba(45, 40, 67, 1) 110%
   );
   box-shadow: 6px 0px 15px rgba(0, 0, 0, 0.15);
+  user-select: none;
 
   @media only screen and (${device.sm}) {
     display: none;
@@ -200,24 +202,30 @@ const ProviderIcon = styled.img`
 `
 
 const MobileMenu = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 11px;
-  z-index: 2000;
-  position: fixed;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgb(41, 49, 52);
-  background: linear-gradient(
-    34deg,
-    rgba(41, 49, 52, 1) 0%,
-    rgba(53, 52, 75, 1) 100%
-  );
-  height: 62px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  display: none;
+
+  @media only screen and (${device.sm}) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    user-select: none;
+    grid-area: bottom;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 11px 20px;
+    width: 100%;
+    height: 62px;
+    z-index: 5;
+    background: rgb(41, 49, 52);
+    background: linear-gradient(
+      34deg,
+      rgba(41, 49, 52, 1) 0%,
+      rgba(53, 52, 75, 1) 100%
+    );
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  }
 `
 
 const MobileItem = styled.div`
@@ -241,8 +249,8 @@ const MobileLabel = styled.div`
   margin-top: 5px;
 `
 
-const NavItem = ({ children, src }) => (
-  <MobileItem>
+const NavItem = ({ children, src, onClick = () => {} }) => (
+  <MobileItem onClick={onClick}>
     <MobileIcon src={src} alt="" />
     <MobileLabel>{children}</MobileLabel>
   </MobileItem>

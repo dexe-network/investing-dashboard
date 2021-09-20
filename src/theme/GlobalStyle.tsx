@@ -20,6 +20,11 @@ const GlobalStyle = createGlobalStyle`
     font-family: Gilroy, Open-Sans, Helvetica, Sans-Serif;
   }
 
+  #root {
+    min-height: fill-available;
+    min-height: -webkit-fill-available;
+  }
+
   .ReactVirtualized__Grid,
   .ReactVirtualized__List {
     &:focus {

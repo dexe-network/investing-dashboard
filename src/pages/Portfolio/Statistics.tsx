@@ -1,5 +1,7 @@
 /* eslint-disable react/display-name */
+import { useRef, useMemo, useEffect, useState } from "react"
 import styled from "styled-components"
+import debounce from "lodash.debounce"
 import Chart from "components/Chart"
 import DonutChart from "components/DonutChart"
 import {
@@ -12,15 +14,345 @@ import {
 } from "theme"
 import { NoData } from "pages/Profile/styled"
 import DataTable from "react-data-table-component"
+import LineChart from "components/LineChart"
 import Calendar from "components/Calendar"
+import swap from "assets/icons/swap-button.svg"
 import { setFilter } from "state/pools/actions"
 import { AppDispatch, AppState } from "state"
 import { format } from "date-fns"
 import { useDispatch, useSelector } from "react-redux"
 
 import data from "./sampleData"
+import { getRandomPnl } from "utils"
 
 interface Props {}
+
+const assetsList = [
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+  [
+    [
+      { label: "OH", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "S", x: 6, y: getRandomPnl() },
+      { label: "OH", x: 7, y: getRandomPnl() },
+      { label: "M", x: 8, y: getRandomPnl() },
+      { label: "T", x: 9, y: getRandomPnl() },
+      { label: "W", x: 10, y: getRandomPnl() },
+      { label: "TH", x: 11, y: getRandomPnl() },
+      { label: "F", x: 12, y: getRandomPnl() },
+      { label: "S", x: 13, y: getRandomPnl() },
+    ],
+    [
+      { label: "S", x: 0, y: getRandomPnl() },
+      { label: "M", x: 1, y: getRandomPnl() },
+      { label: "T", x: 2, y: getRandomPnl() },
+      { label: "W", x: 3, y: getRandomPnl() },
+      { label: "TH", x: 4, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+      { label: "F", x: 5, y: getRandomPnl() },
+    ],
+  ],
+]
 
 const StyledStatistics = styled.div`
   max-width: 1280px;
@@ -29,6 +361,10 @@ const StyledStatistics = styled.div`
 
   @media only screen and (${device.sm}) {
     padding: 0 10px;
+  }
+
+  @media only screen and (${device.xs}) {
+    display: none;
   }
 `
 
@@ -255,65 +591,313 @@ const columns = [
   },
 ]
 
+const MobilePortfolio = styled.div`
+  display: none;
+
+  @media only screen and (${device.xs}) {
+    display: flex;
+    flex-direction: column;
+  }
+`
+
+const Container = styled.div`
+  user-select: none;
+  width: calc(100% - 44px);
+  margin: auto;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(
+    217deg,
+    rgba(41, 49, 52, 1) -30%,
+    rgba(53, 52, 75, 1) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const List = styled.div`
+  position: relative;
+  background: linear-gradient(
+    217deg,
+    rgba(41, 49, 52, 1) -30%,
+    rgba(53, 52, 75, 1) 100%
+  );
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.16) inset;
+  -webkit-box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.16) inset;
+  -moz-box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.16) inset;
+  height: 173px;
+  width: 100%;
+  margin-top: 18px;
+  overflow-y: auto;
+`
+
+const CurrentBackground = styled.div`
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  z-index: 10;
+
+  &:after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    content: "";
+    border-radius: 5px;
+    box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.16);
+    background: linear-gradient(
+      94deg,
+      rgba(51, 62, 64, 1) 0%,
+      rgba(128, 128, 128, 0.5) 100%
+    );
+    width: 100%;
+    height: 48px;
+  }
+`
+
+const EmptyItem = styled.div`
+  height: 42px;
+`
+
+const ListItem = styled(Flex)<{ active?: boolean }>`
+  width: 100%;
+  height: 48px;
+  z-index: 20;
+  position: relative;
+  justify-content: space-around;
+  user-select: none;
+
+  border-radius: 5px;
+  box-shadow: ${(props) =>
+    props.active
+      ? "0px 3px 7px rgba(0, 0, 0, 0.16)"
+      : "0px 3px 7px rgba(0, 0, 0, 0)"};
+  background: ${(props) =>
+    props.active
+      ? "linear-gradient(94deg,rgba(51, 62, 64, 1) 0%,rgba(128, 128, 128, 0.5) 100%)"
+      : "linear-gradient(94deg,rgba(51, 62, 64, 0) 0%,rgba(128, 128, 128, 0) 100%)"};
+`
+
+const BaseInfo = styled(Flex)`
+  flex-direction: column;
+`
+
+const PnlInfo = styled(Flex)`
+  flex-direction: column;
+`
+
+const TokenInfo = styled.div``
+
+const TokenSymbol = styled.div`
+  color: #f7f7f7;
+  font-size: 16px;
+  font-weight: 500;
+`
+const TokenPnl24 = styled.div`
+  font-size: 14px;
+  color: #7fffd4;
+  opacity: 0.7;
+  margin-left: 10px;
+`
+const TokenPnl = styled.div`
+  color: #7fffd4;
+  opacity: 0.7;
+  font-size: 14px;
+`
+const TokenPnlInBase = styled.div`
+  color: #c2c3c4;
+  font-size: 14px;
+  opacity: 0.7;
+`
+const TokenName = styled.div`
+  color: #999999;
+  font-size: 14px;
+`
+
+const BaseTokenSymbol = styled.div`
+  color: #999999;
+  font-size: 14px;
+`
+const BaseTokenBalance = styled.div`
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+`
+
+const SwapButton = styled.div`
+  background: #3f424a;
+  border-radius: 5px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  width: 26px;
+  height: 27px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 4.5px;
+`
+
+const SwapIcon = styled.img`
+  transform: rotate(-90deg);
+`
+
+const ChartTooltip = styled.div`
+  padding: 17px 15px 15px;
+  border-radius: 5px;
+  background: linear-gradient(
+    216deg,
+    rgba(41, 49, 52, 1) 0%,
+    rgba(53, 52, 75, 1) 100%
+  );
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  height: 160px;
+  width: calc(100% - 20px);
+  margin: 0 auto 35px;
+  /* backdrop-filter: blur(2px); */
+`
+
+const TooltipValue = styled.div`
+  color: #f5f5f5;
+  font-size: 14px;
+`
+
+const TooltipLabel = styled.div`
+  color: #999999;
+  font-size: 14px;
+  margin-right: 10px;
+`
+
+const RowLabel = styled.div`
+  color: #f5f5f5;
+  font-size: 16px;
+  font-weight: 500;
+`
+const RowValue = styled.div`
+  color: #f5f5f5;
+  font-size: 16px;
+  font-weight: 500;
+`
+
+const BackButton = styled.img`
+  height: 15px;
+  width: 21px;
+`
+
+const Asset = ({ index, currentIndex, setIndex }) => {
+  return (
+    <ListItem
+      active={index === currentIndex}
+      key={index}
+      onClick={() => setIndex(index)}
+    >
+      <TokenInfo>
+        <Flex>
+          <TokenSymbol>DeXE</TokenSymbol>
+          <TokenPnl24>21.1%</TokenPnl24>
+        </Flex>
+        <TokenName>Dexe.Network</TokenName>
+      </TokenInfo>
+      <BaseInfo>
+        <BaseTokenBalance>1.1452</BaseTokenBalance>
+        <BaseTokenSymbol>USDT</BaseTokenSymbol>
+      </BaseInfo>
+      <PnlInfo>
+        <TokenPnl>29.3%</TokenPnl>
+        <TokenPnlInBase>12.33</TokenPnlInBase>
+      </PnlInfo>
+      <SwapButton>
+        <SwapIcon src={swap} />
+      </SwapButton>
+    </ListItem>
+  )
+}
+
 function Statistics(props: Props) {
+  const [currentIndex, setIndex] = useState(0)
   const {} = props
 
-  const filters = useSelector((state: AppState) => state.pools.filters)
-  const dispatch = useDispatch<AppDispatch>()
-  const handleChange = (name, value) => dispatch(setFilter({ name, value }))
-
-  const startDate = format(new Date(filters.period[0]), "MM/dd/yyyy")
-  const endDate = format(new Date(filters.period[1]), "MM/dd/yyyy")
-
-  const customCalendarLabel = (
-    <Stat>
-      {" "}
-      <Label>
-        From: <WhiteText>{startDate}</WhiteText>
-      </Label>
-      <Label>
-        To: <WhiteText>{endDate}</WhiteText>
-      </Label>
-    </Stat>
-  )
-
   return (
-    <StyledStatistics>
-      {/* <TotalStats p="40px 0" jc="space-between" full>
-        <Calendar
-          value={filters.period}
-          onChange={handleChange}
-          label={customCalendarLabel}
-        />
-
-        <StatItem label="Total buy at:" value="$155 000.12" />
-        <StatItem label="Total sold at:" value="$255 000.12" />
-        <StatItem label="Revenue:" value="$105 000.00" />
-        <StatItem label="Profit" value="$68 000" />
-        <StatItem label="TOTAL P&L (%):" value="42%" />
-      </TotalStats> */}
-      <ChartsWrapper jc="space-between" full>
-        <Chart period height={217} />
-        <PieWrapper>
-          <DonutChart />
-        </PieWrapper>
-      </ChartsWrapper>
-      <Flex p="47px 0">
-        <Tab active>BUYING</Tab>
-        <Tab>SELLING</Tab>
-      </Flex>
-      <TabContent>
-        <DataTable
-          customStyles={customTableStyles}
-          fixedHeader
-          fixedHeaderScrollHeight="210px"
-          columns={columns}
-          data={data}
-          noDataComponent={<NoData>You have no open positions</NoData>}
-          theme="dexe"
-        />
-      </TabContent>
-    </StyledStatistics>
+    <>
+      <StyledStatistics>
+        <ChartsWrapper jc="space-between" full>
+          <Chart period height={217} />
+          <PieWrapper>
+            <DonutChart />
+          </PieWrapper>
+        </ChartsWrapper>
+        <Flex p="47px 0">
+          <Tab active>Deposits</Tab>
+          <Tab>Withdrawals</Tab>
+        </Flex>
+        <TabContent>
+          <DataTable
+            customStyles={customTableStyles}
+            fixedHeader
+            fixedHeaderScrollHeight="210px"
+            columns={columns}
+            data={data}
+            noDataComponent={<NoData>You have no open positions</NoData>}
+            theme="dexe"
+          />
+        </TabContent>
+      </StyledStatistics>
+      <MobilePortfolio>
+        <ChartTooltip>
+          <Flex full>
+            <Flex>
+              <TooltipLabel>From:</TooltipLabel>
+              <TooltipValue>03.08.2020</TooltipValue>
+            </Flex>
+            <Flex>
+              <TooltipLabel>To:</TooltipLabel>
+              <TooltipValue>Now</TooltipValue>
+            </Flex>
+          </Flex>
+          <Flex full p="12px 0 6px">
+            <RowLabel>ISEDX - $ETH</RowLabel>
+            <RowValue>-1.2742 ETH</RowValue>
+          </Flex>
+          <Flex full p="6px 0">
+            <RowLabel>ISEDX - $ETH percent</RowLabel>
+            <RowValue>-12.13%</RowValue>
+          </Flex>
+          <Flex full p="6px 0">
+            <RowLabel>ISEDX - USD</RowLabel>
+            <RowValue>-848 USD</RowValue>
+          </Flex>
+          <Flex full p="6px 0">
+            <RowLabel>ISEDX - USD percent</RowLabel>
+            <RowValue>-11%</RowValue>
+          </Flex>
+        </ChartTooltip>
+        <Container>
+          <LineChart
+            dataPrev={assetsList[currentIndex][0]}
+            dataNew={[
+              assetsList[currentIndex][0][
+                assetsList[currentIndex][0].length - 1
+              ],
+              ...assetsList[currentIndex][1],
+            ]}
+          />
+          <List>
+            {assetsList.map((asset, index) => (
+              <Asset
+                index={index}
+                currentIndex={currentIndex}
+                setIndex={setIndex}
+                key={index}
+              />
+            ))}
+          </List>
+        </Container>
+      </MobilePortfolio>
+    </>
   )
 }
 

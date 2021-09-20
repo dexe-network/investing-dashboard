@@ -16,6 +16,8 @@ import getLibrary from "utils/getLibrary"
 
 import BlockNumber from "components/BlockNumber"
 import "react-virtualized/styles.css"
+import { OwnedPoolsUpdater, UserDataUpdater } from "state/user/hooks"
+import { PriceRatesUpdater } from "state/rates/hooks"
 
 const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
 
@@ -47,6 +49,11 @@ ReactDOM.render(
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3ProviderNetwork getLibrary={getLibrary}>
           <Provider store={store}>
+            <>
+              <OwnedPoolsUpdater />
+              <UserDataUpdater />
+              <PriceRatesUpdater />
+            </>
             <Normalize />
             <GlobalStyle />
             <GlobalComponents />

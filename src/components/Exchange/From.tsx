@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useContext } from "react"
-import { useERC20 } from "hooks/useContract"
-import { useWeb3React } from "@web3-react/core"
+import React from "react"
 import { Flex, Text } from "theme"
 import { ethers } from "ethers"
 import { BigNumber } from "@ethersproject/bignumber"
 import lock from "assets/icons/lock-solid.svg"
+import TokenIcon from "components/TokenIcon"
+import Ripple from "components/Ripple"
+import { DebounceInput } from "react-debounce-input"
 
 import {
   Container,
@@ -12,62 +13,105 @@ import {
   Balance,
   Max,
   Input,
-  TokenIcon,
   ActiveSymbol,
   SymbolLabel,
   Unlock,
 } from "./styled"
 
-const ExchangeFrom: React.FC<{
-  context: any
-  amount: BigNumber
-  onInputChange: (input: string) => void
-  setMaxAmount: () => void
-}> = ({ context, amount, onInputChange, setMaxAmount }) => {
-  const { state, setFrom } = useContext(context)
+interface IFromProps {
+  price: number
+  amount: number
+  balance: BigNumber
+  address: string
+  symbol?: string
+  decimal?: number
+  isAlloved: boolean
+  isPool?: boolean
+  isStable?: boolean
+  onChange: (amount: number) => void
+  onSelect: () => void
+}
 
-  const [ERC20, baseData] = useERC20(state.from.address)
+const ExchangeFrom: React.FC<IFromProps> = ({
+  price,
+  amount,
+  balance,
+  address,
+  symbol,
+  decimal,
+  isAlloved,
+  isPool = false,
+  isStable = false,
+  onChange,
+  onSelect,
+}) => {
+  const setMaxAmount = () => {
+    onChange(parseFloat(ethers.utils.formatUnits(balance, decimal)))
+  }
 
-  useEffect(() => {
-    if (!baseData) return
+  const handleInputChange = (e) => {
+    const { value } = e.target
+    const rgx = /^[0-9]*\.?[0-9]*$/
 
-    setFrom("symbol", baseData.symbol)
-    setFrom("decimals", baseData.decimals)
-    setFrom("balance", baseData.balance)
-  }, [baseData, setFrom])
+    if (value.match(rgx)) {
+      onChange(value)
+    } else {
+      onChange(parseFloat(value.replace(/[^0-9.]/g, "")) || 0.0)
+    }
+  }
 
+  if (!decimal || !symbol) {
+    return (
+      <Container dir="column" full>
+        <Flex p="0 0 5px" full>
+          <Price>
+            <Ripple width="67px" />
+          </Price>
+          <Balance>
+            <Ripple width="80px" />
+          </Balance>
+        </Flex>
+        <Flex full ai="center">
+          <Ripple width="120px" />
+          <Ripple width="60px" />
+        </Flex>
+      </Container>
+    )
+  }
   return (
     <Container full>
       <Flex full dir="column">
         <Flex p="0 0 5px" full>
-          <Price>≈${state.from.price.toString()}</Price>
+          <Price>
+            ≈$
+            {isStable ? amount.toFixed(2) : price.toFixed(2)}
+          </Price>
           <Balance>
             <Text color="#F7F7F7">
-              {ethers.utils.formatUnits(
-                state.from.balance,
-                state.from.decimals
-              )}
+              {parseFloat(ethers.utils.formatUnits(balance, decimal))}
             </Text>
-            <Text color="#999999">{state.from.symbol}</Text>
+            <Text color="#999999">{symbol}</Text>
             <Max onClick={setMaxAmount}>(Max)</Max>
           </Balance>
         </Flex>
         <Flex full ai="center">
-          <Input
-            onChange={(e) => onInputChange(e.target.value)}
-            value={ethers.utils.formatUnits(amount, state.from.decimals)}
-            type="text"
-            placeholder="0"
+          <DebounceInput
+            element={Input}
+            minLength={0}
+            debounceTimeout={500}
+            onChange={handleInputChange}
+            value={amount}
           />
-          <ActiveSymbol>
+          <ActiveSymbol onClick={onSelect}>
             <TokenIcon
-              src={`https://tokens.1inch.exchange/${state.from.address.toLowerCase()}.png`}
+              size={22}
+              src={`https://tokens.1inch.exchange/${address.toLowerCase()}.png`}
             />
-            <SymbolLabel>{state.from.symbol}</SymbolLabel>
+            <SymbolLabel>{symbol}</SymbolLabel>
           </ActiveSymbol>
         </Flex>
       </Flex>
-      {amount.gt(state.allowance) && state.direction === "deposit" && (
+      {!isAlloved && (
         <Unlock>
           <img src={lock} alt="" />
         </Unlock>

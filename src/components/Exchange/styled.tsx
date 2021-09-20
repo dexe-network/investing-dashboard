@@ -11,6 +11,12 @@ export const Container = styled(Flex)`
   );
   box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
   width: 331px;
+  /* position: relative; */
+`
+
+export const InfoContainer = styled(Flex)`
+  width: 331px;
+  padding-bottom: 11px;
 `
 
 export const Price = styled(Text)`
@@ -46,11 +52,6 @@ export const Input = styled.input`
     font-size: 20px;
     line-height: 20px;
   }
-`
-
-export const TokenIcon = styled.img`
-  height: 22px;
-  width: 22px;
 `
 
 export const ActiveSymbol = styled.div`

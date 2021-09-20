@@ -1,5 +1,7 @@
 import { getAddress } from "@ethersproject/address"
 import { BigNumber } from "@ethersproject/bignumber"
+import { stableCoins } from "constants/index"
+import { ethers } from "ethers"
 
 export function isAddress(value: any): string | false {
   try {
@@ -24,7 +26,14 @@ export function shortenAddress(
   return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
 }
 
-export function fromBig(value: BigNumber, decimals: number) {
+export function fromBig(
+  value: BigNumber | undefined,
+  decimals: number | undefined
+) {
+  if (!value || !decimals) {
+    return BigNumber.from(0)
+  }
+
   const divisor = BigNumber.from(10).pow(decimals)
 
   return value.div(divisor).toString()
@@ -45,13 +54,42 @@ export const getRandomPnl = () => {
   return r1 * 100 * negative
 }
 
-export const formatNumber = (amount: string) => {
+export const formatNumber = (amount: string, decimals = 6) => {
   const numArr = amount.split(".")
 
   const floatPart = numArr[1] && numArr[1] !== "0" ? `.${numArr[1]}` : ""
 
+  if (Number(numArr[0]) > 1000) {
+    return `${(Number(numArr[0]) / 1000).toFixed(2).split(".00")[0]}k`
+  }
+
   return (
     numArr[0].split(/(?=(?:\d{3})+(?!\d))/).join(",") +
-    (floatPart.length < 6 ? floatPart : floatPart.substring(0, 6))
+    (floatPart.length < decimals ? floatPart : floatPart.substring(0, decimals))
   )
+}
+
+export const formatBigNumber = (value: BigNumber, decimals = 18, fix = 6) => {
+  const amount = ethers.utils.formatUnits(value, decimals).toString()
+
+  return formatNumber(amount, fix)
+}
+
+export const isStable = (address: string) =>
+  stableCoins.eth.indexOf(address.toLowerCase()) !== -1
+
+export function getBNBSign(lib, address, nonce) {
+  return new Promise((resolve) => {
+    lib.provider.bnbSign(address, nonce).then((v) => resolve(v.signature))
+  })
+}
+
+export function getSignature(nonce, address, lib) {
+  if (lib?.provider?.bnbSign) {
+    return getBNBSign(lib, address, nonce)
+  }
+
+  const signer = lib.getSigner(address)
+
+  return signer.signMessage(nonce)
 }

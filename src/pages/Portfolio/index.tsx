@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Header, Tab, Flex } from "theme"
+import { Header, Tab, Flex, device } from "theme"
 import { Switch, Route, useLocation } from "react-router-dom"
 import Statistics from "pages/Portfolio/Statistics"
 
@@ -7,9 +7,13 @@ interface Props {}
 
 const StyledPortfolio = styled.div`
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow-y: auto;
-  padding: 0 0 50px;
+  padding: 70px 0 50px;
+
+  @media only screen and (${device.xs}) {
+    padding: 15px 0 10px;
+  }
 `
 
 function Portfolio(props: Props) {
@@ -24,7 +28,9 @@ function Portfolio(props: Props) {
 
   return (
     <StyledPortfolio>
-      <Flex p="20px 0" jc="center" full>
+      <Statistics />
+
+      {/* <Flex p="20px 0" jc="center" full>
         <Header>
           <Tab active={pathname === STATISTICS} to={STATISTICS}>
             Statistics
@@ -39,9 +45,9 @@ function Portfolio(props: Props) {
             Voting
           </Tab>
         </Header>
-      </Flex>
+      </Flex> */}
 
-      <Switch>
+      {/* <Switch>
         <Route exact path={STATISTICS}>
           <Statistics />
         </Route>
@@ -54,7 +60,7 @@ function Portfolio(props: Props) {
         <Route exact path={VOTING}>
           voting
         </Route>
-      </Switch>
+      </Switch> */}
     </StyledPortfolio>
   )
 }

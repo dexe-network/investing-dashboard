@@ -9,6 +9,7 @@ import icon from "assets/icons/swap-arrow.svg"
 const Container = styled(Flex)`
   margin-top: -9px;
   margin-bottom: -5px;
+  user-select: none;
 `
 
 const PercentButton = styled.div`
@@ -48,11 +49,17 @@ const SwapButton = styled.div`
 
 const Icon = styled(motion.img)``
 
-const ExchangeDivider: React.FC<{
+interface IDividerProps {
   changeAmount: (v: number) => void
   changeDirection: () => void
-  direction: "down" | "up"
-}> = ({ changeAmount, changeDirection, direction }) => {
+  direction: "deposit" | "withdraw"
+}
+
+const ExchangeDivider: React.FC<IDividerProps> = ({
+  changeAmount,
+  changeDirection,
+  direction,
+}) => {
   return (
     <Container full>
       <PercentButton onClick={() => changeAmount(10)}>10</PercentButton>
@@ -60,7 +67,7 @@ const ExchangeDivider: React.FC<{
       <SwapButton onClick={changeDirection}>
         <Icon
           variants={rotateVariants}
-          animate={direction === "down" ? "hidden" : "visible"}
+          animate={direction === "deposit" ? "hidden" : "visible"}
           src={icon}
           alt=""
         />

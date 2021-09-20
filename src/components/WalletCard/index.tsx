@@ -61,8 +61,8 @@ const WalletCard: React.FC<IProps> = (props) => {
   return (
     <Card>
       <Flex full>
-        <Label>Connected with {wallet}</Label>
-        <Change>Change</Change>
+        <Label>Wallet: {wallet}</Label>
+        {/* <Change>Change</Change> */}
       </Flex>
       <Flex p="5px 0 0" full>
         <Flex ai="center">
