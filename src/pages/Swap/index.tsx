@@ -1,26 +1,14 @@
-import styled from "styled-components"
-import React, {
-  useState,
-  useReducer,
-  useCallback,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-} from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Flex } from "theme"
 import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 import { useWeb3React } from "@web3-react/core"
 import {
   useUniswapExchangeTool,
-  usePoolUpgradeable,
-  useTraderPoolUpgradeable,
   useDexeExchangeTool,
   useERC20,
 } from "hooks/useContract"
 import FundsList from "components/FundsList"
-import { usePoolData } from "state/pools/hooks"
 import TokenSelector from "modals/TokenSelector"
-import { useSelectPoolByAddress } from "state/pools/hooks"
 import TraderMobile from "components/TraderMobile"
 import { useParams } from "react-router-dom"
 import ExchangeFrom from "components/Exchange/From"
@@ -29,7 +17,6 @@ import ExchangeTo from "components/Exchange/To"
 import Button from "components/Button"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ethers } from "ethers"
-import { useSelectPrices } from "state/rates/hooks"
 import { isStable, formatNumber } from "utils"
 
 import { PriceContainer, Container } from "pages/Invest/styled"
@@ -124,18 +111,13 @@ export default function Swap() {
   const [hash, setHash] = useState("")
 
   const { poolAddress } = useParams<{ poolAddress: string }>()
-  const traderData = usePoolData(poolAddress)
-  const rates = useSelectPrices()
   const rate = 1
 
-  const poolData = useSelectPoolByAddress(poolAddress)
-  const [traderPool, fromAddress, tvl, userPoolData] = useTraderPoolUpgradeable(
-    poolAddress,
-    poolData?.ownerAddress
-  )
   const exchangeTool = useUniswapExchangeTool()
   const exchange = useDexeExchangeTool()
-  const [fromToken, fromData, fromBalance] = useERC20(fromAddress)
+  const [fromToken, fromData, fromBalance] = useERC20(
+    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
+  )
   const [toToken, toData] = useERC20(toAddress)
 
   useEffect(() => {
@@ -145,14 +127,6 @@ export default function Swap() {
       setToAddress(list[0].address)
     }
   }, [list, setToAddress, toAddress])
-
-  useEffect(() => {
-    if (!traderPool || !toAddress) return
-    ;(async () => {
-      const data = await traderPool.positionFor(toAddress)
-      setToBalance(data[0])
-    })()
-  }, [traderPool, toAddress])
 
   useEffect(() => {
     if (!hash || !library) return
@@ -254,7 +228,7 @@ export default function Swap() {
 
   const getButton = () => {
     // loading state
-    if (!fromData || !toData || !traderPool || pending) {
+    if (!fromData || !toData || pending) {
       return (
         <Button theme="disabled" fz={22} full>
           <Flex>
@@ -267,12 +241,7 @@ export default function Swap() {
       )
     }
 
-    if (
-      direction === "deposit" &&
-      userPoolData[3].lt(
-        ethers.utils.parseUnits(fromAmount.toString(), fromData.decimals)
-      )
-    ) {
+    if (direction === "deposit") {
       return (
         <Button theme="disabled" fz={22} full>
           Inufficient balance
@@ -294,15 +263,8 @@ export default function Swap() {
     }
 
     return (
-      <Button
-        onClick={handleSubmit}
-        theme={direction === "deposit" ? "primary" : "warn"}
-        fz={22}
-        full
-      >
-        {direction === "deposit"
-          ? `Buy ${toData?.symbol}`
-          : `Sell ${toData?.symbol}`}
+      <Button onClick={handleSubmit} theme={"warn"} fz={22} full>
+        {`Sell ${toData?.symbol}`}
       </Button>
     )
   }
@@ -325,8 +287,8 @@ export default function Swap() {
       <ExchangeFrom
         price={0}
         amount={fromAmount}
-        balance={userPoolData[3]}
-        address={fromAddress}
+        balance={fromBalance}
+        address={poolAddress}
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
         onChange={handleFromChange}
@@ -354,11 +316,7 @@ export default function Swap() {
 
       <PriceContainer>
         <Label>Price: </Label>
-        {!fromData && !rates ? (
-          <StageSpinner size={12} loading />
-        ) : (
-          priceTemplate
-        )}
+        {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
       </PriceContainer>
 
       {button}
@@ -376,17 +334,7 @@ export default function Swap() {
       <HalfBlock>
         <Flex dir="column" full>
           <FundsList />
-          {traderData && (
-            <TraderMobile
-              decimal={traderData.basicTokenDecimal}
-              symbol={traderData.symbol}
-              currentPrice={traderData.currentPrice}
-              priceChange24H={traderData.priceChange24H}
-              totalValueLocked={traderData.totalValueLocked}
-              annualPercentageYield={traderData.annualPercentageYield}
-              profitAndLoss={traderData.profitAndLoss}
-            />
-          )}
+          <TraderMobile />
         </Flex>
       </HalfBlock>
       <HalfBlock>
@@ -394,8 +342,10 @@ export default function Swap() {
           <Label>Total funds</Label>
           <Label>
             {formatNumber(
-              ethers.utils.formatUnits(tvl[0], fromData?.decimals).toString(),
-              isStable(fromAddress) ? 3 : 5
+              ethers.utils
+                .formatUnits(fromBalance, fromData?.decimals)
+                .toString(),
+              isStable(poolAddress) ? 3 : 5
             )}{" "}
             {fromData?.symbol}
           </Label>

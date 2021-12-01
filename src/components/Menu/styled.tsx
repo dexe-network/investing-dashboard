@@ -67,7 +67,6 @@ const StyledMenu = styled(motion.nav)`
   position: sticky;
   z-index: 20;
   top: 0;
-  height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -214,7 +213,7 @@ const MobileMenu = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 7px 11px 20px;
+    padding: 7px 11px 7px;
     width: 100%;
     height: 62px;
     z-index: 5;
@@ -224,7 +223,7 @@ const MobileMenu = styled.div`
       rgba(41, 49, 52, 1) 0%,
       rgba(53, 52, 75, 1) 100%
     );
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+    box-shadow: 0px -3px 6px rgba(0, 0, 0, 0.2);
   }
 `
 
@@ -247,6 +246,7 @@ const MobileLabel = styled.div`
   color: #ffffff;
   text-align: center;
   margin-top: 5px;
+  margin-bottom: 10px;
 `
 
 const NavItem = ({ children, src, onClick = () => {} }) => (

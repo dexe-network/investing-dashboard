@@ -1,4 +1,3 @@
-import { useState } from "react"
 import styled from "styled-components"
 import { Flex } from "theme"
 import { useSwipeable } from "react-swipeable"
@@ -7,12 +6,9 @@ import { useWeb3React } from "@web3-react/core"
 
 import Button from "components/Button"
 import PnlWidget from "components/PnlWidget"
-import FundsList from "components/FundsList"
+import NotificationsWidget from "components/NotificationsWidget"
 import InvestorMobile from "components/InvestorMobile"
-import { useSelectOwnedPools } from "state/user/hooks"
 import InvestingHistory from "assets/custom-buttons/InvestingHistory"
-
-import { useSelectUserData } from "state/user/hooks"
 
 import { Section, Buttons } from "pages/Trader/styled"
 
@@ -32,37 +28,39 @@ function Investor(props: Props) {
   const {} = props
 
   const history = useHistory()
-  const user = useSelectUserData()
   const { account } = useWeb3React()
-  const ownedPools = useSelectOwnedPools()
 
-  const [portfolioModalOpen, setPortfolioModal] = useState(false)
+  // const [portfolioModalOpen, setPortfolioModal] = useState(false)
 
   const redirectToTrader = () => {
-    if (ownedPools && ownedPools.length) {
-      history.push(`/pool/${ownedPools[0].poolAdr}`)
-      return
-    }
+    history.push("/me/trader/0x...")
   }
 
   const handlers = useSwipeable({
     onSwipedLeft: () => redirectToTrader(),
   })
 
-  if (!account || !account.length) {
-    return <Redirect to="/me" />
-  }
+  // if (!account || !account.length) {
+  //   return <Redirect to="/me" />
+  // }
 
   return (
-    <Container {...handlers}>
+    <Container
+      {...handlers}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      {...handlers}
+    >
       <Section>
-        <FundsList />
+        {/* <FundsList /> */}
         <InvestorMobile onArrowClick={() => {}} />
       </Section>
 
       <Section>
         <PnlWidget pnlPeriod={{ m1: 0, m3: 0, all: 0 }} pnlChart={[]} />
-
+        <NotificationsWidget notifications={[{}]} />
         <Buttons>
           <InvestingHistory />
           <Button theme="primary" onClick={() => {}} fz={16} full>

@@ -10,7 +10,7 @@ import DonutChart from "components/DonutChart"
 
 import { useUserProMode } from "state/user/hooks"
 
-import { IPool } from "constants/interfaces"
+import { Pool } from "constants/interfaces_v2"
 
 import rank from "assets/icons/rank.svg"
 import copiers from "assets/icons/copiers.svg"
@@ -44,75 +44,76 @@ import {
 } from "pages/Profile/styled"
 
 interface Props {
-  data: IPool
+  data: Pool[]
 }
 
 const Statistics = ({ data }: Props) => {
   const [pro] = useUserProMode()
   const animatePro = pro ? "visible" : "hidden"
+  console.log(data)
 
   const average = [
     {
       label: "Trades per Day:",
-      value: `${data.avg.tradesPerDay}`,
+      value: `23`,
     },
     {
       label: "Order size:",
-      value: `${data.avg.orderSize}%`,
+      value: `14.23%`,
     },
     {
       label: "Daily Profit:",
-      value: `${data.avg.dailyLpProfit}%`,
+      value: `3.23%`,
     },
     {
       label: "Trade position:",
-      value: `${data.avg.timePosition}H`,
+      value: `56H`,
     },
     {
       label: "Sortino (ETH):",
-      value: `${data.sortino.base}`,
+      value: `1232`,
     },
     {
       label: "Sortino (BTC):",
-      value: `${data.sortino.btc}`,
+      value: `5321`,
     },
     {
       label: "Trades:",
-      value: `${data.trades}`,
+      value: `532`,
     },
     {
       label: "Maximum Loss:",
-      value: `${data.maxLoss}%`,
+      value: `-6.22%`,
     },
   ]
 
   const funds = [
     {
       label: "Personal funds:",
-      value: `${data.personalFunds} ETH(${data.personalFundsPercent}%)`,
+      value: `2.12 ETH(12.2%)`,
     },
     {
       label: "Invested:",
-      value: `${data.invested} ETH`,
+      value: `2.00 ETH`,
     },
   ]
 
   const totalPNL = [
     {
       label: "ETH(%):",
-      value: `${data.pnl.lpBasicPercent}%`,
+      value: `3.21%`,
     },
     {
       label: "USD(%):",
-      value: `${data.pnl.lpUsdPercent}%`,
+      value: `2.34%`,
     },
     {
       label: "Circulating Supply:",
-      value: `${data.supply.circulating} ${data.symbol}`,
+      value: `123 USDT`,
     },
     {
       label: "Total Supply:",
-      value: `${data.supply.total} ${data.symbol}`,
+      value: `123213 USDT`,
     },
   ]
 
@@ -123,7 +124,7 @@ const Statistics = ({ data }: Props) => {
     },
     {
       label: "Profit Factor:",
-      value: `${data.profitFactor}`,
+      value: `28`,
     },
   ]
 
@@ -133,21 +134,21 @@ const Statistics = ({ data }: Props) => {
         <AvatarPlaceholder />
 
         <IconsWrapper>
-          <Funds active={data.baseAddress} type={Orientation.horizontal} />
+          <Funds active={"0x...."} type={Orientation.horizontal} />
 
           <Card>
             <StatisticsIcon src={rank} />
-            <Text>{data.rank}</Text>
+            <Text>12</Text>
           </Card>
 
           <Card>
             <StatisticsIcon src={copiers} />
-            <Text>{data.copiers}</Text>
+            <Text>54</Text>
           </Card>
 
           <Card>
             <StatisticsIcon src={fee} />
-            <Text>{data.commision}%</Text>
+            <Text>33%</Text>
           </Card>
 
           <DesktopIcon>
@@ -161,8 +162,8 @@ const Statistics = ({ data }: Props) => {
           </DesktopIcon>
         </IconsWrapper>
 
-        <To to={`/pool/${data.poolAddress}/invest`}>
-          <Button>Buy {data.symbol}</Button>
+        <To to={`/pool/0x.../invest`}>
+          <Button>Buy ISDX</Button>
         </To>
       </TraderStatistics>
 
@@ -176,7 +177,7 @@ const Statistics = ({ data }: Props) => {
         <AreaChart
           title
           period
-          data={data.pnl.detailed}
+          data={[]}
           width={910}
           height={180}
           tooltipSize="lg"
@@ -194,7 +195,10 @@ const Statistics = ({ data }: Props) => {
           <Title full weight={800}>
             Monthly statistics
           </Title>
-          <StatisticsCalendar currentYear data={data.pnl.monthly} />
+          <StatisticsCalendar
+            currentYear
+            data={[12, 14, 17, 18, 19, 29, 12, 14, 17, 18, 19, 29]}
+          />
         </Wrapper>
       </CalendarWrapper>
 

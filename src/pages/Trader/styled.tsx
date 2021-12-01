@@ -34,21 +34,6 @@ export const Section = styled(Flex)`
   flex-direction: column;
 `
 
-export const Block = styled(Flex)`
-  position: relative;
-  background: linear-gradient(
-    270deg,
-    rgba(51, 62, 64, 0.5) 0%,
-    rgba(128, 128, 128, 0.5) 100%
-  );
-  border-radius: 5px;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
-  height: 95px;
-  width: 100%;
-  margin: 5px 0;
-  justify-content: space-around;
-`
-
 export const HalfBlock = styled(Flex)`
   flex-direction: column;
   align-items: space-around;

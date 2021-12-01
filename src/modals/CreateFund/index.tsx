@@ -1,7 +1,7 @@
 import Modal from "styled-react-modal"
 import { device } from "theme"
 
-import Slider from "./Slider"
+// import Slider from "./Slider"
 
 const StyledModal = Modal.styled`
   box-shadow: 0 3px 30px rgba(0, 0, 0, 0.4);
@@ -28,7 +28,7 @@ export default function CreateFund({ isOpen, onRequestClose }) {
       onBackgroundClick={onRequestClose}
       onEscapeKeydown={onRequestClose}
     >
-      <Slider close={onRequestClose} />
+      {/* <Slider close={onRequestClose} /> */}
     </StyledModal>
   )
 }

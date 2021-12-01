@@ -16,10 +16,15 @@ export const Container = styled(Flex)`
 
 export const Header = styled(Flex)`
   width: 100%;
-  height: 33px;
-  margin-top: 12px;
   margin-bottom: 20px;
-  padding: 0 28px 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  height: 58px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  background: #31383b;
+  padding: 0 20px;
 `
 
 export const BackIcon = styled.img`
@@ -44,7 +49,7 @@ export const List = styled(Flex)`
   padding-bottom: 60px;
 `
 
-export const ListHead = styled.div`
+export const ListHead = styled(motion.div)`
   width: 100%;
   padding: 0 15px 10px 50px;
   display: grid;
@@ -106,7 +111,7 @@ export const ClosePosition = styled(TextButtonBase)`
 
 export const gradients = {
   default:
-    "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(194, 195, 196, 0.2) 100%);",
+    "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(122, 122, 122, 0.2) 100%);",
   buy:
     "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(127, 255, 212, 0.1) 100%);",
   sell:

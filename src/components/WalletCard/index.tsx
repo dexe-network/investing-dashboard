@@ -42,6 +42,12 @@ const Change = styled.div`
   cursor: pointer;
 `
 
+const Connect = styled.div`
+  color: #2680eb;
+  font-size: 15px;
+  font-weight: 800;
+`
+
 const TokenName = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -61,17 +67,24 @@ const WalletCard: React.FC<IProps> = (props) => {
   return (
     <Card>
       <Flex full>
-        <Label>Wallet: {wallet}</Label>
-        {/* <Change>Change</Change> */}
+        <Label>Owner wallet: {wallet}</Label>
+        <Change>Change</Change>
       </Flex>
       <Flex p="5px 0 0" full>
-        <Flex ai="center">
-          <Address>{shortenAddress(account)}</Address>
-          <LinkIcon fill="#2680EB" />
-        </Flex>
+        {account ? (
+          <Flex ai="center">
+            <Address>{shortenAddress(account)}</Address>
+            <LinkIcon fill="#2680EB" />
+          </Flex>
+        ) : (
+          <Connect>Connect wallet</Connect>
+        )}
         <Flex>
-          <TokenIcon size={26} src={tokens[props.token]?.logoURI} />
-          <TokenName>{tokens[props.token]?.symbol}</TokenName>
+          <TokenIcon
+            size={26}
+            src={tokens[props.token.toLowerCase()]?.logoURI}
+          />
+          <TokenName>{tokens[props.token.toLowerCase()]?.symbol}</TokenName>
         </Flex>
       </Flex>
     </Card>

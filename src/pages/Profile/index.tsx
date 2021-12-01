@@ -3,9 +3,8 @@ import ProfileAvatar from "components/ProfileAvatar"
 import Statistics from "pages/Profile/Statistics"
 import History from "pages/Profile/History"
 import { Header } from "theme"
-import { IPool } from "constants/interfaces"
 import FavoriteCard from "components/FavoriteCard"
-import { AppState } from "state"
+import { Pool } from "constants/interfaces_v2"
 
 import {
   ProfileCard,
@@ -19,7 +18,7 @@ import {
 
 interface Props {
   active?: boolean
-  data: IPool
+  data: Pool[]
 }
 
 function Profile(props: Props) {
@@ -32,11 +31,7 @@ function Profile(props: Props) {
   return (
     <ProfileCard>
       {!active ? <ProfilePlaceholder /> : null}
-      <ProfileAvatar
-        name={`${data.firstName} ${data.lastName}`}
-        url={data.avatar}
-        pinned={tab !== STATISTICS}
-      />
+      <ProfileAvatar url="" name={`Irvin Smith`} pinned={tab !== STATISTICS} />
 
       <Header>
         <Tab active={tab === STATISTICS} to={() => setTab(STATISTICS)}>
@@ -83,9 +78,7 @@ const Card = ({ active, i, next, prev, data }) => {
   return null
 }
 
-const ProfileContainer: React.FC<{ pools: AppState["pools"]["list"] }> = ({
-  pools,
-}) => {
+const ProfileContainer: React.FC<{ pools: any }> = ({ pools }) => {
   const [current, setCurrent] = useState(0)
 
   const next = useCallback(() => setCurrent(current + 1), [current])

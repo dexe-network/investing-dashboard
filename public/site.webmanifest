@@ -1,6 +1,6 @@
 {
-    "name": "w2w",
-    "short_name": "w2w",
+    "name": "investing",
+    "short_name": "investing",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#242033",
-    "background_color": "#242033",
+    "theme_color": "#31383B",
+    "background_color": "#31383B",
     "display": "standalone"
 }

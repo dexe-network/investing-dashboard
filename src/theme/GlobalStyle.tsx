@@ -1,4 +1,8 @@
 import { createGlobalStyle } from "styled-components"
+import styled from "styled-components"
+import { device } from "theme"
+import { motion } from "framer-motion"
+import background from "assets/background/dashboard-overlay.png"
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -6,13 +10,17 @@ const GlobalStyle = createGlobalStyle`
     overflow-x:hidden;
     overflow-y:hidden;
 
-    height: calc(var(--vh, 1vh) * 100);
-    min-height: calc(var(--vh, 1vh) * 100);
+    /* height: calc(var(--vh, 1vh) * 100);
+    min-height: calc(var(--vh, 1vh) * 100); */
     min-height: -webkit-fill-available;
+    touch-action: none;
+    overscroll-behavior: none;
   }
 
   html {
     height: -webkit-fill-available;
+    touch-action: none;
+    overscroll-behavior: none;
   }
 
   #root * {
@@ -23,6 +31,8 @@ const GlobalStyle = createGlobalStyle`
   #root {
     min-height: fill-available;
     min-height: -webkit-fill-available;
+    touch-action: none;
+    overscroll-behavior: none;
   }
 
   .ReactVirtualized__Grid,
@@ -30,6 +40,10 @@ const GlobalStyle = createGlobalStyle`
     &:focus {
       outline: none;
     }
+  }
+
+  p {
+    margin: 3px 0 2px;
   }
 
   input::-webkit-outer-spin-button,
@@ -60,6 +74,98 @@ const GlobalStyle = createGlobalStyle`
       );
     }
   }
+`
+
+export const SpecialModalBackground = styled.div`
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  background: linear-gradient(
+    214deg,
+    rgba(41, 49, 52, 0.6) -50%,
+    rgba(53, 52, 75, 0.6) 100%
+  );
+  backdrop-filter: blur(3px);
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+
+  @media only screen and (${device.sm}) {
+    bottom: 62px;
+    height: auto;
+  }
+`
+
+export const AppWrapper = styled.div`
+  display: grid;
+  min-height: -webkit-fill-available;
+  background: #202020;
+  grid-template-columns: 50px 1fr;
+  grid-template-areas: "menu content";
+  height: inherit;
+  overscroll-behavior: none;
+  touch-action: none;
+
+  @media only screen and (${device.sm}) {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 62px;
+    grid-template-areas: "content" "bottom";
+    gap: 0px 0px;
+    justify-items: stretch;
+    align-items: stretch;
+  }
+`
+
+export const Overlay = styled.div`
+  background: url(${background});
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+`
+
+export const Content = styled.div`
+  z-index: 5;
+  grid-area: content;
+  touch-action: none;
+  overflow-y: hidden;
+  overscroll-behavior: none;
+
+  @media only screen and (${device.xs}) {
+    /* padding-bottom: 62px; */
+  }
+`
+
+export const Unsupported = styled.div`
+  background: rgb(252, 14, 14);
+  color: #fff;
+  padding: 5px;
+  text-align: center;
+  z-index: 30;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+`
+
+export const RestrictedContainer = styled(motion.div)`
+  height: calc(100% - 49px);
+  padding-bottom: 42px;
 `
 
 export default GlobalStyle

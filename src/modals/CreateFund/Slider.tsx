@@ -20,7 +20,6 @@ import "rc-tooltip/assets/bootstrap.css"
 
 import defaultAvatar from "assets/icons/default-avatar.svg"
 import { useERC20 } from "hooks/useContract"
-import { FullItem, Price } from "modals/TokenSelector/styled"
 import { fromBig, formatNumber } from "utils"
 import {
   Slide,
@@ -178,35 +177,6 @@ export default function Slider<Props>({ close }) {
                   </TokenWrapper>
                 ))}
               </CommonBasesGroup>
-            ) : null}
-
-            {formState._basicToken !== "" ? (
-              <FullItem onClick={() => setSelectorModal(true)} full>
-                <TokenIcon
-                  src={`https://tokens.1inch.exchange/${formState._basicToken}.png`}
-                  size={28}
-                />
-                <Flex dir="column" ai="flex-start" p="3px 0 0">
-                  <Text color="#F7F7F7" fz={16}>
-                    {baseTokenInfo?.symbol}
-                  </Text>
-                  <Text color="#999999" fz={14}>
-                    {baseTokenInfo?.name}
-                  </Text>
-                </Flex>
-                <Price>
-                  {!baseTokenInfo?.decimals ? (
-                    <Flex>
-                      <Flex p="0 25px 0">Loading token data</Flex>
-                      <GuardSpinner size={20} loading />
-                    </Flex>
-                  ) : (
-                    formatNumber(
-                      fromBig(balance, baseTokenInfo?.decimals).toString()
-                    )
-                  )}
-                </Price>
-              </FullItem>
             ) : null}
           </BaseTokenSelect>
           {/* <InputUI
@@ -393,26 +363,7 @@ export default function Slider<Props>({ close }) {
             <Flex p="0 7px 0 0">
               <FormLabel>Starting price: </FormLabel>
             </Flex>
-
-            <Price>
-              1 {formState._symbol} = 1 {baseTokenInfo?.symbol}
-            </Price>
           </Flex>
-
-          <BaseTokenSelect jc="space-between" full>
-            <FullItem full>
-              <TokenIcon src={defaultAvatar} size={28} />
-              <Flex dir="column" ai="flex-start" p="3px 0 0">
-                <Text color="#F7F7F7" fz={16}>
-                  {formState._symbol}
-                </Text>
-                <Text color="#999999" fz={14}>
-                  {formState._name}
-                </Text>
-              </Flex>
-            </FullItem>
-          </BaseTokenSelect>
-
           <Flex p="9px 0 0 0" dir="column" ai="flex-start" full>
             <WalletCard token={formState._basicToken} />
           </Flex>
@@ -492,12 +443,12 @@ export default function Slider<Props>({ close }) {
 
       <Footer>
         <DotsWrapper>
-          <StepperDot onClick={() => goto(0)} type={typeByStep(0)} />
+          {/* <StepperDot onClick={() => goto(0)} type={typeByStep(0)} />
           <StepperDot onClick={() => goto(1)} type={typeByStep(1)} />
           <StepperDot onClick={() => goto(2)} type={typeByStep(2)} />
           <StepperDot onClick={() => goto(3)} type={typeByStep(3)} />
           <StepperDot onClick={() => goto(4)} type={typeByStep(4)} />
-          <StepperDot onClick={() => goto(5)} type={typeByStep(5)} />
+          <StepperDot onClick={() => goto(5)} type={typeByStep(5)} /> */}
         </DotsWrapper>
 
         <ButtonsCoontainer>

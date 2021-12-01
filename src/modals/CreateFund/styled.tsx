@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, useCallback, ElementType } from "react"
+import { Link } from "react-router-dom"
 import styled from "styled-components"
-import { Text, Flex, BaseButton, device } from "theme"
+import { Text, Flex, BaseButton, device, ExternalLink } from "theme"
 import { motion } from "framer-motion"
 import { StageSpinner } from "react-spinners-kit"
 import { List } from "react-virtualized"
+import arrowDown from "assets/icons/angle-down.svg"
 
 import angleDown from "assets/icons/angle-down.svg"
 import { useClickAway } from "react-use"
@@ -18,18 +20,26 @@ import InputSlider from "rc-slider"
 
 import useDebounce from "hooks/useDebounce"
 
-export const Title = styled(Text)`
+export const Title = styled(Flex)`
   font-size: 24px;
   font-weight: bold;
   color: #f5f5f5;
   white-space: normal;
-  margin-bottom: 15px;
+  text-align: center;
+  height: 52px;
+  width: 100%;
+  justify-content: center;
+  flex: 1;
+  /* margin-bottom: 15px; */
 `
 
 export const Secondary = styled(Text)`
-  font-size: 16px;
+  font-size: 14px;
   color: #f7f7f7;
+  font-weight: 400;
+  letter-spacing: 0.25px;
   white-space: normal;
+  margin-top: 20px;
 
   @media only screen and (${device.sm}) {
     font-size: 14px;
@@ -41,6 +51,7 @@ export const Warn = styled(Text)`
   color: #ff7f7fb9;
   white-space: normal;
   font-style: italic;
+  padding-top: 4px;
 
   @media only screen and (${device.sm}) {
     font-size: 12px;
@@ -60,6 +71,7 @@ const Container = styled(Flex)`
 
   &:hover {
     background: #3e4250;
+    border: 1px solid #3e4250;
   }
 
   @media only screen and (${device.sm}) {
@@ -164,7 +176,7 @@ export const InputUI: React.FC<{
   onChange?: (name: string, value: string) => void
   onKeyDown?: (e: any) => void
   onPaste?: (e: any) => void
-  icon?: React.ReactElement | boolean
+  icon?: React.ReactElement | boolean | undefined
   onClick?: () => void
 }> = ({ name, label, onChange, onKeyDown, onPaste, icon, onClick }) => {
   const [active, setActive] = useState(false)
@@ -213,112 +225,202 @@ export const InputUI: React.FC<{
   )
 }
 
-const Icon = styled(motion.img)<{ rotate: string }>`
-  transition: all 0.2s ease-in-out;
-  transform: rotate(${(props) => props?.rotate || "0deg"});
+const DropdownBody = styled(Flex)`
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 20px;
+  /* position: absolute; */
+  min-height: 235px;
+  /* margin: auto; */
+  /* top: 65px; */
+  background: linear-gradient(
+    90deg,
+    rgba(71, 72, 82, 1) 0%,
+    rgba(55, 59, 69, 1) 100%
+  );
+  /* left: 0px; */
+  /* right: 0px; */
+  width: 100%;
+  z-index: 100;
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0px 3px 6px 5px rgba(0, 0, 0, 0.16);
+  box-shadow: inset 0px 3px 6px 5px rgba(0, 0, 0, 0.16);
 `
 
-const DropdownContainer = styled(motion.div)`
-  height: 0px;
-  z-index: 5;
+const DropdownLabel = styled.div<{ active?: boolean }>`
+  transition: all 0.5s ease-in-out;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: ${(props) => (props.active ? 800 : 500)};
+  position: relative;
+  z-index: 10;
+`
+
+const DropdownDescription = styled.div`
+  font-size: 12px;
+  color: #c2c3c4;
+  z-index: 10;
   position: relative;
 `
 
-const DropdownBody = styled.div`
-  height: 193px;
-  width: 434px;
-  border-radius: 10px;
-  background: ${(props) => props.theme.bgPrimary};
-  position: absolute;
-  top: 10px;
-  overflow: auto;
-  border: 1px solid #2f2f2f;
-`
-
-const dropdownVariants = {
-  visible: {
-    opacity: 1,
-    y: 0,
-    display: "block",
-  },
-  hidden: {
-    opacity: 0,
-    y: -4,
-    transitionEnd: {
-      display: "none",
-    },
-  },
-}
-
-const DropdownToken = styled(Flex)`
-  height: 44px;
+const DropdownItem = styled.div<{ active?: boolean }>`
+  position: relative;
+  flex: 1;
   width: 100%;
-  background: ${(props) => props.theme.bgPrimary};
-  transition: background 0.2s ease-in-out;
-  border-radius: 10px;
-  padding: 8px 9px;
-  cursor: pointer;
+  padding: 15px 15px;
+  border-bottom: 1px solid #312b46;
 
-  &:hover {
-    background: #2b2a3c;
+  &:nth-child(1) {
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: ${(props) =>
+        props.active &&
+        "linear-gradient(101deg, rgba(57,95,78,1) 0%, rgba(76,57,95,1) 100%)"};
+
+      filter: blur(2px);
+      z-index: 5;
+    }
+  }
+  &:nth-child(2) {
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: ${(props) =>
+        props.active &&
+        "linear-gradient(101deg, rgba(135,53,71,1) 0%, rgba(76,57,95,1) 100%)"};
+      filter: blur(2px);
+      z-index: 5;
+    }
+  }
+  &:nth-child(3) {
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: ${(props) =>
+        props.active &&
+        "linear-gradient(101deg, rgba(55,77,133,1) 0%, rgba(76,57,95,1) 100%)"};
+
+      filter: blur(2px);
+      z-index: 5;
+    }
+  }
+
+  &:last-child {
+    border-bottom: none;
   }
 `
 
-const TokenSymbol = styled(Flex)`
-  color: #f5f5f5;
-  font-size: 14px;
-  text-transform: uppercase;
-  margin-right: 10px;
-`
+export const SelectUI = ({ label }) => {
+  const [active, setActive] = useState(false)
+  const [value, setValue] = useState("")
 
-const TokenName = styled(Text)`
-  max-width: 250px;
-  white-space: nowrap;
-  overflow: hidden;
-  color: #999999;
-`
-
-const DropdownSearch = styled.input`
-  color: #999999;
-  font-weight: 300;
-  user-select: none;
-  font-size: 18px;
-  outline: none;
-  background: transparent;
-  border: none;
-  z-index: 5;
-`
-
-const IconLink = styled.a`
-  height: 45px;
-  width: 55px;
-`
-
-const DropdownWrapper = styled.div`
-  width: 100%;
-`
-
-const Search: React.FC<{ onChange: (event: any) => void }> = ({ onChange }) => {
-  const [q, setQuery] = useState("")
-  const debounced = useDebounce(q, 25)
-
-  const handleSearch = (e) => {
-    console.log(e.target.value)
-    setQuery(e.target.value)
-    onChange(e.target.value)
+  const handleSelect = (v) => {
+    setActive(false)
+    setValue(v)
   }
-
-  // useEffect(() => {
-  //   onChange(debounced)
-  // }, [onChange, debounced])
-
   return (
-    <DropdownSearch
-      type="text"
-      onClick={(e) => e.stopPropagation()}
-      placeholder="Search symbol"
-      onChange={handleSearch}
-    />
+    <>
+      {/* <Container onClick={() => setActive(!active)}>
+        <div></div>
+        <Label initial="hidden" animate="visible">
+          {value || label}
+        </Label>
+        <Flex
+          animate={
+            active
+              ? { transform: "rotate(180deg)" }
+              : { transform: "rotate(0deg)" }
+          }
+          jc="center"
+          ai="center"
+          p="15px"
+        >
+          <img src={angleDown} alt="select" />
+        </Flex>
+      </Container> */}
+      <DropdownBody>
+        <DropdownItem
+          active={value === "Standard"}
+          onClick={() => handleSelect("Standard")}
+        >
+          <DropdownLabel active={value === "Standard"}>Standard</DropdownLabel>
+          <DropdownDescription>
+            <p>
+              Trading on assets from the <Text color="#47BEF9">white list</Text>{" "}
+              + Trading of
+            </p>
+            <p>non-whitelisted assets through the proposals (low risk)</p>
+            <p>
+              <ExternalLink
+                onClick={(e) => e.stopPropagation()}
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more
+              </ExternalLink>
+            </p>
+          </DropdownDescription>
+        </DropdownItem>
+        <DropdownItem
+          active={value === "Risky"}
+          onClick={() => handleSelect("Risky")}
+        >
+          <DropdownLabel active={value === "Risky"}>Risky</DropdownLabel>
+          <DropdownDescription>
+            <p>Trading of non-whitelisted assets.</p>
+            <p>suspended for 20 days</p>
+            <p>
+              (High risk){" "}
+              <ExternalLink
+                onClick={(e) => e.stopPropagation()}
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more
+              </ExternalLink>
+            </p>
+          </DropdownDescription>
+        </DropdownItem>
+        <DropdownItem
+          active={value === "Investment"}
+          onClick={() => handleSelect("Investment")}
+        >
+          <DropdownLabel active={value === "Investment"}>
+            Investment
+          </DropdownLabel>
+          <DropdownDescription>
+            <p>Manage the assets on your own</p>
+            <p>
+              (High risk){" "}
+              <ExternalLink
+                onClick={(e) => e.stopPropagation()}
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more
+              </ExternalLink>
+            </p>
+          </DropdownDescription>
+        </DropdownItem>
+      </DropdownBody>
+    </>
   )
 }
 
@@ -345,151 +447,6 @@ export const CommonBasesGroup = styled(Flex)`
 export const TokenWrapper = styled.div`
   margin-right: 10px;
 `
-
-export const DropdownUI: React.FC<{
-  active: string
-  onSelect: (name: string, address: string) => void
-  name: string
-}> = ({ active, onSelect, name }) => {
-  const [list, tokens] = useTokensList()
-  const config = useNetworkConfig()
-  const ref = useRef(null)
-  const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState("")
-  const [filteredList, setList] = useState<ITokenBase[]>([])
-  const memoSetList = useCallback((v) => {
-    setList(v)
-  }, [])
-
-  const memoSetQuery = useCallback((v) => {
-    setQuery(v)
-  }, [])
-
-  useEffect(() => {
-    if (!list.length) return
-    memoSetList(list)
-  }, [list, memoSetList])
-
-  useEffect(() => {
-    if (!query.length) {
-      memoSetList(list)
-    } else {
-      const queryLowered = query.toLowerCase()
-      const res = list.filter((token) =>
-        token.name.toLowerCase().includes(queryLowered)
-      )
-      memoSetList(res)
-    }
-  }, [query, memoSetList, list])
-
-  useClickAway(ref, () => {
-    if (open) {
-      setOpen(false)
-
-      if (query.length) {
-        setQuery("")
-      }
-    }
-  })
-
-  const handleClick = () => {
-    setOpen(!open)
-  }
-
-  const handleTokenClick = (address) => {
-    setOpen(false)
-    onSelect(name, address)
-  }
-
-  const render = ({ index, style }) => {
-    const token = filteredList[index]
-
-    return (
-      <DropdownToken
-        onClick={() => handleTokenClick(token.address)}
-        jc="flex-start"
-        key={token.address}
-        style={style}
-      >
-        <TokenIcon src={token.logoURI || ""} />
-        <TokenSymbol>{token.symbol}</TokenSymbol>
-        <TokenName>({token.name})</TokenName>
-      </DropdownToken>
-    )
-  }
-
-  const isSelected = active !== "" && active in tokens
-
-  const leftSide = isSelected ? (
-    <Flex dir="column" jc="flex-start" ai="flex-start">
-      <TokenName>{tokens[active].name}</TokenName>
-      <TokenSymbol>{tokens[active].symbol}</TokenSymbol>
-    </Flex>
-  ) : (
-    <LabelBase>Select major asset</LabelBase>
-  )
-
-  return (
-    <DropdownWrapper ref={ref}>
-      <Container onClick={handleClick}>
-        <Flex full p="0 15px" ai="center">
-          <Flex>{open ? <Search onChange={memoSetQuery} /> : leftSide}</Flex>
-          <Flex p="0 13px 0 0">
-            {list?.length === 0 ? (
-              <StageSpinner size={20} loading color="#549680" />
-            ) : (
-              <Flex>
-                {isSelected && (
-                  <IconLink
-                    href={`${config.url}/token/${tokens[active].address}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <TokenIcon size={45} src={tokens[active].logoURI} />
-                  </IconLink>
-                )}
-                <Icon rotate={open ? "180deg" : "0deg"} src={angleDown} />
-              </Flex>
-            )}
-          </Flex>
-        </Flex>
-      </Container>
-      <DropdownContainer
-        variants={dropdownVariants}
-        animate={open ? "visible" : "hidden"}
-        initial="hidden"
-      >
-        <DropdownBody>
-          {filteredList.length ? (
-            <List
-              overscanRowCount={1000}
-              overscanIndicesGetter={({
-                cellCount,
-                overscanCellsCount,
-                startIndex,
-                stopIndex,
-              }) => ({
-                overscanStartIndex: Math.max(
-                  0,
-                  startIndex - overscanCellsCount
-                ),
-                overscanStopIndex: Math.min(
-                  cellCount - 1,
-                  stopIndex + overscanCellsCount
-                ),
-              })}
-              height={191}
-              rowCount={filteredList.length}
-              rowHeight={44}
-              rowRenderer={render}
-              width={432}
-            />
-          ) : null}
-        </DropdownBody>
-      </DropdownContainer>
-    </DropdownWrapper>
-  )
-}
 
 const TextArea = styled.textarea`
   resize: none;
@@ -551,12 +508,12 @@ export const Area = ({ name, onChange }) => {
 
 export const ButtonsCoontainer = styled(Flex)`
   padding: 15px 30px;
-  justify-content: space-between;
+  justify-content: flex-end;
+  align-items: center;
   width: 100%;
 
   @media screen and (${device.xs}) {
     padding: 0;
-    align-items: center;
     justify-content: flex-end;
   }
 `
@@ -585,6 +542,7 @@ export const PrevButton = styled(StepperBaseButton)`
   margin-right: 15px;
   padding: 17px 15px 17px 25px;
   color: #c2c3c4;
+  font-weight: 300;
 
   @media screen and (${device.xs}) {
     padding: 17px 15px;
@@ -629,8 +587,10 @@ const background = {
   NEXT: "#496876",
 }
 
-export const StepperDot = styled.div<{
-  type?: "CHECKED" | "DEFAULT" | "ACTIVE" | "NEXT"
+export type StepperDotTypes = "CHECKED" | "DEFAULT" | "ACTIVE" | "NEXT"
+
+export const StepperDot = styled(Link)<{
+  type?: StepperDotTypes
 }>`
   width: 15px;
   height: 15px;
@@ -804,6 +764,10 @@ export const AllocateSlider: React.FC<{
   }, [debounced, onChange, name, debounce])
 
   const handleChange = (value) => {
+    if (value in customMarks) {
+      vibrate()
+    }
+
     if (debounce) {
       setV(value)
       return
@@ -812,10 +776,25 @@ export const AllocateSlider: React.FC<{
     onChange(name, value)
   }
 
+  const vibrate = () => {
+    if (!window) {
+      return
+    }
+
+    if (!window.navigator) {
+      return
+    }
+
+    if (!window.navigator.vibrate) {
+      return
+    }
+    window.navigator.vibrate(50)
+  }
+
   return (
     <Flex full p="0 0 10px">
       <Flex full p="24px 0" ai="center">
-        <SliderLine />
+        {min !== 0 && <SliderLine />}
         <InputSlider
           marks={customMarks}
           min={min}
@@ -823,10 +802,10 @@ export const AllocateSlider: React.FC<{
           value={debounce ? v : initial}
           onChange={handleChange}
         />
-        <SliderLine />
+        {max !== 100 && <SliderLine />}
       </Flex>
       {!hideInput && (
-        <Flex>
+        <Flex p="0 0 0 20px">
           <NumberInput onChange={handleChange} value={debounce ? v : initial} />
         </Flex>
       )}
@@ -839,10 +818,10 @@ export const Arrow = styled.img`
 `
 
 export const Footer = styled(Flex)`
-  flex-direction: column;
+  flex-direction: row;
   width: 100%;
 
-  @media screen and (${device.xs}) {
+  /* @media screen and (${device.xs}) {
     flex-direction: row;
-  }
+  } */
 `

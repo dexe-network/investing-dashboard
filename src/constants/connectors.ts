@@ -12,7 +12,7 @@ import arkaneIcon from "assets/wallets/arkane.svg"
 const LOCAL_NETWORK_URL = "http://localhost:8545"
 const BSC_NETWORK_URL = "https://bsc-dataseed.binance.org/"
 
-const SUPPORTED_CHAINS = [56, 97, 1337]
+const SUPPORTED_CHAINS = [1, 56, 97, 1337]
 
 const POLLING_INTERVAL = 12000
 const RPC_URLS = {

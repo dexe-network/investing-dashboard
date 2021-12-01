@@ -65,7 +65,9 @@ export const formatNumber = (amount: string, decimals = 6) => {
 
   return (
     numArr[0].split(/(?=(?:\d{3})+(?!\d))/).join(",") +
-    (floatPart.length < decimals ? floatPart : floatPart.substring(0, decimals))
+    (floatPart.length < decimals
+      ? floatPart
+      : floatPart.substring(0, decimals + 1))
   )
 }
 

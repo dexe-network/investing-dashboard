@@ -1,8 +1,8 @@
 // import React, { useState, useRef } from "react"
 import styled from "styled-components"
 import AreaChart from "components/AreaChart"
-import { Flex, Text } from "theme"
-import { Block, HalfBlock, Label, AreaWrapper } from "pages/Trader/styled"
+import { Flex, Text, Block } from "theme"
+import { HalfBlock, Label, AreaWrapper } from "pages/Trader/styled"
 import { IPoolInfo, IDetailedChart } from "constants/interfaces"
 
 const MonthLabel = styled(Text)`

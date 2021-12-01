@@ -121,7 +121,7 @@ const Avatar: React.FC<Props> = ({
   if (!url || !url.length) {
     url = defaultAvatar
   } else {
-    url = `${process.env.REACT_APP_STATS_API_URL}/assets/avatars/${url}`
+    url = `${url}`
   }
 
   // console.log(url)

@@ -205,7 +205,7 @@ export const ProfileCard = styled(motion.div)`
   justify-content: flex-start;
 
   overflow: auto;
-  max-height: calc(var(--vh, 1vh) * 100);
+  /* max-height: calc(var(--vh, 1vh) * 100); */
 
   -webkit-box-shadow: 0px 106px 45px -4px rgb(0 0 0 / 18%);
   -moz-box-shadow: 0px 106px 45px -4px rgb(0 0 0 / 18%);

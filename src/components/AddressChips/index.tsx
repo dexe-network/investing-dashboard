@@ -1,4 +1,4 @@
-import { InputUI } from "modals/CreateFund/styled"
+import { InputButton, InputUI } from "modals/CreateFund/styled"
 import React from "react"
 import { isAddress } from "utils"
 
@@ -7,14 +7,22 @@ import { shortenAddress } from "utils"
 import close from "assets/icons/close.svg"
 import { ChipsWrapper, TagItem, TagButton, ErrorText } from "./styled"
 
-type IAddressChips = {
+type AddressChipsState = {
   items: string[]
   value: string
   error: string
 }
 
-export default class AddressChips extends React.Component {
-  state: IAddressChips = {
+type AddressChipsProps = {
+  label?: string
+  limit?: number
+}
+
+export default class AddressChips extends React.Component<
+  AddressChipsProps,
+  AddressChipsState
+> {
+  state = {
     items: [],
     value: "",
     error: "",
@@ -95,7 +103,7 @@ export default class AddressChips extends React.Component {
   }
 
   isInList(address: string) {
-    const items = this.state.items
+    const items: string[] = this.state.items
 
     return items.includes(address)
   }
@@ -109,10 +117,12 @@ export default class AddressChips extends React.Component {
   }
 
   render() {
+    const { label, limit } = this.props
+    const { items, error } = this.state
     return (
       <>
         <ChipsWrapper full p="15px 0 0" jc="flex-start">
-          {this.state.items.map((item) => (
+          {items.map((item) => (
             <TagItem key={item}>
               {shortenAddress(item)}
               <TagButton onClick={() => this.handleDelete(item)}>
@@ -124,13 +134,18 @@ export default class AddressChips extends React.Component {
 
         <InputUI
           name="address-input"
-          label="Type or paste BEP-20 address and press Enter"
+          label={label || "type address"}
           onKeyDown={this.handleKeyDown}
           onChange={this.handleChange}
           onPaste={this.handlePaste}
+          icon={
+            limit !== undefined && (
+              <InputButton>{limit - items.length} left</InputButton>
+            )
+          }
         />
 
-        {this.state.error && <ErrorText>{this.state.error}</ErrorText>}
+        {error && <ErrorText>{error}</ErrorText>}
       </>
     )
   }

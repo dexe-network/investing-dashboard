@@ -7,8 +7,6 @@ import { useSwipeable } from "react-swipeable"
 
 import { GuardSpinner } from "react-spinners-kit"
 
-import { useSelectUserData } from "state/user/hooks"
-
 import { useCreateFundContext } from "context/CreateFundContext"
 import { useConnectWalletContext } from "context/ConnectWalletContext"
 
@@ -17,7 +15,6 @@ import { TraderName } from "components/MemberMobile/styled"
 
 import icon from "assets/icons/button-plus.svg"
 import swipeDown from "assets/icons/swipe-arrow-down.svg"
-import swipeRight from "assets/icons/swipe-arrow-right.svg"
 
 import {
   Container,
@@ -29,14 +26,13 @@ import {
   ButtonText,
   HintText,
   ButtonsContainer,
-  FloatingButton,
   ArrowButton,
 } from "./styled"
 import { getSignature } from "utils"
 
 interface Props {}
 
-function ProfileSwitcher(props: Props) {
+function Welcome(props: Props) {
   const {} = props
 
   const history = useHistory()
@@ -46,9 +42,28 @@ function ProfileSwitcher(props: Props) {
 
   const [nickname, setNickname] = useState<string | null>(null)
   const [avatar, setAvatar] = useState<Blob | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
 
-  const user = useSelectUserData()
+  // EMULATE user data loading and trader data loading
+  useEffect(() => {
+    ;(async () => {
+      const resolver = await new Promise<{
+        investor: boolean
+        trader: boolean
+      }>((resolve) => {
+        setTimeout(() => {
+          resolve({ investor: false, trader: false })
+        }, 50)
+      })
+
+      if (resolver.trader) {
+        history.push("/me/trader/0x...")
+      } else if (resolver.investor) {
+        history.push("/me/investor")
+      }
+      setLoading(false)
+    })()
+  }, [history])
 
   useEffect(() => {
     if (!nickname || !avatar) return
@@ -110,10 +125,10 @@ function ProfileSwitcher(props: Props) {
   }, [nickname, avatar, account, library, history, toggleConnectWallet])
 
   const handleCreateFund = () => {
-    if (!account) {
-      toggleConnectWallet()
-      return
-    }
+    // if (!account) {
+    //   toggleConnectWallet()
+    //   return
+    // }
 
     toggleCreateFund(true)
   }
@@ -124,11 +139,11 @@ function ProfileSwitcher(props: Props) {
   }
 
   const handleFundRedirect = () => {
-    if (!account?.length) {
-      toggleConnectWallet()
-    }
+    // if (!account?.length) {
+    //   toggleConnectWallet()
+    // }
 
-    history.push("/investor")
+    history.push("/me/trader/0x...")
   }
 
   const handleInvestRedirect = () => {
@@ -146,7 +161,7 @@ function ProfileSwitcher(props: Props) {
     </IconContainer>
   )
 
-  const avatarContent = !user ? (
+  const avatarContent = (
     <>
       <AvatarWrapper>
         <Avatar onCrop={setAvatar} showUploader size={110} />
@@ -159,44 +174,55 @@ function ProfileSwitcher(props: Props) {
         <Text fw={500}> photo</Text>
       </HintText>
     </>
-  ) : (
-    <AvatarWrapper>
-      <Avatar url={user.avatar} size={110} />
-      <TraderName>{user.nickname}</TraderName>
-    </AvatarWrapper>
   )
+
+  if (loading) {
+    return (
+      <Container {...handlers}>
+        <GuardSpinner size={30} loading />
+      </Container>
+    )
+  }
+
   return (
     <Container {...handlers}>
-      <FloatingButton onClick={handleFundRedirect}>
-        <img src={swipeRight} alt="swipe right" />
-        <Text color="#C2C3C4" fz={14}>
-          Your fund
-        </Text>
-      </FloatingButton>
-
-      <ProfileSetup>
-        {loading || user === null ? (
-          <GuardSpinner size={30} loading />
-        ) : (
-          avatarContent
-        )}
+      <ProfileSetup
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+      >
+        {avatarContent}
       </ProfileSetup>
-      <ButtonsContainer>
+      <ButtonsContainer
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+      >
         <To to="/pools">
           <BigIconButton>
             {iconElement}
             <ButtonText>Start investing</ButtonText>
           </BigIconButton>
         </To>
-        <BigIconButton onClick={handleCreateFund}>
-          {iconElement}
-          <ButtonText>
-            Create a new fund <br /> \ become a trader
-          </ButtonText>
-        </BigIconButton>
+        <To to="new-fund">
+          <BigIconButton>
+            {iconElement}
+            <ButtonText>
+              Create a new fund <br /> \ become a trader
+            </ButtonText>
+          </BigIconButton>
+        </To>
       </ButtonsContainer>
 
-      <ArrowButton onClick={handleInvestRedirect}>
+      <ArrowButton
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+        onClick={handleInvestRedirect}
+      >
         <img src={swipeDown} alt="swipe down" />
         <Text color="#C2C3C4" fz={14}>
           New fund for investment
@@ -206,4 +232,4 @@ function ProfileSwitcher(props: Props) {
   )
 }
 
-export default ProfileSwitcher
+export default Welcome

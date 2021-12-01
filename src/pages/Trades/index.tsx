@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import axios from "axios"
-import back from "assets/icons/arrow-back.svg"
+import swipeLeft from "assets/icons/swipe-arrow-left.svg"
 import filter from "assets/icons/filter.svg"
 import calendar from "assets/icons/calendar.svg"
 import { Tab } from "pages/Profile/styled"
@@ -10,7 +9,7 @@ import TradesListItem, { TradesTotalItem } from "./List"
 import { IPoolPosition } from "constants/interfaces"
 import { AnimatePresence } from "framer-motion"
 import { ease } from "theme"
-import { format, addDays } from "date-fns"
+import { addDays } from "date-fns"
 import { useSwipeable } from "react-swipeable"
 
 import {
@@ -23,12 +22,10 @@ import {
   Label,
   SubItems,
   TradeButtons,
-  TextButtonBase,
   BuyMore,
   ClosePosition,
   BackIcon,
 } from "./styled"
-import React from "react"
 
 const Mul = BigNumber.from(10).pow(18)
 
@@ -150,126 +147,6 @@ const positions: IPoolPosition[] = [
     pnl: 35,
     transactions: [],
   },
-  {
-    id: "io34ua9hd1",
-    createdAt: "123",
-    updatedAt: "123",
-    tokenAddress: "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DODO
-    baseAddress: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-    amount: BigNumber.from("500"),
-    avgBasePrice: BigNumber.from("23330000000000000000"),
-    avgStablePrice: BigNumber.from("23330000"), // 1000 USDT / 6 decimals
-    pnlBase: BigNumber.from("23330000000000000000")
-      .mul(BigNumber.from("500"))
-      .div(100)
-      .mul(35),
-    pnlStable: BigNumber.from("23330000")
-      .mul(BigNumber.from("500"))
-      .div(100)
-      .mul(35),
-    pnl: 35,
-    transactions: [],
-  },
-  {
-    id: "io345i2ud1",
-    createdAt: "123",
-    updatedAt: "123",
-    tokenAddress: "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DODO
-    baseAddress: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-    amount: BigNumber.from("500"),
-    avgBasePrice: BigNumber.from("23330000000000000000"),
-    avgStablePrice: BigNumber.from("23330000"), // 1000 USDT / 6 decimals
-    pnlBase: BigNumber.from("23330000000000000000")
-      .mul(BigNumber.from("500"))
-      .div(100)
-      .mul(35),
-    pnlStable: BigNumber.from("23330000")
-      .mul(BigNumber.from("500"))
-      .div(100)
-      .mul(35),
-    pnl: 35,
-    transactions: [],
-  },
-  // {
-  //   id: "io34542ki2ud1",
-  //   createdAt: "123",
-  //   updatedAt: "123",
-  //   tokenAddress: "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DODO
-  //   baseAddress: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  //   amount: BigNumber.from("500"),
-  //   avgBasePrice: BigNumber.from("23330000000000000000"),
-  //   avgStablePrice: BigNumber.from("23330000"), // 1000 USDT / 6 decimals
-  //   pnlBase: BigNumber.from("23330000000000000000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnlStable: BigNumber.from("23330000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnl: 35,
-  //   transactions: [],
-  // },
-  // {
-  //   id: "34542kissjo2ud1",
-  //   createdAt: "123",
-  //   updatedAt: "123",
-  //   tokenAddress: "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DODO
-  //   baseAddress: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  //   amount: BigNumber.from("500"),
-  //   avgBasePrice: BigNumber.from("23330000000000000000"),
-  //   avgStablePrice: BigNumber.from("23330000"), // 1000 USDT / 6 decimals
-  //   pnlBase: BigNumber.from("23330000000000000000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnlStable: BigNumber.from("23330000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnl: 35,
-  //   transactions: [],
-  // },
-  // {
-  //   id: "uojud1",
-  //   createdAt: "123",
-  //   updatedAt: "123",
-  //   tokenAddress: "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DODO
-  //   baseAddress: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  //   amount: BigNumber.from("500"),
-  //   avgBasePrice: BigNumber.from("23330000000000000000"),
-  //   avgStablePrice: BigNumber.from("23330000"), // 1000 USDT / 6 decimals
-  //   pnlBase: BigNumber.from("23330000000000000000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnlStable: BigNumber.from("23330000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnl: 35,
-  //   transactions: [],
-  // },
-  // {
-  //   id: "uojuej24d1",
-  //   createdAt: "123",
-  //   updatedAt: "123",
-  //   tokenAddress: "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DODO
-  //   baseAddress: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  //   amount: BigNumber.from("500"),
-  //   avgBasePrice: BigNumber.from("23330000000000000000"),
-  //   avgStablePrice: BigNumber.from("23330000"), // 1000 USDT / 6 decimals
-  //   pnlBase: BigNumber.from("23330000000000000000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnlStable: BigNumber.from("23330000")
-  //     .mul(BigNumber.from("500"))
-  //     .div(100)
-  //     .mul(35),
-  //   pnl: 35,
-  //   transactions: [],
-  // },
 ]
 
 export default function Trades() {
@@ -277,23 +154,7 @@ export default function Trades() {
   const [openPosition, setOpen] = useState<null | string>(null)
   const history = useHistory()
 
-  useEffect(() => {
-    const getPools = async () => {
-      const {
-        data: { data },
-      } = await axios.get(
-        `${process.env.REACT_APP_STATS_API_URL}/trades/${poolAddress}`
-      )
-
-      console.log(data)
-    }
-
-    try {
-      getPools()
-    } catch (e) {
-      console.log(e)
-    }
-  }, [poolAddress])
+  console.log(poolAddress)
 
   const goBack = () => {
     try {
@@ -309,9 +170,14 @@ export default function Trades() {
 
   return (
     <Container {...handlers}>
-      <Header>
-        <BackIcon onClick={goBack} src={back} alt="back" />
-        <Tabs>
+      <Header
+        initial={{ y: -62 }}
+        animate={{ y: 0 }}
+        exit={{ y: -62 }}
+        transition={{ duration: 0.3, ease: [0.29, 0.98, 0.29, 1] }}
+      >
+        <BackIcon onClick={goBack} src={swipeLeft} alt="back" />
+        <Tabs p="5px 0 0">
           <Tab active to={() => {}}>
             Open
           </Tab>
@@ -324,12 +190,22 @@ export default function Trades() {
           <img src={calendar} alt="calendar" />
         </IconButtons>
       </Header>
-      <ListHead>
+      <ListHead
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+      >
         <Label>Ticker/Volume</Label>
         <Label>Price</Label>
         <Label>Total</Label>
       </ListHead>
-      <List>
+      <List
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+      >
         {positions.map((position: IPoolPosition) => (
           <React.Fragment key={position.id}>
             <TradesTotalItem

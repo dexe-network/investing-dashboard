@@ -1,13 +1,14 @@
 import { createReducer } from "@reduxjs/toolkit"
 import { addPools, setFilter } from "./actions"
 import { sortItemsList, currencies } from "constants/index"
-import { IPool, ITopMembersFilters } from "constants/interfaces"
+import { ITopMembersFilters } from "constants/interfaces"
+import { Pool } from "constants/interfaces_v2"
 import { addDays } from "date-fns"
 import { calendarStaticRanges } from "constants/index"
 
 export interface poolsState {
   filters: ITopMembersFilters
-  list: IPool[]
+  list: Pool[]
 }
 
 const allPeriodRange = calendarStaticRanges[0].range()

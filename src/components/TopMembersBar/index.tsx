@@ -1,5 +1,5 @@
 import { useState } from "react"
-// import { motion } from "framer-motion"
+import { motion } from "framer-motion"
 
 import { device, useBreakpoint } from "theme"
 import styled from "styled-components"
@@ -15,16 +15,20 @@ import CardView from "assets/icons/CardView"
 import ListView from "assets/icons/ListView"
 import { usePoolsFilters } from "state/pools/hooks"
 
-const StyledBar = styled.div`
+export const StyledBar = styled(motion.div)`
+  touch-action: none;
   display: flex;
   justify-content: flex-start;
   align-items: center;
   user-select: none;
   height: 58px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  background: #31383b;
+  width: 100%;
 
   @media only screen and (${device.sm}) {
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 10px;
   }
 `
 
@@ -94,34 +98,52 @@ const SwitchIcon = styled.div<{ scale: number }>`
   }
 `
 
+const ClickableArea = styled.div`
+  width: 58px;
+  height: 58px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 const ListGridSwitcher = ({ type, setType }) => {
   return (
-    <SwitcherContainer
-      onClick={() => setType(type === "card" ? "list" : "card")}
-    >
-      <SwitchIcon scale={type === "card" ? 1.1 : 1}>
-        <CardView fill={type === "card" ? "#fff" : "#6F7579"} />
-      </SwitchIcon>
+    <ClickableArea onClick={() => setType(type === "card" ? "list" : "card")}>
+      <SwitcherContainer>
+        <SwitchIcon scale={type === "card" ? 1.1 : 1}>
+          <CardView fill={type === "card" ? "#fff" : "#6F7579"} />
+        </SwitchIcon>
 
-      <Circle position={type === "card" ? "left" : "right"} />
+        <Circle position={type === "card" ? "left" : "right"} />
 
-      <SwitchIcon scale={type === "list" ? 1 : 0.8}>
-        <ListView fill={type === "list" ? "#fff" : "#6F7579"} />
-      </SwitchIcon>
-    </SwitcherContainer>
+        <SwitchIcon scale={type === "list" ? 1 : 0.8}>
+          <ListView fill={type === "list" ? "#fff" : "#6F7579"} />
+        </SwitchIcon>
+      </SwitcherContainer>
+    </ClickableArea>
   )
 }
 
 const TopMembersBar: React.FC = () => {
   const [filters, handleFiltersChange] = usePoolsFilters()
   const breakpoint = useBreakpoint()
-  const isDesktop = breakpoint !== "xs"
+
+  const [isMenuOpen, setMenuState] = useState(false)
+
+  const isDesktop = breakpoint !== "sm"
 
   return (
-    <StyledBar>
-      <MenuContainer>
-        <HamburgerMenu src={hamburger} />
-      </MenuContainer>
+    <StyledBar
+      initial={{ y: -62 }}
+      animate={{ y: 0 }}
+      exit={{ y: -62 }}
+      transition={{ duration: 0.3, ease: [0.29, 0.98, 0.29, 1] }}
+    >
+      <ClickableArea onClick={() => setMenuState(!isMenuOpen)}>
+        <MenuContainer>
+          <HamburgerMenu src={hamburger} />
+        </MenuContainer>
+      </ClickableArea>
       {isDesktop && (
         <Dropdown
           name="sort"

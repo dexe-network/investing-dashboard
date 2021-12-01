@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import { createWeb3ReactRoot, Web3ReactProvider } from "@web3-react/core"
 import { Normalize } from "styled-normalize"
 import { createTheme } from "react-data-table-component"
+import { BrowserRouter as Router } from "react-router-dom"
 
 import { Provider } from "react-redux"
 import { ModalProvider } from "styled-react-modal"
@@ -16,8 +17,6 @@ import getLibrary from "utils/getLibrary"
 
 import BlockNumber from "components/BlockNumber"
 import "react-virtualized/styles.css"
-import { OwnedPoolsUpdater, UserDataUpdater } from "state/user/hooks"
-import { PriceRatesUpdater } from "state/rates/hooks"
 
 const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
 
@@ -39,7 +38,9 @@ createTheme("dexe", {
 
 const GlobalComponents = () => (
   <>
-    <BlockNumber />
+    {/* <BlockNumber /> */}
+    <Normalize />
+    <GlobalStyle />
   </>
 )
 
@@ -49,15 +50,12 @@ ReactDOM.render(
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3ProviderNetwork getLibrary={getLibrary}>
           <Provider store={store}>
-            <>
-              <OwnedPoolsUpdater />
-              <UserDataUpdater />
-              <PriceRatesUpdater />
-            </>
-            <Normalize />
-            <GlobalStyle />
-            <GlobalComponents />
-            <App />
+            <Router>
+              <>
+                <GlobalComponents />
+                <App />
+              </>
+            </Router>
           </Provider>
         </Web3ProviderNetwork>
       </Web3ReactProvider>

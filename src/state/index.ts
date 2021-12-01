@@ -4,16 +4,14 @@ import { save, load } from "redux-localstorage-simple"
 import user from "./user/reducer"
 import transactions from "./transactions/reducer"
 import pools from "./pools/reducer"
-import rates from "./rates/reducer"
 
-const PERSISTED_KEYS: string[] = ["user", "transactions"]
+const PERSISTED_KEYS: string[] = ["user", "transactions", "pools"]
 
 const store = configureStore({
   reducer: {
     user,
     transactions,
     pools,
-    rates,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),

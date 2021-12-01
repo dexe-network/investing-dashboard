@@ -106,7 +106,9 @@ export const Copiers = styled.span`
 
 export const MiddleContent = styled(Flex)``
 
-export const TextBig = styled.div<{ color?: string; align?: string }>`
+type alignType = "left" | "center" | "right"
+
+export const TextBig = styled.div<{ color?: string; align?: alignType }>`
   font-size: 22px;
   font-weight: bold;
   height: 22px;

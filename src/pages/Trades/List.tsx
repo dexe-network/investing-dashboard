@@ -1,10 +1,8 @@
 import styled from "styled-components"
 import { Flex, ease } from "theme"
 import TokenIcon from "components/TokenIcon"
-import { BigNumber } from "@ethersproject/bignumber"
 import { useERC20 } from "hooks/useContract"
 import { ethers } from "ethers"
-import { useSelectPrices } from "state/rates/hooks"
 import { IPoolPosition, IPoolTransaction } from "constants/interfaces"
 import { CircleSpinner } from "react-spinners-kit"
 import { format } from "date-fns"
@@ -65,7 +63,6 @@ export const TradesTotalItem: React.FC<IProps> = ({
 }) => {
   const [tokenContract, tokenData] = useERC20(data.tokenAddress)
   const [baseContract, baseData] = useERC20(data.baseAddress)
-  const prices = useSelectPrices()
 
   if (!tokenContract || !tokenData || !baseContract || !baseData) {
     return (

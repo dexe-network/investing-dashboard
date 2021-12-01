@@ -1,18 +1,14 @@
-import styled from "styled-components"
-import { Flex, Text, Center, To } from "theme"
+import { Block, Center, To } from "theme"
 import { useSwipeable } from "react-swipeable"
 import { useHistory, useParams } from "react-router-dom"
 import FundsList from "components/FundsList"
 import TraderMobile from "components/TraderMobile"
 import Button from "components/Button"
-import { useEffect, useState } from "react"
-import axios from "axios"
+import { useState } from "react"
 import { GuardSpinner } from "react-spinners-kit"
 import { formatNumber } from "utils"
 import { ethers } from "ethers"
-import { useSelectPrices } from "state/rates/hooks"
 import PnlWidget from "components/PnlWidget"
-import { IPoolInfo } from "constants/interfaces"
 
 import OpenNewTrade from "assets/custom-buttons/OpenNewTrade"
 
@@ -22,7 +18,6 @@ import {
   Container,
   Buttons,
   Section,
-  Block,
   HalfBlock,
   Label,
   Value,
@@ -34,32 +29,12 @@ function Trader(props: Props) {
 
   const { poolAddress } = useParams<{ poolAddress: string }>()
   const history = useHistory()
-  const rates = useSelectPrices()
 
-  const [loading, setLoading] = useState(true)
-  const [data, setData] = useState<IPoolInfo | null>(null)
-
-  useEffect(() => {
-    if (typeof poolAddress !== "string") return
-
-    const getPoolData = async () => {
-      const {
-        data: { data },
-      } = await axios.get(
-        `${process.env.REACT_APP_STATS_API_URL}/trader/${poolAddress}/info`
-      )
-      console.log(data)
-      setData(data)
-      setLoading(false)
-    }
-
-    if (poolAddress.length === 42) {
-      getPoolData()
-    }
-  }, [poolAddress])
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState(null)
 
   const redirectToInvestor = () => {
-    history.push("/investor")
+    history.push("/me/investor")
   }
 
   const handlers = useSwipeable({
@@ -74,70 +49,39 @@ function Trader(props: Props) {
     )
   }
 
-  if (!data) {
-    return (
-      <Center>
-        <Text>Data not available</Text>
-      </Center>
-    )
-  }
+  // if (!data) {
+  //   return (
+  //     <Center>
+  //       <Text>Data not available</Text>
+  //     </Center>
+  //   )
+  // }
 
   return (
     <Container {...handlers}>
       <Section>
-        <FundsList />
-        <TraderMobile
-          decimal={data.basicTokenDecimal}
-          symbol={data.symbol}
-          currentPrice={data.currentPrice}
-          priceChange24H={data.priceChange24H}
-          totalValueLocked={data.totalValueLocked}
-          annualPercentageYield={data.annualPercentageYield}
-          profitAndLoss={data.profitAndLoss}
-        />
+        {/* <FundsList /> */}
+        <TraderMobile />
       </Section>
 
       <Section>
         <PnlWidget
-          pnlPeriod={data.profitAndLossByPeriod}
-          pnlChart={data.profitAndLossChart}
+          pnlPeriod={{ m1: 22.2, m3: 12.3, all: 102.38 }}
+          pnlChart={[]}
         />
         <Block>
           <HalfBlock>
             <Label>Personal funds locked</Label>
-            <Value>
-              $
-              {formatNumber(
-                ethers.utils
-                  .formatUnits(
-                    data.personalFundsLocked.toString(),
-                    data.basicTokenDecimal
-                  )
-                  .toString(),
-                2
-              )}
-            </Value>
-            <Pnl side="BUY">
-              {formatNumber(data.personalFundsLocked24H.toString(), 2)}%
-            </Pnl>
+            <Value>${formatNumber("32880", 2)}</Value>
+            <Pnl side="BUY">{formatNumber("12.342", 2)}%</Pnl>
           </HalfBlock>
           <HalfBlock>
             <Label>Investor’s funds locked</Label>
             <Value>
               {"$"}
-              {formatNumber(
-                ethers.utils
-                  .formatUnits(
-                    data.investorsFundsLocked.toString(),
-                    data.basicTokenDecimal
-                  )
-                  .toString(),
-                2
-              )}
+              {formatNumber("240123", 2)}
             </Value>
-            <Pnl side="SELL">
-              {formatNumber(data.investorsFundsLocked24H.toString(), 2)}%
-            </Pnl>
+            <Pnl side="SELL">{formatNumber("-2.28", 2)}%</Pnl>
           </HalfBlock>
         </Block>
         <Buttons>

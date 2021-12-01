@@ -71,7 +71,7 @@ export const ExternalLink = styled.a`
   color: ${(props) => props.theme.linkColor};
 `
 
-export const BaseButton = styled.button`
+export const BaseButton = styled(motion.button)`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,6 +81,7 @@ export const BaseButton = styled.button`
   border: none;
   cursor: pointer;
   user-select: none;
+  background: none;
 
   &:active {
     transform: scale(0.98);
@@ -142,6 +143,21 @@ export const Flex = styled(motion.div)<{
   margin: ${(props) => (props.m ? props.m : 0)};
   padding: ${(props) => (props.p ? props.p : 0)};
   opacity: ${(props) => (props.op ? props.op : 1)};
+`
+
+export const Block = styled(Flex)`
+  position: relative;
+  background: linear-gradient(
+    270deg,
+    rgba(51, 62, 64, 0.5) 0%,
+    rgba(128, 128, 128, 0.5) 100%
+  );
+  border-radius: 5px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+  height: 95px;
+  width: 100%;
+  margin: 5px 0;
+  justify-content: space-around;
 `
 
 export const External: React.FC<{

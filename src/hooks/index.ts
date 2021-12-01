@@ -1,5 +1,6 @@
 import { useWeb3React } from "@web3-react/core"
-import { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
+import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
 
 export function useActiveWeb3React() {
   const web3 = useWeb3React()
@@ -33,4 +34,26 @@ export function useKeyPress(targetKey: string): boolean {
     }
   }, []) // Empty array ensures that effect is only run on mount and unmount
   return keyPressed
+}
+
+export const useFocus = () => {
+  const htmlElRef = useRef<any>(null)
+  const setFocus = () => {
+    htmlElRef.current && htmlElRef.current?.focus && htmlElRef.current.focus()
+  }
+
+  return [htmlElRef, setFocus]
+}
+
+export const useBodyLock = () => {
+  const ref = React.createRef()
+
+  useEffect(() => {
+    if (!ref.current) return
+    disableBodyScroll(ref.current)
+
+    return () => clearAllBodyScrollLocks()
+  }, [ref])
+
+  return ref
 }
