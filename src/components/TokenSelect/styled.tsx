@@ -36,57 +36,64 @@ export const Input = styled.input`
 `
 
 export const CommonContainer = styled.div`
-  max-width: 300px;
-  margin: 25px 15px 0;
+  margin: 33px 0 25px;
+  width: 100%;
 `
 
-export const CommonsList = styled(Flex)`
-  flex-wrap: wrap;
+export const CommonsList = styled.div`
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    ". . . ."
+    ". . . .";
+  justify-items: stretch;
+  align-items: stretch;
+  width: fill-available;
 `
 
 export const CommonItem = styled(Flex)`
   min-width: 86px;
   justify-content: flex-start;
-  margin-bottom: 6px;
-  margin-top: 7px;
+  margin: 6px 0px 7px 3px;
   user-select: none;
   cursor: pointer;
+
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 16px;
+
+  display: flex;
+  align-items: center;
+
+  color: #cfcfcf;
 `
 
 export const FullList = styled(Flex)`
-  margin-top: 23px;
   flex-direction: column;
-  max-height: 373px;
   flex: 1;
   width: 100%;
-  border-radius: 5px;
-  box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23) inset;
-  -webkit-box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23) inset;
-  -moz-box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23) inset;
-  background: linear-gradient(
-    219deg,
-    rgba(41, 49, 52, 1) 0%,
-    rgba(53, 52, 75, 1) 100%
-  );
+  background: rgba(90, 96, 113, 0.15);
+  border-radius: 6px;
   overflow-y: auto;
 `
 
 export const FullItem = styled(Flex)`
   user-select: none;
   cursor: pointer;
-  height: 48px;
-  min-height: 48px;
+  height: 50px;
+  min-height: 50px;
   padding: 10px 15px;
   justify-content: flex-start;
   border-radius: 5px;
   transition: all 0.3s;
 
   &:hover {
-    background: linear-gradient(
-      94deg,
-      rgba(51, 62, 64, 1) 0%,
-      rgba(128, 128, 128, 0.5018382352941176) 100%
-    );
+    background: rgba(52, 59, 67, 0.4);
     box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23);
   }
 `
@@ -99,7 +106,11 @@ export const Price = styled(Text)`
 `
 
 export const Title = styled(Text)`
-  color: #c2c3c4;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 14px;
-  font-size: 500;
+  line-height: 18px;
+  color: #acb3b8;
+  margin-bottom: 12px;
 `

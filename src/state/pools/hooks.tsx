@@ -18,13 +18,20 @@ export function usePoolsFilters(): [
   return [filters, handleChange]
 }
 
-export function usePools(): [Pool[], boolean, () => void] {
-  const [pools, setPools] = useState<Pool[]>([])
+export function usePools(): [
+  { all: Pool[]; risk: Pool[] },
+  boolean,
+  () => void
+] {
+  const [pools, setPools] = useState<{ all: Pool[]; risk: Pool[] }>({
+    all: [],
+    risk: [],
+  })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     setTimeout(() => {
-      setPools(Pools)
+      setPools({ all: Pools, risk: Pools.slice(0, 4) })
       setLoading(false)
     }, 1000)
   }, [])
@@ -33,7 +40,8 @@ export function usePools(): [Pool[], boolean, () => void] {
     if (loading) return
     setLoading(true)
     setTimeout(() => {
-      setPools([...pools, ...Pools])
+      // TODO: handle more for current list
+      // setPools([...pools, ...Pools])
       setLoading(false)
     }, 1300)
   }

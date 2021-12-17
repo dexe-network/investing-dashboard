@@ -32,7 +32,6 @@ export { size, device }
 
 export default {
   textPrimary: "#FAFAFA",
-  linkColor: "#2680EB",
   bgPrimary:
     "linear-gradient(243deg,rgba(41, 49, 52, 1) 0%,rgba(53, 52, 75, 1) 100%);",
   bgPrimaryHovered:
@@ -68,7 +67,7 @@ export const To = styled(Link)`
 
 export const ExternalLink = styled.a`
   text-decoration: none;
-  color: ${(props) => props.theme.linkColor};
+  color: #007ff3;
 `
 
 export const BaseButton = styled(motion.button)`
@@ -83,9 +82,10 @@ export const BaseButton = styled(motion.button)`
   user-select: none;
   background: none;
 
-  &:active {
+  // TODO: remove outdated animation, use only framer-motion package
+  /* &:active {
     transform: scale(0.98);
-  }
+  } */
   &:focus {
     outline: 0px solid transparent;
   }

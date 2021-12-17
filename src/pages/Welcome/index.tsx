@@ -147,7 +147,7 @@ function Welcome(props: Props) {
   }
 
   const handleInvestRedirect = () => {
-    history.push("/pools")
+    history.push("/")
   }
 
   const handlers = useSwipeable({
@@ -200,18 +200,16 @@ function Welcome(props: Props) {
         exit={{ opacity: 0, y: -15 }}
         transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        <To to="/pools">
+        <To to="/">
           <BigIconButton>
             {iconElement}
-            <ButtonText>Start investing</ButtonText>
+            <ButtonText color="#75DDC1">Start investing</ButtonText>
           </BigIconButton>
         </To>
         <To to="new-fund">
           <BigIconButton>
             {iconElement}
-            <ButtonText>
-              Create a new fund <br /> \ become a trader
-            </ButtonText>
+            <ButtonText color="#007FF3">Became a trader</ButtonText>
           </BigIconButton>
         </To>
       </ButtonsContainer>

@@ -55,7 +55,7 @@ const MemberMobile = ({ index = 0 }) => {
         </Flex>
         <Content>
           <Flex dir="column" full>
-            <Flex p="13px 0 8px" full jc="space-evenly">
+            <Flex full jc="space-evenly">
               <Ticker>ISDX</Ticker>
               <Flex>
                 <Price>$1.00</Price>

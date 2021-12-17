@@ -1,111 +1,54 @@
-import { useState, useRef } from "react"
+// import React, { useState, useRef } from "react"
 import styled from "styled-components"
-import { device } from "theme"
-
+import { Flex } from "theme"
 import search from "assets/icons/search.svg"
+// import { motion } from "framer-motion"
 
-import { CircleSpinner } from "react-spinners-kit"
-import { useDebounce } from "react-use"
-
-const StyledSearch = styled.div`
-  position: relative;
-  height: 37px;
-  width: 225px;
-  overflow: hidden;
-  min-width: 40px;
-
-  /* @media only screen and (${device.md}) {
-    width: fit-content;
-  } */
+export const Container = styled(Flex)<{ height: string }>`
+  background: rgba(90, 96, 113, 0.15);
+  box-shadow: 0px 7px 64px rgba(0, 0, 0, 0.07);
+  border-radius: 10px;
+  padding: 0 10px;
+  width: 100%;
+  height: ${(props) => props.height || "30px"};
 `
 
-const Input = styled.input`
-  border-radius: 7px;
-  appearance: none;
-  border: none;
-  background: rgba(0, 0, 0, 0.3);
-  height: 100%;
-  width: 100%;
+export const Input = styled.input`
+  background: none;
   outline: none;
-  padding-left: 10px;
-  padding-top: 5px;
-  transition: all 0.5s;
+  border: none;
 
-  @media only screen and (${device.sm}) {
-    background: transparent;
-  }
+  flex: 1;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 16px;
+  color: #5a6071;
 
   &::placeholder {
-    vertical-align: middle;
+    font-family: Gilroy;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 13px;
     line-height: 16px;
-    font-size: 16px;
-    color: #53575a;
-
-    @media only screen and (${device.sm}) {
-      color: #686c6f;
-    }
-  }
-
-  &:focus {
-    color: #707070;
-    background: #000;
+    color: #5a6071;
   }
 `
 
-const IconWrapper = styled.div`
-  position: absolute;
-  right: 9px;
-  top: 9px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20px;
-`
+export const Icon = styled.img``
 
-const Icon = styled.img`
-  width: 20px;
-  height: 20px;
-`
+interface Props {
+  height: string
+  placeholder: string
+}
 
-const Search: React.FC<{
-  onChange: (value: string, name: string) => void
-}> = (props) => {
-  const ref = useRef<HTMLInputElement>(null)
-  const [val, setVal] = useState("")
-  const [typing, setTyping] = useState(false)
-
-  useDebounce(
-    () => {
-      props.onChange("query", val)
-      setTyping(false)
-    },
-    800,
-    [val]
-  )
-
+const Search: React.FC<Props> = ({ height, placeholder }) => {
   return (
-    <StyledSearch>
-      <Input
-        ref={ref}
-        onChange={(e) => {
-          setVal(e.target.value)
-          setTyping(true)
-        }}
-        placeholder="Names, Ticker, Address"
-      />
-      <IconWrapper
-        onClick={() => {
-          const node = ref.current
-
-          if (node) {
-            node.focus()
-          }
-        }}
-      >
-        {typing ? <CircleSpinner size={15} loading /> : <Icon src={search} />}
-      </IconWrapper>
-    </StyledSearch>
+    <Container height={height}>
+      <Input placeholder={placeholder} />
+      <Icon src={search} />
+    </Container>
   )
 }
 

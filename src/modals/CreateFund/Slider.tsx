@@ -276,7 +276,7 @@ export default function Slider<Props>({ close }) {
                 have not been added to the following whitelist won’t be able to
                 participate in investing in the fund.
               </Secondary>
-              <AddressChips />
+              <AddressChips limit={10} />
             </Flex>
           </Flex>
         </Flex>

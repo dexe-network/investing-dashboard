@@ -33,13 +33,3 @@ export const ListContainer = styled(motion.div)`
     padding: 0;
   }
 `
-
-export const LoadMoreIcon = styled(motion.div)`
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 40px auto;
-  z-index: 100;
-  height: 50px;
-`

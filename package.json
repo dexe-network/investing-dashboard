@@ -104,6 +104,7 @@
     "@storybook/node-logger": "^6.1.15",
     "@storybook/preset-create-react-app": "^3.1.5",
     "@storybook/react": "^6.1.15",
+    "storybook-react-router": "^1.0.8",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.7",
@@ -118,9 +119,8 @@
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "4.0.0",
-    "generate-react-cli": "https://github.com/edward-arinin-web-dev/generate-react-cli.git",
     "prettier": "^2.2.1",
-    "storybook-react-router": "^1.0.8"
+    "generate-react-cli": "https://github.com/edward-arinin-web-dev/generate-react-cli.git"
   },
   "resolutions": {
     "styled-components": "^5"

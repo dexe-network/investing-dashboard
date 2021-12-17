@@ -9,36 +9,48 @@ import { useWeb3React } from "@web3-react/core"
 import { useActiveWallet } from "hooks/useActiveWallet"
 
 const Card = styled.div`
-  background: linear-gradient(
-    243deg,
-    rgba(41, 49, 52, 1) 0%,
-    rgba(53, 52, 75, 1) 100%
-  );
-  height: 70px;
+  background: #2f333b;
+  border-radius: 6px;
+  height: 47px;
   width: 100%;
-  border-radius: 10px;
-  width: 100%;
-  box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.35);
-  padding: 15px 18px;
+  padding: 5px 18px;
   user-select: none;
 `
 
 const Label = styled.div`
-  color: #707070;
-  font-size: 14px;
-  font-weight: 300;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.5px;
+  color: #75ddc1;
 `
 
 const Address = styled.div`
-  color: #999999;
-  font-size: 22px;
-  font-weight: 500;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 22px;
+
+  display: flex;
+  align-items: center;
+
+  color: #aeb0b2;
 `
 
 const Change = styled.div`
-  color: #999999;
-  font-size: 14px;
-  font-style: italic;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: right;
+
+  /* Input/Text */
+
+  color: #5a6071;
   cursor: pointer;
 `
 
@@ -67,21 +79,18 @@ const WalletCard: React.FC<IProps> = (props) => {
   return (
     <Card>
       <Flex full>
-        <Label>Owner wallet: {wallet}</Label>
+        <Label>Owner</Label>
         <Change>Change</Change>
       </Flex>
-      <Flex p="5px 0 0" full>
-        {account ? (
-          <Flex ai="center">
-            <Address>{shortenAddress(account)}</Address>
-            <LinkIcon fill="#2680EB" />
-          </Flex>
-        ) : (
-          <Connect>Connect wallet</Connect>
-        )}
+      <Flex full>
+        <Flex ai="center">
+          <Address>
+            {account ? shortenAddress(account) : "wallet not connected"}
+          </Address>
+        </Flex>
         <Flex>
           <TokenIcon
-            size={26}
+            size={20}
             src={tokens[props.token.toLowerCase()]?.logoURI}
           />
           <TokenName>{tokens[props.token.toLowerCase()]?.symbol}</TokenName>

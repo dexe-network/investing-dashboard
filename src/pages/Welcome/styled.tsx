@@ -21,51 +21,75 @@ export const ProfileSetup = styled(Flex)`
   height: 141px;
 `
 export const BigIconButton = styled(BaseButton)`
+  width: 279px;
   box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.16);
   background: none;
-  background: linear-gradient(
-    267deg,
-    rgba(51, 62, 64, 0.25) 0%,
-    rgba(128, 128, 128, 0.25) 100%
-  );
+  background: linear-gradient(64.44deg, #24282d 32.35%, #3a393f 100%);
   border-radius: 50px;
-  color: #47bef9;
   font-size: 15px;
   font-weight: 500;
   padding: 16px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin: 15px 0;
 `
 export const IconContainer = styled(Flex)`
-  min-width: 68px;
-  min-height: 68px;
+  min-width: 57px;
+  min-height: 57px;
   border-radius: 100px;
   justify-content: center;
+  padding-top: 5px;
   align-items: center;
-  background: #332e47;
+  background: #202020;
+  -webkit-box-shadow: inset 0px 12px 27px 0px #202020;
+  box-shadow: inset 0px 12px 27px 0px #202020;
 `
 
-export const AvatarWrapper = styled(AvatarContainer)``
+export const AvatarWrapper = styled(AvatarContainer)`
+  &:after {
+    content: "+";
+    position: absolute;
+    right: -5px;
+    top: 0px;
+    width: 27px;
+    height: 27px;
+    background: linear-gradient(64.44deg, #3a393f 32.35%, #24282d 100%);
+    border-radius: 8px 0 8px 0;
+    font-family: Gilroy;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 29px;
+    color: #75ddc1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`
 export const Icon = styled.img``
 
 export const ButtonText = styled(Text)`
-  color: #47bef9;
-  font-size: 15px;
-  font-weight: 500;
-  width: 216px;
-  padding-left: 36px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 41px;
+  padding-left: 17px;
   text-align: left;
 `
 
 export const HintText = styled(Text)`
   position: relative;
   text-align: center;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 14px;
-  color: #c2c3c4;
+  line-height: 17px;
+  color: #c4c4c4;
   margin-top: 13px;
 
-  &:before {
+  /* &:before {
     content: "";
     position: absolute;
     width: 12px;
@@ -86,7 +110,7 @@ export const HintText = styled(Text)`
     background: url(${arrowToLogo});
     background-repeat: no-repeat;
     background-size: contain;
-  }
+  } */
 `
 
 export const ButtonsContainer = styled(Flex)`

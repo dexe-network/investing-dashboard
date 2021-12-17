@@ -52,19 +52,24 @@ export const Wrapper = styled(Flex)`
 export const TraderName = styled.div`
   cursor: pointer;
   position: absolute;
-  bottom: -2px;
+  bottom: -9px;
   left: 0;
   right: 0;
   margin: 0 auto;
-  background-color: #35344b;
+  background: linear-gradient(64.44deg, #24282d 32.35%, #3a393f 100%);
+  border-radius: 4px;
   padding: 5px 7px 3px 7px;
-  border-radius: 10px 0 10px 0;
-  width: 91px;
+  width: 134px;
+  height: 27px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
   color: #7fffd4;
-  font-size: 12px;
   text-align: center;
   box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.3);
   z-index: 25;
@@ -79,7 +84,7 @@ export const Content = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding-left: 35px;
+  padding-left: 45px;
   width: 100%;
   height: 96px;
   z-index: 1;
@@ -97,13 +102,9 @@ export const Content = styled.div`
     right: 0;
     top: 0;
     bottom: 0;
-    background: linear-gradient(
-      262deg,
-      rgba(51, 62, 64, 1) 0%,
-      rgba(128, 128, 128, 1) 100%
-    );
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
+    background: linear-gradient(64.44deg, #24282d 32.35%, #3a393f 100%);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
     opacity: 0.5;
     z-index: 2;
     box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
@@ -117,11 +118,11 @@ export const Content = styled.div`
     top: 38px;
     bottom: 0;
     background: linear-gradient(
-      0deg,
-      rgba(51, 62, 64, 1) 0%,
-      rgba(79, 81, 85, 1) 100%
+      244.44deg,
+      rgba(250, 250, 250, 0.1) 0%,
+      rgba(0, 0, 0, 0.04) 67.65%
     );
-    border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 10px;
     opacity: 0.5;
     z-index: 3;
     box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
@@ -129,22 +130,34 @@ export const Content = styled.div`
 `
 
 export const Ticker = styled(Text)`
-  font-size: 22px;
+  font-family: Gilroy;
+  font-style: normal;
   font-weight: bold;
+  font-size: 20px;
+  line-height: 41px;
   color: #c2c3c4;
   margin-right: 20px;
 `
 
 export const Price = styled(Text)`
-  font-size: 22px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 41px;
   color: #c2c3c4;
   margin-right: 3px;
 `
 
 export const Pnl = styled(Text)`
-  font-size: 12px;
-  color: #7fffd4;
-  transform: translateY(3px);
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+
+  color: #9ae2cb;
+  transform: translateY(2px);
 `
 
 export const Tile = styled(Flex)`
@@ -154,34 +167,61 @@ export const Tile = styled(Flex)`
 `
 
 export const Value = styled(Text)`
-  color: #ffffff;
-  font-size: 22px;
+  color: #f7f7f7;
+  font-family: Gilroy;
+  font-style: normal;
   font-weight: bold;
-  height: 28px;
+  font-size: 20px;
+  line-height: 32px;
 `
 
 export const Label = styled(Text)`
-  color: #c2c3c4;
-  font-size: 15px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #5a6071;
 `
 
 export const CopiersCounter = styled(Text)`
-  color: #7fffd4;
-  font-weight: bold;
+  color: #9ae2cb;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 12px;
+  line-height: 15px;
   margin-right: 5px;
 `
 
 export const CopiersLabel = styled(Text)`
-  color: #999999;
-  font-weight: 800;
-  font-size: 12px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #c2c3c4;
 `
 
 export const CopiersPnl = styled(Text)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+
   color: #7fffd4;
-  font-weight: 400;
-  font-size: 12px;
+
   opacity: 0.5;
   margin-left: 3px;
 `

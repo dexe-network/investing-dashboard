@@ -24,7 +24,7 @@ export const initialState: poolsState = {
     period: initialRange,
     query: "",
     currency: currencies[0],
-    listStyle: "list",
+    listType: "all",
   },
   list: [],
 }

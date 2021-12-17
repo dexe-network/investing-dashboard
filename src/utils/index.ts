@@ -95,3 +95,7 @@ export function getSignature(nonce, address, lib) {
 
   return signer.signMessage(nonce)
 }
+
+export function checkMetamask() {
+  //
+}

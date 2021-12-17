@@ -12,7 +12,6 @@ const ProfileHeader: React.FC = () => {
 
   const isTrader = location.pathname.substr(0, 10) === "/me/trader"
   const isInvestor = location.pathname.substr(0, 12) === "/me/investor"
-  const isNewFund = location.pathname.substr(0, 12) === "/me/new-fund"
 
   useEffect(() => {
     document.ontouchmove = function (event) {
@@ -63,27 +62,6 @@ const ProfileHeader: React.FC = () => {
           <img src={swipeRight} alt="swipe right" />
           <FloatingLabel>Your fund</FloatingLabel>
         </FloatingButton>
-      </HeadContainer>
-    )
-  }
-
-  if (isNewFund) {
-    return (
-      <HeadContainer>
-        <FloatingButton
-          position="left"
-          initial={{ opacity: 0, x: -15 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 15 }}
-          transition={{
-            delay: 0.3,
-            duration: 0.3,
-            ease: [0.29, 0.98, 0.29, 1],
-          }}
-        >
-          <img src={swipeLeft} alt="swipe right" />
-        </FloatingButton>
-        <Title>Basic Information</Title>
       </HeadContainer>
     )
   }

@@ -1,11 +1,18 @@
-import { InputButton, InputUI } from "modals/CreateFund/styled"
 import React from "react"
 import { isAddress } from "utils"
 
 import { shortenAddress } from "utils"
 
 import close from "assets/icons/close.svg"
-import { ChipsWrapper, TagItem, TagButton, ErrorText } from "./styled"
+import {
+  LimitIndicator,
+  ChipsWrapper,
+  TagItem,
+  TagButton,
+  ErrorText,
+  Container,
+  Input,
+} from "./styled"
 
 type AddressChipsState = {
   items: string[]
@@ -15,9 +22,10 @@ type AddressChipsState = {
 
 type AddressChipsProps = {
   label?: string
-  limit?: number
+  limit: number
 }
 
+// TODO: refactor to functional component
 export default class AddressChips extends React.Component<
   AddressChipsProps,
   AddressChipsState
@@ -120,33 +128,30 @@ export default class AddressChips extends React.Component<
     const { label, limit } = this.props
     const { items, error } = this.state
     return (
-      <>
-        <ChipsWrapper full p="15px 0 0" jc="flex-start">
-          {items.map((item) => (
-            <TagItem key={item}>
-              {shortenAddress(item)}
-              <TagButton onClick={() => this.handleDelete(item)}>
-                <img src={close} />
-              </TagButton>
-            </TagItem>
-          ))}
-        </ChipsWrapper>
+      <Container>
+        {!!items.length && (
+          <ChipsWrapper full p="15px 0 0" jc="flex-start">
+            {items.map((item) => (
+              <TagItem key={item}>
+                {shortenAddress(item)}
+                <TagButton onClick={() => this.handleDelete(item)}>
+                  <img src={close} />
+                </TagButton>
+              </TagItem>
+            ))}
+          </ChipsWrapper>
+        )}
 
-        <InputUI
-          name="address-input"
-          label={label || "type address"}
+        <Input
+          placeholder="Paste address here 0x..."
           onKeyDown={this.handleKeyDown}
-          onChange={this.handleChange}
+          onChange={(e) => this.handleChange("", e.target.value)}
           onPaste={this.handlePaste}
-          icon={
-            limit !== undefined && (
-              <InputButton>{limit - items.length} left</InputButton>
-            )
-          }
         />
 
-        {error && <ErrorText>{error}</ErrorText>}
-      </>
+        <LimitIndicator>{limit - items.length} left</LimitIndicator>
+        <ErrorText>{error}</ErrorText>
+      </Container>
     )
   }
 }

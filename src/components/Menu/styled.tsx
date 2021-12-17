@@ -200,62 +200,6 @@ const ProviderIcon = styled.img`
   height: 30px;
 `
 
-const MobileMenu = styled.div`
-  display: none;
-
-  @media only screen and (${device.sm}) {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    user-select: none;
-    grid-area: bottom;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 7px 11px 7px;
-    width: 100%;
-    height: 62px;
-    z-index: 5;
-    background: rgb(41, 49, 52);
-    background: linear-gradient(
-      34deg,
-      rgba(41, 49, 52, 1) 0%,
-      rgba(53, 52, 75, 1) 100%
-    );
-    box-shadow: 0px -3px 6px rgba(0, 0, 0, 0.2);
-  }
-`
-
-const MobileItem = styled.div`
-  width: 55px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-`
-
-const MobileIcon = styled.img`
-  width: 21px;
-  height: 21px;
-`
-
-const MobileLabel = styled.div`
-  font-size: 9px;
-  color: #ffffff;
-  text-align: center;
-  margin-top: 5px;
-  margin-bottom: 10px;
-`
-
-const NavItem = ({ children, src, onClick = () => {} }) => (
-  <MobileItem onClick={onClick}>
-    <MobileIcon src={src} alt="" />
-    <MobileLabel>{children}</MobileLabel>
-  </MobileItem>
-)
-
 export {
   ProviderIcon,
   LogoSection,
@@ -271,6 +215,4 @@ export {
   Icon,
   Content,
   Group,
-  MobileMenu,
-  NavItem,
 }

@@ -9,7 +9,7 @@ export const Icon = styled.img<{ size?: number }>`
   min-height: ${(props) => (props.size ? props.size : 28)}px;
   min-width: ${(props) => (props.size ? props.size : 28)}px;
   border-radius: 50px;
-  margin-right: 10px;
+  margin-right: 8px;
 `
 
 interface IProps {

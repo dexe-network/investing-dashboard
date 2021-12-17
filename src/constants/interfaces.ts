@@ -21,14 +21,12 @@ export interface IStaticRanges {
   range: () => void
 }
 
-export type ListOrCard = "list" | "card"
-
 export interface ITopMembersFilters {
   sort: string
   period: string[]
   query: string
   currency: string
-  listStyle: ListOrCard
+  listType: "all" | "risk"
 }
 
 export interface ITokenBase {

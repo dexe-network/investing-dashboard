@@ -1,6 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="12.357" height="12.357" viewBox="0 0 12.357 12.357">
-  <g id="Icon" transform="translate(1.179 3.679)">
-    <line id="Line" x1="10" y2="10" transform="translate(0 -2.5)" fill="none" stroke="#767676" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.667"/>
-    <line id="Line-2" data-name="Line" x2="10" y2="10" transform="translate(0 -2.5)" fill="none" stroke="#767676" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.667"/>
-  </g>
+<svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M5.5421 5L9.37457 9.17398C9.54807 9.36294 9.54807 9.66931 9.37457 9.85828C9.20107 10.0472 8.91977 10.0472 8.74626 9.85828L4.91379 5.6843L1.08131 9.85828C0.90781 10.0472 0.626506 10.0472 0.453003 9.85828C0.2795 9.66931 0.2795 9.36294 0.453003 9.17398L4.28548 5L0.453003 0.826019C0.2795 0.637056 0.2795 0.330686 0.453003 0.141723C0.626506 -0.0472408 0.90781 -0.0472408 1.08131 0.141723L4.91379 4.3157L8.74626 0.141723C8.91977 -0.0472408 9.20107 -0.0472408 9.37457 0.141723C9.54807 0.330686 9.54807 0.637056 9.37457 0.826019L5.5421 5Z" fill="url(#paint0_linear_458_964)"/>
+<defs>
+<linearGradient id="paint0_linear_458_964" x1="9.5047" y1="0" x2="1.80742" y2="3.38038" gradientUnits="userSpaceOnUse">
+<stop stop-color="#63B49B"/>
+<stop offset="1" stop-color="#A4EBD4"/>
+</linearGradient>
+</defs>
 </svg>

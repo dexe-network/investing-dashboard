@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import styled from "styled-components"
 import { Text, Flex, BaseButton, device, ExternalLink } from "theme"
 import { motion } from "framer-motion"
+import RadioButton from "components/RadioButton"
 import { StageSpinner } from "react-spinners-kit"
 import { List } from "react-virtualized"
 import arrowDown from "assets/icons/angle-down.svg"
@@ -21,37 +22,52 @@ import InputSlider from "rc-slider"
 import useDebounce from "hooks/useDebounce"
 
 export const Title = styled(Flex)`
-  font-size: 24px;
+  font-family: Gilroy;
+  font-style: normal;
   font-weight: bold;
-  color: #f5f5f5;
+  font-size: 22px;
+  line-height: 41px;
+
+  letter-spacing: 0.5px;
+
+  color: #ffffff;
   white-space: normal;
   text-align: center;
   height: 52px;
   width: 100%;
   justify-content: center;
   flex: 1;
-  /* margin-bottom: 15px; */
+`
+
+export const InputLabel = styled(motion.div)`
+  margin-bottom: 7px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 18px;
+  color: #acb3b8;
 `
 
 export const Secondary = styled(Text)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 14px;
-  color: #f7f7f7;
-  font-weight: 400;
-  letter-spacing: 0.25px;
-  white-space: normal;
-  margin-top: 20px;
+  line-height: 130%;
+  /* or 18px */
 
-  @media only screen and (${device.sm}) {
-    font-size: 14px;
-  }
+  white-space: normal;
+  color: #878d9d;
 `
 
 export const Warn = styled(Text)`
-  font-size: 16px;
-  color: #ff7f7fb9;
-  white-space: normal;
-  font-style: italic;
-  padding-top: 4px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 18px;
+  color: #616a78;
 
   @media only screen and (${device.sm}) {
     font-size: 12px;
@@ -60,19 +76,15 @@ export const Warn = styled(Text)`
 
 const Container = styled(Flex)`
   position: relative;
-  border: 1px solid #2f2f2f;
   width: 100%;
   min-height: 61px;
-  transition: all 0.3s cubic-bezier(0.63, 0.08, 0.49, 0.84);
-  border-radius: 10px;
   margin-top: 15px;
-  background: #373b45;
   cursor: pointer;
 
-  &:hover {
-    background: #3e4250;
-    border: 1px solid #3e4250;
-  }
+  background: #2f333b;
+
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
+  border-radius: 6px;
 
   @media only screen and (${device.sm}) {
     min-height: 51px;
@@ -80,10 +92,12 @@ const Container = styled(Flex)`
 `
 
 const LabelBase = styled(Text)`
-  color: #999999;
-  font-weight: 300;
-  user-select: none;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 18px;
+  line-height: 18px;
+  color: #5a6071;
 `
 
 const Label = styled(LabelBase)`
@@ -106,23 +120,17 @@ const Input = styled(motion.input)`
   height: 59px;
   width: 100%;
   outline: none;
-  transition: all 0.5s;
   box-sizing: border-box;
   padding: 15px 15px 0;
   z-index: 2;
   position: relative;
-  color: #549680;
+  color: #1e1e1e;
 
   &::placeholder {
     vertical-align: middle;
     line-height: 16px;
     font-size: 16px;
     color: #53575a;
-  }
-
-  &:focus {
-    color: #707070;
-    /* border: 1px solid #2f2f2f; */
   }
 
   @media only screen and (${device.sm}) {
@@ -164,10 +172,13 @@ export const TextItalic = styled.span`
 `
 
 export const InputButton = styled.span`
-  color: #767676;
-  font-size: 16px;
+  font-family: Gilroy;
   font-style: italic;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 18px;
   white-space: nowrap;
+  color: #5a6071;
 `
 
 export const InputUI: React.FC<{
@@ -226,107 +237,54 @@ export const InputUI: React.FC<{
 }
 
 const DropdownBody = styled(Flex)`
-  overflow: hidden;
   flex-direction: column;
   justify-content: flex-start;
-  margin-top: 20px;
-  /* position: absolute; */
-  min-height: 235px;
-  /* margin: auto; */
-  /* top: 65px; */
-  background: linear-gradient(
-    90deg,
-    rgba(71, 72, 82, 1) 0%,
-    rgba(55, 59, 69, 1) 100%
-  );
-  /* left: 0px; */
-  /* right: 0px; */
   width: 100%;
-  z-index: 100;
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0px 3px 6px 5px rgba(0, 0, 0, 0.16);
-  box-shadow: inset 0px 3px 6px 5px rgba(0, 0, 0, 0.16);
 `
 
-const DropdownLabel = styled.div<{ active?: boolean }>`
-  transition: all 0.5s ease-in-out;
-  color: #ffffff;
+const DropdownCardButton = styled.p`
+  padding-top: 12px;
+`
+
+const DropdownLabel = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 16px;
-  font-weight: ${(props) => (props.active ? 800 : 500)};
-  position: relative;
-  z-index: 10;
+  line-height: 31px;
+  color: #dadada;
 `
 
 const DropdownDescription = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 12px;
-  color: #c2c3c4;
+  line-height: 14px;
+
+  color: #848a9a;
   z-index: 10;
   position: relative;
 `
 
-const DropdownItem = styled.div<{ active?: boolean }>`
+const DropdownItem = styled(Flex)`
   position: relative;
   flex: 1;
   width: 100%;
-  padding: 15px 15px;
-  border-bottom: 1px solid #312b46;
+  background: linear-gradient(64.44deg, #282b31 32.35%, #2f333b 100%);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
+  border-radius: 10px;
+  margin: 8px 0;
+  padding: 5px 15px 10px;
+`
 
-  &:nth-child(1) {
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: ${(props) =>
-        props.active &&
-        "linear-gradient(101deg, rgba(57,95,78,1) 0%, rgba(76,57,95,1) 100%)"};
-
-      filter: blur(2px);
-      z-index: 5;
-    }
-  }
-  &:nth-child(2) {
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: ${(props) =>
-        props.active &&
-        "linear-gradient(101deg, rgba(135,53,71,1) 0%, rgba(76,57,95,1) 100%)"};
-      filter: blur(2px);
-      z-index: 5;
-    }
-  }
-  &:nth-child(3) {
-    &:before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: ${(props) =>
-        props.active &&
-        "linear-gradient(101deg, rgba(55,77,133,1) 0%, rgba(76,57,95,1) 100%)"};
-
-      filter: blur(2px);
-      z-index: 5;
-    }
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
+const DropdownContent = styled.div`
+  flex: 1;
 `
 
 export const SelectUI = ({ label }) => {
   const [active, setActive] = useState(false)
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState("Standard")
 
   const handleSelect = (v) => {
     setActive(false)
@@ -334,90 +292,59 @@ export const SelectUI = ({ label }) => {
   }
   return (
     <>
-      {/* <Container onClick={() => setActive(!active)}>
-        <div></div>
-        <Label initial="hidden" animate="visible">
-          {value || label}
-        </Label>
-        <Flex
-          animate={
-            active
-              ? { transform: "rotate(180deg)" }
-              : { transform: "rotate(0deg)" }
-          }
-          jc="center"
-          ai="center"
-          p="15px"
-        >
-          <img src={angleDown} alt="select" />
-        </Flex>
-      </Container> */}
       <DropdownBody>
-        <DropdownItem
-          active={value === "Standard"}
-          onClick={() => handleSelect("Standard")}
-        >
-          <DropdownLabel active={value === "Standard"}>Standard</DropdownLabel>
-          <DropdownDescription>
-            <p>
-              Trading on assets from the <Text color="#47BEF9">white list</Text>{" "}
-              + Trading of
-            </p>
-            <p>non-whitelisted assets through the proposals (low risk)</p>
-            <p>
-              <ExternalLink
-                onClick={(e) => e.stopPropagation()}
-                href="https://google.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Read more
-              </ExternalLink>
-            </p>
-          </DropdownDescription>
+        <DropdownItem onClick={() => handleSelect("Standard")}>
+          <Flex p="0 15px">
+            <RadioButton
+              selected={value}
+              onChange={setValue}
+              value="Standard"
+            />
+          </Flex>
+          <DropdownContent>
+            <DropdownLabel>Standard</DropdownLabel>
+            <DropdownDescription>
+              <p>
+                Trading on assets from the{" "}
+                <Text color="#47BEF9">white list</Text> + Trading of
+              </p>
+              <p>non-whitelisted assets through the proposals</p>
+              <DropdownCardButton>
+                (low risk){" "}
+                <ExternalLink
+                  onClick={(e) => e.stopPropagation()}
+                  href="https://google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read more
+                </ExternalLink>
+              </DropdownCardButton>
+            </DropdownDescription>
+          </DropdownContent>
         </DropdownItem>
-        <DropdownItem
-          active={value === "Risky"}
-          onClick={() => handleSelect("Risky")}
-        >
-          <DropdownLabel active={value === "Risky"}>Risky</DropdownLabel>
-          <DropdownDescription>
-            <p>Trading of non-whitelisted assets.</p>
-            <p>suspended for 20 days</p>
-            <p>
-              (High risk){" "}
-              <ExternalLink
-                onClick={(e) => e.stopPropagation()}
-                href="https://google.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Read more
-              </ExternalLink>
-            </p>
-          </DropdownDescription>
-        </DropdownItem>
-        <DropdownItem
-          active={value === "Investment"}
-          onClick={() => handleSelect("Investment")}
-        >
-          <DropdownLabel active={value === "Investment"}>
-            Investment
-          </DropdownLabel>
-          <DropdownDescription>
-            <p>Manage the assets on your own</p>
-            <p>
-              (High risk){" "}
-              <ExternalLink
-                onClick={(e) => e.stopPropagation()}
-                href="https://google.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Read more
-              </ExternalLink>
-            </p>
-          </DropdownDescription>
+        <DropdownItem onClick={() => handleSelect("Risky")}>
+          <Flex p="0 15px">
+            <RadioButton selected={value} onChange={setValue} value="Risky" />
+          </Flex>
+          <DropdownContent>
+            <DropdownLabel>Risky</DropdownLabel>
+            <DropdownDescription>
+              <p>Trading of non-whitelisted assets.</p>
+              <p>suspended for 20 days</p>
+              <DropdownCardButton>
+                (High risk){" "}
+                <ExternalLink
+                  onClick={(e) => e.stopPropagation()}
+                  href="https://google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read more
+                </ExternalLink>
+              </DropdownCardButton>
+            </DropdownDescription>
+          </DropdownContent>
         </DropdownItem>
       </DropdownBody>
     </>
@@ -448,7 +375,7 @@ export const TokenWrapper = styled.div`
   margin-right: 10px;
 `
 
-const TextArea = styled.textarea`
+export const TextArea = styled.textarea`
   resize: none;
   height: 78px;
   width: 434px;
@@ -456,13 +383,18 @@ const TextArea = styled.textarea`
   position: relative;
   border: 1px solid transparent;
   transition: all 0.5s;
-  border-radius: 9px;
-  background: ${(props) => props.theme.bgPrimary};
+  background: #2f333b;
+  border-radius: 6px;
   padding: 13px 16px;
   color: #549680;
 
   &::placeholder {
-    color: #999999;
+    font-family: Gilroy;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 15px;
+    color: #5a6071;
   }
 
   &:focus {
@@ -472,12 +404,17 @@ const TextArea = styled.textarea`
   }
 `
 
-const MaxLength = styled(Text)`
+export const MaxLength = styled(Text)`
   position: absolute;
   right: 15px;
   bottom: 15px;
   max-width: 50px;
-  font-style: italic;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: right;
 `
 
 export const Area = ({ name, onChange }) => {
@@ -491,15 +428,15 @@ export const Area = ({ name, onChange }) => {
     onChange(name, target.value)
   }
 
-  const left = 255 - description.length
+  const left = 1000 - description.length
   return (
     <Container>
       <TextArea
-        placeholder="Description"
+        placeholder="Fund strategy"
         onChange={handleChange}
         onBlur={handleBlur}
       />
-      <MaxLength color={left >= 0 ? "#767676" : "#D73231"} fz={16}>
+      <MaxLength color={left >= 0 ? "#5A6071" : "#D73231"} fz={16}>
         {left} left
       </MaxLength>
     </Container>
@@ -518,59 +455,32 @@ export const ButtonsCoontainer = styled(Flex)`
   }
 `
 
-export const StepperBaseButton = styled(BaseButton)`
-  border-radius: 10px;
-  padding: 19px 44px 16px;
-  font-size: 14px;
-  font-weight: bold;
-`
+export const StepperBaseButton = styled(BaseButton)``
 
 export const NextButton = styled(StepperBaseButton)`
-  background: #202020;
-  width: 100%;
-  color: #7fffd4;
-
-  @media screen and (${device.xs}) {
-    background: transparent;
-    width: fit-content;
-    padding: 17px 20px 17px 25px;
-  }
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 41px;
+  color: #9ae2cb;
 `
 
 export const PrevButton = styled(StepperBaseButton)`
-  background: transparent;
-  margin-right: 15px;
-  padding: 17px 15px 17px 25px;
-  color: #c2c3c4;
-  font-weight: 300;
-
-  @media screen and (${device.xs}) {
-    padding: 17px 15px;
-    margin-right: 0;
-  }
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 41px;
+  color: #9ae2cb;
 `
 
 export const DotsWrapper = styled(Flex)`
   max-width: 165px;
   min-width: 165px;
   position: relative;
-  padding: 10px 0 0;
   margin: 0 auto;
-  justify-content: space-evenly;
-
-  &:after {
-    content: "";
-    background: #595b6c;
-    height: 2px;
-    position: absolute;
-    left: 15px;
-    right: 15px;
-  }
-
-  @media screen and (${device.xs}) {
-    padding: 0;
-    margin-left: 15px;
-  }
+  justify-content: space-around;
 `
 
 const types = {
@@ -582,7 +492,7 @@ const types = {
 
 const background = {
   CHECKED: "#889393",
-  DEFAULT: "#626878",
+  DEFAULT: "#636A77",
   ACTIVE: "#419389",
   NEXT: "#496876",
 }
@@ -592,32 +502,16 @@ export type StepperDotTypes = "CHECKED" | "DEFAULT" | "ACTIVE" | "NEXT"
 export const StepperDot = styled(Link)<{
   type?: StepperDotTypes
 }>`
-  width: 15px;
-  height: 15px;
+  width: 8px;
+  height: 8px;
   background: ${(props) =>
     props.type ? background[props.type] : background.DEFAULT};
   border-radius: 50px;
-  border: 1px solid
-    ${(props) => (props.type ? types[props.type] : types.DEFAULT)};
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2;
   cursor: pointer;
-
-  box-shadow: ${(props) =>
-    props.type && props.type === "ACTIVE"
-      ? "0 0 6px rgba(127, 255, 212, 0.3)"
-      : "none"};
-
-  &:before {
-    content: "";
-    height: 5px;
-    width: 5px;
-    display: block;
-    background: ${(props) => (props.type ? types[props.type] : types.DEFAULT)};
-    border-radius: 50px;
-  }
 `
 
 export const SliderContainer = styled.div``
@@ -660,6 +554,41 @@ const slideVariants = {
   },
 }
 
+export const PerformanceCard = styled(Flex)`
+  background: linear-gradient(64.44deg, #282b31 32.35%, #2f333b 100%);
+  mix-blend-mode: normal;
+  width: 100%;
+  min-height: 65px;
+  margin: 4px 0;
+
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
+  border-radius: 10px;
+`
+
+export const PerformanceContent = styled.div`
+  flex: 1;
+`
+
+export const PerformanceTitle = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  color: #f7f7f7;
+`
+
+export const PerformanceDescription = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  line-height: 16px;
+  /* identical to box height */
+
+  color: #7a8085;
+`
+
 export const Slide = ({ item, active }) => {
   return (
     <SliderItem
@@ -681,8 +610,8 @@ export const FormLabel = styled(Text)`
 
 export const SliderLine = styled.div`
   width: 100%;
-  background: rgba(32, 32, 32, 0.33);
-  border-radius: 6px;
+  background: #2f333b;
+  border-radius: 2px;
   height: 4px;
   max-width: 20%;
   margin-right: -3px;
@@ -695,27 +624,28 @@ const Percent = styled.input`
   outline: none;
   border: none;
   border-radius: 0;
-  width: 95px;
-  border-bottom: 1px solid #676767;
-  color: #dddddd;
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-  margin-left: 10px;
+  width: 35px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 41px;
+  color: #c2c3c4;
   position: relative;
 `
 
-const InputWrapper = styled.div`
+const InputWrapper = styled(Flex)`
   position: relative;
+  /* width: 55px; */
 `
 
 const InputSymbol = styled.span`
-  position: absolute;
-  right: 20px;
-  top: 1px;
-  color: #dddddd;
-  font-size: 18px;
-  font-weight: bold;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 16px;
+  color: #c2c3c4;
 `
 
 export const NumberInput = ({ value, onChange }) => (
@@ -820,8 +750,5 @@ export const Arrow = styled.img`
 export const Footer = styled(Flex)`
   flex-direction: row;
   width: 100%;
-
-  /* @media screen and (${device.xs}) {
-    flex-direction: row;
-  } */
+  padding: 20px 0;
 `
