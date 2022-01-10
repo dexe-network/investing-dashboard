@@ -10,7 +10,6 @@ import { useEagerConnect } from "hooks/useEagerConnect"
 import { useInactiveListener } from "hooks/useInactiveListener"
 
 import ConnectWalletContext from "context/ConnectWalletContext"
-import PopoverContext from "context/PopoverContext"
 
 import NotificationsContext from "context/NotificationsContext"
 
@@ -44,11 +43,9 @@ const App = () => {
           <AppWrapper>
             <ConnectWalletContext>
               <NotificationsContext>
-                <PopoverContext>
-                  <Menu />
-                  <Routes />
-                  <TapBar />
-                </PopoverContext>
+                <Menu />
+                <Routes />
+                <TapBar />
               </NotificationsContext>
             </ConnectWalletContext>
           </AppWrapper>

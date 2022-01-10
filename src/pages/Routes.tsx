@@ -4,7 +4,6 @@ import { AnimatePresence } from "framer-motion"
 
 import ProfileHeader from "components/ProfileHeader"
 import CreateFundContext from "context/CreateFundContext"
-import { usePopoverContext } from "context/PopoverContext"
 
 import { Content, RestrictedContainer } from "theme/GlobalStyle"
 
@@ -16,18 +15,17 @@ const Investor = lazy(() => import("pages/Investor"))
 const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades"))
+const Wallet = lazy(() => import("pages/Wallet"))
 
 export default function Routes() {
   const location = useLocation()
-  const { isOpen, toggle } = usePopoverContext()
 
   return (
-    <Content min={isOpen}>
+    <Content>
       <Suspense fallback={null}>
         <CreateFundContext>
           <AnimatePresence exitBeforeEnter initial>
             <Switch location={location} key={location.pathname}>
-              {/* INVESTOR */}
               <Route path="/me">
                 <RestrictedContainer>
                   <ProfileHeader />
@@ -49,22 +47,22 @@ export default function Routes() {
                 <NewFund />
               </Route>
 
-              {/* POOLS */}
               <Route exact path="/">
                 <TopMembers />
               </Route>
 
-              {/* INVESTOR */}
+              <Route exact path="/wallet">
+                <Wallet />
+              </Route>
+
               <Route exact path="/investor/history/:type/:account">
                 <Trades />
               </Route>
 
-              {/* Trader info */}
               <Route exact path="/pool/history/:type/:address">
                 <Trades />
               </Route>
 
-              {/* Trader/Investor operations */}
               <Route exact path="/pool/:poolAddress/invest">
                 <Invest />
               </Route>

@@ -7,9 +7,9 @@ import {
   useDexeExchangeTool,
   useERC20,
 } from "hooks/useContract"
-import FundsList from "components/FundsList"
-import TokenSelector from "modals/TokenSelector"
-import TraderMobile from "components/TraderMobile"
+import MemberMobile from "components/MemberMobile"
+import Tooltip from "components/Tooltip"
+import Popover from "components/Popover"
 import { useParams } from "react-router-dom"
 import ExchangeFrom from "components/Exchange/From"
 import ExchangeDivider from "components/Exchange/Divider"
@@ -19,41 +19,74 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { ethers } from "ethers"
 import { isStable, formatNumber } from "utils"
 
-import { PriceContainer, Container } from "pages/Invest/styled"
+import {
+  PriceContainer,
+  Container,
+  TooltipValue,
+  TooltipLabel,
+  ExchangeName,
+} from "pages/Invest/styled"
 import { HalfBlock } from "pages/Trader/styled"
 import {
   Label,
-  TooltipIcon,
   PriceText,
   InfoContainer,
+  Value,
 } from "components/Exchange/styled"
-
-import tooltip from "assets/icons/tooltip.svg"
 import useTokensList from "hooks/useTokensList"
 
 export const useExchange = (): [
   {
     fromAmount: number
     toAmount: number
+    fromAddress: string
     toAddress: string
     toSelectorOpened: boolean
+    fromSelectorOpened: boolean
+    pending: boolean
     direction: "deposit" | "withdraw"
   },
   {
     setFromAmount: (amount: number) => void
     setToAmount: (amount: number) => void
     setToAddress: (address: string) => void
-    setDirection: (direction: "deposit" | "withdraw") => void
+    setFromAddress: (address: string) => void
+    setDirection: (v: "deposit" | "withdraw") => void
+    setPercentage: (v: number) => void
     setToSelector: (state: boolean) => void
+    setFromSelector: (state: boolean) => void
   }
 ] => {
+  const { library } = useWeb3React()
+
   const [fromAmount, setFromAmount] = useState(0.0)
   const [toAmount, setToAmount] = useState(0.0)
+  const [hash, setHash] = useState("")
+  const [pending, setPending] = useState(false)
+  const [toSelectorOpened, setToSelector] = useState(false)
+  const [fromSelectorOpened, setFromSelector] = useState(false)
+  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+
   const [toAddress, setToAddress] = useState(
     "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
   )
-  const [toSelectorOpened, setToSelector] = useState(false)
-  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+  const [fromAddress, setFromAddress] = useState(
+    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
+  )
+
+  useEffect(() => {
+    if (!hash || !library) return
+    ;(async () => {
+      try {
+        await library.waitForTransaction(hash)
+
+        setPending(false)
+        setHash("")
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [hash, library])
 
   const setFromAmountCallback = useCallback(
     (amount: number): void => setFromAmount(amount),
@@ -70,8 +103,8 @@ export const useExchange = (): [
     []
   )
 
-  const setDirectionCallback = useCallback(
-    (direction: "withdraw" | "deposit"): void => setDirection(direction),
+  const setFromAddressCallback = useCallback(
+    (address: string): void => setFromAddress(address),
     []
   )
 
@@ -80,150 +113,98 @@ export const useExchange = (): [
     []
   )
 
-  return [
-    {
-      fromAmount,
-      toAmount,
-      toAddress,
-      toSelectorOpened,
-      direction,
-    },
-    {
-      setFromAmount: setFromAmountCallback,
-      setToAmount: setToAmountCallback,
-      setToAddress: setToAddressCallback,
-      setDirection: setDirectionCallback,
-      setToSelector: setToSelectorCallback,
-    },
-  ]
-}
-
-export default function Swap() {
-  // INPUT HANDLERS
-  const [
-    { fromAmount, toAmount, toAddress, toSelectorOpened, direction },
-    { setFromAmount, setToAmount, setToAddress, setDirection, setToSelector },
-  ] = useExchange()
-  const [list] = useTokensList()
-  const { account, library } = useWeb3React()
-  const [pending, setPending] = useState(false)
-  const [toBalance, setToBalance] = useState(BigNumber.from(0))
-  const [hash, setHash] = useState("")
-
-  const { poolAddress } = useParams<{ poolAddress: string }>()
-  const rate = 1
-
-  const exchangeTool = useUniswapExchangeTool()
-  const exchange = useDexeExchangeTool()
-  const [fromToken, fromData, fromBalance] = useERC20(
-    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
+  const setFromSelectorCallback = useCallback(
+    (v: boolean): void => setFromSelector(v),
+    []
   )
-  const [toToken, toData] = useERC20(toAddress)
 
-  useEffect(() => {
-    if (!list.length) return
-
-    if (!toAddress && list.length) {
-      setToAddress(list[0].address)
-    }
-  }, [list, setToAddress, toAddress])
-
-  useEffect(() => {
-    if (!hash || !library) return
-    ;(async () => {
-      try {
-        const data = await library.waitForTransaction(hash)
-        console.log(data)
-
-        setPending(false)
-        setHash("")
-      } catch (e) {
-        console.log(e)
-      }
-    })()
-  }, [hash, library])
-
-  const handleDirectionChange = () => {
+  const handleDirectionChange = useCallback(() => {
     if (direction === "deposit") {
       setDirection("withdraw")
     } else {
       setDirection("deposit")
     }
-  }
+  }, [direction])
 
-  const handlePercentageChange = (percent) => {
-    const parsedAmount = fromBalance.div(100).mul(percent)
+  const handlePercentageChange = useCallback((v: number) => {
+    // TODO: decide how to know balance
+    console.log(v)
+  }, [])
 
-    if (parsedAmount._isBigNumber) {
-      const fromPrice = parseFloat(
-        ethers.utils.formatUnits(parsedAmount, fromData?.decimals)
-      )
-      setFromAmount(fromPrice)
-      setToAmount(fromPrice * rate)
-    }
-  }
-
-  const handleFromChange = (v) => {
+  const handleFromChange = useCallback((v: number) => {
     try {
-      const am = parseFloat(v) || 0.0
+      const am = parseFloat(v.toString()) || 0.0
       setFromAmount(am)
 
-      setToAmount(am * rate)
+      setToAmount(am * 1)
     } catch (e) {
       console.log(e)
     }
-  }
+  }, [])
 
-  const handleToChange = (v) => {
+  const handleToChange = useCallback((v: number) => {
     try {
-      const am = parseFloat(v) || 0.0
+      const am = parseFloat(v.toString()) || 0.0
       setToAmount(am)
-      setFromAmount(am * rate)
+      setFromAmount(am * 1)
     } catch (e) {
       console.log(e)
     }
-  }
+  }, [])
+
+  return [
+    {
+      fromAmount,
+      toAmount,
+      fromAddress,
+      toAddress,
+      toSelectorOpened,
+      fromSelectorOpened,
+      direction,
+      pending,
+    },
+    {
+      setFromAmount: handleFromChange,
+      setToAmount: handleToChange,
+      setToAddress: setToAddressCallback,
+      setFromAddress: setFromAddressCallback,
+      setDirection: handleDirectionChange,
+      setPercentage: handlePercentageChange,
+      setToSelector: setToSelectorCallback,
+      setFromSelector: setFromSelectorCallback,
+    },
+  ]
+}
+
+export default function Swap() {
+  const { poolAddress } = useParams<{ poolAddress: string }>()
+
+  const [
+    {
+      pending,
+      fromAmount,
+      toAmount,
+      toAddress,
+      fromAddress,
+      toSelectorOpened,
+      fromSelectorOpened,
+      direction,
+    },
+    {
+      setFromAmount,
+      setToAmount,
+      setToSelector,
+      setFromSelector,
+      setDirection,
+      setPercentage,
+    },
+  ] = useExchange()
+
+  const [fromToken, fromData, fromBalance] = useERC20(fromAddress)
+  const [toToken, toData, toBalance] = useERC20(toAddress)
 
   const handleSubmit = () => {
-    // const path = [fromAddress, toAddress]
-    const path = [
-      "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", // WETH
-      "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6", // DEXE
-    ]
-
-    try {
-      const params = [
-        poolAddress,
-        ethers.utils
-          .parseUnits(fromAmount.toString(), fromData?.decimals)
-          .toHexString(),
-        BigNumber.from("7000000000000000000").toHexString(),
-        path,
-        Math.round((new Date().getTime() + 2 * 24 * 60 * 60 * 1000) / 1000),
-      ]
-      console.log(params)
-      ;(async () => {
-        const receipt = await exchange?.swapExactTokensForTokens(
-          params[0],
-          params[1],
-          params[2],
-          params[3],
-          params[4],
-          {
-            from: account,
-          }
-        )
-        setHash(receipt.hash)
-      })()
-      ;(async () => {
-        const dataIn = await exchangeTool?.getAmountsIn(params[2], params[3])
-        const dataOut = await exchangeTool?.getAmountsOut(params[2], params[3])
-        console.log(dataIn, dataOut)
-      })()
-    } catch (e) {
-      console.log(e)
-    }
+    // TODO: create transaction builder
   }
 
   const getButton = () => {
@@ -269,93 +250,124 @@ export default function Swap() {
     )
   }
 
+  const button = getButton()
+
+  const tooltip = (
+    <Tooltip id="0">
+      <Flex p="6.5px 0 6.5px" full>
+        <TooltipLabel>Liquiduty Provider Fee</TooltipLabel>
+        <TooltipValue>9,997 DAI</TooltipValue>
+      </Flex>
+      <Flex p="6.5px 0 2px" full>
+        <TooltipLabel>Route</TooltipLabel>
+        <TooltipValue>DAI {">"} USDT &gt; ETH</TooltipValue>
+      </Flex>
+      <Flex p="0 0 5px" jc="flex-end" full>
+        <ExchangeName>(Pancakeswap)</ExchangeName>
+      </Flex>
+      <Flex p="6.5px 0 6.5px" full>
+        <TooltipLabel>Price Impact</TooltipLabel>
+        <TooltipLabel>-0.4%</TooltipLabel>
+      </Flex>
+      <Flex p="6.5px 0 6.5px" full>
+        <TooltipLabel>Minimum Received</TooltipLabel>
+        <TooltipValue>3.46364834 ETH</TooltipValue>
+      </Flex>
+      <Flex p="6.5px 0 6.5px" full>
+        <TooltipLabel>Slippage tolerance</TooltipLabel>
+        <TooltipValue>0.50%</TooltipValue>
+      </Flex>
+    </Tooltip>
+  )
+
   const priceTemplate = (
-    <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
-      <PriceText color="#F7F7F7">
+    <Flex ai="center">
+      <PriceText color="#C2C3C4">
         1.00 {toData?.symbol} = {"1.00 "}
         {fromData?.symbol}
       </PriceText>
-      <PriceText color="#999999">(~{"1.00"}$)</PriceText>
-      <TooltipIcon src={tooltip} />
+      <PriceText color="#596073">(~{"1.00"}$)</PriceText>
+      {tooltip}
     </Flex>
   )
 
-  const button = getButton()
-
-  const formTemplate = (
-    <div>
-      <ExchangeFrom
-        price={0}
-        amount={fromAmount}
-        balance={fromBalance}
-        address={poolAddress}
-        symbol={fromData?.symbol}
-        decimal={fromData?.decimals}
-        onChange={handleFromChange}
-        isAlloved
-        onSelect={() => {}}
-      />
-
-      <ExchangeDivider
-        direction={direction}
-        changeAmount={handlePercentageChange}
-        changeDirection={handleDirectionChange}
-      />
-
-      <ExchangeTo
-        price={0}
-        priceChange24H={0}
-        amount={toAmount}
-        balance={toBalance}
-        address={toAddress}
-        symbol={toData?.symbol}
-        decimal={toData?.decimals}
-        onChange={handleToChange}
-        onSelect={() => setToSelector(true)}
-      />
-
-      <PriceContainer>
-        <Label>Price: </Label>
-        {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
-      </PriceContainer>
-
-      {button}
-    </div>
-  )
-
   return (
-    <Container>
-      <TokenSelector
-        tokensList={list}
-        onSelect={setToAddress}
+    <>
+      <Popover
+        title="Select a token"
+        isOpen={fromSelectorOpened}
+        toggle={setFromSelector}
+        contentHeight={650}
+      ></Popover>
+      <Popover
+        title="Select a token"
         isOpen={toSelectorOpened}
-        onRequestClose={() => setToSelector(false)}
-      />
-      <HalfBlock>
-        <Flex dir="column" full>
-          <FundsList />
-          <TraderMobile />
-        </Flex>
-      </HalfBlock>
-      <HalfBlock>
-        <InfoContainer>
-          <Label>Total funds</Label>
-          <Label>
-            {formatNumber(
-              ethers.utils
-                .formatUnits(fromBalance, fromData?.decimals)
-                .toString(),
-              isStable(poolAddress) ? 3 : 5
-            )}{" "}
-            {fromData?.symbol}
-          </Label>
-        </InfoContainer>
-        <InfoContainer>
-          <Label>Locked In positions</Label>
-          <Label>(0%) 0 {fromData?.symbol}</Label>
-        </InfoContainer>
-        {formTemplate}
-      </HalfBlock>
-    </Container>
+        toggle={setToSelector}
+        contentHeight={650}
+      ></Popover>
+      <Container>
+        <HalfBlock>
+          <Flex dir="column" full>
+            <MemberMobile index={0} />
+          </Flex>
+          <Flex dir="column" full>
+            <InfoContainer>
+              <Label>Investor available Funds</Label>
+              <Value>0 TRX</Value>
+            </InfoContainer>
+            <InfoContainer>
+              <Label>Your available Funds</Label>
+              <Value>80,028 TRX</Value>
+            </InfoContainer>
+            <InfoContainer>
+              <Label>Locked In positions</Label>
+              <Value>(0%) 0 TRX</Value>
+            </InfoContainer>
+          </Flex>
+        </HalfBlock>
+        <HalfBlock>
+          <div>
+            <ExchangeFrom
+              price={0}
+              amount={toAmount}
+              balance={toBalance}
+              address={toAddress}
+              symbol={toData?.symbol}
+              decimal={toData?.decimals}
+              onChange={setFromAmount}
+              isAlloved
+              onSelect={() => setFromSelector(true)}
+            />
+
+            <ExchangeDivider
+              direction={direction}
+              changeAmount={setPercentage}
+              changeDirection={() =>
+                setDirection(direction === "deposit" ? "withdraw" : "deposit")
+              }
+            />
+
+            <ExchangeTo
+              price={0}
+              priceChange24H={0}
+              amount={toAmount}
+              balance={toBalance}
+              address={toAddress}
+              symbol={toData?.symbol}
+              decimal={toData?.decimals}
+              onChange={setToAmount}
+              onSelect={() => setToSelector(true)}
+            />
+
+            <PriceContainer>
+              <Label>Price: </Label>
+              {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
+            </PriceContainer>
+
+            {button}
+          </div>
+        </HalfBlock>
+      </Container>
+    </>
   )
 }

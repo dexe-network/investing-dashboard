@@ -33,6 +33,32 @@ export const Container = styled(Flex)`
 
 export const PriceContainer = styled(Flex)`
   width: 100%;
-  height: 38px;
-  padding-right: 15px;
+  padding: 34px 0 22px;
+`
+
+export const TooltipLabel = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 100%;
+  color: #6c757d;
+`
+
+export const TooltipValue = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 100%;
+  color: #dadada;
+`
+
+export const ExchangeName = styled.div`
+  color: #596073;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 130%;
 `

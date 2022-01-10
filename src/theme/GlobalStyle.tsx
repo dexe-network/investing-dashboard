@@ -109,7 +109,8 @@ export const SpecialModalBackground = styled.div`
 export const AppWrapper = styled.div`
   display: grid;
   min-height: -webkit-fill-available;
-  background: linear-gradient(13.79deg, #141618 9.61%, #2c2f36 88.48%);
+
+  background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);
   grid-template-columns: 50px 1fr;
   grid-template-areas: "menu content";
   height: inherit;
@@ -140,14 +141,13 @@ export const AppWrapper = styled.div`
 //   z-index: 1;
 // `
 
-export const Content = styled.div<{ min?: boolean }>`
+export const Content = styled.div`
   z-index: 5;
   grid-area: content;
   touch-action: none;
   overflow-y: hidden;
   overscroll-behavior: none;
   transition: 0.2s all;
-  transform: scale(${(props) => (props.min ? 0.9 : 1)});
 
   @media only screen and (${device.xs}) {
     /* padding-bottom: 62px; */

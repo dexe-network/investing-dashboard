@@ -132,9 +132,17 @@ export const Content = styled.div`
 export const Ticker = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-weight: normal;
   font-size: 20px;
   line-height: 41px;
+  /* identical to box height, or 205% */
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+
+  /* Main Color */
+
   color: #c2c3c4;
   margin-right: 20px;
 `

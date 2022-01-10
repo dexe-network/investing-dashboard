@@ -4,12 +4,12 @@ import { useParams } from "react-router-dom"
 import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 
 import ExchangeFrom from "components/Exchange/From"
+import Tooltip from "components/Tooltip"
 import ExchangeDivider from "components/Exchange/Divider"
 import ExchangeTo from "components/Exchange/To"
 import Button from "components/Button"
-import tooltip from "assets/icons/tooltip.svg"
 
-import { Label, TooltipIcon, PriceText } from "components/Exchange/styled"
+import { Label, PriceText } from "components/Exchange/styled"
 import { useExchange } from "pages/Swap"
 import { useERC20 } from "hooks/useContract"
 
@@ -143,7 +143,7 @@ export default function Invest() {
     price === "0" ? (
       <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
         <PriceText color="#F7F7F7">not available</PriceText>
-        <TooltipIcon src={tooltip} />
+        <Tooltip id="0"></Tooltip>
       </Flex>
     ) : (
       <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
@@ -154,7 +154,7 @@ export default function Invest() {
         <PriceText color="#999999">
           (~{isStable(poolAddress) ? "1.00" : "1.00"}$)
         </PriceText>
-        <TooltipIcon src={tooltip} />
+        <Tooltip id="0"></Tooltip>
       </Flex>
     )
 

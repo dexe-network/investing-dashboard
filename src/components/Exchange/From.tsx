@@ -6,9 +6,9 @@ import lock from "assets/icons/lock-solid.svg"
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
 import { DebounceInput } from "react-debounce-input"
-
+import angleIcon from "assets/icons/angle-down.svg"
 import {
-  Container,
+  FromContainer,
   Price,
   Balance,
   Max,
@@ -16,6 +16,7 @@ import {
   ActiveSymbol,
   SymbolLabel,
   Unlock,
+  IconDown,
 } from "./styled"
 
 interface IFromProps {
@@ -62,7 +63,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
 
   if (!decimal || !symbol) {
     return (
-      <Container dir="column" full>
+      <FromContainer dir="column" full>
         <Flex p="0 0 5px" full>
           <Price>
             <Ripple width="67px" />
@@ -75,22 +76,24 @@ const ExchangeFrom: React.FC<IFromProps> = ({
           <Ripple width="120px" />
           <Ripple width="60px" />
         </Flex>
-      </Container>
+      </FromContainer>
     )
   }
   return (
-    <Container full>
+    <FromContainer full>
       <Flex full dir="column">
-        <Flex p="0 0 5px" full>
+        <Flex p="0 0 2px" full>
           <Price>
             ≈$
             {isStable ? amount.toFixed(2) : price.toFixed(2)}
           </Price>
           <Balance>
-            <Text color="#F7F7F7">
+            <Text fw={600} color="#DADADA">
               {parseFloat(ethers.utils.formatUnits(balance, decimal))}
             </Text>
-            <Text color="#999999">{symbol}</Text>
+            <Text fw={600} color="#616A78">
+              {symbol}
+            </Text>
             <Max onClick={setMaxAmount}>(Max)</Max>
           </Balance>
         </Flex>
@@ -104,10 +107,11 @@ const ExchangeFrom: React.FC<IFromProps> = ({
           />
           <ActiveSymbol onClick={onSelect}>
             <TokenIcon
-              size={22}
+              size={27}
               src={`https://tokens.1inch.exchange/${address.toLowerCase()}.png`}
             />
             <SymbolLabel>{symbol}</SymbolLabel>
+            <IconDown src={angleIcon} />
           </ActiveSymbol>
         </Flex>
       </Flex>
@@ -116,7 +120,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
           <img src={lock} alt="" />
         </Unlock>
       )}
-    </Container>
+    </FromContainer>
   )
 }
 

@@ -13,14 +13,15 @@ export const Icon = styled.img<{ size?: number }>`
 `
 
 interface IProps {
-  src: string
+  src?: string
   size?: number
 }
 
 const TokenIcon: React.FC<IProps> = ({ src, size }) => {
   if (
     src ===
-    "https://tokens.1inch.exchange/0xde4ee8057785a7e8e800db58f9784845a5c2cbd6.png"
+      "https://tokens.1inch.exchange/0xde4ee8057785a7e8e800db58f9784845a5c2cbd6.png" ||
+    !src
   ) {
     // change icon if token dexe
     return <Icon src={defaultAvatar} size={size} />

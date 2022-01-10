@@ -5,18 +5,20 @@ import { ethers } from "ethers"
 
 import { Flex, Text } from "theme"
 import {
-  Container,
+  ToContainer,
   Price,
   Balance,
   Input,
   ActiveSymbol,
   SymbolLabel,
+  IconDown,
 } from "./styled"
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
 import { fromBig } from "utils"
 import { BigNumber } from "@ethersproject/bignumber"
 import poolLogo from "assets/icons/default-pool-logo.svg"
+import angleIcon from "assets/icons/angle-down.svg"
 import { DebounceInput } from "react-debounce-input"
 
 interface IToProps {
@@ -67,7 +69,7 @@ const ExchangeTo: React.FC<IToProps> = ({
 
   if (!decimal || !symbol) {
     return (
-      <Container dir="column" full>
+      <ToContainer dir="column" full>
         <Flex p="0 0 5px" full>
           <Price>
             <Ripple width="67px" />
@@ -80,13 +82,13 @@ const ExchangeTo: React.FC<IToProps> = ({
           <Ripple width="120px" />
           <Ripple width="60px" />
         </Flex>
-      </Container>
+      </ToContainer>
     )
   }
 
   return (
-    <Container dir="column" full>
-      <Flex p="0 0 5px" full>
+    <ToContainer dir="column" full>
+      <Flex p="0 0 2px" full>
         <Price>
           ≈${price.toFixed(2)} ({priceChange24H.toFixed(2)}%)
         </Price>
@@ -104,11 +106,12 @@ const ExchangeTo: React.FC<IToProps> = ({
           value={amount}
         />
         <ActiveSymbol onClick={onSelect}>
-          <TokenIcon size={22} src={icon} />
+          <TokenIcon size={27} src={icon} />
           <SymbolLabel>{symbol}</SymbolLabel>
+          <IconDown src={angleIcon} />
         </ActiveSymbol>
       </Flex>
-    </Container>
+    </ToContainer>
   )
 }
 

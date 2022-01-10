@@ -6,7 +6,6 @@ export const FloatingContainer = styled(motion.div)`
   position: absolute;
   left: 0%;
   right: 0%;
-  bottom: 0%;
   overflow: hidden;
   width: 100%;
   z-index: 90;
@@ -14,19 +13,17 @@ export const FloatingContainer = styled(motion.div)`
 `
 
 export const Container = styled.div`
-  background: #1c2128;
+  background: #27292f;
   box-shadow: 0px 0.5px 0px rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
+  border-radius: 10px 10px 0 0;
   height: 100%;
   width: 100%;
 `
 
 export const Handle = styled.div<{ active: boolean }>`
   position: relative;
-  background: #202020;
-  border-radius: 10px 10px 0px 0px;
-  height: 12px;
-  margin: 0 0 -1px;
+  height: 15px;
   &:after {
     content: "";
     position: absolute;
@@ -34,11 +31,11 @@ export const Handle = styled.div<{ active: boolean }>`
     left: 0;
     right: 0;
     margin: auto;
-    background: ${(props) => (props.active ? "#47635a" : "#343434")};
+    background: ${(props) => (props.active ? "#47635a" : "#ABA7A7")};
     border-radius: 6px;
     width: 38px;
     height: 5px;
-    top: 3px;
+    top: 9px;
   }
 `
 
@@ -57,8 +54,8 @@ export const Header = styled(Flex)`
 `
 
 export const Overlay = styled(motion.div)`
-  background: rgb(45, 50, 49);
-  backdrop-filter: blur(10px);
+  background: rgba(27, 27, 27, 0.6);
+  backdrop-filter: blur(6px);
   position: absolute;
   top: 0;
   right: 0;

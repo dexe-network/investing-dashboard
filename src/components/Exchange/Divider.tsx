@@ -7,41 +7,48 @@ import styled from "styled-components"
 import icon from "assets/icons/swap-arrow.svg"
 
 const Container = styled(Flex)`
-  margin-top: -9px;
-  margin-bottom: -5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   user-select: none;
+  background: #2f333b;
+  height: 16px;
+  position: relative;
 `
 
-const PercentButton = styled.div`
-  height: 15px;
+const PercentButton = styled.div<{ active?: boolean }>`
+  height: 16px;
   flex: 1;
-  background: linear-gradient(
-    0deg,
-    rgba(51, 62, 64, 0.2) 0%,
-    rgba(128, 128, 128, 0.2) 100%
-  );
-  font-size: 13px;
-  color: #4e4e4e;
-  text-align: center;
   padding-top: 2px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 130%;
+  text-align: center;
+  color: #c2c3c4;
   cursor: pointer;
 
+  background: ${(props) => (props.active ? "#252830" : "transparent")};
+  border-radius: 3px;
+
   &:first-child {
-    border-top-left-radius: 5px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
   }
 
   &:last-child {
-    border-top-right-radius: 5px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
   }
 `
 
 const SwapButton = styled.div`
   cursor: pointer;
-  border-radius: 5px;
-  background: #3f424a;
-  border: 3px solid #2e2c46;
-  width: 40px;
-  height: 33px;
+  border-radius: 50px;
+  background: linear-gradient(64.44deg, #292b31 32.35%, #22262e 100%);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -62,8 +69,10 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
 }) => {
   return (
     <Container full>
-      <PercentButton onClick={() => changeAmount(10)}>10</PercentButton>
-      <PercentButton onClick={() => changeAmount(25)}>25</PercentButton>
+      <PercentButton active onClick={() => changeAmount(10)}>
+        10%
+      </PercentButton>
+      <PercentButton onClick={() => changeAmount(25)}>25%</PercentButton>
       <SwapButton onClick={changeDirection}>
         <Icon
           variants={rotateVariants}
@@ -72,8 +81,8 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
           alt=""
         />
       </SwapButton>
-      <PercentButton onClick={() => changeAmount(50)}>50</PercentButton>
-      <PercentButton onClick={() => changeAmount(75)}>75</PercentButton>
+      <PercentButton onClick={() => changeAmount(50)}>50%</PercentButton>
+      <PercentButton onClick={() => changeAmount(75)}>75%</PercentButton>
     </Container>
   )
 }

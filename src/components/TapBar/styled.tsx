@@ -57,7 +57,7 @@ const MobileLabel = styled.div<{ active: boolean }>`
   color: ${(props) => (props.active ? "#77DDC2" : "#f5f5f5")};
 `
 
-const WrappedLink = styled(To)`
+const Wrapper = styled.div`
   &:nth-child(1) {
     ${MobileIcon} {
       transform: translateY(5px);
@@ -75,20 +75,47 @@ const WrappedLink = styled(To)`
   }
 `
 
-export const NavItem = ({ text, path, Icon, onClick = () => {} }) => {
+interface Props {
+  text: string
+  path?: string
+  onClick?: () => void
+  Icon: any
+}
+export const NavItem: React.FC<Props> = ({
+  text,
+  path,
+  Icon,
+  onClick = () => {},
+}) => {
   const match = useRouteMatch({
     path,
     exact: true,
   })
+
+  if (!path) {
+    return (
+      <Wrapper>
+        <MobileItem onClick={onClick}>
+          <MobileIcon>
+            <Icon active={!!match} />
+          </MobileIcon>
+          <MobileLabel active={!!match}>{text}</MobileLabel>
+        </MobileItem>
+      </Wrapper>
+    )
+  }
+
   return (
-    <WrappedLink to={path}>
-      <MobileItem onClick={onClick}>
-        <MobileIcon>
-          <Icon active={!!match} />
-        </MobileIcon>
-        <MobileLabel active={!!match}>{text}</MobileLabel>
-      </MobileItem>
-    </WrappedLink>
+    <Wrapper>
+      <To to={path}>
+        <MobileItem>
+          <MobileIcon>
+            <Icon active={!!match} />
+          </MobileIcon>
+          <MobileLabel active={!!match}>{text}</MobileLabel>
+        </MobileItem>
+      </To>
+    </Wrapper>
   )
 }
 

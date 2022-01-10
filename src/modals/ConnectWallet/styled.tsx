@@ -8,7 +8,7 @@ export const Title = styled(Text)`
 `
 
 export const WalletIcon = styled.img`
-  max-width: 60px;
+  height: 33px;
   transition: transform 0.2s;
   position: relative;
 `
@@ -29,7 +29,8 @@ export const Wallet = styled(Flex)`
 `
 
 export const Body = styled.div<{ opacity: number }>`
-  margin-top: 20px;
+  margin-top: 45px;
+  padding: 0 16px;
   transition: opacity 0.4s;
   opacity: ${(props) => props.opacity};
   cursor: ${(props) => (props.opacity !== 1 ? "not-allowed" : "normal")};
@@ -42,7 +43,12 @@ export const Body = styled.div<{ opacity: number }>`
 export const Header = styled(Flex)``
 
 export const TermsAndPrivacy = styled.span`
-  color: #f5f5f5;
+  font-family: Gilroy;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 15px;
+  color: #ffffff;
   padding-left: 10px;
   padding-top: 3px;
 `
@@ -52,14 +58,24 @@ export const ChooseWallet = styled(Flex)`
 `
 
 export const Wallets = styled(Flex)`
-  flex-wrap: wrap;
+  margin-top: 30px;
+  border: 1px solid #007ff3;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 37px 0 40px;
 `
 
 export const WalletTitle = styled(Text)`
-  padding-top: 15px;
-  color: #f5f5f5;
-  font-size: 16px;
-  font-weight: 600;
-  white-space: normal;
+  padding-top: 8px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 12px;
   text-align: center;
+  letter-spacing: 1px;
+
+  /* Text */
+
+  color: #dadada;
 `

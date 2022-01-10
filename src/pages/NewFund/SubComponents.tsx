@@ -6,6 +6,7 @@ import AddressChips from "components/AddressChips"
 import TokenSelect from "components/TokenSelect"
 import RadioButton from "components/RadioButton"
 import Switch from "components/Switch"
+import OneValueCard from "components/OneValueCard"
 import { opacityVariants } from "motion/variants"
 import swipeLeft from "assets/icons/swipe-arrow-left.svg"
 import {
@@ -29,6 +30,9 @@ import {
   MaxLength,
   InputLabel,
   ButtonsCoontainer,
+  CardsRow,
+  RiskyFundTypeCard,
+  StandardFundTypeCard,
 } from "modals/CreateFund/styled"
 import { SubContainer, NavIcon } from "./styled"
 
@@ -299,6 +303,39 @@ export const Fees = () => {
         *** 30% of the trader&apos;s reward received is charged by the platform.{" "}
         <External href="https://dexe.network">Read more.</External>
       </Secondary>
+    </SubContainer>
+  )
+}
+
+export const Summary = () => {
+  return (
+    <SubContainer
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      jc="flex-start"
+    >
+      <Secondary>
+        Please make sure ti check all the entered data bellow
+      </Secondary>
+      <Warn>Trade settings cannot be changed after creation.</Warn>
+      <CardsRow>
+        <OneValueCard label="Name of Fund" value="Big Trade" />
+        <OneValueCard label="Owner" value="0x8e8..8382" />
+      </CardsRow>
+      <CardsRow>
+        <OneValueCard label="Base token" value="DEXE" />
+        <OneValueCard label="Ticker symbol" value="ISDX" />
+      </CardsRow>
+      <CardsRow>
+        <OneValueCard label="Own investments" value="1020 DEXE" />
+        <OneValueCard label="Min. invest amount" value="120 DEXE" />
+      </CardsRow>
+      <CardsRow>
+        <OneValueCard label="Emission" value="Unlim. Emission" />
+        <OneValueCard label="Limit who can invest" value="50 accounts" />
+      </CardsRow>
     </SubContainer>
   )
 }

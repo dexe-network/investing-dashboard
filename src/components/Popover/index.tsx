@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { Flex } from "theme"
 import {
@@ -25,8 +25,10 @@ const Popover: React.FC<{
   title: string
   isOpen: boolean
   toggle: (state: boolean) => void
-}> = ({ title, children, isOpen, toggle }) => {
+  contentHeight: number
+}> = ({ title, children, isOpen, toggle, contentHeight }) => {
   const [isDragging, setDragging] = useState(false)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   // detect dragging down by 25% of screen height
   const handleDragEnd = (e, info) => {
@@ -48,7 +50,7 @@ const Popover: React.FC<{
         initial="hidden"
         variants={{
           visible: {
-            opacity: 0.3,
+            opacity: 0.4,
             display: "block",
           },
           hidden: {
@@ -69,34 +71,18 @@ const Popover: React.FC<{
         variants={{
           visible: {
             display: "block",
-            bottom: "-20%",
+            top: `${window.innerHeight - contentHeight}px`,
           },
           hidden: {
             transitionEnd: { display: "none" },
-            bottom: "-120%",
+            top: `${window.innerHeight}px`,
           },
         }}
       >
-        <Handle active={isDragging} />
-        <Container>
+        <Container ref={containerRef}>
+          <Handle active={isDragging} />
           <Header>{title}</Header>
           {children}
-          {/* <Flex full p="20px">
-            <Flex ai="flex-start" dir="column">
-              <AccountTitle>Current account</AccountTitle>
-              <AccountDescription>Connected with MetaMask</AccountDescription>
-            </Flex>
-            <AccountIcon src={metamask} />
-          </Flex>
-          <AccountAddress>
-            {shortenAddress("0x1dF62f291b2E969fB0849d99D9Ce41e2F137006e", 12)}
-          </AccountAddress>
-          <AccountFooter>
-            <TextButton theme="primary">Change</TextButton>
-            <TextButton>Copy</TextButton>
-            <TextButton>History</TextButton>
-            <TextButton>Disconnect</TextButton>
-          </AccountFooter> */}
         </Container>
       </FloatingContainer>
     </>

@@ -1,17 +1,20 @@
 import styled from "styled-components"
 import { Flex, Text } from "theme"
 
-export const Container = styled(Flex)`
-  padding: 15px;
-  border-radius: 5px;
-  background: linear-gradient(
-    270deg,
-    rgba(51, 62, 64, 0.75) 0%,
-    rgba(128, 128, 128, 0.75) 120%
-  );
-  box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
+export const FromContainer = styled(Flex)`
+  padding: 12px 20px 5px 20px;
+  background: linear-gradient(64.44deg, #282b31 32.35%, #373d47 100%);
+  border-radius: 8px 8px 0px 0px;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
   width: 331px;
-  /* position: relative; */
+`
+
+export const ToContainer = styled(Flex)`
+  padding: 12px 20px 5px 20px;
+  background: linear-gradient(64.44deg, #282b31 32.35%, #373d47 100%);
+  border-radius: 0px 0px 8px 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  width: 331px;
 `
 
 export const InfoContainer = styled(Flex)`
@@ -19,11 +22,29 @@ export const InfoContainer = styled(Flex)`
   padding-bottom: 11px;
 `
 
+export const IconDown = styled.img`
+  margin-left: 10px;
+`
+
 export const Price = styled(Text)`
-  color: #f7f7f7;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 18px;
+  color: #6c757d;
   user-select: none;
 `
 export const Balance = styled(Flex)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 18px;
+
+  display: flex;
+  align-items: center;
+  text-align: right;
   user-select: none;
   ${Text} {
     padding: 0 2px;
@@ -32,14 +53,18 @@ export const Balance = styled(Flex)`
 
 export const Max = styled(Text)`
   cursor: pointer;
-  color: #47bef9;
+  color: #00caff;
+  font-weight: 600;
 `
 
 export const Input = styled.input`
   user-select: none;
-  font-size: 20px;
-  font-weight: bold;
-  color: #fff;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 22px;
+  line-height: 41px;
+  color: #424b55;
   outline: none;
   background: transparent;
   border: none;
@@ -59,21 +84,23 @@ export const ActiveSymbol = styled.div`
   user-select: none;
   display: flex;
   align-items: center;
-  border-radius: 14px;
   padding: 3px 9px 3px 3px;
-  box-shadow: 0px 0px 7px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(
-    270deg,
-    rgba(51, 62, 64, 1) 0%,
-    rgba(79, 81, 85, 1) 100%
-  );
+  background: linear-gradient(64.44deg, #24282d 32.35%, #2e323a 100%);
+  /* Dropshadow 3 */
+
+  -webkit-box-shadow: inset 1px 2px 4px 4px rgb(0, 0, 0, 0.1);
+  box-shadow: inset 1px 2px 4px 4px rgb(0, 0, 0, 0.1);
+  border-radius: 16px;
 `
 
 export const SymbolLabel = styled.span`
-  font-size: 22px;
-  height: 22px;
-  color: #f5f5f5;
-  margin-left: 7px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 20px;
+  color: #f7f7f7;
+  margin-top: 4px;
 `
 
 export const Unlock = styled.div`
@@ -94,18 +121,32 @@ export const Unlock = styled.div`
 `
 
 export const Label = styled(Text)`
-  color: #999999;
-  font-size: 16px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 100%;
+  color: #6c757d;
 `
 
-export const TooltipIcon = styled.img`
-  height: 15px;
-  width: 15px;
+export const Value = styled(Text)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 100%;
+  color: #5a6071;
 `
 
 export const PriceText = styled(Text)`
-  height: 15px;
-  font-size: 16px;
-  margin-right: 9px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 130%;
+  /* or 18px */
+
+  display: flex;
+  align-items: center;
   cursor: pointer;
 `

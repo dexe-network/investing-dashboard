@@ -10,6 +10,7 @@ import {
   AboutManagers,
   InvestmentsAndRestrictions,
   Fees,
+  Summary,
   HeaderGroup,
   ButtonsGroup,
 } from "./SubComponents"
@@ -41,7 +42,7 @@ export default function NewFund() {
           <Fees />
         </Route>
         <Route path="/new-fund/summary">
-          <BasicInfo />
+          <Summary />
         </Route>
         <Route exact path="/new-fund">
           <Redirect to="/new-fund/basic-info" />

@@ -96,6 +96,7 @@ const TopMembersBar: React.FC = () => {
       </StyledBar>
 
       <Popover
+        contentHeight={650}
         title="Filters"
         isOpen={isFiltersActive}
         toggle={setFiltersActive}

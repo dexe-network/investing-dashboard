@@ -2,6 +2,7 @@
 import { Flex, To } from "theme"
 import styled from "styled-components"
 import Avatar from "components/Avatar"
+import { Link } from "react-router-dom"
 import AreaChart from "components/AreaChart"
 import { Pool } from "constants/interfaces_v2"
 
@@ -50,7 +51,7 @@ const MemberMobile = ({ index = 0 }) => {
       <Wrapper full>
         <Flex p="0 0 0 36px">
           <CopiersCounter>17</CopiersCounter>
-          <CopiersLabel>copiers</CopiersLabel>
+          <CopiersLabel>investors</CopiersLabel>
           <CopiersPnl>0.00%</CopiersPnl>
         </Flex>
         <Content>
@@ -62,7 +63,9 @@ const MemberMobile = ({ index = 0 }) => {
                 <Pnl>0.00%</Pnl>
               </Flex>
               <To to={"#"}>
-                <BuyButton>Buy</BuyButton>
+                <Link to="/pool/0x9e8D0235f1ccF9bff025Ad8504dd4438d749f9F9/exchange">
+                  <BuyButton>Buy</BuyButton>
+                </Link>
               </To>
             </Flex>
             <ChartContainer jc="space-between" full p="0 8px 0 0">
@@ -74,12 +77,12 @@ const MemberMobile = ({ index = 0 }) => {
                 <Label>TVL</Label>
               </Tile>
               <Tile>
-                <Value>1.1</Value>
-                <Label>Coef</Label>
+                <Value>25.5%</Value>
+                <Label>APY</Label>
               </Tile>
               <Tile>
-                <Value>0.00%</Value>
-                <Label>TFA</Label>
+                <Value>31.22%</Value>
+                <Label>P&L</Label>
               </Tile>
             </ChartContainer>
           </Flex>

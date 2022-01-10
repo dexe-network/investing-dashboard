@@ -282,6 +282,79 @@ const DropdownContent = styled.div`
   flex: 1;
 `
 
+interface TypeCardProps {
+  handleSelect?: (v: any) => void
+  setValue?: (v: any) => void
+  value?: any
+}
+
+export const StandardFundTypeCard: React.FC<TypeCardProps> = ({
+  handleSelect = (v: any) => {},
+  value = true,
+  setValue = (v: any) => {},
+}) => {
+  return (
+    <DropdownItem onClick={() => handleSelect("Standard")}>
+      <Flex p="0 15px">
+        <RadioButton selected={value} onChange={setValue} value="Standard" />
+      </Flex>
+      <DropdownContent>
+        <DropdownLabel>Standard</DropdownLabel>
+        <DropdownDescription>
+          <p>
+            Trading on assets from the <Text color="#47BEF9">white list</Text> +
+            Trading of
+          </p>
+          <p>non-whitelisted assets through the proposals</p>
+          <DropdownCardButton>
+            (low risk){" "}
+            <ExternalLink
+              onClick={(e) => e.stopPropagation()}
+              href="https://google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Read more
+            </ExternalLink>
+          </DropdownCardButton>
+        </DropdownDescription>
+      </DropdownContent>
+    </DropdownItem>
+  )
+}
+
+export const RiskyFundTypeCard: React.FC<TypeCardProps> = ({
+  handleSelect = (v: any) => {},
+  value = true,
+  setValue = (v: any) => {},
+}) => {
+  return (
+    <DropdownItem onClick={() => handleSelect("Risky")}>
+      <Flex p="0 15px">
+        <RadioButton selected={value} onChange={setValue} value="Risky" />
+      </Flex>
+      <DropdownContent>
+        <DropdownLabel>Risky</DropdownLabel>
+        <DropdownDescription>
+          <p>Trading of non-whitelisted assets.</p>
+          <p>suspended for 20 days</p>
+          <DropdownCardButton>
+            (High risk){" "}
+            <ExternalLink
+              onClick={(e) => e.stopPropagation()}
+              href="https://google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Read more
+            </ExternalLink>
+          </DropdownCardButton>
+        </DropdownDescription>
+      </DropdownContent>
+    </DropdownItem>
+  )
+}
+
 export const SelectUI = ({ label }) => {
   const [active, setActive] = useState(false)
   const [value, setValue] = useState("Standard")
@@ -293,59 +366,16 @@ export const SelectUI = ({ label }) => {
   return (
     <>
       <DropdownBody>
-        <DropdownItem onClick={() => handleSelect("Standard")}>
-          <Flex p="0 15px">
-            <RadioButton
-              selected={value}
-              onChange={setValue}
-              value="Standard"
-            />
-          </Flex>
-          <DropdownContent>
-            <DropdownLabel>Standard</DropdownLabel>
-            <DropdownDescription>
-              <p>
-                Trading on assets from the{" "}
-                <Text color="#47BEF9">white list</Text> + Trading of
-              </p>
-              <p>non-whitelisted assets through the proposals</p>
-              <DropdownCardButton>
-                (low risk){" "}
-                <ExternalLink
-                  onClick={(e) => e.stopPropagation()}
-                  href="https://google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Read more
-                </ExternalLink>
-              </DropdownCardButton>
-            </DropdownDescription>
-          </DropdownContent>
-        </DropdownItem>
-        <DropdownItem onClick={() => handleSelect("Risky")}>
-          <Flex p="0 15px">
-            <RadioButton selected={value} onChange={setValue} value="Risky" />
-          </Flex>
-          <DropdownContent>
-            <DropdownLabel>Risky</DropdownLabel>
-            <DropdownDescription>
-              <p>Trading of non-whitelisted assets.</p>
-              <p>suspended for 20 days</p>
-              <DropdownCardButton>
-                (High risk){" "}
-                <ExternalLink
-                  onClick={(e) => e.stopPropagation()}
-                  href="https://google.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Read more
-                </ExternalLink>
-              </DropdownCardButton>
-            </DropdownDescription>
-          </DropdownContent>
-        </DropdownItem>
+        <StandardFundTypeCard
+          handleSelect={handleSelect}
+          value={value}
+          setValue={setValue}
+        />
+        <RiskyFundTypeCard
+          handleSelect={handleSelect}
+          value={value}
+          setValue={setValue}
+        />
       </DropdownBody>
     </>
   )
@@ -751,4 +781,14 @@ export const Footer = styled(Flex)`
   flex-direction: row;
   width: 100%;
   padding: 20px 0;
+`
+
+export const CardsRow = styled(Flex)`
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 20px;
+
+  & > div:nth-child(1) {
+    margin-right: 22px;
+  }
 `

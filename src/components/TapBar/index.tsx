@@ -9,15 +9,12 @@ import Profile from "assets/menu/mobile/Profile"
 import TopTraders from "assets/menu/mobile/TopTraders"
 import Notifications from "assets/menu/mobile/Notifications"
 
-import { usePopoverContext } from "context/PopoverContext"
-
 import { MobileMenu, NavItem } from "./styled"
 
 export const TapBar = () => {
   const [isFullScreen, setFullScreen] = useState<null | boolean>(null)
-  // const { account } = useWeb3React()
-  // const { toggleConnectWallet } = useConnectWalletContext()
-  // const { isOpen, toggle } = usePopoverContext()
+  const { account } = useWeb3React()
+  const { toggleConnectWallet } = useConnectWalletContext()
 
   useEffect(() => {
     if (window.matchMedia("(display-mode: standalone)").matches) {
@@ -36,7 +33,15 @@ export const TapBar = () => {
         normal: { height: "59px", padding: "15px 14px 12px 14px" },
       }}
     >
-      <NavItem path="/my-wallet" Icon={Wallet} text="My wallet" />
+      {!account ? (
+        <NavItem path="/wallet" Icon={Wallet} text="My wallet" />
+      ) : (
+        <NavItem
+          onClick={() => toggleConnectWallet(true)}
+          Icon={Wallet}
+          text="My wallet"
+        />
+      )}
       <NavItem path="/me" Icon={Profile} text="My profile" />
       <NavItem path="/" Icon={TopTraders} text="Traders" />
       <NavItem
