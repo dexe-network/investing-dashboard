@@ -29,7 +29,8 @@ export const IconDown = styled.img`
 export const Price = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 14px;
   line-height: 18px;
   color: #6c757d;
@@ -38,7 +39,8 @@ export const Price = styled(Text)`
 export const Balance = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 14px;
   line-height: 18px;
 
@@ -54,14 +56,16 @@ export const Balance = styled(Flex)`
 export const Max = styled(Text)`
   cursor: pointer;
   color: #00caff;
-  font-weight: 600;
+  font-family: "Gilroy-Heavy";
+  font-weight: 800; ;
 `
 
 export const Input = styled.input`
   user-select: none;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 22px;
   line-height: 41px;
   color: #424b55;
@@ -96,7 +100,8 @@ export const ActiveSymbol = styled.div`
 export const SymbolLabel = styled.span`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 20px;
   line-height: 20px;
   color: #f7f7f7;
@@ -123,7 +128,8 @@ export const Unlock = styled.div`
 export const Label = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 14px;
   line-height: 100%;
   color: #6c757d;
@@ -132,7 +138,8 @@ export const Label = styled(Text)`
 export const Value = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 14px;
   line-height: 100%;
   color: #5a6071;
@@ -141,7 +148,8 @@ export const Value = styled(Text)`
 export const PriceText = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 14px;
   line-height: 130%;
   /* or 18px */

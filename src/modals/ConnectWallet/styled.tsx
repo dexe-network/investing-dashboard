@@ -3,7 +3,8 @@ import styled from "styled-components"
 
 export const Title = styled(Text)`
   font-size: 24px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   color: #f5f5f5;
 `
 
@@ -45,7 +46,8 @@ export const Header = styled(Flex)``
 export const TermsAndPrivacy = styled.span`
   font-family: Gilroy;
   font-style: italic;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 12px;
   line-height: 15px;
   color: #ffffff;
@@ -69,7 +71,8 @@ export const WalletTitle = styled(Text)`
   padding-top: 8px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+  font-weight: 400;
   font-size: 10px;
   line-height: 12px;
   text-align: center;

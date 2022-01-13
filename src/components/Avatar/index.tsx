@@ -67,6 +67,7 @@ const CameraIcon = styled.img`
   left: 0;
   right: 0;
   bottom: 10px;
+  width: 18px;
 
   @media only screen and (${device.xs}) {
     bottom: 25px;

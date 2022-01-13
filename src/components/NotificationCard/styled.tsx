@@ -23,14 +23,16 @@ export const Time = styled(Text)`
 
 export const Title = styled(Text)`
   color: #f5f5f5;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   text-overflow: ellipsis;
   white-space: normal;
 `
 
 export const Description = styled(Text)`
   color: #f5f5f5;
-  font-weight: 300;
+  font-family: "Gilroy-Light";
+font-weight: 300;
   text-overflow: ellipsis;
   white-space: normal;
 `

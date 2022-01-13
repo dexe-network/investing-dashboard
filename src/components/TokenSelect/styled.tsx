@@ -63,7 +63,8 @@ export const CommonItem = styled(Flex)`
 
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 16px;
   line-height: 16px;
 
@@ -101,14 +102,16 @@ export const FullItem = styled(Flex)`
 export const Price = styled(Text)`
   color: #f7f7f7;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
   margin-left: auto;
 `
 
 export const Title = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 18px;
   color: #acb3b8;

@@ -31,7 +31,8 @@ export const AvatarWrapper = styled.div`
     justify-content: center;
     align-items: center;
     color: #8a8e92;
-    font-weight: bold;
+    font-family: "Gilroy-Bold";
+font-weight: 700;;
     font-size: 21px;
   }
 `
@@ -44,7 +45,8 @@ export const FloatingButtons = styled(Flex)`
 export const TextGray = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.5px;
@@ -61,7 +63,8 @@ export const UserInfo = styled(Flex)`
 export const Name = styled.input`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 18px;
   line-height: 22px;
   letter-spacing: 0.5px;
@@ -96,7 +99,8 @@ export const Card = styled.div`
 export const Address = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 28px;
   letter-spacing: 1px;
@@ -124,7 +128,8 @@ export const TextButton = styled.div<{ color?: string }>`
 export const Heading = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 18px;
   line-height: 20px;
 
@@ -151,7 +156,8 @@ export const Sticky = styled.div`
   width: calc(100% - 7px);
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 10px;
   line-height: 12px;
   color: #6c757d;
@@ -165,7 +171,8 @@ export const Sticky = styled.div`
 export const Time = styled.div`
   font-family: Gilroy;
   font-style: italic;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 10px;
   line-height: 12px;
   color: #6c757d;
@@ -179,7 +186,8 @@ export const Transaction = styled.div`
 export const TransactionType = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 14px;
 
@@ -195,7 +203,8 @@ export const TransactionDetails = styled(Flex)`
 export const TransactionHash = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
 
@@ -205,7 +214,8 @@ export const TransactionHash = styled.div`
 export const TransactionText = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 18px;
   display: flex;

@@ -5,9 +5,9 @@ import styled from "styled-components"
 export const StyledBar = styled(motion.div)`
   touch-action: none;
   user-select: none;
-  height: 102px;
+  height: 50px;
   width: 100%;
-  background: #2c2f36;
+  background: #1e212a;
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
 
@@ -38,16 +38,18 @@ export const Tabs = styled(Flex)``
 export const Tab = styled(ClickableArea)<{ active?: boolean }>`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
-  line-height: 18px;
+  line-height: 130%;
+  /* or 18px */
 
-  &:nth-child(1) {
-    color: ${(props) => (props.active ? "#77DDC2" : "#6c757d")};
-  }
+  display: flex;
+  align-items: flex-end;
+  color: ${(props) => (props.active ? "#9AE2CB" : "#5A6071")};
 
   &:nth-child(2) {
-    color: ${(props) => (props.active ? "#A55858" : "#6c757d")};
+    padding-left: 30px;
   }
 `
 
@@ -58,14 +60,16 @@ export const IconButton = styled.img`
 `
 
 export const Badge = styled.div<{ active?: boolean }>`
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.15));
-  border: 2px solid ${(props) => (props.active ? "#9AE2CB" : "transparent")};
-  background: rgba(61, 64, 68, 0.4);
-  margin: 0 8px;
-  color: ${(props) => (props.active ? "#9AE2CB" : "#6C757D")};
-  border-radius: 10px;
-  padding: 8px 11px 7px 11px;
-  font-size: 10px;
+  background: ${(props) =>
+    props.active
+      ? "linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%)"
+      : "transparent"};
+  border-radius: 4px;
+  height: 24px;
+  padding: 0 12px;
+  color: ${(props) => (props.active ? "#272A31" : "#5A6071")};
+  display: flex;
+  align-items: center;
 `
 
 export const tabsVariants = {
@@ -81,7 +85,8 @@ export const tabsVariants = {
 export const FormLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 16px;
   line-height: 19px;
   color: #c4c4c4;
@@ -116,7 +121,8 @@ export const FilterSelectableItem = styled.div<{ active?: boolean }>`
       : "#33363f"};
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 200%;
   padding: 7px 10px 8px 16px;

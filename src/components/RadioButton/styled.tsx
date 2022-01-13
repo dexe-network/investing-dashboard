@@ -8,12 +8,12 @@ export const Container = styled.div`
 
 export const OuterCircle = styled.div<{ unselected: boolean }>`
   backdrop-filter: blur(4px);
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
-  min-height: 18px;
-  border: 2px solid
-    ${(props) => (props.unselected ? "#6C757D" : "rgba(127, 255, 212, 0.4);")};
+  width: 19px;
+  height: 19px;
+  min-width: 19px;
+  min-height: 19px;
+  border: 1px solid
+    ${(props) => (props.unselected ? "#5A6071" : "rgba(112, 192, 166, 1);")};
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -25,8 +25,7 @@ export const OuterCircle = styled.div<{ unselected: boolean }>`
 export const InnerCircle = styled.div<{ unselected: boolean }>`
   border-radius: 50%;
   transition: all 0.1s linear;
-  height: ${(props) => (props.unselected ? "0px" : "8px")};
-  width: ${(props) => (props.unselected ? "0px" : "8px")};
-  background: #f7f7f7;
-  filter: blur(2px);
+  height: ${(props) => (props.unselected ? "0px" : "11px")};
+  width: ${(props) => (props.unselected ? "0px" : "11px")};
+  background: linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%);
 `

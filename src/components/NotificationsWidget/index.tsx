@@ -10,7 +10,8 @@ interface NotificationsWidgetProps {
 const Symbol = styled(Text)`
   height: 25px;
   font-size: 25px;
-  font-weight: 800;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   color: #c2c3c4;
   padding: 0 6px;
   margin-left: 4px;
@@ -20,14 +21,16 @@ const Name = styled(Text)`
   height: 14px;
   font-size: 14px;
   color: #999999;
-  font-weight: 400;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
 `
 
 const Message = styled(Text)`
   height: 14px;
   color: #ffffff;
   opacity: 0.8;
-  font-weight: 800;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const BageContainer = styled.div`
@@ -45,7 +48,8 @@ const BageContainer = styled.div`
 
 const BageCounter = styled(Text)`
   color: #fff;
-  font-weight: 800;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 14px;
 `
 

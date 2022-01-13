@@ -21,7 +21,8 @@ const PercentButton = styled.div<{ active?: boolean }>`
   padding-top: 2px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 10px;
   line-height: 130%;
   text-align: center;

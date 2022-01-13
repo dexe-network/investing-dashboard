@@ -4,7 +4,8 @@ import { Flex, Text, BaseButton } from "theme"
 export const ErrorText = styled(Text)`
   font-size: 18px;
   color: #ff7f7f;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 export const ApproveButton = styled(BaseButton)`
@@ -16,7 +17,8 @@ export const ApproveButton = styled(BaseButton)`
   box-shadow: 0px 0px 7px #ff7f7f;
   font-size: 22;
   color: #dbdbdb;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   padding: 22px 15px 19px;
   width: 100%;
   border-radius: 10px;
@@ -39,7 +41,8 @@ export const PriceContainer = styled(Flex)`
 export const TooltipLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 100%;
   color: #6c757d;
@@ -48,7 +51,8 @@ export const TooltipLabel = styled.div`
 export const TooltipValue = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 100%;
   color: #dadada;
@@ -58,7 +62,8 @@ export const ExchangeName = styled.div`
   color: #596073;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 130%;
 `

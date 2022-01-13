@@ -21,7 +21,8 @@ export const Input = styled.input`
   flex: 1;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 13px;
   line-height: 16px;
   color: #5a6071;
@@ -29,7 +30,8 @@ export const Input = styled.input`
   &::placeholder {
     font-family: Gilroy;
     font-style: normal;
-    font-weight: normal;
+    font-family: "Gilroy-Regular";
+font-weight: 400;
     font-size: 13px;
     line-height: 16px;
     color: #5a6071;

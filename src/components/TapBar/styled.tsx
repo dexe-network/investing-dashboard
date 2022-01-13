@@ -48,7 +48,8 @@ const MobileLabel = styled.div<{ active: boolean }>`
 
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 12px;
   text-align: center;

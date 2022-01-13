@@ -11,7 +11,6 @@ import { useCreateFundContext } from "context/CreateFundContext"
 import { useConnectWalletContext } from "context/ConnectWalletContext"
 
 import Avatar from "components/Avatar"
-import { TraderName } from "components/MemberMobile/styled"
 
 import icon from "assets/icons/button-plus.svg"
 import swipeDown from "assets/icons/swipe-arrow-down.svg"
@@ -27,6 +26,7 @@ import {
   HintText,
   ButtonsContainer,
   ArrowButton,
+  TraderName,
 } from "./styled"
 import { getSignature } from "utils"
 

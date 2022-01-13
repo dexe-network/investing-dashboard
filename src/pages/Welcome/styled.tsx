@@ -1,10 +1,16 @@
-import { Flex, BaseButton, Text } from "theme"
+import { Flex, BaseButton, Text, device } from "theme"
 import styled from "styled-components"
-
-import { AvatarContainer } from "components/MemberMobile/styled"
 
 import arrowToLogo from "assets/others/arrow-to-logo.svg"
 import arrowToName from "assets/others/arrow-to-name.svg"
+
+const AvatarContainer = styled.div`
+  height: 112px;
+  width: 112px;
+  z-index: 5;
+  border-radius: 150px;
+  position: relative;
+`
 
 export const Container = styled(Flex)`
   justify-content: space-evenly;
@@ -27,7 +33,8 @@ export const BigIconButton = styled(BaseButton)`
   background: linear-gradient(64.44deg, #24282d 32.35%, #3a393f 100%);
   border-radius: 50px;
   font-size: 15px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
   padding: 16px;
   display: flex;
   justify-content: flex-start;
@@ -57,7 +64,8 @@ export const AvatarWrapper = styled(AvatarContainer)`
     border-radius: 8px 0 8px 0;
     font-family: Gilroy;
     font-style: normal;
-    font-weight: normal;
+    font-family: "Gilroy-Regular";
+font-weight: 400;
     font-size: 24px;
     line-height: 29px;
     color: #75ddc1;
@@ -71,7 +79,8 @@ export const Icon = styled.img``
 export const ButtonText = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 16px;
   line-height: 41px;
   padding-left: 17px;
@@ -83,7 +92,8 @@ export const HintText = styled(Text)`
   text-align: center;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 17px;
   color: #c4c4c4;
@@ -136,4 +146,36 @@ export const ArrowButton = styled(BaseButton)`
   display: flex;
   flex-direction: column;
   align-items: center;
+`
+
+export const TraderName = styled.div`
+  cursor: pointer;
+  position: absolute;
+  bottom: -9px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background: linear-gradient(64.44deg, #24282d 32.35%, #3a393f 100%);
+  border-radius: 4px;
+  padding: 5px 7px 3px 7px;
+  width: 134px;
+  height: 27px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: Gilroy;
+  font-style: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  color: #7fffd4;
+  text-align: center;
+  box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.3);
+  z-index: 25;
+
+  @media only screen and (${device.xs}) {
+    font-size: 15px;
+    width: 100%;
+  }
 `

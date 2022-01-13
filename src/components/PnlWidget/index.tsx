@@ -27,13 +27,15 @@ const Period = styled(Flex)`
 const ProfitSm = styled(Text)`
   color: #f5f5f5;
   font-size: 19px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const ProfitAll = styled(Text)`
   color: #7fffd4;
   font-size: 32px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const PnlWidget: React.FC<{

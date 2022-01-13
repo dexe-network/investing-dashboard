@@ -73,7 +73,7 @@ const TopMembersBar: React.FC = () => {
               active={filters.listType === "risk"}
               onClick={() => dispatchFilter("listType", "risk")}
             >
-              Risk Pools
+              Investment
             </Tab>
           </Tabs>
 
@@ -86,13 +86,13 @@ const TopMembersBar: React.FC = () => {
             </ClickableArea>
           </Icons>
         </TopMenu>
-        <BottomMenu>
+        {/* <BottomMenu>
           {commonBases.map((symbol) => (
             <Badge active={symbol === "ALL"} key={symbol}>
               {symbol}
             </Badge>
           ))}
-        </BottomMenu>
+        </BottomMenu> */}
       </StyledBar>
 
       <Popover

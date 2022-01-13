@@ -24,7 +24,8 @@ export const LimitIndicator = styled.div`
   bottom: 10px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: right;
@@ -40,7 +41,8 @@ export const TagItem = styled.div`
   border-radius: 4px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   color: #7fffd4;
@@ -55,7 +57,8 @@ export const TagButton = styled(BaseButton)`
   cursor: pointer;
   font: inherit;
   margin-left: 6px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   padding: 0;
   line-height: 1;
   display: flex;
@@ -70,7 +73,8 @@ export const TagButton = styled(BaseButton)`
 export const ErrorText = styled(Text)`
   color: #be0007;
   white-space: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   padding: 5px 0;
 `
 
@@ -84,7 +88,8 @@ export const Input = styled.input`
   font-family: Gilroy;
   font-style: normal;
   background: none;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 18px;
   line-height: 40px;
   display: flex;
@@ -95,7 +100,8 @@ export const Input = styled.input`
   &::placeholder {
     font-family: Gilroy;
     font-style: normal;
-    font-weight: normal;
+    font-family: "Gilroy-Regular";
+font-weight: 400;
     font-size: 12px;
     line-height: 14px;
     letter-spacing: 0.5px;

@@ -21,10 +21,48 @@ import InputSlider from "rc-slider"
 
 import useDebounce from "hooks/useDebounce"
 
+export const HintText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+
+  /* icons */
+
+  color: #5a6071;
+`
+
+export const ErrorText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
+  font-size: 12px;
+  line-height: 130%;
+  /* identical to box height, or 16px */
+  padding: 8px 0 8px 10px;
+  color: #5a6071;
+  position: relative;
+
+  &:after {
+    position: absolute;
+    left: 0px;
+    top: 13px;
+    width: 4px;
+    height: 4px;
+    background: #5a6071;
+    border-radius: 50px;
+    content: "";
+  }
+`
+
 export const Title = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 22px;
   line-height: 41px;
 
@@ -43,7 +81,8 @@ export const InputLabel = styled(motion.div)`
   margin-bottom: 7px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 18px;
   color: #acb3b8;
@@ -52,7 +91,8 @@ export const InputLabel = styled(motion.div)`
 export const Secondary = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 130%;
   /* or 18px */
@@ -64,7 +104,8 @@ export const Secondary = styled(Text)`
 export const Warn = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 18px;
   color: #616a78;
@@ -74,14 +115,14 @@ export const Warn = styled(Text)`
   }
 `
 
-const Container = styled(Flex)`
+const Container = styled(Flex)<{ width?: string }>`
   position: relative;
-  width: 100%;
+  width: ${(props) => (props.width ? props.width : "100%")};
   min-height: 61px;
   margin-top: 15px;
   cursor: pointer;
 
-  background: #2f333b;
+  background: #252932;
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
   border-radius: 6px;
@@ -94,7 +135,8 @@ const Container = styled(Flex)`
 const LabelBase = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 18px;
   line-height: 18px;
   color: #5a6071;
@@ -124,17 +166,60 @@ const Input = styled(motion.input)`
   padding: 15px 15px 0;
   z-index: 2;
   position: relative;
-  color: #1e1e1e;
+  font-family: Gilroy;
+  font-style: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
+  font-size: 16px;
+  line-height: 41px;
+  color: #5a6071;
 
   &::placeholder {
     vertical-align: middle;
-    line-height: 16px;
+    font-family: Gilroy;
+    font-style: normal;
+    font-family: "Gilroy-Regular";
+font-weight: 400;
     font-size: 16px;
-    color: #53575a;
+    line-height: 41px;
+    /* or 256% */
+
+    display: flex;
+    align-items: flex-end;
+
+    /* icons */
+
+    color: #5a6071;
   }
 
   @media only screen and (${device.sm}) {
     height: 51px;
+  }
+`
+
+export const AvatarWrapper = styled.div`
+  width: 82px;
+  height: 100px;
+  position: relative;
+
+  &:after {
+    background: #282b31;
+    width: 18px;
+    height: 18px;
+    border-radius: 50px;
+    position: absolute;
+    bottom: 35px;
+    right: 17px;
+    content: "+";
+    color: rgb(139, 142, 145);
+    font-family: "Gilroy-Heavy";
+font-weight: 800;;
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 3px;
+    box-sizing: border-box;
   }
 `
 
@@ -174,7 +259,8 @@ export const TextItalic = styled.span`
 export const InputButton = styled.span`
   font-family: Gilroy;
   font-style: italic;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 18px;
   line-height: 18px;
   white-space: nowrap;
@@ -189,7 +275,19 @@ export const InputUI: React.FC<{
   onPaste?: (e: any) => void
   icon?: React.ReactElement | boolean | undefined
   onClick?: () => void
-}> = ({ name, label, onChange, onKeyDown, onPaste, icon, onClick }) => {
+  width?: string
+  customPlaceholder?: string
+}> = ({
+  name,
+  label,
+  onChange,
+  onKeyDown,
+  onPaste,
+  icon,
+  onClick,
+  width,
+  customPlaceholder,
+}) => {
   const [active, setActive] = useState(false)
 
   const handleBlur = ({ target }) => {
@@ -209,14 +307,14 @@ export const InputUI: React.FC<{
   }
 
   return (
-    <Container onClick={onClick}>
+    <Container onClick={onClick} width={width}>
       <Input
         spellCheck={false}
         onBlur={handleBlur}
         onFocus={handleFocus}
         onPaste={onPaste}
         onKeyDown={onKeyDown}
-        placeholder="XXX"
+        placeholder={customPlaceholder ? customPlaceholder : "XXXX"}
         initial="hidden"
         variants={inputVariants}
         animate={active ? "visible" : "hidden"}
@@ -249,16 +347,23 @@ const DropdownCardButton = styled.p`
 const DropdownLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 16px;
-  line-height: 31px;
-  color: #dadada;
+  line-height: 35px;
+
+  /* body text */
+
+  color: #f7f7f7;
+
+  opacity: 0.7;
 `
 
 const DropdownDescription = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
 
@@ -282,6 +387,20 @@ const DropdownContent = styled.div`
   flex: 1;
 `
 
+const DropdownText = styled.p`
+  font-family: Gilroy;
+  font-style: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  padding: 0;
+  margin: 0;
+  /* icons */
+
+  color: #5a6071;
+`
+
 interface TypeCardProps {
   handleSelect?: (v: any) => void
   setValue?: (v: any) => void
@@ -295,27 +414,31 @@ export const StandardFundTypeCard: React.FC<TypeCardProps> = ({
 }) => {
   return (
     <DropdownItem onClick={() => handleSelect("Standard")}>
-      <Flex p="0 15px">
+      <Flex p="0 17px">
         <RadioButton selected={value} onChange={setValue} value="Standard" />
       </Flex>
       <DropdownContent>
         <DropdownLabel>Standard</DropdownLabel>
         <DropdownDescription>
-          <p>
+          <DropdownText>
             Trading on assets from the <Text color="#47BEF9">white list</Text> +
             Trading of
-          </p>
-          <p>non-whitelisted assets through the proposals</p>
+          </DropdownText>
+          <DropdownText>
+            non-whitelisted assets through the proposals
+          </DropdownText>
           <DropdownCardButton>
-            (low risk){" "}
-            <ExternalLink
-              onClick={(e) => e.stopPropagation()}
-              href="https://google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read more
-            </ExternalLink>
+            <DropdownText>
+              (low risk){" "}
+              <ExternalLink
+                onClick={(e) => e.stopPropagation()}
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more
+              </ExternalLink>
+            </DropdownText>
           </DropdownCardButton>
         </DropdownDescription>
       </DropdownContent>
@@ -330,24 +453,26 @@ export const RiskyFundTypeCard: React.FC<TypeCardProps> = ({
 }) => {
   return (
     <DropdownItem onClick={() => handleSelect("Risky")}>
-      <Flex p="0 15px">
+      <Flex p="0 17px">
         <RadioButton selected={value} onChange={setValue} value="Risky" />
       </Flex>
       <DropdownContent>
         <DropdownLabel>Risky</DropdownLabel>
         <DropdownDescription>
-          <p>Trading of non-whitelisted assets.</p>
-          <p>suspended for 20 days</p>
+          <DropdownText>Trading of non-whitelisted assets.</DropdownText>
+          <DropdownText>suspended for 20 days</DropdownText>
           <DropdownCardButton>
-            (High risk){" "}
-            <ExternalLink
-              onClick={(e) => e.stopPropagation()}
-              href="https://google.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read more
-            </ExternalLink>
+            <DropdownText>
+              (High risk){" "}
+              <ExternalLink
+                onClick={(e) => e.stopPropagation()}
+                href="https://google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more
+              </ExternalLink>
+            </DropdownText>
           </DropdownCardButton>
         </DropdownDescription>
       </DropdownContent>
@@ -421,7 +546,8 @@ export const TextArea = styled.textarea`
   &::placeholder {
     font-family: Gilroy;
     font-style: normal;
-    font-weight: normal;
+    font-family: "Gilroy-Regular";
+font-weight: 400;
     font-size: 12px;
     line-height: 15px;
     color: #5a6071;
@@ -441,7 +567,8 @@ export const MaxLength = styled(Text)`
   max-width: 50px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: right;
@@ -490,7 +617,8 @@ export const StepperBaseButton = styled(BaseButton)``
 export const NextButton = styled(StepperBaseButton)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 41px;
   color: #9ae2cb;
@@ -499,7 +627,8 @@ export const NextButton = styled(StepperBaseButton)`
 export const PrevButton = styled(StepperBaseButton)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 41px;
   color: #9ae2cb;
@@ -602,7 +731,8 @@ export const PerformanceContent = styled.div`
 export const PerformanceTitle = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 16px;
   line-height: 19px;
   color: #f7f7f7;
@@ -611,7 +741,8 @@ export const PerformanceTitle = styled.div`
 export const PerformanceDescription = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 13px;
   line-height: 16px;
   /* identical to box height */
@@ -633,7 +764,8 @@ export const Slide = ({ item, active }) => {
 
 export const FormLabel = styled(Text)`
   font-size: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   color: #f5f5f5;
   white-space: normal;
 `
@@ -657,7 +789,8 @@ const Percent = styled.input`
   width: 35px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 16px;
   line-height: 41px;
   color: #c2c3c4;
@@ -672,7 +805,8 @@ const InputWrapper = styled(Flex)`
 const InputSymbol = styled.span`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 16px;
   line-height: 16px;
   color: #c2c3c4;

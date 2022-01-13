@@ -389,13 +389,15 @@ const Label = styled.div`
 const Value = styled.div`
   color: #f5f5f5;
   font-size: 22px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const WhiteText = styled.span`
   color: #f5f5f5;
   font-size: 14px;
-  font-weight: 300;
+  font-family: "Gilroy-Light";
+font-weight: 300;
 `
 
 const StatItem: React.FC<{ label: string; value: string }> = ({
@@ -415,7 +417,8 @@ const PieWrapper = styled.div`
 
 const Tab = styled.div<{ active?: boolean }>`
   font-size: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   color: ${(props) => (props.active ? "#f5f5f5" : "#999999")};
   margin: 0 15px;
   user-select: none;
@@ -429,7 +432,8 @@ const TabContent = styled.div`
 const Cell = styled.div<{ color?: string }>`
   color: ${(props) => (props?.color ? props.color : "#f5f5f5")};
   font-size: 14px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   white-space: nowrap;
 `
 
@@ -437,7 +441,8 @@ const Button = styled(BaseButton)`
   color: rgba(0, 0, 0, 0.6);
   padding: 13px 31px 10px;
   font-size: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   border-radius: 7px;
   cursor: pointer;
   user-select: none;
@@ -697,7 +702,8 @@ const TokenInfo = styled.div``
 const TokenSymbol = styled.div`
   color: #f7f7f7;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
 `
 const TokenPnl24 = styled.div`
   font-size: 14px;
@@ -727,7 +733,8 @@ const BaseTokenSymbol = styled.div`
 const BaseTokenBalance = styled.div`
   color: #ffffff;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
 `
 
 const SwapButton = styled.div`
@@ -775,12 +782,14 @@ const TooltipLabel = styled.div`
 const RowLabel = styled.div`
   color: #f5f5f5;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
 `
 const RowValue = styled.div`
   color: #f5f5f5;
   font-size: 16px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
 `
 
 const BackButton = styled.img`

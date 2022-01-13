@@ -46,7 +46,8 @@ export const StatisticsContainer = styled(Flex)`
 export const StatisticsTitle = styled(Text)`
   color: #dddddd;
   font-size: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   margin-bottom: 15px;
 `
 
@@ -57,7 +58,8 @@ const Label = styled(Text)`
 
 const Value = styled(Text)`
   font-size: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   color: #9b9b9d;
   text-align: right;
 `
@@ -86,7 +88,8 @@ export const Rank = styled.div`
   bottom: 0px;
   right: -5px;
   color: #f5f5f5;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   font-size: 16px;
 `
 
@@ -99,7 +102,8 @@ export const FloatingText = styled.span`
 
 export const Copiers = styled.span`
   font-size: 14px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   color: #7fffd4;
   margin-left: 10px;
 `
@@ -110,7 +114,8 @@ type alignType = "left" | "center" | "right"
 
 export const TextBig = styled.div<{ color?: string; align?: alignType }>`
   font-size: 22px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   height: 22px;
   line-height: 22px;
   transform: translateY(1px);
@@ -121,6 +126,7 @@ export const TextBig = styled.div<{ color?: string; align?: alignType }>`
 
 export const TextSmall = styled.div<{ color?: string; align?: string }>`
   font-size: 14px;
+  font-family: "Gilroy-Light";
   font-weight: 300;
 
   color: ${(props) => (props.color ? props.color : "#f5f5f5")};
@@ -154,7 +160,8 @@ export const Button = styled(BaseButton)<{ secondary?: boolean }>`
   border-radius: 7px;
   color: ${(props) => (props.secondary ? "#B2B2B2" : "#000000")};
   font-size: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+  font-weight: 700;
   text-align: center;
 
   height: 31px;

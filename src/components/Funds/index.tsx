@@ -60,7 +60,8 @@ const Major = styled.div`
 const Ticker = styled.span`
   font-size: 14px;
   color: #f5f5f5;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
   margin: 0 3.5px;
 `
 

@@ -29,7 +29,8 @@ const StyledContainer = styled.div`
 const Symbol = styled.div`
   font-size: 17px;
   height: 16px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   color: #e1e1e1;
   padding: 0 7px 0;
   height: 16px;

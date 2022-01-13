@@ -20,7 +20,8 @@ const Card = styled.div`
 const Label = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.5px;
@@ -30,7 +31,8 @@ const Label = styled.div`
 const Address = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 18px;
   line-height: 22px;
 
@@ -43,7 +45,8 @@ const Address = styled.div`
 const Change = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: right;
@@ -57,12 +60,14 @@ const Change = styled.div`
 const Connect = styled.div`
   color: #2680eb;
   font-size: 15px;
-  font-weight: 800;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const TokenName = styled.div`
   font-size: 14px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
   color: #f5f5f5;
   text-transform: uppercase;
 `

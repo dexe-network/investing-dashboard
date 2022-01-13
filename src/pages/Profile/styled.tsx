@@ -349,7 +349,8 @@ const StatisticsIcon = styled.img`
 const Text = styled.div`
   color: #f5f5f5;
   font-size: 14px;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
   margin: 0 5px;
 `
 
@@ -358,7 +359,8 @@ const StatisticGroup = styled.div`
   font-size: 14px;
   color: #707070;
   font-style: italic;
-  font-weight: 500;
+  font-family: "Gilroy-Medium";
+font-weight: 500;
   padding: 5px 0;
 
   @media only screen and (${device.sm}) {
@@ -379,10 +381,12 @@ const StatisticsBody = styled(motion.div)`
 const StatisticsLabel = styled.div`
   color: #9b9b9d;
   font-size: 14px;
-  font-weight: 300;
+  font-family: "Gilroy-Light";
+font-weight: 300;
 `
 const StatisticsValue = styled(StatisticsLabel)`
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const StatisticsItem = styled(Flex)`
@@ -507,7 +511,8 @@ export const Bottom = styled(Wrapper)`
 const NoData = styled.div`
   color: #64666d;
   font-size: 16px;
-  font-weight: 300;
+  font-family: "Gilroy-Light";
+font-weight: 300;
   padding: 100px 0;
 `
 
@@ -522,32 +527,35 @@ const StyledPost = styled.div<{ border?: boolean }>`
 const PostSymbol = styled.span`
   font-size: 33px;
   color: #dddddd;
-  font-weight: 900;
+  font-weight: 800;;
 `
 
 const PostName = styled.span`
   font-size: 20px;
   color: #707070;
-  font-weight: 300;
+  font-family: "Gilroy-Light";
+font-weight: 300;
   margin-left: 20px;
 `
 
 const PostPrice = styled.span`
   color: #dddddd;
   font-size: 16px;
-  font-weight: 800;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
 `
 
 const PostPnl = styled.span<{ val: number }>`
   font-size: 16px;
-  font-weight: 800;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   color: ${(props) => (props.val && props.val >= 0 ? "#7FFFD4" : "#FF7F7F")};
   margin-left: 20px;
 `
 
 const PostDescription = styled.p`
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 800;;
   line-height: 35px;
   color: #dddddd;
   height: 105px;
@@ -561,7 +569,8 @@ const PostDescription = styled.p`
 const PostBottomText = styled.div`
   color: #dddddd;
   font-size: 14px;
-  font-weight: 300;
+  font-family: "Gilroy-Light";
+font-weight: 300;
   border-bottom: 1px solid transparent;
   transition: 0.15s ease-in-out;
   user-select: none;
@@ -629,7 +638,8 @@ const PostMore = styled.div`
   transition: background 0.15s ease-in-out;
   font-size: 20px;
   color: #707070;
-  font-weight: 400;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   line-height: 20px;
   cursor: pointer;
   user-select: none;
@@ -643,7 +653,8 @@ const ButtonSymbol = styled.span`
   position: relative;
   color: #e1e1e1;
   font-size: 20px;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   padding-left: 15px;
   padding-right: 15px;
 `

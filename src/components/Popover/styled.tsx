@@ -44,7 +44,8 @@ export const Header = styled(Flex)`
   padding-top: 14px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 22px;
   line-height: 20px;
   text-align: center;
@@ -78,7 +79,8 @@ export const AccountCard = styled.div`
 export const AccountTitle = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: bold;
+  font-family: "Gilroy-Bold";
+font-weight: 700;;
   font-size: 18px;
   line-height: 22px;
   color: #ffffff;
@@ -89,7 +91,8 @@ export const AccountTitle = styled(Text)`
 export const AccountDescription = styled(Text)`
   font-family: Gilroy;
   font-style: italic;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
 
@@ -110,7 +113,8 @@ export const AccountAddress = styled(Flex)`
   border-radius: 10px;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 14px;
   line-height: 200%;
   color: #f7f7f7;
@@ -130,7 +134,8 @@ export const TextButton = styled(Text)<{ theme?: "default" | "primary" }>`
   cursor: pointer;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: center;

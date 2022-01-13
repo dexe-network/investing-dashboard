@@ -36,7 +36,8 @@ export const Icon = styled.img`
 
 export const Label = styled.div`
   font-family: Gilroy;
-  font-weight: 400;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   color: #9ae2cb;
@@ -45,7 +46,8 @@ export const Label = styled.div`
 export const Value = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-family: "Gilroy-Regular";
+font-weight: 400;
   font-size: 18px;
   line-height: 41px;
   color: #dadada;

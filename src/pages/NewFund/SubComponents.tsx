@@ -5,11 +5,14 @@ import WalletCard from "components/WalletCard"
 import AddressChips from "components/AddressChips"
 import TokenSelect from "components/TokenSelect"
 import RadioButton from "components/RadioButton"
+import Avatar from "components/Avatar"
 import Switch from "components/Switch"
 import OneValueCard from "components/OneValueCard"
 import { opacityVariants } from "motion/variants"
 import swipeLeft from "assets/icons/swipe-arrow-left.svg"
 import {
+  AvatarWrapper,
+  HintText,
   SelectUI,
   NextButton,
   PrevButton,
@@ -33,6 +36,7 @@ import {
   CardsRow,
   RiskyFundTypeCard,
   StandardFundTypeCard,
+  ErrorText,
 } from "modals/CreateFund/styled"
 import { SubContainer, NavIcon } from "./styled"
 
@@ -45,14 +49,40 @@ export const BasicInfo: React.FC = () => {
       transition={{ duration: 0.3 }}
     >
       <Flex full dir="column" ai="flex-start">
-        <Secondary>Basic settings for your fund.</Secondary>
-        <Warn>Basic settings for fund cannot be changed after creation.</Warn>
-        <InputUI label="Token name" onChange={() => {}} name="_name" />
-        <InputUI label="Ticker symbol" onChange={() => {}} name="_symbol" />
+        <Flex full jc="center">
+          <AvatarWrapper>
+            <Avatar onCrop={() => {}} showUploader size={65} />
+          </AvatarWrapper>
+        </Flex>
+        <Flex full dir="column" ai="flex-start">
+          <HintText>
+            Basic settings for fund cannot be changed after creation.
+          </HintText>
+          <Flex>
+            <InputUI
+              width="59%"
+              customPlaceholder="XXXXXXXXX"
+              label="Fund Name"
+              onChange={() => {}}
+              name="_name"
+            />
+            <InputUI
+              width="37%"
+              label="Symbol"
+              onChange={() => {}}
+              name="_symbol"
+            />
+          </Flex>
+          <Flex dir="column" ai="flex-start">
+            <ErrorText>
+              Your fund name can contain a max. of 20 characters
+            </ErrorText>
+          </Flex>
+        </Flex>
       </Flex>
 
       <Flex p="50px 0 0" full dir="column" ai="flex-start">
-        <InputLabel>Choose type of your fund</InputLabel>
+        <HintText>Choose type of your fund</HintText>
         <SelectUI label="Type of fund" />
       </Flex>
     </SubContainer>
@@ -359,7 +389,7 @@ const steps = [
 ]
 
 const stepNamings = [
-  "Create a new fund",
+  "Basic settings",
   "Select a token",
   "About mannagers",
   "Investment",
