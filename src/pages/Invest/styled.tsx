@@ -4,8 +4,8 @@ import { Flex, Text, BaseButton } from "theme"
 export const ErrorText = styled(Text)`
   font-size: 18px;
   color: #ff7f7f;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
 `
 
 export const ApproveButton = styled(BaseButton)`
@@ -17,8 +17,8 @@ export const ApproveButton = styled(BaseButton)`
   box-shadow: 0px 0px 7px #ff7f7f;
   font-size: 22;
   color: #dbdbdb;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   padding: 22px 15px 19px;
   width: 100%;
   border-radius: 10px;
@@ -41,8 +41,8 @@ export const PriceContainer = styled(Flex)`
 export const TooltipLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 100%;
   color: #6c757d;
@@ -51,8 +51,8 @@ font-weight: 400;
 export const TooltipValue = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 100%;
   color: #dadada;
@@ -62,8 +62,8 @@ export const ExchangeName = styled.div`
   color: #596073;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 130%;
 `

@@ -25,8 +25,8 @@ const StyledTooltipSm = styled(StyledTooltip)`
 const TooltipText = styled.div`
   color: #f5f5f5;
   font-size: 16px;
-  font-family: "Gilroy-Medium";
-font-weight: 500;
+  font-family: Gilroy;
+  font-weight: 500;
 `
 
 const LargeTooltip = ({ active, payload }) => {
@@ -93,8 +93,8 @@ const Bar = styled(Flex)`
 const Ticker = styled.div`
   color: #dddddd;
   font-size: 16px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   margin-right: 10px;
 
   @media only screen and (${device.sm}) {
@@ -105,8 +105,8 @@ font-weight: 700;;
 
 const Price = styled.div`
   font-size: 16px;
-  font-family: "Gilroy-Medium";
-font-weight: 500;
+  font-family: Gilroy;
+  font-weight: 500;
   color: #999999;
 
   @media only screen and (${device.sm}) {
@@ -116,8 +116,8 @@ font-weight: 500;
 
 const Month = styled.div<{ active?: boolean }>`
   font-size: 16px;
-  font-family: "Gilroy-Medium";
-font-weight: 500;
+  font-family: Gilroy;
+  font-weight: 500;
   color: ${(props) => (props.active ? "#999999" : "#4A4F53")};
   margin: 0 8px;
   user-select: none;
@@ -129,8 +129,8 @@ font-weight: 500;
 
   @media only screen and (${device.xs}) {
     font-size: 10px;
-    font-family: "Gilroy-Bold";
-font-weight: 700;;
+    font-family: Gilroy;
+    font-weight: 700;
   }
 `
 

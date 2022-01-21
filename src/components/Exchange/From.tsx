@@ -106,10 +106,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
             value={amount}
           />
           <ActiveSymbol onClick={onSelect}>
-            <TokenIcon
-              size={27}
-              src={`https://tokens.1inch.exchange/${address.toLowerCase()}.png`}
-            />
+            <TokenIcon size={27} address={address} />
             <SymbolLabel>{symbol}</SymbolLabel>
             <IconDown src={angleIcon} />
           </ActiveSymbol>

@@ -38,7 +38,7 @@ export const Tabs = styled(Flex)``
 export const Tab = styled(ClickableArea)<{ active?: boolean }>`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
 font-weight: 400;
   font-size: 14px;
   line-height: 130%;
@@ -85,7 +85,7 @@ export const tabsVariants = {
 export const FormLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
 font-weight: 400;
   font-size: 16px;
   line-height: 19px;
@@ -121,7 +121,7 @@ export const FilterSelectableItem = styled.div<{ active?: boolean }>`
       : "#33363f"};
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
 font-weight: 400;
   font-size: 12px;
   line-height: 200%;

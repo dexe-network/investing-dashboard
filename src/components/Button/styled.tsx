@@ -9,13 +9,12 @@ export const GradientButton = styled(BaseButton)<{
   color: ButtonThemeType
 }>`
   position: relative;
-  padding: 19px 9px 15px;
+  padding: 12px 9px 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border-radius: 5px;
-  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.5);
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   width: ${(props) => (props.full ? "100%" : "fit-content")};
@@ -69,19 +68,25 @@ export const GradientButton = styled(BaseButton)<{
   }
 
   ${Text} {
-    font-size: ${(props) => props.fz || 16}px;
+    font-family: Gilroy;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 22px;
+    letter-spacing: 0.1px;
+
     color: #202020;
-    font-family: "Gilroy-Bold";
-font-weight: 700;;
     z-index: 21;
   }
 `
 
+// BUY BUTTON
+
 export const BuyButtonContainer = styled(BaseButton)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 17px;
 
@@ -91,4 +96,25 @@ font-weight: 400;
 export const BuyArrow = styled.img`
   height: 15px;
   width: 15px;
+`
+
+// BORDERED BUTTON
+
+export const BorderedContainer = styled(BaseButton)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 16px;
+  /* or 100% */
+  color: #2680eb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  // border: 1px solid #2680eb;
+  height: 47px;
+  white-space: nowrap;
 `

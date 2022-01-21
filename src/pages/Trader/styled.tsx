@@ -48,8 +48,8 @@ export const Label = styled(Text)`
   font-size: 13px;
 `
 export const Value = styled(Text)`
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-size: 32px;
   color: #f7f7f7;
 `

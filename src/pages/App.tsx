@@ -1,13 +1,14 @@
 import Div100vh from "react-div-100vh"
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-import theme, { External } from "theme"
+import theme from "theme"
 import { ThemeProvider } from "styled-components"
 import { ModalProvider } from "styled-react-modal"
 import Menu from "components/Menu"
 import TapBar from "components/TapBar"
+import UnsupportedChain from "components/UnsupportedChain"
 
 import { useEagerConnect } from "hooks/useEagerConnect"
 import { useInactiveListener } from "hooks/useInactiveListener"
+import useDefaultConnector from "hooks/useDefaultConnector"
 
 import ConnectWalletContext from "context/ConnectWalletContext"
 
@@ -15,30 +16,18 @@ import NotificationsContext from "context/NotificationsContext"
 
 import Routes from "pages/Routes"
 
-import {
-  SpecialModalBackground,
-  AppWrapper,
-  Unsupported,
-} from "theme/GlobalStyle"
+import { SpecialModalBackground, AppWrapper } from "theme/GlobalStyle"
 
 const App = () => {
   const eager = useEagerConnect()
-  const { error } = useWeb3React()
-  const isUnsupportedChainIdError = error instanceof UnsupportedChainIdError
 
+  useDefaultConnector(eager)
   useInactiveListener(eager)
 
   return (
     <ThemeProvider theme={theme}>
       <ModalProvider backgroundComponent={SpecialModalBackground}>
-        {isUnsupportedChainIdError && (
-          <Unsupported>
-            Unsupported network selected. See{" "}
-            <External href="https://dexe.network">
-              how to setup network connection
-            </External>
-          </Unsupported>
-        )}
+        <UnsupportedChain />
         <Div100vh>
           <AppWrapper>
             <ConnectWalletContext>

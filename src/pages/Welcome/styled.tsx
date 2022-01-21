@@ -33,8 +33,8 @@ export const BigIconButton = styled(BaseButton)`
   background: linear-gradient(64.44deg, #24282d 32.35%, #3a393f 100%);
   border-radius: 50px;
   font-size: 15px;
-  font-family: "Gilroy-Medium";
-font-weight: 500;
+  font-family: Gilroy;
+  font-weight: 500;
   padding: 16px;
   display: flex;
   justify-content: flex-start;
@@ -64,8 +64,8 @@ export const AvatarWrapper = styled(AvatarContainer)`
     border-radius: 8px 0 8px 0;
     font-family: Gilroy;
     font-style: normal;
-    font-family: "Gilroy-Regular";
-font-weight: 400;
+    font-family: Gilroy;
+    font-weight: 400;
     font-size: 24px;
     line-height: 29px;
     color: #75ddc1;
@@ -79,8 +79,8 @@ export const Icon = styled.img``
 export const ButtonText = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-size: 16px;
   line-height: 41px;
   padding-left: 17px;
@@ -92,8 +92,8 @@ export const HintText = styled(Text)`
   text-align: center;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 17px;
   color: #c4c4c4;
@@ -165,8 +165,8 @@ export const TraderName = styled.div`
   white-space: nowrap;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 17px;
   color: #7fffd4;

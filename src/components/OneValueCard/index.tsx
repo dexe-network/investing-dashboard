@@ -5,7 +5,7 @@ import React from "react"
 
 interface OneValueCardProps {
   label: string
-  value: string
+  value: any
 }
 
 const OneValueCard: React.FC<OneValueCardProps> = ({ label, value }) => {

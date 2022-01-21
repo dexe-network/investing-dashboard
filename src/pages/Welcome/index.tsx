@@ -7,7 +7,6 @@ import { useSwipeable } from "react-swipeable"
 
 import { GuardSpinner } from "react-spinners-kit"
 
-import { useCreateFundContext } from "context/CreateFundContext"
 import { useConnectWalletContext } from "context/ConnectWalletContext"
 
 import Avatar from "components/Avatar"
@@ -37,7 +36,6 @@ function Welcome(props: Props) {
 
   const history = useHistory()
   const { account, library } = useWeb3React()
-  const { toggleCreateFund } = useCreateFundContext()
   const { toggleConnectWallet } = useConnectWalletContext()
 
   const [nickname, setNickname] = useState<string | null>(null)
@@ -123,15 +121,6 @@ function Welcome(props: Props) {
       // TODO: signMessage
     }
   }, [nickname, avatar, account, library, history, toggleConnectWallet])
-
-  const handleCreateFund = () => {
-    // if (!account) {
-    //   toggleConnectWallet()
-    //   return
-    // }
-
-    toggleCreateFund(true)
-  }
 
   const handleTraderNameClick = () => {
     const userInput = prompt("Your name will be attached to account address.")

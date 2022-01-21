@@ -36,7 +36,7 @@ export function useKeyPress(targetKey: string): boolean {
   return keyPressed
 }
 
-export const useFocus = () => {
+export const useFocus = (): [any, any] => {
   const htmlElRef = useRef<any>(null)
   const setFocus = () => {
     htmlElRef.current && htmlElRef.current?.focus && htmlElRef.current.focus()

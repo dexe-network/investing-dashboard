@@ -15,7 +15,8 @@ import GlobalStyle from "theme/GlobalStyle"
 
 import getLibrary from "utils/getLibrary"
 
-import BlockNumber from "components/BlockNumber"
+import { ContractsRegistryUpdater } from "state/contracts/updater"
+import { PriceFeedUpdater } from "state/pricefeed/updater"
 import "react-virtualized/styles.css"
 
 const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
@@ -38,7 +39,8 @@ createTheme("dexe", {
 
 const GlobalComponents = () => (
   <>
-    {/* <BlockNumber /> */}
+    <ContractsRegistryUpdater />
+    <PriceFeedUpdater />
     <Normalize />
     <GlobalStyle />
   </>

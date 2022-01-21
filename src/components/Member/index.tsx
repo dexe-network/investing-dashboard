@@ -53,10 +53,7 @@ const Member: React.FC<Props> = ({ data }) => {
               <Flex ai="center">
                 <TextBig>ISDX</TextBig>
                 <FundContainer>
-                  <TokenIcon
-                    src={`https://tokens.1inch.exchange/0x....png`}
-                    size={15}
-                  />
+                  <TokenIcon size={15} />
                 </FundContainer>
               </Flex>
               <TextSmall>

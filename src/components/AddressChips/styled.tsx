@@ -1,15 +1,57 @@
 import { Flex, BaseButton, Text } from "theme"
 import styled from "styled-components"
 
-export const Container = styled(Flex)`
+export const Label = styled.div`
+  padding: 20px 0 0 15px;
+  font-family: Gilroy;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: #9ae2cb;
+  text-align: left;
+`
+
+export const Icon = styled.img`
+  position: absolute;
+  fill: #5c6166;
+  bottom: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+`
+
+export const Container = styled(Flex)<{
+  customBg?: string
+  readonly?: boolean
+  isDefault?: boolean
+}>`
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 80px;
+  align-items: flex-start;
+  min-height: 54px;
   width: 100%;
-  background: #2f333b;
-  box-shadow: 0px 7px 64px rgba(0, 0, 0, 0.07);
+  background: ${(props) => (props.customBg ? props.customBg : "#20242d")};
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
   border-radius: 6px;
   position: relative;
+  box-shadow: ${(props) =>
+    props.readonly ? "0px 4px 4px rgba(0, 0, 0, 0.08)" : "none"};
+
+  &::before {
+    content: "";
+    opacity: ${(props) => (props.readonly ? 1 : 0)};
+    position: absolute;
+    width: 3px;
+    top: 0;
+    bottom: 0;
+    left: 0px;
+    background: ${(props) =>
+      props.isDefault
+        ? "rgb(92, 97, 102)"
+        : "linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%)"};
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 10px 0 0 10px;
+  }
 `
 
 export const ChipsWrapper = styled(Flex)`
@@ -24,8 +66,8 @@ export const LimitIndicator = styled.div`
   bottom: 10px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: right;
@@ -41,8 +83,8 @@ export const TagItem = styled.div`
   border-radius: 4px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   color: #7fffd4;
@@ -57,8 +99,8 @@ export const TagButton = styled(BaseButton)`
   cursor: pointer;
   font: inherit;
   margin-left: 6px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   padding: 0;
   line-height: 1;
   display: flex;
@@ -73,8 +115,8 @@ font-weight: 700;;
 export const ErrorText = styled(Text)`
   color: #be0007;
   white-space: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   padding: 5px 0;
 `
 
@@ -85,23 +127,20 @@ export const Input = styled.input`
   appereance: none;
   border: none;
 
+  background: none;
   font-family: Gilroy;
   font-style: normal;
-  background: none;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
-  font-size: 18px;
+  font-weight: normal;
+  font-size: 16px;
   line-height: 40px;
-  display: flex;
-  align-items: flex-end;
 
-  color: #202020;
+  color: #5a6071;
 
   &::placeholder {
     font-family: Gilroy;
     font-style: normal;
-    font-family: "Gilroy-Regular";
-font-weight: 400;
+    font-family: Gilroy;
+    font-weight: 400;
     font-size: 12px;
     line-height: 14px;
     letter-spacing: 0.5px;

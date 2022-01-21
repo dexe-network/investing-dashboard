@@ -144,7 +144,7 @@ const Content = styled(motion.div)`
   height: 40px;
   overflow: hidden;
   white-space: nowrap;
-  font-family: "Gilroy-Medium";
+  font-family: Gilroy;
   font-weight: 500;
   font-size: 16px;
 

@@ -97,8 +97,8 @@ export const TradeButtons = styled(Flex)`
 
 export const TextButtonBase = styled(BaseButton)`
   font-size: 16px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   text-align: center;
   background: none;
 `
@@ -148,8 +148,8 @@ export const From = styled(Text)`
 export const To = styled(Text)`
   white-space: normal;
   color: #ffffff;
-  font-family: "Gilroy-Medium";
-font-weight: 500;
+  font-family: Gilroy;
+  font-weight: 500;
   font-size: 16px;
 `
 

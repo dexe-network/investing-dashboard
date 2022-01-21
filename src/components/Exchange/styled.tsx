@@ -29,7 +29,7 @@ export const IconDown = styled.img`
 export const Price = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
@@ -39,7 +39,7 @@ export const Price = styled(Text)`
 export const Balance = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
@@ -56,7 +56,7 @@ export const Balance = styled(Flex)`
 export const Max = styled(Text)`
   cursor: pointer;
   color: #00caff;
-  font-family: "Gilroy-Heavy";
+  font-family: Gilroy;
   font-weight: 800; ;
 `
 
@@ -64,7 +64,7 @@ export const Input = styled.input`
   user-select: none;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 22px;
   line-height: 41px;
@@ -100,7 +100,7 @@ export const ActiveSymbol = styled.div`
 export const SymbolLabel = styled.span`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 20px;
   line-height: 20px;
@@ -128,7 +128,7 @@ export const Unlock = styled.div`
 export const Label = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 14px;
   line-height: 100%;
@@ -138,7 +138,7 @@ export const Label = styled(Text)`
 export const Value = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 14px;
   line-height: 100%;
@@ -148,7 +148,7 @@ export const Value = styled(Text)`
 export const PriceText = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 14px;
   line-height: 130%;

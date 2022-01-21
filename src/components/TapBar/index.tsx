@@ -33,7 +33,7 @@ export const TapBar = () => {
         normal: { height: "59px", padding: "15px 14px 12px 14px" },
       }}
     >
-      {!account ? (
+      {!!account ? (
         <NavItem path="/wallet" Icon={Wallet} text="My wallet" />
       ) : (
         <NavItem

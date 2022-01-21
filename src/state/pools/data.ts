@@ -19,7 +19,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -72,7 +72,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -125,7 +125,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -178,7 +178,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -231,7 +231,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -284,7 +284,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -337,7 +337,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -390,7 +390,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -443,7 +443,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,
@@ -496,7 +496,7 @@ const Pools: Pool[] = [
     // POOL CONFIG
     type: "standard",
     is_actual_on: false,
-    mannagers_list: [],
+    managers_list: [],
 
     // COMMISSIONS
     trader_commission: 30,

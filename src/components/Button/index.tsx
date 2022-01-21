@@ -1,7 +1,12 @@
 import { Text } from "theme"
-import { GradientButton, BuyButtonContainer, BuyArrow } from "./styled"
 import arrow from "assets/icons/buy-button-arrow.svg"
 import { ButtonBaseProps, MainButtonProps } from "./types"
+import {
+  GradientButton,
+  BuyButtonContainer,
+  BuyArrow,
+  BorderedContainer,
+} from "./styled"
 
 // MAIN, DEFAULT BUTTON
 
@@ -30,4 +35,10 @@ export const BuyButton: React.FC<ButtonBaseProps> = ({ onClick }) => {
       <BuyArrow src={arrow} alt="" />
     </BuyButtonContainer>
   )
+}
+
+// BORDERED BUTTON
+
+export const BorderedButton: React.FC = ({ children }) => {
+  return <BorderedContainer>{children}</BorderedContainer>
 }

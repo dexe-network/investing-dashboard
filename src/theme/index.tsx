@@ -67,7 +67,7 @@ export const To = styled(Link)`
 
 export const ExternalLink = styled.a`
   text-decoration: none;
-  color: #007ff3;
+  color: #0076bc;
 `
 
 export const BaseButton = styled(motion.button)`
@@ -162,7 +162,6 @@ export const Block = styled(Flex)`
 
 export const External: React.FC<{
   href: string
-  children: React.ReactChild
 }> = ({ href, children }) => (
   <ExternalLink href={href} target="_blank" rel="noopener noreferrer">
     {children}

@@ -21,7 +21,7 @@ const PercentButton = styled.div<{ active?: boolean }>`
   padding-top: 2px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
 font-weight: 400;
   font-size: 10px;
   line-height: 130%;
@@ -47,7 +47,7 @@ const SwapButton = styled.div`
   cursor: pointer;
   border-radius: 50px;
   background: linear-gradient(64.44deg, #292b31 32.35%, #22262e 100%);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
   width: 30px;
   height: 30px;
   display: flex;

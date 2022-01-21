@@ -27,7 +27,7 @@ export interface Pool {
   // POOL CONFIG
   type: "standard" | "risky" | "investment"
   is_actual_on: boolean
-  mannagers_list: string[]
+  managers_list: string[]
 
   // COMMISSIONS
   trader_commission: number

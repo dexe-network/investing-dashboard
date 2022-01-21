@@ -13,10 +13,10 @@ export const FloatingContainer = styled(motion.div)`
 `
 
 export const Container = styled.div`
-  background: #27292f;
-  box-shadow: 0px 0.5px 0px rgba(255, 255, 255, 0.15);
+  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  box-shadow: 0px -4px 17px -1px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
-  border-radius: 10px 10px 0 0;
+  border-radius: 30px 30px 0 0;
   height: 100%;
   width: 100%;
 `
@@ -40,13 +40,15 @@ export const Handle = styled.div<{ active: boolean }>`
 `
 
 export const Header = styled(Flex)`
-  height: 42px;
-  padding-top: 14px;
+  // height: 42px;
+  padding-top: 20px;
+  padding-bottom: 19px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
-  font-size: 22px;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: #c5d1dc;
   line-height: 20px;
   text-align: center;
   color: #ffffff;
@@ -72,15 +74,15 @@ export const AccountCard = styled.div`
   border-radius: 10px;
   width: fill-available;
   margin: 47px auto;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  // filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.08));
   max-width: 343px;
 `
 
 export const AccountTitle = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-size: 18px;
   line-height: 22px;
   color: #ffffff;
@@ -91,8 +93,8 @@ font-weight: 700;;
 export const AccountDescription = styled(Text)`
   font-family: Gilroy;
   font-style: italic;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
 
@@ -113,8 +115,8 @@ export const AccountAddress = styled(Flex)`
   border-radius: 10px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 200%;
   color: #f7f7f7;
@@ -134,8 +136,8 @@ export const TextButton = styled(Text)<{ theme?: "default" | "primary" }>`
   cursor: pointer;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: center;

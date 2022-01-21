@@ -2,11 +2,7 @@ import { useState, useCallback, useEffect } from "react"
 import { Flex } from "theme"
 import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 import { useWeb3React } from "@web3-react/core"
-import {
-  useUniswapExchangeTool,
-  useDexeExchangeTool,
-  useERC20,
-} from "hooks/useContract"
+import { useUniswapExchangeTool, useERC20 } from "hooks/useContract"
 import MemberMobile from "components/MemberMobile"
 import Tooltip from "components/Tooltip"
 import Popover from "components/Popover"

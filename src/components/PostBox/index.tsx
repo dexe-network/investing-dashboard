@@ -35,8 +35,8 @@ const Textarea = styled.textarea`
 const PostButton = styled.div`
   color: #7fffd4;
   font-size: 22px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   padding: 17px 27px 14px;
   cursor: pointer;
   transition: background, color 0.3s ease-in-out;

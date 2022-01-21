@@ -34,7 +34,7 @@ export const Body = styled(Flex)`
 export const Title = styled(Text)`
   color: #f5f5f5;
   font-size: 24px;
-  font-family: "Gilroy-Bold";
+  font-family: Gilroy;
   font-weight: 700;
   width: 100%;
 `

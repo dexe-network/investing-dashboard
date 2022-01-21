@@ -170,10 +170,7 @@ export default function Slider<Props>({ close }) {
                     key={token.address}
                     onClick={() => setForm("_basicToken", token.address)}
                   >
-                    <TokenIcon
-                      size={34}
-                      src={`https://tokens.1inch.exchange/${token.address}.png`}
-                    />
+                    <TokenIcon size={34} address={token.address} />
                   </TokenWrapper>
                 ))}
               </CommonBasesGroup>
@@ -200,7 +197,7 @@ export default function Slider<Props>({ close }) {
           </Flex>
           <FormLabel>Owner</FormLabel>
           <Flex full dir="column" p="10px 0 0">
-            <WalletCard token={formState._basicToken} />
+            {/* <WalletCard token={formState._basicToken} /> */}
           </Flex>
 
           <InputUI
@@ -276,7 +273,7 @@ export default function Slider<Props>({ close }) {
                 have not been added to the following whitelist won’t be able to
                 participate in investing in the fund.
               </Secondary>
-              <AddressChips limit={10} />
+              {/* <AddressChips limit={10} /> */}
             </Flex>
           </Flex>
         </Flex>
@@ -365,7 +362,7 @@ export default function Slider<Props>({ close }) {
             </Flex>
           </Flex>
           <Flex p="9px 0 0 0" dir="column" ai="flex-start" full>
-            <WalletCard token={formState._basicToken} />
+            {/* <WalletCard token={formState._basicToken} /> */}
           </Flex>
 
           <Flex p="15px 0" full ai="flex-start" dir="column">

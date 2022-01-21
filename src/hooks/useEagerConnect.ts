@@ -42,7 +42,6 @@ export function useEagerConnect() {
       ) {
         provider.walletConnectProvider = undefined
       }
-
       activate(provider, undefined, true)
         .then(console.log)
         .catch((e) => {
@@ -53,7 +52,6 @@ export function useEagerConnect() {
         })
     } else if (!!activeProviderName && activeProviderName in connectorsByName) {
       const provider = connectorsByName[activeProviderName]
-
       activate(provider, undefined, true)
         .then(console.log)
         .catch((e) => {

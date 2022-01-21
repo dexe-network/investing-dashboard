@@ -54,7 +54,7 @@ export const getRandomPnl = () => {
   return r1 * 100 * negative
 }
 
-export const formatNumber = (amount: string, decimals = 6) => {
+export const formatNumber = (amount: string, decimals = 2) => {
   const numArr = amount.split(".")
 
   const floatPart = numArr[1] && numArr[1] !== "0" ? `.${numArr[1]}` : ""
@@ -99,3 +99,5 @@ export function getSignature(nonce, address, lib) {
 export function checkMetamask() {
   //
 }
+
+export const focusText = (event) => event.target.select()

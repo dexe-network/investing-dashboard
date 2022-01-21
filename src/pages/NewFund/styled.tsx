@@ -8,7 +8,7 @@ export const Container = styled(Flex)`
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 10px 16px 0px;
+  padding: 10px 16px 20px;
 `
 
 export const SubContainer = styled(Flex)`

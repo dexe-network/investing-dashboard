@@ -12,8 +12,8 @@ export const HeadContainer = styled.div`
 export const Title = styled(Text)`
   color: #f5f5f5;
   font-size: 24px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   text-align: center;
 `
 

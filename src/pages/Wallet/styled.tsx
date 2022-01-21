@@ -31,8 +31,8 @@ export const AvatarWrapper = styled.div`
     justify-content: center;
     align-items: center;
     color: #8a8e92;
-    font-family: "Gilroy-Bold";
-font-weight: 700;;
+    font-family: Gilroy;
+    font-weight: 700;
     font-size: 21px;
   }
 `
@@ -45,8 +45,8 @@ export const FloatingButtons = styled(Flex)`
 export const TextGray = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.5px;
@@ -63,8 +63,8 @@ export const UserInfo = styled(Flex)`
 export const Name = styled.input`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-size: 18px;
   line-height: 22px;
   letter-spacing: 0.5px;
@@ -91,7 +91,7 @@ export const Card = styled.div`
   background: linear-gradient(64.44deg, #202227 32.35%, #1b1e23 100%);
   border-radius: 12px;
   border: 1px solid #007ff3;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
   padding: 14px 13px;
   margin: 33px 0 51px 0;
 `
@@ -99,8 +99,8 @@ export const Card = styled.div`
 export const Address = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 28px;
   letter-spacing: 1px;
@@ -128,8 +128,8 @@ export const TextButton = styled.div<{ color?: string }>`
 export const Heading = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-size: 18px;
   line-height: 20px;
 
@@ -156,8 +156,8 @@ export const Sticky = styled.div`
   width: calc(100% - 7px);
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 10px;
   line-height: 12px;
   color: #6c757d;
@@ -171,8 +171,8 @@ font-weight: 400;
 export const Time = styled.div`
   font-family: Gilroy;
   font-style: italic;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 10px;
   line-height: 12px;
   color: #6c757d;
@@ -186,8 +186,8 @@ export const Transaction = styled.div`
 export const TransactionType = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 14px;
 
@@ -203,8 +203,8 @@ export const TransactionDetails = styled(Flex)`
 export const TransactionHash = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
 
@@ -214,8 +214,8 @@ font-weight: 400;
 export const TransactionText = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 18px;
   display: flex;
@@ -236,4 +236,25 @@ export const TransactionsGroup = styled.div`
 export const PathArrow = styled.img`
   width: 5px;
   height: 8px;
+`
+
+export const TransactionsPlaceholder = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: center;
+  letter-spacing: 0.1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* icons */
+  width: 100%;
+  flex: 1;
+
+  color: #5a6071;
+  height: fill-available;
+  min-height: 300px;
 `

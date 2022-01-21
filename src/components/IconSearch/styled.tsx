@@ -30,7 +30,7 @@ export const Input = styled(motion.input)`
   &::placeholder {
     font-family: Gilroy;
     font-style: normal;
-    font-family: "Gilroy-Regular";
+    font-family: Gilroy;
 font-weight: 400;
     font-size: 12px;
     line-height: 14px;

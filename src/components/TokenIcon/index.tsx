@@ -1,6 +1,8 @@
-// import React, { useState, useRef } from "react"
+import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import defaultAvatar from "assets/icons/default-avatar.svg"
+import unknown from "assets/icons/Unknown.svg"
+import { useWeb3React } from "@web3-react/core"
 // import { motion } from "framer-motion"
 
 export const Icon = styled.img<{ size?: number }>`
@@ -13,21 +15,49 @@ export const Icon = styled.img<{ size?: number }>`
 `
 
 interface IProps {
-  src?: string
   size?: number
+  address?: string
 }
 
-const TokenIcon: React.FC<IProps> = ({ src, size }) => {
-  if (
-    src ===
-      "https://tokens.1inch.exchange/0xde4ee8057785a7e8e800db58f9784845a5c2cbd6.png" ||
-    !src
-  ) {
+const getIconsPathByChain = (id, address) => {
+  if (id === 97) {
+    return `https://pancake.kiemtienonline360.com/images/coins/${address}.png`
+  }
+  return `https://pancake.kiemtienonline360.com/images/coins/${address}.png`
+}
+
+const TokenIcon: React.FC<IProps> = ({ size, address }) => {
+  const [srcImg, setImg] = useState(unknown)
+  const [error, setError] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+  const { chainId } = useWeb3React()
+
+  const src = getIconsPathByChain(chainId, address)
+
+  useEffect(() => {
+    const token = new Image()
+    token.src = src || unknown
+
+    const imageLoad: any = token.addEventListener("load", () => {
+      setImg(src || unknown)
+      setLoaded(true)
+    })
+
+    const imageError: any = token.addEventListener("error", () => {
+      setError(true)
+    })
+
+    return () => {
+      token.removeEventListener(imageLoad, imageError)
+    }
+  }, [src])
+
+  if (src === unknown || !src) {
     // change icon if token dexe
     return <Icon src={defaultAvatar} size={size} />
   }
 
-  return <Icon src={src} size={size} />
+  return <Icon src={srcImg} size={size} />
 }
 
 export default TokenIcon

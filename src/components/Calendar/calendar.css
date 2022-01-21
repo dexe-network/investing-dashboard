@@ -17,8 +17,8 @@
 .rdrCalendarValue {
   font-size: 16px;
   color: #999999;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-family: Gilroy;
   margin-left: 15px;
   width: 133px;
@@ -194,8 +194,8 @@ font-weight: 700;;
 
 .rdrDayNumber span{
     color: #F7F7F7;
-    font-family: "Gilroy-Bold";
-font-weight: 700;;
+    font-family: Gilroy;
+    font-weight: 700;
     font-size: 13px;
   }
 
@@ -316,8 +316,8 @@ font-weight: 700;;
 }
 
 .rdrMonthAndYearPickers{
-  font-family: "Gilroy-Heavy";
-font-weight: 800;;
+  font-family: Gilroy;
+  font-weight: 800;
 }
 
 .rdrMonthAndYearPickers select{
@@ -403,8 +403,8 @@ font-weight: 800;;
 .rdrWeekDay {
   color: #92949B;
   font-size: 10px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   height: 30px;
   display: flex!important;
   align-items: center;
@@ -431,7 +431,7 @@ font-weight: 700;;
 
 .rdrDayNumber {
   outline: 0;
-  font-family: "Gilroy-Light";
+  font-family: Gilroy;
 font-weight: 300;
   position: absolute;
   left: 0;
@@ -577,8 +577,8 @@ font-weight: 300;
 }
 
 .rdrDefinedRangesWrapper .rdrStaticRangeSelected{
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
 }
 
 .rdrDefinedRangesWrapper .rdrStaticRangeSelected .rdrStaticRangeLabel {
@@ -678,8 +678,8 @@ font-weight: 700;;
   align-items: center;
   line-height: 42px;
   text-align: left;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-size: 24px;
   color: #F7F7F7;
   padding-left: 15px;

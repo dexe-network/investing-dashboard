@@ -106,7 +106,8 @@ const ExchangeTo: React.FC<IToProps> = ({
           value={amount}
         />
         <ActiveSymbol onClick={onSelect}>
-          <TokenIcon size={27} src={icon} />
+          {/* // TODO: create FundIcon component */}
+          {/* <TokenIcon size={27} src={icon} /> */}
           <SymbolLabel>{symbol}</SymbolLabel>
           <IconDown src={angleIcon} />
         </ActiveSymbol>

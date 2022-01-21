@@ -4,6 +4,7 @@ import { isAddress } from "utils"
 import { shortenAddress } from "utils"
 
 import close from "assets/icons/close.svg"
+import pencil from "assets/icons/pencil-edit.svg"
 import {
   LimitIndicator,
   ChipsWrapper,
@@ -12,17 +13,22 @@ import {
   ErrorText,
   Container,
   Input,
+  Label,
+  Icon,
 } from "./styled"
 
 type AddressChipsState = {
-  items: string[]
   value: string
   error: string
 }
 
 type AddressChipsProps = {
+  items: string[]
   label?: string
-  limit: number
+  limit?: number
+  customBg?: string
+  onChange: (v: AddressChipsProps["items"]) => void
+  readonly?: boolean
 }
 
 // TODO: refactor to functional component
@@ -31,7 +37,6 @@ export default class AddressChips extends React.Component<
   AddressChipsState
 > {
   state = {
-    items: [],
     value: "",
     error: "",
   }
@@ -41,22 +46,19 @@ export default class AddressChips extends React.Component<
       evt.preventDefault()
 
       const value = this.state.value.trim()
+      const updatedList = [...this.props.items, this.state.value]
 
       if (value && this.isValid(value)) {
-        this.setState({
-          items: [...this.state.items, this.state.value],
-          value: "",
-        })
+        this.props.onChange(updatedList)
       }
     }
   }
 
   handleChange = (name, value: string) => {
+    const updatedList = [...this.props.items, this.state.value]
+
     if (value.length === 42 && this.isValid(value)) {
-      this.setState({
-        items: [...this.state.items, this.state.value],
-        value: "",
-      })
+      this.props.onChange(updatedList)
       return
     }
 
@@ -67,9 +69,8 @@ export default class AddressChips extends React.Component<
   }
 
   handleDelete = (item: string) => {
-    this.setState({
-      items: this.state.items.filter((i) => i !== item),
-    })
+    const updatedList = this.props.items.filter((i) => i !== item)
+    this.props.onChange(updatedList)
   }
 
   handlePaste = (evt: any) => {
@@ -78,9 +79,8 @@ export default class AddressChips extends React.Component<
     const paste = evt.clipboardData.getData("text")
 
     if (this.isValid(paste)) {
-      this.setState({
-        items: [...this.state.items, paste],
-      })
+      const updatedList = [...this.props.items, paste]
+      this.props.onChange(updatedList)
     }
   }
 
@@ -111,7 +111,7 @@ export default class AddressChips extends React.Component<
   }
 
   isInList(address: string) {
-    const items: string[] = this.state.items
+    const items: string[] = this.props.items
 
     return items.includes(address)
   }
@@ -125,10 +125,15 @@ export default class AddressChips extends React.Component<
   }
 
   render() {
-    const { label, limit } = this.props
-    const { items, error } = this.state
+    const { items, limit, readonly, label, customBg } = this.props
+    const { error } = this.state
     return (
-      <Container>
+      <Container
+        isDefault={!items.length}
+        readonly={readonly}
+        customBg={customBg}
+      >
+        {readonly && label && <Label>{label}</Label>}
         {!!items.length && (
           <ChipsWrapper full p="15px 0 0" jc="flex-start">
             {items.map((item) => (
@@ -142,15 +147,20 @@ export default class AddressChips extends React.Component<
           </ChipsWrapper>
         )}
 
-        <Input
-          placeholder="Paste address here 0x..."
-          onKeyDown={this.handleKeyDown}
-          onChange={(e) => this.handleChange("", e.target.value)}
-          onPaste={this.handlePaste}
-        />
+        {!readonly && (
+          <Input
+            placeholder="Paste address here 0x..."
+            onKeyDown={this.handleKeyDown}
+            onChange={(e) => this.handleChange("", e.target.value)}
+            onPaste={this.handlePaste}
+          />
+        )}
 
-        <LimitIndicator>{limit - items.length} left</LimitIndicator>
+        {limit !== undefined && (
+          <LimitIndicator>{limit - items.length} left</LimitIndicator>
+        )}
         <ErrorText>{error}</ErrorText>
+        {readonly && <Icon src={pencil} alt="pencil" />}
       </Container>
     )
   }

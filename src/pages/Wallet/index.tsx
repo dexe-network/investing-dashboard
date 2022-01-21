@@ -1,4 +1,5 @@
 import React from "react"
+import { useWeb3React } from "@web3-react/core"
 import {
   Container,
   Header,
@@ -21,6 +22,7 @@ import {
   TransactionHash,
   TransactionText,
   TransactionsGroup,
+  TransactionsPlaceholder,
   PathArrow,
   Time,
 } from "./styled"
@@ -1342,6 +1344,8 @@ const transactions = [
 ]
 
 export default function Wallet() {
+  const { account, deactivate } = useWeb3React()
+
   return (
     <Container
       initial={{ opacity: 0, y: -15 }}
@@ -1367,11 +1371,11 @@ export default function Wallet() {
 
       <Card>
         <TextGray>Current account</TextGray>
-        <Address>0xc02aaa3...2</Address>
+        <Address>{shortenAddress(account, 8)}</Address>
         <CardButtons>
           <TextButton color="#9AE2CB">Change</TextButton>
           <TextButton>Copy</TextButton>
-          <TextButton>Disconnect</TextButton>
+          <TextButton onClick={() => deactivate()}>Disconnect</TextButton>
         </CardButtons>
       </Card>
 
@@ -1386,37 +1390,43 @@ export default function Wallet() {
           { name: "Rewards" },
         ]}
       />
-      <TransactionsList>
-        {transactions.map(({ date, transactions }) => (
-          <React.Fragment key={date}>
-            <Sticky>{date}</Sticky>
-            <TransactionsGroup>
-              {transactions.map(
-                ({ type, address, timestamp, amountIn, amountOut }) => (
-                  <Transaction key={timestamp}>
-                    <TransactionType>{type}</TransactionType>
-                    <TransactionDetails>
-                      <TransactionHash>
-                        {shortenAddress(address)}
-                      </TransactionHash>
-                      <TransactionText>
-                        <TokenIcon size={18} />
-                        {amountIn}
-                      </TransactionText>
-                      <PathArrow src={swap} />
-                      <TransactionText>
-                        <TokenIcon size={18} />
-                        {amountOut}
-                      </TransactionText>
-                      <Time>{timestamp}</Time>
-                    </TransactionDetails>
-                  </Transaction>
-                )
-              )}
-            </TransactionsGroup>
-          </React.Fragment>
-        ))}
-      </TransactionsList>
+      {!transactions.length ? (
+        <TransactionsList>
+          {transactions.map(({ date, transactions }) => (
+            <React.Fragment key={date}>
+              <Sticky>{date}</Sticky>
+              <TransactionsGroup>
+                {transactions.map(
+                  ({ type, address, timestamp, amountIn, amountOut }) => (
+                    <Transaction key={timestamp}>
+                      <TransactionType>{type}</TransactionType>
+                      <TransactionDetails>
+                        <TransactionHash>
+                          {shortenAddress(address)}
+                        </TransactionHash>
+                        <TransactionText>
+                          <TokenIcon size={18} />
+                          {amountIn}
+                        </TransactionText>
+                        <PathArrow src={swap} />
+                        <TransactionText>
+                          <TokenIcon size={18} />
+                          {amountOut}
+                        </TransactionText>
+                        <Time>{timestamp}</Time>
+                      </TransactionDetails>
+                    </Transaction>
+                  )
+                )}
+              </TransactionsGroup>
+            </React.Fragment>
+          ))}
+        </TransactionsList>
+      ) : (
+        <TransactionsPlaceholder>
+          Your transactions will appear here....
+        </TransactionsPlaceholder>
+      )}
     </Container>
   )
 }

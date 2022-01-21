@@ -9,8 +9,8 @@ const StyledBlockNumber = styled(motion.div)`
   right: 30px;
   color: #2680eb;
   font-size: 14px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
 `
 
 const BlockNumber: React.FC = () => {

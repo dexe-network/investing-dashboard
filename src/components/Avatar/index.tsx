@@ -23,7 +23,7 @@ const Img = styled.img<{ size: number }>`
 `
 
 const HoverCamera = styled.div`
-  opacity: 0;
+  box-sizing: border-box;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -32,8 +32,8 @@ const HoverCamera = styled.div`
   background: linear-gradient(
     180deg,
     rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.52) 70%,
-    rgba(0, 0, 0, 0.7) 100%
+    rgba(0, 0, 0, 0.2) 70%,
+    rgba(0, 0, 0, 0.3) 100%
   );
   height: fill-available;
   width: 100%;
@@ -140,7 +140,7 @@ const Avatar: React.FC<Props> = ({
               accept="image/*"
               onChange={handleSelectFile}
             />
-            <CameraIcon src={camera} alt="upload avatar" />
+            {/* <CameraIcon src={camera} alt="upload avatar" /> */}
           </HoverCamera>
           <ImageCropper
             submit={setCroppedImg}

@@ -9,7 +9,8 @@ import { useWeb3React } from "@web3-react/core"
 import { useActiveWallet } from "hooks/useActiveWallet"
 
 const Card = styled.div`
-  background: #2f333b;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+  background: #252932;
   border-radius: 6px;
   height: 47px;
   width: 100%;
@@ -20,8 +21,8 @@ const Card = styled.div`
 const Label = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.5px;
@@ -31,22 +32,19 @@ font-weight: 400;
 const Address = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
-  font-size: 18px;
+  font-weight: normal;
+  font-size: 16px;
   line-height: 22px;
+  /* or 256% */
 
-  display: flex;
-  align-items: center;
-
-  color: #aeb0b2;
+  color: #e8e9ed;
 `
 
 const Change = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   text-align: right;
@@ -60,26 +58,25 @@ font-weight: 400;
 const Connect = styled.div`
   color: #2680eb;
   font-size: 15px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
 `
 
 const TokenName = styled.div`
   font-size: 14px;
-  font-family: "Gilroy-Medium";
-font-weight: 500;
+  font-family: Gilroy;
+  font-weight: 500;
   color: #f5f5f5;
   text-transform: uppercase;
 `
 
 interface IProps {
   token: string
+  symbol: string
 }
 
 const WalletCard: React.FC<IProps> = (props) => {
-  const [list, tokens] = useTokensList()
   const { account } = useWeb3React()
-  const wallet = useActiveWallet()
 
   return (
     <Card>
@@ -94,11 +91,8 @@ const WalletCard: React.FC<IProps> = (props) => {
           </Address>
         </Flex>
         <Flex>
-          <TokenIcon
-            size={20}
-            src={tokens[props.token.toLowerCase()]?.logoURI}
-          />
-          <TokenName>{tokens[props.token.toLowerCase()]?.symbol}</TokenName>
+          <TokenIcon size={20} address={props.token} />
+          <TokenName>{props.symbol}</TokenName>
         </Flex>
       </Flex>
     </Card>

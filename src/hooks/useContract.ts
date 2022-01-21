@@ -5,6 +5,7 @@ import {
   UniswapExchangeTool,
   PancakeExchangeTool,
   ERC20,
+  PancakeFactory,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -48,10 +49,10 @@ export function usePancakeExchangeTool(): Contract | null {
   )
 }
 
-export function useDexeExchangeTool(): Contract | null {
+export function usePancakeFactory(): Contract | null {
   return useContract(
-    process.env.REACT_APP_DEXE_EXCHANGE_TOOL,
-    UniswapExchangeTool
+    "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
+    PancakeFactory
   )
 }
 
@@ -72,12 +73,22 @@ export function useERC20(
 
   const init = useCallback(() => {
     // GET token info that doesn't need user address
+    if (isETH) {
+      setTokenData({
+        address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        symbol: "ETH",
+        name: "Ethereum Token",
+        decimals: 18,
+      })
+      return
+    }
+
     if (!contract || !library) return
     ;(async () => {
       try {
-        const symbol = isETH ? "ETH" : await contract.symbol()
-        const decimals = isETH ? 18 : await contract.decimals()
-        const name = isETH ? "Ethereum" : await contract.name()
+        const symbol = await contract.symbol()
+        const decimals = await contract.decimals()
+        const name = await contract.name()
 
         setTokenData({
           address,

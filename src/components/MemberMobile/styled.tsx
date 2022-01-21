@@ -28,8 +28,8 @@ export const PoolInfo = styled(Flex)``
 export const BaseInfo = styled(Flex)``
 
 export const Title = styled.div`
-  font-family: "Gilroy-Bold";
-  font-weight: 700;;
+  font-family: Gilroy;
+  font-weight: 700;
   font-weight: bold;
   font-size: 16px;
   line-height: 20px;
@@ -43,7 +43,7 @@ export const Title = styled.div`
 export const Description = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 12px;
   line-height: 12px;
@@ -72,7 +72,7 @@ export const PNL = styled.span`
   padding-left: 3px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 10px;
   line-height: 12px;
@@ -91,7 +91,7 @@ const ItemContainer = styled(Flex)`
 const Label = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
@@ -102,7 +102,7 @@ const Label = styled.div`
 const Value = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
   font-weight: 400;
   font-size: 16px;
   line-height: 30px;

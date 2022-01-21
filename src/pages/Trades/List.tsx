@@ -130,10 +130,7 @@ export const TradesTotalItem: React.FC<IProps> = ({
       gradient={gradients.default}
       onClick={onClick}
     >
-      <TokenIcon
-        src={`https://tokens.1inch.exchange/${data.tokenAddress.toLowerCase()}.png`}
-        size={32}
-      />
+      <TokenIcon address={data.tokenAddress} size={32} />
       <Container>
         <To>{tokenData.name}</To>
         <PrimaryText>
@@ -248,10 +245,7 @@ const TradesListItem: React.FC<{ data: IPoolTransaction }> = ({ data }) => {
       }}
       gradient={gradients[data.status.toLowerCase()]}
     >
-      <TokenIcon
-        src={`https://tokens.1inch.exchange/${path[1].toLowerCase()}.png`}
-        size={32}
-      />
+      <TokenIcon address={path[1]} size={32} />
       <Container>
         <Flex>
           <From>{path0.symbol}/</From>

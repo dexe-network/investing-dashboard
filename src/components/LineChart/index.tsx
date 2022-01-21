@@ -38,7 +38,7 @@ const Tick = styled.div`
     content: "Buy";
     color: #7fffd4;
     font-size: 12px;
-    font-family: "Gilroy-Medium";
+    font-family: Gilroy;
 font-weight: 500;
     opacity: 0.3;
     position: absolute;

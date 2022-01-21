@@ -15,7 +15,7 @@ export const Tab = styled(Flex)<{ active?: boolean }>`
   justify-content: center;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
+  font-family: Gilroy;
 font-weight: 400;
   font-size: 12px;
   line-height: 15px;

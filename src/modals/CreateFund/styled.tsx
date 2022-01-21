@@ -4,6 +4,8 @@ import styled from "styled-components"
 import { Text, Flex, BaseButton, device, ExternalLink } from "theme"
 import { motion } from "framer-motion"
 import RadioButton from "components/RadioButton"
+import PoolTypeLine from "assets/icons/PoolTypeLine"
+import { PoolTypes } from "constants/types"
 import { StageSpinner } from "react-spinners-kit"
 import { List } from "react-virtualized"
 import arrowDown from "assets/icons/angle-down.svg"
@@ -20,13 +22,16 @@ import TokenIcon from "components/TokenIcon"
 import InputSlider from "rc-slider"
 
 import useDebounce from "hooks/useDebounce"
+import pencil from "assets/icons/pencil-edit.svg"
+import { focusText } from "utils"
 
 export const HintText = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
+  width: 100%;
   line-height: 16px;
 
   /* icons */
@@ -34,11 +39,11 @@ font-weight: 400;
   color: #5a6071;
 `
 
-export const ErrorText = styled.div`
+export const ErrorText = styled(motion.div)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 130%;
   /* identical to box height, or 16px */
@@ -59,16 +64,14 @@ font-weight: 400;
 `
 
 export const Title = styled(Flex)`
-  font-family: Gilroy;
-  font-style: normal;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
+  font-family: Gilroy-Bold;
+  font-weight: 800;
   font-size: 22px;
   line-height: 41px;
 
   letter-spacing: 0.5px;
 
-  color: #ffffff;
+  color: #c5d1dc;
   white-space: normal;
   text-align: center;
   height: 52px;
@@ -78,21 +81,20 @@ font-weight: 700;;
 `
 
 export const InputLabel = styled(motion.div)`
-  margin-bottom: 7px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-  color: #acb3b8;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+
+  color: #5a6071;
 `
 
 export const Secondary = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 130%;
   /* or 18px */
@@ -104,8 +106,8 @@ font-weight: 400;
 export const Warn = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 18px;
   color: #616a78;
@@ -115,28 +117,25 @@ font-weight: 400;
   }
 `
 
-const Container = styled(Flex)<{ width?: string }>`
+const BaseContainer = styled(Flex)<{ width?: string }>`
   position: relative;
   width: ${(props) => (props.width ? props.width : "100%")};
-  min-height: 61px;
+  min-height: 47px;
   margin-top: 15px;
   cursor: pointer;
 
-  background: #252932;
+  background: #20242d;
+  /* 5 */
 
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
   border-radius: 6px;
-
-  @media only screen and (${device.sm}) {
-    min-height: 51px;
-  }
 `
 
 const LabelBase = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 18px;
   line-height: 18px;
   color: #5a6071;
@@ -144,7 +143,7 @@ font-weight: 400;
 
 const Label = styled(LabelBase)`
   position: absolute;
-  left: 15px;
+  left: 16px;
   top: 18px;
   right: 0;
   max-width: 90%;
@@ -152,6 +151,13 @@ const Label = styled(LabelBase)`
   overflow: hidden;
   white-space: nowrap;
   z-index: 1;
+
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 16px;
+
+  color: #5a6071;
 `
 
 const Input = styled(motion.input)`
@@ -159,62 +165,59 @@ const Input = styled(motion.input)`
   appearance: none;
   border: 1px solid transparent;
   background: transparent;
-  height: 59px;
+  height: 47px;
   width: 100%;
   outline: none;
   box-sizing: border-box;
-  padding: 15px 15px 0;
+  padding: 12px 0 0 15px;
   z-index: 2;
   position: relative;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 16px;
   line-height: 41px;
-  color: #5a6071;
+  color: #848a9a;
 
   &::placeholder {
-    vertical-align: middle;
     font-family: Gilroy;
     font-style: normal;
-    font-family: "Gilroy-Regular";
-font-weight: 400;
+    font-weight: normal;
     font-size: 16px;
-    line-height: 41px;
-    /* or 256% */
-
-    display: flex;
-    align-items: flex-end;
-
-    /* icons */
+    line-height: 16px;
+    transition: 0.2s all ease-in-out;
+    transition-delay: 0.1s;
 
     color: #5a6071;
   }
 
-  @media only screen and (${device.sm}) {
-    height: 51px;
+  &:not(:focus)::placeholder {
+    opacity: 0;
+  }
+  &:focus::placeholder {
+    opacity: 1;
   }
 `
 
 export const AvatarWrapper = styled.div`
-  width: 82px;
+  width: 102px;
   height: 100px;
   position: relative;
 
   &:after {
     background: #282b31;
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
     border-radius: 50px;
     position: absolute;
-    bottom: 35px;
-    right: 17px;
+    top: 5px;
+    right: 14px;
     content: "+";
     color: rgb(139, 142, 145);
-    font-family: "Gilroy-Heavy";
-font-weight: 800;;
-    font-size: 25px;
+    font-family: Gilroy;
+    font-weight: 600;
+    font-size: 22px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -229,27 +232,6 @@ export const BaseTokenWrapper = styled.div`
   position: relative;
 `
 
-const labelVariants = {
-  visible: {
-    fontSize: "16px",
-    y: -10,
-  },
-  hidden: {
-    fontSize: "18px",
-    y: 0,
-    transition: { delay: 0.4 },
-  },
-}
-
-const inputVariants = {
-  visible: {
-    opacity: 1,
-  },
-  hidden: {
-    opacity: 0,
-  },
-}
-
 export const TextItalic = styled.span`
   color: #767676;
   font-size: 16px;
@@ -259,8 +241,8 @@ export const TextItalic = styled.span`
 export const InputButton = styled.span`
   font-family: Gilroy;
   font-style: italic;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 18px;
   line-height: 18px;
   white-space: nowrap;
@@ -270,25 +252,33 @@ font-weight: 400;
 export const InputUI: React.FC<{
   name: string
   label: string
+  defaultValue?: any
   onChange?: (name: string, value: string) => void
   onKeyDown?: (e: any) => void
+  onFocus?: () => void
+  onBlur?: () => void
   onPaste?: (e: any) => void
   icon?: React.ReactElement | boolean | undefined
   onClick?: () => void
   width?: string
   customPlaceholder?: string
+  type?: string
 }> = ({
   name,
   label,
+  defaultValue,
   onChange,
   onKeyDown,
+  onFocus,
+  onBlur,
   onPaste,
+  type,
   icon,
   onClick,
   width,
   customPlaceholder,
 }) => {
-  const [active, setActive] = useState(false)
+  const [active, setActive] = useState(!!defaultValue)
 
   const handleBlur = ({ target }) => {
     if (!onChange) return
@@ -298,27 +288,31 @@ export const InputUI: React.FC<{
     if (active && !target.value.length) {
       setActive(false)
     }
+    onBlur && onBlur()
   }
 
   const handleFocus = () => {
     if (!onChange) return
 
     setActive(true)
+    setTimeout(() => {
+      onFocus && onFocus()
+    }, 100)
   }
 
   return (
-    <Container onClick={onClick} width={width}>
+    <BaseContainer onClick={onClick} width={width}>
       <Input
+        type={type || "text"}
+        autoComplete="new-password"
+        defaultValue={defaultValue}
+        name={name}
         spellCheck={false}
         onBlur={handleBlur}
         onFocus={handleFocus}
         onPaste={onPaste}
         onKeyDown={onKeyDown}
         placeholder={customPlaceholder ? customPlaceholder : "XXXX"}
-        initial="hidden"
-        variants={inputVariants}
-        animate={active ? "visible" : "hidden"}
-        transition={{ duration: 0.1 }}
       />
       <Label
         initial="hidden"
@@ -330,7 +324,7 @@ export const InputUI: React.FC<{
       <Flex jc="center" ai="center" p="15px">
         {icon}
       </Flex>
-    </Container>
+    </BaseContainer>
   )
 }
 
@@ -340,17 +334,19 @@ const DropdownBody = styled(Flex)`
   width: 100%;
 `
 
-const DropdownCardButton = styled.p`
-  padding-top: 12px;
+const DropdownCardButton = styled.p<{ isFirst?: boolean }>`
+  padding-top: 0px;
+  margin-top: 0;
+  margin-bottom: 6px;
 `
 
 const DropdownLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 16px;
-  line-height: 35px;
+  line-height: 20px;
 
   /* body text */
 
@@ -362,25 +358,42 @@ font-weight: 400;
 const DropdownDescription = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
+  padding-top: 4px;
+  box-sizing: border-box;
 
   color: #848a9a;
   z-index: 10;
   position: relative;
 `
 
-const DropdownItem = styled(Flex)`
+const DropdownItem = styled(Flex)<{ shadow?: boolean }>`
   position: relative;
-  flex: 1;
   width: 100%;
-  background: linear-gradient(64.44deg, #282b31 32.35%, #2f333b 100%);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
-  border-radius: 10px;
+  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  box-shadow: ${(props) =>
+    props.shadow
+      ? "0px 4px 4px rgba(0, 0, 0, 0.08)"
+      : "0px 4px 4px rgba(0, 0, 0, 0.01)"};
+  border-radius: ${(props) => (props.shadow ? "0 10px 10px 0" : "10px")};
   margin: 8px 0;
-  padding: 5px 15px 10px;
+  padding: 13px 15px 8px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    opacity: ${(props) => (props.shadow ? "1" : "0")};
+    width: 3px;
+    top: 0;
+    bottom: 0;
+    left: 0px;
+    background: linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 10px 0 0 10px;
+  }
 `
 
 const DropdownContent = styled.div`
@@ -390,117 +403,198 @@ const DropdownContent = styled.div`
 const DropdownText = styled.p`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 12px;
-  line-height: 14px;
-  padding: 0;
+  line-height: 12px;
+  padding: 0 5px 0 0;
+  max-width: 288px;
   margin: 0;
   /* icons */
 
   color: #5a6071;
 `
 
-interface TypeCardProps {
-  handleSelect?: (v: any) => void
-  setValue?: (v: any) => void
-  value?: any
-}
+export const MainText = styled(DropdownText)`
+  padding: 0;
+  height: 40px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  // white-space: nowrap;
+`
 
-export const StandardFundTypeCard: React.FC<TypeCardProps> = ({
-  handleSelect = (v: any) => {},
-  value = true,
-  setValue = (v: any) => {},
-}) => {
-  return (
-    <DropdownItem onClick={() => handleSelect("Standard")}>
-      <Flex p="0 17px">
-        <RadioButton selected={value} onChange={setValue} value="Standard" />
-      </Flex>
-      <DropdownContent>
-        <DropdownLabel>Standard</DropdownLabel>
-        <DropdownDescription>
-          <DropdownText>
-            Trading on assets from the <Text color="#47BEF9">white list</Text> +
-            Trading of
-          </DropdownText>
-          <DropdownText>
-            non-whitelisted assets through the proposals
-          </DropdownText>
-          <DropdownCardButton>
-            <DropdownText>
-              (low risk){" "}
-              <ExternalLink
-                onClick={(e) => e.stopPropagation()}
-                href="https://google.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Read more
-              </ExternalLink>
-            </DropdownText>
-          </DropdownCardButton>
-        </DropdownDescription>
-      </DropdownContent>
-    </DropdownItem>
-  )
-}
+const LineWrapper = styled.div`
+  position: absolute;
+  right: 1px;
+  bottom: -5px;
+`
 
-export const RiskyFundTypeCard: React.FC<TypeCardProps> = ({
-  handleSelect = (v: any) => {},
-  value = true,
-  setValue = (v: any) => {},
-}) => {
-  return (
-    <DropdownItem onClick={() => handleSelect("Risky")}>
-      <Flex p="0 17px">
-        <RadioButton selected={value} onChange={setValue} value="Risky" />
-      </Flex>
-      <DropdownContent>
-        <DropdownLabel>Risky</DropdownLabel>
-        <DropdownDescription>
-          <DropdownText>Trading of non-whitelisted assets.</DropdownText>
-          <DropdownText>suspended for 20 days</DropdownText>
-          <DropdownCardButton>
-            <DropdownText>
-              (High risk){" "}
-              <ExternalLink
-                onClick={(e) => e.stopPropagation()}
-                href="https://google.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Read more
-              </ExternalLink>
-            </DropdownText>
-          </DropdownCardButton>
-        </DropdownDescription>
-      </DropdownContent>
-    </DropdownItem>
-  )
-}
+const SelectCustomIcon = styled.img`
+  width: 40px;
+  height: 40px;
+`
 
-export const SelectUI = ({ label }) => {
-  const [active, setActive] = useState(false)
-  const [value, setValue] = useState("Standard")
-
-  const handleSelect = (v) => {
-    setActive(false)
-    setValue(v)
+export const SelectUI: React.FC<{
+  handleSelect: (value: any) => void
+  type: string
+  showSelected?: boolean
+}> = ({ handleSelect, type, showSelected }) => {
+  if (showSelected) {
+    return type === "basic" ? (
+      <DropdownItem
+        shadow={type === "basic" || showSelected}
+        onClick={() => handleSelect("basic")}
+      >
+        <Flex p={showSelected ? "0 10px 0 0" : "0 17px"}>
+          {showSelected ? (
+            <SelectCustomIcon src={pencil} />
+          ) : (
+            <RadioButton
+              selected={type}
+              onChange={handleSelect}
+              value="basic"
+            />
+          )}
+        </Flex>
+        <DropdownContent>
+          <DropdownLabel>Standard</DropdownLabel>
+          <DropdownDescription>
+            <MainText>
+              Trading on assets from the <Text color="#47BEF9">white list</Text>{" "}
+              + Trading of non-whitelisted assets through the proposals
+            </MainText>
+            {!showSelected && (
+              <DropdownCardButton isFirst>
+                <DropdownText>
+                  (low risk){" "}
+                  <ExternalLink
+                    onClick={(e) => e.stopPropagation()}
+                    href="https://google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read more
+                  </ExternalLink>
+                </DropdownText>
+              </DropdownCardButton>
+            )}
+          </DropdownDescription>
+        </DropdownContent>
+        <LineWrapper>
+          <PoolTypeLine active={type === "basic"} />
+        </LineWrapper>
+      </DropdownItem>
+    ) : (
+      <DropdownItem
+        shadow={type === "investment" || showSelected}
+        onClick={() => handleSelect("investment")}
+      >
+        <Flex p={showSelected ? "0 10px 0 0" : "0 17px"}>
+          {showSelected ? (
+            <SelectCustomIcon src={pencil} />
+          ) : (
+            <RadioButton
+              selected={type}
+              onChange={handleSelect}
+              value="investment"
+            />
+          )}
+        </Flex>
+        <DropdownContent>
+          <DropdownLabel>Investment</DropdownLabel>
+          <DropdownDescription>
+            <MainText>Manage the assets on your own.</MainText>
+            <DropdownCardButton>
+              <DropdownText>
+                (High risk){" "}
+                <ExternalLink
+                  onClick={(e) => e.stopPropagation()}
+                  href="https://google.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Read more
+                </ExternalLink>
+              </DropdownText>
+            </DropdownCardButton>
+          </DropdownDescription>
+        </DropdownContent>
+        <LineWrapper>
+          <PoolTypeLine active={type === "investment"} />
+        </LineWrapper>
+      </DropdownItem>
+    )
   }
+
   return (
     <>
       <DropdownBody>
-        <StandardFundTypeCard
-          handleSelect={handleSelect}
-          value={value}
-          setValue={setValue}
-        />
-        <RiskyFundTypeCard
-          handleSelect={handleSelect}
-          value={value}
-          setValue={setValue}
-        />
+        <DropdownItem onClick={() => handleSelect("basic")}>
+          <Flex p="0 17px">
+            <RadioButton
+              selected={type}
+              onChange={handleSelect}
+              value="basic"
+            />
+          </Flex>
+          <DropdownContent>
+            <DropdownLabel>Standard</DropdownLabel>
+            <DropdownDescription>
+              <MainText>
+                Trading on assets from the{" "}
+                <Text color="#47BEF9">white list</Text> + Trading of
+                non-whitelisted assets through the proposals
+              </MainText>
+              <DropdownCardButton isFirst>
+                <DropdownText>
+                  (low risk){" "}
+                  <ExternalLink
+                    onClick={(e) => e.stopPropagation()}
+                    href="https://google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read more
+                  </ExternalLink>
+                </DropdownText>
+              </DropdownCardButton>
+            </DropdownDescription>
+          </DropdownContent>
+          <LineWrapper>
+            <PoolTypeLine active={type === "basic"} />
+          </LineWrapper>
+        </DropdownItem>
+        <DropdownItem onClick={() => handleSelect("investment")}>
+          <Flex p="0 17px">
+            <RadioButton
+              selected={type}
+              onChange={handleSelect}
+              value="investment"
+            />
+          </Flex>
+          <DropdownContent>
+            <DropdownLabel>Investment</DropdownLabel>
+            <DropdownDescription>
+              <MainText>Manage the assets on your own.</MainText>
+              <DropdownCardButton>
+                <DropdownText>
+                  (High risk){" "}
+                  <ExternalLink
+                    onClick={(e) => e.stopPropagation()}
+                    href="https://google.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Read more
+                  </ExternalLink>
+                </DropdownText>
+              </DropdownCardButton>
+            </DropdownDescription>
+          </DropdownContent>
+          <LineWrapper>
+            <PoolTypeLine active={type === "investment"} />
+          </LineWrapper>
+        </DropdownItem>
       </DropdownBody>
     </>
   )
@@ -532,50 +626,62 @@ export const TokenWrapper = styled.div`
 
 export const TextArea = styled.textarea`
   resize: none;
-  height: 78px;
   width: 434px;
   box-sizing: border-box;
   position: relative;
-  border: 1px solid transparent;
-  transition: all 0.5s;
-  background: #2f333b;
-  border-radius: 6px;
-  padding: 13px 16px;
-  color: #549680;
+  border: none;
+  transition: all 0.2s;
+  background: transparent;
+  // box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
+  // border-radius: 6px;
+  padding: 0px 40px 0px 16px;
+  margin-top: 30px;
+  margin-bottom: 15px;
+  font-size: 16px;
+  line-height: 16px;
+  letter-spacing: 0.5px;
+  color: #848a9a;
+  height: 47px;
 
   &::placeholder {
-    font-family: Gilroy;
-    font-style: normal;
-    font-family: "Gilroy-Regular";
-font-weight: 400;
-    font-size: 12px;
-    line-height: 15px;
+    transition: all 0.2s;
+    font-size: 16px;
+    line-height: 16px;
+    letter-spacing: 0.5px;
     color: #5a6071;
   }
 
   &:focus {
     outline: none;
-    color: #707070;
-    border: 1px solid #2f2f2f;
+    height: auto;
+    height: 78px;
+
+    &::placeholder {
+      font-size: 12px;
+      line-height: 12px;
+      letter-spacing: 0.5px;
+      color: #5a6071;
+    }
   }
 `
 
 export const MaxLength = styled(Text)`
   position: absolute;
-  right: 15px;
-  bottom: 15px;
+  right: 10px;
+  bottom: 6px;
   max-width: 50px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-weight: normal;
   font-size: 12px;
   line-height: 14px;
+  color: rgba(115, 146, 198, 0.2);
   text-align: right;
 `
 
-export const Area = ({ name, onChange }) => {
+export const Area = ({ name, onChange, placeholder, defaultValue }) => {
   const [description, setDescription] = useState("")
+  const [active, setActive] = useState(!!defaultValue)
 
   const handleChange = ({ target }) => {
     setDescription(target.value)
@@ -583,20 +689,41 @@ export const Area = ({ name, onChange }) => {
 
   const handleBlur = ({ target }) => {
     onChange(name, target.value)
+    if (target.value === "") {
+      setActive(false)
+    }
   }
 
   const left = 1000 - description.length
   return (
-    <Container>
+    <BaseContainer>
       <TextArea
-        placeholder="Fund strategy"
+        onFocus={() => setActive(true)}
+        defaultValue={defaultValue}
         onChange={handleChange}
         onBlur={handleBlur}
       />
+      <Label
+        initial="hidden"
+        variants={{
+          hidden: {
+            y: -2,
+            fontSize: "16px",
+            transition: { delay: 0.2 },
+          },
+          visible: {
+            y: -10,
+            fontSize: "12px",
+          },
+        }}
+        animate={active ? "visible" : "hidden"}
+      >
+        {placeholder}
+      </Label>
       <MaxLength color={left >= 0 ? "#5A6071" : "#D73231"} fz={16}>
         {left} left
       </MaxLength>
-    </Container>
+    </BaseContainer>
   )
 }
 
@@ -617,8 +744,8 @@ export const StepperBaseButton = styled(BaseButton)``
 export const NextButton = styled(StepperBaseButton)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 41px;
   color: #9ae2cb;
@@ -627,8 +754,8 @@ font-weight: 400;
 export const PrevButton = styled(StepperBaseButton)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 14px;
   line-height: 41px;
   color: #9ae2cb;
@@ -713,15 +840,44 @@ const slideVariants = {
   },
 }
 
-export const PerformanceCard = styled(Flex)`
-  background: linear-gradient(64.44deg, #282b31 32.35%, #2f333b 100%);
+const labelVariants = {
+  hidden: {
+    y: 2,
+    fontSize: "16px",
+    transition: { delay: 0.2 },
+  },
+  visible: {
+    y: -14,
+    fontSize: "12px",
+  },
+}
+
+export const PerformanceCard = styled(Flex)<{ shadow?: boolean }>`
+  position: relative;
+  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
   mix-blend-mode: normal;
   width: 100%;
-  min-height: 65px;
+  min-height: 75px;
   margin: 4px 0;
 
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
-  border-radius: 10px;
+  box-shadow: ${(props) =>
+    props.shadow
+      ? "0px 4px 4px rgba(0, 0, 0, 0.08)"
+      : "0px 4px 4px rgba(0, 0, 0, 0.01)"};
+  border-radius: ${(props) => (props.shadow ? "0 10px 10px 0" : "10px")};
+
+  &::before {
+    content: "";
+    position: absolute;
+    opacity: ${(props) => (props.shadow ? "1" : "0")};
+    width: 3px;
+    top: 0;
+    bottom: 0;
+    left: 0px;
+    background: linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 10px 0 0 10px;
+  }
 `
 
 export const PerformanceContent = styled.div`
@@ -731,23 +887,19 @@ export const PerformanceContent = styled.div`
 export const PerformanceTitle = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-weight: normal;
   font-size: 16px;
   line-height: 19px;
-  color: #f7f7f7;
+  color: #c5d1dc;
 `
 
 export const PerformanceDescription = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
-  font-size: 13px;
-  line-height: 16px;
-  /* identical to box height */
-
-  color: #7a8085;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  color: #5a6071;
 `
 
 export const Slide = ({ item, active }) => {
@@ -763,11 +915,16 @@ export const Slide = ({ item, active }) => {
 }
 
 export const FormLabel = styled(Text)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
   font-size: 16px;
-  font-family: "Gilroy-Bold";
-font-weight: 700;;
-  color: #f5f5f5;
+  line-height: 24px;
+  margin-bottom: -4px;
+  margin-left: 3px;
+  letter-spacing: 0.5px;
   white-space: normal;
+  color: #5a6071;
 `
 
 export const SliderLine = styled.div`
@@ -789,32 +946,32 @@ const Percent = styled.input`
   width: 35px;
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 16px;
   line-height: 41px;
-  color: #c2c3c4;
+  color: #a4ebd4;
   position: relative;
 `
 
 const InputWrapper = styled(Flex)`
   position: relative;
-  /* width: 55px; */
 `
 
 const InputSymbol = styled.span`
   font-family: Gilroy;
   font-style: normal;
-  font-family: "Gilroy-Regular";
-font-weight: 400;
+  font-family: Gilroy;
+  font-weight: 400;
   font-size: 16px;
   line-height: 16px;
-  color: #c2c3c4;
+  color: #a4ebd4;
 `
 
-export const NumberInput = ({ value, onChange }) => (
+export const NumberInput = ({ value, onChange, onClick }) => (
   <InputWrapper>
     <Percent
+      onClick={onClick}
       onChange={(v) => onChange(v.target.value)}
       type="number"
       value={value}
@@ -900,7 +1057,11 @@ export const AllocateSlider: React.FC<{
       </Flex>
       {!hideInput && (
         <Flex p="0 0 0 20px">
-          <NumberInput onChange={handleChange} value={debounce ? v : initial} />
+          <NumberInput
+            onClick={focusText}
+            onChange={handleChange}
+            value={debounce ? v : initial}
+          />
         </Flex>
       )}
     </Flex>
@@ -915,6 +1076,8 @@ export const Footer = styled(Flex)`
   flex-direction: row;
   width: 100%;
   padding: 20px 0;
+  z-index: 100;
+  position: relative;
 `
 
 export const CardsRow = styled(Flex)`
@@ -922,7 +1085,185 @@ export const CardsRow = styled(Flex)`
   justify-content: space-between;
   margin-top: 20px;
 
-  & > div:nth-child(1) {
-    margin-right: 22px;
+  & > div:nth-child(2) {
+    margin-left: 22px;
   }
+`
+
+export const WhitelistTokensContainer = styled.div`
+  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  box-shadow: 0px -4px 5px rgba(0, 0, 0, 0.05);
+  border-radius: 30px 30px 0px 0px;
+  width: 100%;
+  padding: 26px 0 150px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+`
+
+export const BaseInput = styled.input`
+  border-radius: 7px;
+  appearance: none;
+  border: none;
+  background: linear-gradient(
+    261deg,
+    rgba(51, 62, 64, 1) 0%,
+    rgba(128, 128, 128, 0.5) 100%
+  );
+  height: 48px;
+  width: 100%;
+  outline: none;
+  padding: 18px 14px 14px;
+  transition: all 0.5s;
+  color: #c2c3c4;
+
+  &::placeholder {
+    vertical-align: middle;
+    line-height: 16px;
+    font-size: 16px;
+    color: #c2c3c4;
+  }
+
+  &:focus {
+    box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23) inset;
+    -webkit-box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23) inset;
+    -moz-box-shadow: 0px 3px 6px 0 rgba(0, 0, 0, 0.23) inset;
+
+    &::placeholder {
+      color: #999999;
+    }
+  }
+`
+
+export const BaseFullList = styled(Flex)`
+  flex-direction: column;
+  justify-content: flex-start;
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+`
+
+export const BaseFullItem = styled(Flex)<{ active?: boolean }>`
+  user-select: none;
+  cursor: pointer;
+  height: 50px;
+  min-height: 50px;
+  padding: 10px 15px;
+  justify-content: flex-start;
+  border-radius: 5px;
+  transition: all 0.3s;
+  margin: 2px 0;
+  background: ${(props) =>
+    props.active
+      ? "linear-gradient(89.66deg,rgba(254, 254, 255, 0.04) 0.07%,rgba(239, 247, 255, 0.05) 98.45%),#232731;"
+      : "transparent"}
+
+  &:hover {
+    background: linear-gradient(
+        89.66deg,
+        rgba(254, 254, 255, 0.04) 0.07%,
+        rgba(239, 247, 255, 0.05) 98.45%
+      ),
+      #232731;
+  }
+`
+
+export const BaseTokenSymbol = styled(Text)`
+  white-space: normal;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 150%;
+  /* or 24px */
+
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.0168em;
+  font-feature-settings: "tnum" on, "lnum" on;
+
+  /* White / 100% */
+
+  color: #ffffff;
+`
+
+export const BaseTokenName = styled(Text)`
+  white-space: normal;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 142%;
+  /* or 17px */
+
+  letter-spacing: 0.0168em;
+  font-feature-settings: "tnum" on, "lnum" on;
+
+  /* icons */
+
+  color: #5a6071;
+`
+
+export const BasePrice = styled(Text)`
+  white-space: normal;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 130%;
+
+  text-align: right;
+  letter-spacing: 0.03em;
+  color: #68d2b6;
+`
+
+export const BaseBalance = styled(Text)`
+  white-space: normal;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 142%;
+  /* identical to box height, or 20px */
+
+  text-align: right;
+  letter-spacing: 0.0168em;
+  font-feature-settings: "tnum" on, "lnum" on;
+
+  color: #ffffff;
+`
+
+export const BaseTitle = styled(Text)`
+  font-style: normal;
+  font-family: Gilroy;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #acb3b8;
+  margin-bottom: 12px;
+`
+
+export const NoTokensPlaceholder = styled(Flex)`
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 37px;
+`
+
+export const HintTextCentered = styled(HintText)`
+  text-align: center;
+  margin: 30px 16px 0;
+`
+
+export const PopoverText = styled(Text)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 144%;
+  text-align: center;
+  letter-spacing: 0.5px;
+  color: #c5d1dc;
+  white-space: normal;
 `
