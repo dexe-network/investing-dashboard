@@ -4,6 +4,7 @@ import { Container, Overlay } from "./styled"
 
 const modalRoot = document.getElementById("modal")
 const Modal: React.FC = ({ children }) => {
+  if (!modalRoot) return null
   return createPortal(
     <>
       <Overlay />

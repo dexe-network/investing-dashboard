@@ -151,9 +151,7 @@ export default function Invest() {
           1 {fromData?.symbol} = {toBalance.div(fromBalance).toString()}{" "}
           {fromData?.symbol}
         </PriceText>
-        <PriceText color="#999999">
-          (~{isStable(poolAddress) ? "1.00" : "1.00"}$)
-        </PriceText>
+        <PriceText color="#999999">(~1.00$)</PriceText>
         <Tooltip id="0"></Tooltip>
       </Flex>
     )
@@ -172,7 +170,7 @@ export default function Invest() {
         onChange={handleFromChange}
         isAlloved
         onSelect={() => {}}
-        isStable={isStable(poolAddress)}
+        isStable
       />
 
       <ExchangeDivider

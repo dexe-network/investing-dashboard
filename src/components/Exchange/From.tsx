@@ -23,7 +23,7 @@ interface IFromProps {
   price: number
   amount: number
   balance: BigNumber
-  address: string
+  address?: string
   symbol?: string
   decimal?: number
   isAlloved: boolean

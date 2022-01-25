@@ -20,10 +20,13 @@ interface IProps {
 }
 
 const getIconsPathByChain = (id, address) => {
+  if (!address) return
+
+  const a = address.toLowerCase()
   if (id === 97) {
-    return `https://pancake.kiemtienonline360.com/images/coins/${address}.png`
+    return `https://pancake.kiemtienonline360.com/images/coins/${a}.png`
   }
-  return `https://pancake.kiemtienonline360.com/images/coins/${address}.png`
+  return `https://pancake.kiemtienonline360.com/images/coins/${a}.png`
 }
 
 const TokenIcon: React.FC<IProps> = ({ size, address }) => {

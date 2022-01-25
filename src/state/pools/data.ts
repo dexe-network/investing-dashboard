@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { Pool } from "constants/interfaces_v2"
 
-const Pools: Pool[] = [
+const Pools = [
   {
     pool_address: "0x123",
     base_address: "0x...",

@@ -6,14 +6,12 @@ import { useWeb3React } from "@web3-react/core"
 import { useActiveWallet } from "hooks/useActiveWallet"
 import { connectorsByName } from "constants/connectors"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
-import { Arkane as ArkaneConnector } from "@arkane-network/web3-arkane-provider"
 import Popover from "components/Popover"
 import Checkbox from "components/Checkbox"
 
 import metamask from "assets/wallets/metamask.svg"
 import bsc from "assets/wallets/bsc.svg"
 import walletconnect from "assets/wallets/walletconnect.svg"
-import arkane from "assets/wallets/arkane.svg"
 
 import close from "assets/icons/close.svg"
 

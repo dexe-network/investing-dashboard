@@ -57,7 +57,7 @@ export function usePancakeFactory(): Contract | null {
 }
 
 export function useERC20(
-  address: string
+  address: string | undefined
 ): [
   Contract | null,
   { address: string; name: string; symbol: string; decimals: number } | null,
@@ -69,6 +69,7 @@ export function useERC20(
   const contract = useContract(address, ERC20)
   const { account, library } = useActiveWeb3React()
   const isETH =
+    !!address &&
     address.toLocaleLowerCase() === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 
   const init = useCallback(() => {
@@ -83,7 +84,7 @@ export function useERC20(
       return
     }
 
-    if (!contract || !library) return
+    if (!contract || !library || !address) return
     ;(async () => {
       try {
         const symbol = await contract.symbol()

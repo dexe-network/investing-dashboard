@@ -30,14 +30,14 @@ export default function Routes() {
                 <RestrictedContainer>
                   <ProfileHeader />
 
-                  <Route exact path="/me/investor">
+                  <Route path="/me/investor">
                     <Investor />
                   </Route>
 
-                  <Route exact path="/me/trader/:poolAddress">
+                  <Route path="/me/trader/:poolAddress">
                     <Trader />
                   </Route>
-                  <Route exact path="/me">
+                  <Route path="/me">
                     <Welcome />
                   </Route>
                 </RestrictedContainer>
@@ -47,27 +47,27 @@ export default function Routes() {
                 <NewFund />
               </Route>
 
-              <Route exact path="/">
-                <TopMembers />
-              </Route>
-
-              <Route exact path="/wallet">
+              <Route path="/wallet">
                 <Wallet />
               </Route>
 
-              <Route exact path="/investor/history/:type/:account">
+              <Route path="/investor/history/:type/:account">
                 <Trades />
               </Route>
 
-              <Route exact path="/pool/history/:type/:address">
+              <Route path="/pool/history/:type/:address">
                 <Trades />
               </Route>
 
-              <Route exact path="/pool/:poolAddress/invest">
+              <Route path="/pool/:poolAddress/invest">
                 <Invest />
               </Route>
-              <Route exact path="/pool/:poolAddress/exchange">
+              <Route path="/pool/:poolAddress/exchange">
                 <Swap />
+              </Route>
+
+              <Route path="/">
+                <TopMembers />
               </Route>
             </Switch>
           </AnimatePresence>

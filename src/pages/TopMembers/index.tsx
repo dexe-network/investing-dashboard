@@ -23,9 +23,6 @@ function TopMembers() {
   const [pools, isLoading, loadMorePools] = usePools()
   const [filters, dispatchFilter] = usePoolsFilters()
 
-  const breakpoint = useBreakpoint()
-  const isMobile = breakpoint === "xs"
-
   // manually disable scrolling *refresh this effect when ref container dissapeared from DOM
   useEffect(() => {
     if (!scrollRef.current) return
@@ -57,21 +54,20 @@ function TopMembers() {
         ref={scrollRef}
         style={{ height: window.innerHeight - 117 }}
       >
-        {pools[filters.listType || "all"].map((pool, index) =>
-          isMobile ? (
-            <MemberMobile key={pool.pool_address} index={index} />
-          ) : (
-            <Member key={pool.pool_address} data={pool} />
-          )
-        )}
+        {pools.map((pool, index) => (
+          <MemberMobile data={pool} key={pool.address} index={index} />
+        ))}
+        {/* // TODO: make loading indicator stick to bottom of the list */}
         <LoadMore
-          isLoading={isLoading && !!pools[filters.listType || "all"].length}
+          isLoading={isLoading && !!pools.length}
           handleMore={loadMorePools}
           r={scrollRef}
         />
       </MembersList>
 
-      {!isMobile && (
+      {/* // TODO: PAGINATION */}
+
+      {/* {!isMobile && (
         <ReactPaginate
           previousLabel={<img src={prev} />}
           nextLabel={<img src={next} />}
@@ -84,7 +80,7 @@ function TopMembers() {
           containerClassName={"pagination"}
           activeClassName={"active"}
         />
-      )}
+      )} */}
     </ListContainer>
   )
 
@@ -93,9 +89,7 @@ function TopMembers() {
   return (
     <StyledTopMembers>
       <TopMembersBar />
-      {isLoading && !pools[filters.listType || "all"].length
-        ? loadingIndicator
-        : body}
+      {isLoading && !pools.length ? loadingIndicator : body}
     </StyledTopMembers>
   )
 }

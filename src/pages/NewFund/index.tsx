@@ -44,7 +44,7 @@ export default function NewFund() {
         <Route path="/new-fund/summary">
           <Summary />
         </Route>
-        <Route exact path="/new-fund">
+        <Route path="/new-fund">
           <Redirect to="/new-fund/basic-info" />
         </Route>
       </Switch>

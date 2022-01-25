@@ -22,10 +22,6 @@ export function useActiveWallet() {
     if (connector === connectorsByName.walletconnect) {
       setActive("walletconnect")
     }
-
-    // if (connector === connectorsByName.arkane) {
-    //   setActive("arkane")
-    // }
   }, [connector, account, library])
 
   return active

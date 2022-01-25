@@ -31,7 +31,7 @@ export const Input = styled(motion.input)`
     font-family: Gilroy;
     font-style: normal;
     font-family: Gilroy;
-font-weight: 400;
+    font-weight: 400;
     font-size: 12px;
     line-height: 14px;
     color: #6b747b;

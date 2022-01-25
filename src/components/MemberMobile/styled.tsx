@@ -5,7 +5,7 @@ export const Card = styled(Flex)`
   height: 120px;
   width: 100%;
   background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 16px auto;
   padding: 0 11px;
   box-sizing: border-box;
@@ -23,9 +23,16 @@ export const PoolInfoContainer = styled(Flex)`
   justify-content: space-around;
 `
 
-export const PoolInfo = styled(Flex)``
+export const PoolInfo = styled(Flex)`
+  width: 50%;
+  justify-content: flex-start;
+  padding-left: 16px;
+`
 
-export const BaseInfo = styled(Flex)``
+export const BaseInfo = styled(Flex)`
+  width: 50%;
+  justify-content: flex-start;
+`
 
 export const Title = styled.div`
   font-family: Gilroy;
@@ -62,7 +69,7 @@ export const PoolStatisticContainer = styled.div`
   height: 60px;
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr;
   gap: 0px 0px;
   grid-template-areas: ". . . . .";

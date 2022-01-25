@@ -1,4 +1,4 @@
-// import React, { useState, useRef } from "react"
+import React, { useState, useRef } from "react"
 import { Flex, To } from "theme"
 import styled from "styled-components"
 import { Link } from "react-router-dom"
@@ -18,8 +18,17 @@ import {
   Statistic,
   PNL,
 } from "./styled"
+import { Pool } from "constants/interfaces_v2"
+import { useERC20 } from "hooks/useContract"
 
-const MemberMobile = ({ index = 0 }) => {
+// @param data - pool data
+// @param index - indicating index in all list of pools
+const MemberMobile: React.FC<{ data: Pool; index: number }> = ({
+  data,
+  index = 0,
+}) => {
+  const [baseContract, baseData] = useERC20(data.parameters.baseToken)
+
   return (
     <Card
       initial={{ opacity: 0, y: -15 }}
@@ -35,12 +44,12 @@ const MemberMobile = ({ index = 0 }) => {
         <PoolInfo>
           <TokenIcon size={38} />
           <div>
-            <Title>ISDX</Title>
-            <Description>BIG TRADE Big Fund</Description>
+            <Title>{data.ticker}</Title>
+            <Description>{data.name}</Description>
           </div>
         </PoolInfo>
         <BaseInfo>
-          <TokenIcon size={38} />
+          <TokenIcon address={baseData?.address} size={38} />
           <div>
             <Title>
               $22.12
@@ -52,18 +61,17 @@ const MemberMobile = ({ index = 0 }) => {
       </PoolInfoContainer>
       <Divider />
       <PoolStatisticContainer>
-        <Statistic label="TVL" value="230k" />
+        <Statistic label="TVL" value={data.leverageInfo.totalPoolUSD} />
         <Statistic label="APY" value="35%" />
         <Statistic label="P&L" value="65%" />
         <Statistic
           label="Investors"
           value={
             <>
-              34 <PNL>+13%</PNL>
+              {data.totalInvestors} <PNL>+13%</PNL>
             </>
           }
         />
-        <BuyButton onClick={() => {}} />
       </PoolStatisticContainer>
     </Card>
   )

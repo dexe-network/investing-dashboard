@@ -9,98 +9,54 @@ export interface User {
   updated_at: number
 }
 
+
+/// @notice The structure that is returned from the TraderPoolView contract and stores static information about the pool
+/// @param address pool address
+/// @param ticker the ERC20 symbol of this pool
+/// @param name the ERC20 name of this pool
+/// @param parameters the active pool parametrs (that are set in the constructor)
+/// @param openPositions the array of open positions addresses
+/// @param baseAndPositionBalances the array of balances. [0] is the balance of base tokens (array is normalized)
+/// @param totalPoolUSD is the current USD TVL in this pool
+/// @param lpEmission is the current number of LP tokens
 export interface Pool {
-  // ADRESSES
-  pool_address: string
-  base_address: string
-  creator_address: string
-
-  // LP TOKEN INFO
-  symbol: string
+  address: string
   name: string
-  lp_decimal: number
+  ticker: string
 
-  base_symbol: string
-  base_name: string
-  base_decimal: number
+  parameters: PoolParameters
+  leverageInfo: LeverageInfo
 
-  // POOL CONFIG
-  type: "standard" | "risky" | "investment"
-  is_actual_on: boolean
-  managers_list: string[]
-
-  // COMMISSIONS
-  trader_commission: number
-  investor_commission: number
-  platform_commission: number
-
-  // STATS
-  current_price: string
-  price_change_24h: number
-  copiers_change_24h: number
-  total_value_locked: BigNumber
-  annual_percentage_yield: number
-  profit_and_loss: number
-  investors_funds_locked: BigNumber
-  investors_funds_locked_24h: number
-  personal_funds_locked: BigNumber
-  personal_funds_locked_24h: number
-
-  pnl_by_period: {
-    m1: number
-    m3: number
-    all: number
-  }
-  pnl_chart: { x: number; y: number; pnl: number }[]
-
-  // TX INFO
-  block_number: string
-  tx_hash: string
-  created_at: number
-  updated_at: number
+  openPositions: string[]
+  baseAndPositionBalances: BigNumber[]
+  totalInvestors: BigNumber
+  totalPoolBase: BigNumber
+  lpEmission: BigNumber
 }
 
-export interface Investor {
-  profitAndLoss24H: number
-  profitAndLoss: number
-
-  investedAmountUSDT: BigNumber
-  totalValueUSDT: BigNumber
-  profitAndLossByPeriod: {
-    m1: number
-    m3: number
-    all: number
-  }
-  profitAndLossChart: { x: number; y: number; pnl: number }[]
+interface PoolParameters {
+  baseToken: string
+  trader: string
+  baseTokenDecimals: BigNumber
+  comissionPercentage: BigNumber
+  comissionPeriod: number
+  descriptionURL: string
+  minimalInvestment: BigNumber
+  privatePool: boolean
+  totalLPEmission: BigNumber
 }
 
-export interface PoolTransaction {
-  txId: string
-  timestamp: Date
-  path: string[]
-  status: "BUY" | "SELL"
-  amount: BigNumber
-  basePrice: BigNumber
-  stablePrice: BigNumber
+/// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
+/// @param totalPoolUSD the total USD value of the pool
+/// @param traderLeverageUSDTokens the maximal amount of USD that the trader is allowed to own
+/// @param freeLeverageUSD the amount of USD that could be invested into the pool
+/// @param freeLeverageBase the amount of base tokens that could be invested into the pool (basically converted freeLeverageUSD)
+interface LeverageInfo {
+  totalPoolUSD: BigNumber
+  freeLeverageBase: BigNumber
+  freeLeverageUSD: BigNumber
+  traderLeverageUSDTokens: BigNumber
 }
-
-export interface PoolPosition {
-  createdAt: string
-  updatedAt: string
-
-  tokenAddress: string
-  baseAddress: string
-  amount: BigNumber
-  avgBasePrice: BigNumber
-  avgStablePrice: BigNumber
-  pnlBase: BigNumber
-  pnlStable: BigNumber
-  pnl: number
-
-  transactions: PoolTransaction[]
-}
-
-interface InvestingHistory {}
 
 export interface WhiteList {
   address: string

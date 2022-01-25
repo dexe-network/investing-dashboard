@@ -1,6 +1,11 @@
 import { addDays, addMonths, addYears } from "date-fns"
 import { createStaticRanges } from "react-date-range"
 
+export const poolTypes = {
+  basic: "BASIC_POOL",
+  invest: "INVEST_POOL",
+}
+
 export const sortItemsList = [
   "Trader rating",
   "P&L in %",

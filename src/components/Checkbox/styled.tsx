@@ -63,5 +63,5 @@ export const Label = styled.span`
   display: flex;
   align-items: center;
   font-family: Gilroy;
-font-weight: 400;
+  font-weight: 400;
 `

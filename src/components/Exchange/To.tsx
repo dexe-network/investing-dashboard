@@ -26,7 +26,7 @@ interface IToProps {
   priceChange24H: number
   amount: number
   balance: BigNumber
-  address: string
+  address?: string
   symbol?: string
   decimal?: number
   isPool?: boolean
@@ -46,10 +46,6 @@ const ExchangeTo: React.FC<IToProps> = ({
   onChange,
   onSelect,
 }) => {
-  const icon = isPool
-    ? poolLogo
-    : `https://tokens.1inch.exchange/${address.toLowerCase()}.png`
-
   // const handleInputChange = (e) => {
   //   const { value } = e.target
 

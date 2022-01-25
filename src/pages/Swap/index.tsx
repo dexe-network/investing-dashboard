@@ -304,7 +304,7 @@ export default function Swap() {
       <Container>
         <HalfBlock>
           <Flex dir="column" full>
-            <MemberMobile index={0} />
+            {/* <MemberMobile index={0} /> */}
           </Flex>
           <Flex dir="column" full>
             <InfoContainer>
