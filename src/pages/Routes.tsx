@@ -11,6 +11,7 @@ const TopMembers = lazy(() => import("pages/TopMembers"))
 const NewFund = lazy(() => import("pages/NewFund"))
 const Invest = lazy(() => import("pages/Invest"))
 const Welcome = lazy(() => import("pages/Welcome"))
+const Profile = lazy(() => import("pages/Profile"))
 const Investor = lazy(() => import("pages/Investor"))
 const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
@@ -59,6 +60,9 @@ export default function Routes() {
                 <Trades />
               </Route>
 
+              <Route path="/pool/:poolAddress/profile">
+                <Profile />
+              </Route>
               <Route path="/pool/:poolAddress/invest">
                 <Invest />
               </Route>

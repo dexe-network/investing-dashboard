@@ -44,13 +44,19 @@ export const HalfBlock = styled(Flex)`
 
 export const Label = styled(Text)`
   text-align: center;
-  color: #c2c3c4;
-  font-size: 13px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  color: #5a6071;
 `
 export const Value = styled(Text)`
   font-family: Gilroy;
-  font-weight: 700;
-  font-size: 32px;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 41px;
+  text-align: center;
   color: #f7f7f7;
 `
 export const Pnl = styled(Text)<{ side: "BUY" | "SELL" }>`

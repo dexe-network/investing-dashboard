@@ -3,7 +3,6 @@ import { useHistory, useParams } from "react-router-dom"
 import swipeLeft from "assets/icons/swipe-arrow-left.svg"
 import filter from "assets/icons/filter.svg"
 import calendar from "assets/icons/calendar.svg"
-import { Tab } from "pages/Profile/styled"
 import { BigNumber } from "@ethersproject/bignumber"
 import TradesListItem, { TradesTotalItem } from "./List"
 import { IPoolPosition } from "constants/interfaces"
@@ -16,6 +15,7 @@ import {
   Container,
   Header,
   Tabs,
+  Tab,
   IconButtons,
   List,
   ListHead,

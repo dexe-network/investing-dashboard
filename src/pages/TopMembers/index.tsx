@@ -5,7 +5,7 @@ import TopMembersBar from "components/TopMembersBar"
 import MemberMobile from "components/MemberMobile"
 import LoadMore from "components/LoadMore"
 import { GuardSpinner } from "react-spinners-kit"
-import { Text, Flex, Center, useBreakpoint } from "theme"
+import { Text, Flex, Center, useBreakpoint, To } from "theme"
 import { usePoolsFilters, usePools } from "state/pools/hooks"
 import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
 
@@ -55,7 +55,9 @@ function TopMembers() {
         style={{ height: window.innerHeight - 117 }}
       >
         {pools.map((pool, index) => (
-          <MemberMobile data={pool} key={pool.address} index={index} />
+          <To key={pool.address} to={`/pool/${pool.address}/profile`}>
+            <MemberMobile data={pool} index={index} />
+          </To>
         ))}
         {/* // TODO: make loading indicator stick to bottom of the list */}
         <LoadMore

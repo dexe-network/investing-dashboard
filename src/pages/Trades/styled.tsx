@@ -1,6 +1,6 @@
 import styled from "styled-components"
 import { motion } from "framer-motion"
-import { Flex, BaseButton, Text } from "theme"
+import { Flex, BaseButton, Text, device } from "theme"
 
 export const Container = styled(Flex)`
   flex-direction: column;
@@ -37,6 +37,39 @@ export const Tabs = styled(Flex)`
   width: 200px;
   margin-right: -20px;
 `
+
+export const LinkWrap = styled.div<{ c: string; fw: number }>`
+  font-size: 16px;
+  color: ${(props) => props.c};
+  user-select: none;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  text-decoration: none;
+  user-select: none;
+  text-align: center;
+  padding: 0 20px;
+  width: 100px;
+
+  font-weight: ${(props) => props.fw};
+
+  @media only screen and (${device.md}) {
+    font-size: 14px;
+  }
+
+  @media only screen and (${device.sm}) {
+    padding: 0 10px;
+  }
+`
+
+export const Tab = ({ children, active, to }) => (
+  <LinkWrap
+    c={active ? "#F5F5F5" : "#999999"}
+    onClick={to}
+    fw={active ? 800 : 500}
+  >
+    {children}
+  </LinkWrap>
+)
 
 export const IconButtons = styled(Flex)`
   width: 55px;
@@ -113,8 +146,10 @@ export const ClosePosition = styled(TextButtonBase)`
 export const gradients = {
   default:
     "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(122, 122, 122, 0.2) 100%);",
-  buy: "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(127, 255, 212, 0.1) 100%);",
-  sell: "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(255, 127, 127, 0.1) 100%);",
+  buy:
+    "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(127, 255, 212, 0.1) 100%);",
+  sell:
+    "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(255, 127, 127, 0.1) 100%);",
 }
 
 export const Wrapper = styled(Flex)<{ gradient: string; shadow?: boolean }>`

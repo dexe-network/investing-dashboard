@@ -3,7 +3,7 @@ import { Flex } from "theme"
 import { motion } from "framer-motion"
 
 export const TabContainer = styled(Flex)`
-  background: #33363f;
+  background: #252a35;
   border-radius: 10px;
   height: 35px;
   width: 100%;
@@ -26,7 +26,7 @@ export const Tab = styled(Flex)<{ active?: boolean }>`
     props.active
       ? "linear-gradient(244.44deg, #63B49B 0%, #A4EBD4 67.65%)"
       : "transparent"};
-  color: ${(props) => (props.active ? "#24272D" : "#dadada")};
-  font-weight: ${(props) => (props.active ? "bold" : "normal")};
+  color: ${(props) => (props.active ? "#24272D" : "#5A6071")};
+  font-weight: ${(props) => (props.active ? "600" : "400")};
   border-radius: 10px;
 `

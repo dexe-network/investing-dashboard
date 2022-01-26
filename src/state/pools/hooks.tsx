@@ -5,6 +5,26 @@ import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, AppState } from "state"
 import { TraderPoolRegistry } from "abi"
 import useContract from "hooks/useContract"
+import { useQuery } from "urql"
+
+const BasicPoolQuery = `
+  query BasiPool{
+    basicPools(first: 5 orderBy: creatingTime) {
+      id
+      baseToken
+      ticker
+      name
+      creatingTime
+      investors { allPools {  id} }
+      positions {  id }
+      invests {  id }
+      divests { id }
+      exchanges { id }
+      history {  id }
+      priceHistory {  id price }
+    }
+  }
+`
 
 import { addPools, setFilter } from "state/pools/actions"
 
@@ -54,6 +74,10 @@ const generatePoolsData = (address, poolInfos, leverageInfos): Pool => {
   }
 }
 
+const generateHistoricalPoolsData = () => {
+  return {}
+}
+
 // TODO: move loading to redux state
 // @return list of loaded pools
 // @return loading indicator of pools
@@ -66,14 +90,17 @@ export function usePools(): [Pool[], boolean, () => void] {
     (state: AppState) => state.contracts.TraderPoolRegistry
   )
   const pools = useSelector((state: AppState) => state.pools.list)
-
+  const [basiPoolQueryData, reexecuteQuery] = useQuery({
+    query: BasicPoolQuery,
+  })
   const traderPoolRegistry = useContract(
     traderPoolRegistryAddress,
     TraderPoolRegistry
   )
 
   useEffect(() => {
-    if (!traderPoolRegistry || !dispatch) return
+    if (!traderPoolRegistry || !basiPoolQueryData || !dispatch) return
+    console.log(basiPoolQueryData)
     ;(async () => {
       try {
         const basicPoolsLength = await traderPoolRegistry.countPools(
@@ -111,7 +138,7 @@ export function usePools(): [Pool[], boolean, () => void] {
         console.log(e)
       }
     })()
-  }, [traderPoolRegistry, dispatch])
+  }, [traderPoolRegistry, basiPoolQueryData, dispatch])
 
   const handleMore = () => {
     if (loading) return

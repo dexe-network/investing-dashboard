@@ -2,14 +2,22 @@ import styled from "styled-components"
 import { BaseButton, device, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
+const buttonSizes = {
+  normal: "12px 9px 13px",
+  small: "9px 39px 9px",
+}
+
 export const GradientButton = styled(BaseButton)<{
+  size?: string
   m?: string
+  p?: string
   fz?: number
   full?: boolean
   color: ButtonThemeType
 }>`
   position: relative;
-  padding: 12px 9px 13px;
+  padding: ${(props) =>
+    props.size ? buttonSizes[props.size] : buttonSizes.normal};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,54 +31,13 @@ export const GradientButton = styled(BaseButton)<{
   animation: changeButton 3s ease infinite;
   z-index: 20;
   overflow: hidden;
-
-  &:hover {
-    border-radius: 4px;
-  }
-
-  &:before {
-    transition: all 0.3s ease-in-out;
-    opacity: 0;
-    z-index: 1;
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(90deg, #a4ebd4 0%, #63b49b 100%);
-  }
-
-  &:after {
-    transition: all 0.3s ease-in-out;
-    opacity: 1;
-    z-index: 1;
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: ${(props) => props.theme.buttonGradients[props.color]};
-  }
-
-  /* &:hover {
-      &:before {
-        opacity: 1;
-      }
-      &:after {
-        opacity: 0;
-      }
-    } */
-
-  @media only screen and (${device.sm}) {
-    font-size: 14px;
-  }
+  background: linear-gradient(64.44deg, #63b49b 12.29%, #a4ebd4 76.64%);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   ${Text} {
     font-family: Gilroy;
     font-style: normal;
-    font-weight: bold;
+    font-weight: 700;
     font-size: 16px;
     line-height: 22px;
     letter-spacing: 0.1px;
@@ -78,6 +45,31 @@ export const GradientButton = styled(BaseButton)<{
     color: #202020;
     z-index: 21;
   }
+`
+
+export const SecondaryContainer = styled(BaseButton)`
+  padding: 10px 10px 11px 10px;
+  background: #22252c;
+  border-radius: 6px;
+  border: 1px solid #303a4a;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 17px;
+  text-align: center;
+  letter-spacing: 0.1px;
+  color: #5a6575;
+`
+
+export const GradientButtonText = styled(Text)`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+  letter-spacing: 0.1px;
+  color: #232830;
 `
 
 // BUY BUTTON

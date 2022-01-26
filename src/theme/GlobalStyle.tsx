@@ -4,6 +4,24 @@ import { device } from "theme"
 import { motion } from "framer-motion"
 import background from "assets/background/dashboard-overlay.png"
 
+export const GradientSVG = () => {
+  const gradientTransform = `rotate(${180})`
+
+  return (
+    <svg style={{ height: 0, width: 0 }}>
+      <defs>
+        <linearGradient
+          id="progress-bar-gradient"
+          gradientTransform={gradientTransform}
+        >
+          <stop offset="0%" stopColor="#A4EBD4" />
+          <stop offset="92%" stopColor="#000" stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
 const GlobalStyle = createGlobalStyle`
   body {
     width:100%;

@@ -23,15 +23,16 @@ import { useERC20 } from "hooks/useContract"
 
 // @param data - pool data
 // @param index - indicating index in all list of pools
-const MemberMobile: React.FC<{ data: Pool; index: number }> = ({
+const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
   data,
   index = 0,
+  children,
 }) => {
   const [baseContract, baseData] = useERC20(data.parameters.baseToken)
 
   return (
     <Card
-      initial={{ opacity: 0, y: -15 }}
+      initial={!index ? { opacity: 1, y: 0 } : { opacity: 0, y: -15 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
       transition={{
@@ -73,6 +74,7 @@ const MemberMobile: React.FC<{ data: Pool; index: number }> = ({
           }
         />
       </PoolStatisticContainer>
+      {children}
     </Card>
   )
 }

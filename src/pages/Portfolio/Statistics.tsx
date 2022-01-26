@@ -12,7 +12,6 @@ import {
   LinkIcon,
   device,
 } from "theme"
-import { NoData } from "pages/Profile/styled"
 import DataTable from "react-data-table-component"
 import LineChart from "components/LineChart"
 import Calendar from "components/Calendar"
@@ -397,7 +396,7 @@ const WhiteText = styled.span`
   color: #f5f5f5;
   font-size: 14px;
   font-family: Gilroy;
-font-weight: 300;
+  font-weight: 300;
 `
 
 const StatItem: React.FC<{ label: string; value: string }> = ({
@@ -703,7 +702,7 @@ const TokenSymbol = styled.div`
   color: #f7f7f7;
   font-size: 16px;
   font-family: Gilroy;
-font-weight: 500;
+  font-weight: 500;
 `
 const TokenPnl24 = styled.div`
   font-size: 14px;
@@ -734,7 +733,7 @@ const BaseTokenBalance = styled.div`
   color: #ffffff;
   font-size: 16px;
   font-family: Gilroy;
-font-weight: 500;
+  font-weight: 500;
 `
 
 const SwapButton = styled.div`
@@ -783,13 +782,13 @@ const RowLabel = styled.div`
   color: #f5f5f5;
   font-size: 16px;
   font-family: Gilroy;
-font-weight: 500;
+  font-weight: 500;
 `
 const RowValue = styled.div`
   color: #f5f5f5;
   font-size: 16px;
   font-family: Gilroy;
-font-weight: 500;
+  font-weight: 500;
 `
 
 const BackButton = styled.img`
@@ -832,7 +831,7 @@ function Statistics(props: Props) {
 
   return (
     <>
-      <StyledStatistics>
+      {/* <StyledStatistics>
         <ChartsWrapper jc="space-between" full>
           <Chart period height={217} />
           <PieWrapper>
@@ -905,7 +904,7 @@ function Statistics(props: Props) {
             ))}
           </List>
         </Container>
-      </MobilePortfolio>
+      </MobilePortfolio> */}
     </>
   )
 }

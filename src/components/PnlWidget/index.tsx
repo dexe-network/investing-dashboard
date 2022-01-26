@@ -2,13 +2,16 @@
 import styled from "styled-components"
 import AreaChart from "components/AreaChart"
 import { Flex, Text, Block } from "theme"
-import { HalfBlock, Label, AreaWrapper } from "pages/Trader/styled"
+import { HalfBlock, Label, AreaWrapper } from "./styled"
 import { IPoolInfo, IDetailedChart } from "constants/interfaces"
 
 const MonthLabel = styled(Text)`
-  color: #f5f5f5;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
   text-align: center;
-  font-size: 14px;
+  color: #5a6071;
 `
 
 const ProfitLossContainer = styled(Flex)`
@@ -25,17 +28,23 @@ const Period = styled(Flex)`
 `
 
 const ProfitSm = styled(Text)`
-  color: #f5f5f5;
-  font-size: 19px;
   font-family: Gilroy;
-  font-weight: 700;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 31px;
+  text-align: center;
+  color: #f7f7f7;
 `
 
 const ProfitAll = styled(Text)`
-  color: #7fffd4;
-  font-size: 32px;
   font-family: Gilroy;
-  font-weight: 700;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 31px;
+  text-align: center;
+  color: #9ae2cb;
 `
 
 const PnlWidget: React.FC<{

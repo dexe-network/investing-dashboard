@@ -12,8 +12,9 @@ const defaultContext = {
   toggleNotifications: () => {},
 }
 
-export const NotificationsContextProvider =
-  React.createContext<IContext>(defaultContext)
+export const NotificationsContextProvider = React.createContext<IContext>(
+  defaultContext
+)
 
 export const useNotificationsContext = () =>
   React.useContext(NotificationsContextProvider)

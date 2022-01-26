@@ -147,16 +147,11 @@ export const Flex = styled(motion.div)<{
 
 export const Block = styled(Flex)`
   position: relative;
-  background: linear-gradient(
-    270deg,
-    rgba(51, 62, 64, 0.5) 0%,
-    rgba(128, 128, 128, 0.5) 100%
-  );
-  border-radius: 5px;
+  background: linear-gradient(64.44deg, #24272f 32.35%, #333a48 100%);
+  border-radius: 10px;
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
-  height: 95px;
+  height: 120px;
   width: 100%;
-  margin: 5px 0;
   justify-content: space-around;
 `
 

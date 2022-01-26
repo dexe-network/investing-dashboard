@@ -2,7 +2,6 @@ import styled from "styled-components"
 import { Flex, Text, BaseButton, device } from "theme"
 
 export const Card = styled(Flex)`
-  height: 120px;
   width: 100%;
   background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
   border-radius: 8px;
@@ -60,7 +59,8 @@ export const Description = styled.div`
 
 export const Divider = styled.div`
   background: #2e3645;
-  width: 100%;
+  width: fill-available;
+  margin-left: 60px;
   height: 1px;
 `
 
