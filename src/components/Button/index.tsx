@@ -37,8 +37,11 @@ const Button: React.FC<MainButtonProps> = ({
 
 export default Button
 
-export const SecondaryButton: React.FC = ({ children }) => {
-  return <SecondaryContainer>{children}</SecondaryContainer>
+export const SecondaryButton: React.FC<{ size?: string }> = ({
+  size = "normal",
+  children,
+}) => {
+  return <SecondaryContainer size={size}>{children}</SecondaryContainer>
 }
 
 // BUY BUTTON placed on pool card component

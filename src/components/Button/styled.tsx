@@ -3,8 +3,13 @@ import { BaseButton, device, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
 const buttonSizes = {
-  normal: "12px 9px 13px",
+  normal: "12px 25px 13px",
   small: "9px 39px 9px",
+}
+
+const secondarySizes = {
+  normal: "13px 25px 15px 25px",
+  small: "10px 10px 11px 10px",
 }
 
 export const GradientButton = styled(BaseButton)<{
@@ -47,8 +52,8 @@ export const GradientButton = styled(BaseButton)<{
   }
 `
 
-export const SecondaryContainer = styled(BaseButton)`
-  padding: 10px 10px 11px 10px;
+export const SecondaryContainer = styled(BaseButton)<{ size: string }>`
+  padding: ${(props) => secondarySizes[props.size]};
   background: #22252c;
   border-radius: 6px;
   border: 1px solid #303a4a;
@@ -59,7 +64,7 @@ export const SecondaryContainer = styled(BaseButton)`
   line-height: 17px;
   text-align: center;
   letter-spacing: 0.1px;
-  color: #5a6575;
+  color: #c5d1dc;
 `
 
 export const GradientButtonText = styled(Text)`
