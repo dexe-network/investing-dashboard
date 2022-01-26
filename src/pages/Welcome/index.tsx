@@ -2,8 +2,9 @@ import axios from "axios"
 import { useState, useEffect } from "react"
 import { useHistory } from "react-router-dom"
 import { Text, To, Flex } from "theme"
+import { useWeb3React } from "@web3-react/core"
 import { useSwipeable } from "react-swipeable"
-
+import { useConnectWalletContext } from "context/ConnectWalletContext"
 import { getSignature } from "utils"
 import Button, { SecondaryButton } from "components/Button"
 import logo from "assets/icons/logo-big.svg"
@@ -25,15 +26,33 @@ interface Props {}
 
 function Welcome(props: Props) {
   const {} = props
+  const { toggleConnectWallet } = useConnectWalletContext()
 
+  const { account } = useWeb3React()
   const history = useHistory()
 
   const handleFundRedirect = () => {
+    if (!account) {
+      toggleConnectWallet(true)
+      return
+    }
     history.push("/me/trader/0x...")
   }
 
   const handleInvestRedirect = () => {
+    if (!account) {
+      toggleConnectWallet(true)
+      return
+    }
     history.push("/")
+  }
+
+  const handleCreateFundRedirect = () => {
+    if (!account) {
+      toggleConnectWallet(true)
+      return
+    }
+    history.push("/new-fund")
   }
 
   const handlers = useSwipeable({
@@ -65,8 +84,10 @@ function Welcome(props: Props) {
         </Socials>
       </Content>
       <Buttons>
-        <Button m="0">Become a trader</Button>
-        <SecondaryButton>Invest</SecondaryButton>
+        <Button m="0" onClick={handleCreateFundRedirect}>
+          Become a trader
+        </Button>
+        <SecondaryButton onClick={handleInvestRedirect}>Invest</SecondaryButton>
       </Buttons>
     </Container>
   )

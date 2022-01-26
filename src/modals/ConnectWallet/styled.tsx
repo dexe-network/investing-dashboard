@@ -22,63 +22,74 @@ export const Checked = styled.img`
 
 export const Wallet = styled(Flex)`
   position: relative;
-  max-width: 125px;
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: 40px;
 
-  &:hover ${WalletIcon} {
-    transform: scale(1.1);
+  &:after {
+    content: "";
+    position: absolute;
+    height: 1px;
+    bottom: -20px;
+    left: 40px;
+    right: 0;
+    background: linear-gradient(
+      89.66deg,
+      rgba(254, 254, 255, 0.04) 0.07%,
+      rgba(239, 247, 255, 0.08) 98.45%
+    );
   }
 `
 
-export const Body = styled.div<{ opacity: number }>`
-  margin-top: 45px;
-  padding: 0 16px;
+export const Body = styled.div`
+  margin-top: 24px;
+  padding: 0;
   transition: opacity 0.4s;
-  opacity: ${(props) => props.opacity};
-  cursor: ${(props) => (props.opacity !== 1 ? "not-allowed" : "normal")};
-
-  & ${Wallet} {
-    cursor: ${(props) => (props.opacity !== 1 ? "not-allowed" : "pointer")};
-  }
 `
 
 export const Header = styled(Flex)``
-
-export const TermsAndPrivacy = styled.span`
-  font-family: Gilroy;
-  font-style: italic;
-  font-family: Gilroy;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 15px;
-  color: #ffffff;
-  padding-left: 10px;
-  padding-top: 3px;
-`
 
 export const ChooseWallet = styled(Flex)`
   color: #cad8fc;
 `
 
 export const Wallets = styled(Flex)`
-  margin-top: 30px;
-  border: 1px solid #007ff3;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  padding: 37px 0 40px;
+  padding: 60px 0 40px;
+  flex-direction: column;
+  align-items: flex-start;
 `
 
 export const WalletTitle = styled(Text)`
-  padding-top: 8px;
+  padding-left: 16px;
   font-family: Gilroy;
   font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  letter-spacing: 0.5px;
+  transform: translateY(2px);
+  color: #c5d1dc;
+`
+
+export const PrivacyText = styled.p`
+  padding: 0;
+  margin: 0;
   font-family: Gilroy;
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 12px;
-  text-align: center;
-  letter-spacing: 1px;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 130%;
+  color: #c2d1dd;
+  justify-content: flex-start;
+  width: 100%;
+`
 
-  /* Text */
-
-  color: #dadada;
+export const LinkText = styled.a`
+  text-decoration: none;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 130%;
+  color: #0076bc;
 `

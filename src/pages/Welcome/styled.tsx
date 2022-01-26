@@ -19,6 +19,7 @@ export const Content = styled(Flex)`
   width: 100%;
   flex-direction: column;
   align-items: flex-start;
+  padding: 30px 0;
 `
 
 export const Title = styled.div`

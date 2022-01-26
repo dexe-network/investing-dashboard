@@ -1,12 +1,11 @@
 import { useState } from "react"
 
-import Modal from "styled-react-modal"
-import { ExternalLink, Flex } from "theme"
+import { ExternalLink, Flex, External } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import { useActiveWallet } from "hooks/useActiveWallet"
 import { connectorsByName } from "constants/connectors"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
-import Popover from "components/Popover"
+import Modal from "components/Modal"
 import Checkbox from "components/Checkbox"
 
 import metamask from "assets/wallets/metamask.svg"
@@ -22,8 +21,9 @@ import {
   Title,
   Header,
   Body,
-  TermsAndPrivacy,
+  PrivacyText,
   ChooseWallet,
+  LinkText,
   Wallets,
   Wallet,
   WalletIcon,
@@ -66,77 +66,30 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
   }
 
   return (
-    <Popover
-      contentHeight={450}
-      isOpen={isOpen}
-      toggle={onRequestClose}
-      title="Connect your wallet"
-    >
-      <Body opacity={termsAccepted ? 1 : 0.5}>
-        <Flex full jc="flex-start" ai="center">
-          <Checkbox
-            name="terms&privacy"
-            checked={termsAccepted}
-            onChange={setAccepted}
-            label={
-              <TermsAndPrivacy>
-                Accept{" "}
-                <ExternalLink
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="dexe.network"
-                >
-                  Terms of Service
-                </ExternalLink>{" "}
-                and{" "}
-                <ExternalLink
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="dexe.network"
-                >
-                  Privacy Policy
-                </ExternalLink>
-              </TermsAndPrivacy>
-            }
-          />
-        </Flex>
+    <Modal isOpen={isOpen} toggle={onRequestClose} title="Connect your wallet">
+      <Body>
+        <PrivacyText>
+          By connecting the wallet I accept
+          <LinkText href="#"> Terms of Service </LinkText>and
+          <LinkText href="#"> Privacy Policy </LinkText>
+          DeXe Network
+        </PrivacyText>
 
         <Wallets full>
-          <Wallet
-            onClick={() => activateProvider("walletconnect")}
-            dir="column"
-            full
-            jc="space-around"
-            ai="center"
-          >
+          <Wallet onClick={() => activateProvider("walletconnect")}>
             <WalletIcon src={walletconnect} alt="walletconnect" />
             <WalletTitle>Wallet Connect</WalletTitle>
-            {active === "walletconnect" && <Checked src={check} />}
           </Wallet>
-          <Wallet
-            onClick={() => activateProvider("metamask")}
-            dir="column"
-            full
-            jc="space-around"
-            ai="center"
-          >
+          <Wallet onClick={() => activateProvider("metamask")}>
             <WalletIcon src={metamask} alt="metamask" />
             <WalletTitle>Metamask</WalletTitle>
-            {active === "metamask" && <Checked src={check} />}
           </Wallet>
-          <Wallet
-            onClick={() => activateProvider("bsc")}
-            dir="column"
-            full
-            jc="space-around"
-            ai="center"
-          >
+          <Wallet onClick={() => activateProvider("bsc")}>
             <WalletIcon src={bsc} alt="bsc" />
-            <WalletTitle>Binance Chain</WalletTitle>
-            {active === "bsc" && <Checked src={check} />}
+            <WalletTitle>Binance Smart Chain</WalletTitle>
           </Wallet>
         </Wallets>
       </Body>
-    </Popover>
+    </Modal>
   )
 }

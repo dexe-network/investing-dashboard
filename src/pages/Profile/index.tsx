@@ -32,7 +32,7 @@ const Profile: React.FC<Props> = () => {
     <Container>
       <MemberMobile data={poolData}>
         <ButtonContainer>
-          <SecondaryButton>Investing history</SecondaryButton>
+          <SecondaryButton size="small">Investing history</SecondaryButton>
           <Button m="0" size="small">
             Buy {poolData.ticker}
           </Button>
