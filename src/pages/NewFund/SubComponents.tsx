@@ -646,7 +646,7 @@ export const InvestmentsAndRestrictions = () => {
         </Flex>
       </Flex>
       <Popover
-        title="About investors"
+        title="Use previous list of investors ?"
         isOpen={showPopup}
         toggle={setPopupState}
         contentHeight={370}
@@ -660,10 +660,10 @@ export const InvestmentsAndRestrictions = () => {
         </Flex>
         <Flex p="25px 37px 0" full>
           <Flex p="0 18px 0 0">
-            <BorderedButton>Add New</BorderedButton>
+            <BorderedButton size="small">New</BorderedButton>
           </Flex>
-          <Button onClick={submitWarnPopup} full>
-            Use latest whitelist
+          <Button size="small" onClick={submitWarnPopup} full>
+            Use latest
           </Button>
         </Flex>
       </Popover>

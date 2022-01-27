@@ -167,7 +167,7 @@ export const Content = styled.div`
   overscroll-behavior: none;
   transition: 0.2s all;
 
-  @media only screen and (${device.xs}) {
+  @media only screen and (${device.md}) {
     /* padding-bottom: 62px; */
   }
 `

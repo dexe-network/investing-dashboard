@@ -33,7 +33,7 @@ interface IToProps {
   decimal?: number
   isPool?: boolean
   onChange: (amount: number) => void
-  onSelect: () => void
+  onSelect?: () => void
 }
 
 const ExchangeTo: React.FC<IToProps> = ({
@@ -91,7 +91,9 @@ const ExchangeTo: React.FC<IToProps> = ({
           ≈${price.toFixed(2)} ({priceChange24H.toFixed(2)}%)
         </Price>
         <Balance>
-          <Tokens>{fromBig(balance, decimal)}</Tokens>
+          <Tokens>
+            {ethers.utils.formatUnits(balance, decimal).toString()}
+          </Tokens>
           <Symbol>{symbol}</Symbol>
         </Balance>
       </Flex>
@@ -107,7 +109,7 @@ const ExchangeTo: React.FC<IToProps> = ({
           {/* // TODO: create FundIcon component */}
           <TokenIcon address="" size={27} />
           <SymbolLabel>{symbol}</SymbolLabel>
-          <IconDown src={angleIcon} />
+          {onSelect && <IconDown src={angleIcon} />}
         </ActiveSymbol>
       </Flex>
     </ToContainer>

@@ -7,6 +7,7 @@ import PriceFeed from "./PriceFeed"
 import PancakeFactory from "./PancakeFactory"
 import TraderPoolFactory from "./TraderPoolFactory"
 import TraderPoolRegistry from "./TraderPoolRegistry"
+import TraderPool from "./TraderPool"
 
 export {
   PancakeExchangeTool,
@@ -18,4 +19,5 @@ export {
   PancakeFactory,
   TraderPoolFactory,
   TraderPoolRegistry,
+  TraderPool,
 }

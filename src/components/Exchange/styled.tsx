@@ -22,9 +22,7 @@ export const InfoContainer = styled(Flex)`
   padding-bottom: 11px;
 `
 
-export const IconDown = styled.img`
-  margin-left: 10px;
-`
+export const IconDown = styled.img``
 
 export const Price = styled(Text)`
   font-family: Gilroy;
@@ -125,6 +123,7 @@ export const SymbolLabel = styled.span`
   font-size: 16px;
   line-height: 20px;
   letter-spacing: 0.5px;
+  margin-right: 10px;
 
   color: #c5d1dc;
   margin-top: 4px;

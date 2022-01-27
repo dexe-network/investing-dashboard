@@ -33,8 +33,8 @@ export const ContractsRegistryUpdater: React.FC = () => {
     }
 
     // get all contracts addresses related to dexe
-    try {
-      ;(async () => {
+    ;(async () => {
+      try {
         const result = await Promise.all(
           contractAddressGetters.map((funcName) =>
             contractsRegistry[funcName]()
@@ -52,10 +52,10 @@ export const ContractsRegistryUpdater: React.FC = () => {
             ),
           })
         )
-      })()
-    } catch (e) {
-      console.log(e)
-    }
+      } catch (e) {
+        console.log(e)
+      }
+    })()
   }, [contractsRegistry])
   return null
 }

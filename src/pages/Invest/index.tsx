@@ -2,26 +2,29 @@ import React, { useState, useEffect, useCallback } from "react"
 import { Flex } from "theme"
 import { useParams } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
+import { BigNumber } from "@ethersproject/bignumber"
 import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 
 import ExchangeFrom from "components/Exchange/From"
 import Tooltip from "components/Tooltip"
 import ExchangeDivider from "components/Exchange/Divider"
 import ExchangeTo from "components/Exchange/To"
-import Button from "components/Button"
+import Button, { BorderedButton } from "components/Button"
 import { Label, PriceText } from "components/Exchange/styled"
 
 import { selectBasicPoolByAddress } from "state/pools/selectors"
 
-import { useERC20 } from "hooks/useContract"
+import useContract, { useERC20 } from "hooks/useContract"
 
 import { ethers } from "ethers"
 
+import LockedIcon from "assets/icons/LockedIcon"
 import { ErrorText, Container, PriceContainer, InfoRow } from "./styled"
 import { getAllowance, isStable } from "utils"
 import { useSelector } from "react-redux"
 import { AppState } from "state"
 import MemberMobile from "components/MemberMobile"
+import { TraderPool } from "abi"
 
 export const useInvest = (): [
   {
@@ -172,7 +175,8 @@ export default function Invest() {
   ] = useInvest()
 
   const [pending, setPending] = useState(false)
-  const [allowance, setAllowance] = useState("0")
+  const [allowance, setAllowance] = useState("-1")
+  const [toBalance, setToBalance] = useState("0")
 
   const [error, setError] = useState("")
 
@@ -181,14 +185,30 @@ export default function Invest() {
     selectBasicPoolByAddress(state, poolAddress)
   )
 
+  const traderPool = useContract(poolData.address, TraderPool)
   const [fromToken, fromData, fromBalance] = useERC20(
     poolData.parameters.baseToken
   )
-  const [toToken, toData, toBalance] = useERC20(
+  const [toToken, toData] = useERC20(
     "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
   )
   const handleSubmit = async () => {
     // TODO: write invest page submit function
+    const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
+
+    const receptions = await traderPool?.getInvestTokens(amountInBN.toString())
+    ;(async () => {
+      try {
+        console.log(amountInBN.toString())
+        const investResult = await traderPool?.invest(
+          amountInBN.toHexString(),
+          receptions.receivedAmounts
+        )
+        console.log(investResult)
+      } catch (e) {
+        console.log(e)
+      }
+    })()
   }
 
   const handlePercentageChange = (percent) => {
@@ -205,6 +225,20 @@ export default function Invest() {
 
   const handleFromChange = (v) => {
     // TODO: write fromChange function
+    setFromAmount(v)
+  }
+
+  const approve = () => {
+    if (!fromToken) return
+    ;(async () => {
+      try {
+        const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
+        const receipt = await fromToken.approve(poolData.address, amountInBN)
+        console.log(receipt)
+      } catch (e) {
+        console.log(e)
+      }
+    })()
   }
 
   const handleToChange = (v) => {
@@ -236,8 +270,30 @@ export default function Invest() {
     })()
   }, [fromToken, account, library, poolData, direction])
 
+  // in token amount listener
+  useEffect(() => {
+    if (!traderPool || !fromData) return
+    ;(async () => {
+      const tokens = await traderPool.getInvestTokens(
+        ethers.utils.parseUnits(fromAmount.toString(), 18).toString()
+      )
+      console.log(ethers.utils.formatUnits(tokens[0], 18).toString())
+    })()
+  }, [traderPool, fromAmount, fromData, account])
+
+  // get LP tokens balance
+  useEffect(() => {
+    if (!traderPool || !fromData) return
+    ;(async () => {
+      const lpBalance = await traderPool.balanceOf(account)
+      setToBalance(lpBalance.toString())
+    })()
+  }, [traderPool, fromData, account])
+
   const getButton = () => {
-    if (!fromToken || pending) {
+    const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+
+    if (!fromToken || pending || allowance === "-1") {
       return (
         <Button theme="disabled" fz={22} full>
           <Flex>
@@ -250,16 +306,19 @@ export default function Invest() {
       )
     }
 
-    if (
-      direction === "deposit" &&
-      ethers.utils
-        .parseUnits(fromAmount.toString(), fromData?.decimals)
-        .gt(fromBalance)
-    ) {
+    if (direction === "deposit" && amountIn.gt(fromBalance)) {
       return (
         <Button theme="disabled" fz={22} full>
           Inufficient funds
         </Button>
+      )
+    }
+
+    if (BigNumber.from(allowance).lt(amountIn)) {
+      return (
+        <BorderedButton onClick={approve} size="big">
+          Unlock Token {fromData?.symbol} <LockedIcon />
+        </BorderedButton>
       )
     }
 
@@ -270,21 +329,6 @@ export default function Invest() {
       return (
         <Button theme="disabled" fz={22} full>
           Inufficient funds
-        </Button>
-      )
-    }
-
-    if (fromBalance.toString() === "0") {
-      return (
-        <Button
-          onClick={handleSubmit}
-          theme={direction === "deposit" ? "primary" : "warn"}
-          fz={22}
-          full
-        >
-          {direction === "deposit"
-            ? `Buy ${fromData?.symbol}`
-            : `Sell ${fromData?.symbol}`}
         </Button>
       )
     }
@@ -322,10 +366,10 @@ export default function Invest() {
       </Flex>
     ) : (
       <Flex ai="center">
-        <PriceText color="#5A6071">
+        {/* <PriceText color="#5A6071">
           1 {fromData?.symbol} = {toBalance.div(fromBalance).toString()}{" "}
           {fromData?.symbol}
-        </PriceText>
+        </PriceText> */}
         <PriceText color="#5A6071">(~1.00$)</PriceText>
         <Tooltip id="0"></Tooltip>
       </Flex>
@@ -358,13 +402,12 @@ export default function Invest() {
         price={0}
         priceChange24H={0}
         amount={toAmount}
-        balance={toBalance}
+        balance={BigNumber.from(toBalance)}
         address={poolAddress}
         symbol={poolData.ticker}
         decimal={18}
         isPool
         onChange={handleToChange}
-        onSelect={() => {}}
       />
 
       <PriceContainer>
@@ -379,7 +422,7 @@ export default function Invest() {
   return (
     <Container>
       <MemberMobile data={poolData} />
-      <Flex dir="column" full>
+      {/* <Flex dir="column" full>
         <InfoRow
           label="Investor available Funds"
           value={`0 ${poolData.ticker}`}
@@ -397,7 +440,7 @@ export default function Invest() {
           value={`(55%) 19,983 ${poolData.ticker}`}
           white
         />
-      </Flex>
+      </Flex> */}
 
       {error.length ? <ErrorText>{error}</ErrorText> : form}
     </Container>

@@ -53,15 +53,19 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
     if (provider) {
       localStorage.setItem("dexe.network/investing/web3-auth-method", name)
 
-      activate(provider, undefined, true)
-        .then(onRequestClose)
-        .catch((e) => {
-          if (e) {
-            console.log(e)
-            activate(provider)
-            onRequestClose()
-          }
-        })
+      setTimeout(() => {
+        activate(provider, undefined, true)
+          .then(onRequestClose)
+          .catch((e) => {
+            if (e) {
+              console.log(e)
+              setTimeout(() => {
+                activate(provider)
+                onRequestClose()
+              }, 500)
+            }
+          })
+      }, 500)
     }
   }
 

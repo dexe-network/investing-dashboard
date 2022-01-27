@@ -3,8 +3,15 @@ import { BaseButton, device, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
 const buttonSizes = {
+  big: "14px 25px 14px",
   normal: "12px 25px 13px",
   small: "9px 39px 9px",
+}
+
+const borderedButtonSizes = {
+  big: "12px 23px 12px",
+  normal: "10px 23px 11px",
+  small: "7px 37px 7px",
 }
 
 const secondarySizes = {
@@ -97,21 +104,24 @@ export const BuyArrow = styled.img`
 
 // BORDERED BUTTON
 
-export const BorderedContainer = styled(BaseButton)`
+export const BorderedContainer = styled(BaseButton)<{ size?: string }>`
   font-family: Gilroy;
   font-style: normal;
   font-weight: bold;
-  font-size: 16px;
-  line-height: 16px;
-  /* or 100% */
-  color: #2680eb;
+  font-size: 20px;
+  line-height: 22px;
+  /* identical to box height, or 110% */
 
   display: flex;
   align-items: center;
-  justify-content: center;
+  text-align: center;
   letter-spacing: 0.5px;
+  padding: ${(props) =>
+    props.size ? borderedButtonSizes[props.size] : borderedButtonSizes.normal};
+
+  color: #5a6071;
   border-radius: 6px;
-  // border: 1px solid #2680eb;
-  height: 47px;
   white-space: nowrap;
+  border: 2px solid #5a6071;
+  width: fill-available;
 `

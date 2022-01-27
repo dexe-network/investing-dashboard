@@ -12,13 +12,13 @@ const BSC_NETWORK_URL = "https://bsc-dataseed.binance.org/"
 const BSC_TESTNET_URL =
   "https://speedy-nodes-nyc.moralis.io/c53d0ffcceb6907663310428/bsc/testnet"
 
-const SUPPORTED_CHAINS = [1, 56, 97, 1337]
+// const SUPPORTED_CHAINS = [1, 56, 97, 1337]
+const SUPPORTED_CHAINS = [97]
 
 const POLLING_INTERVAL = 12000
 const RPC_URLS = {
   56: BSC_NETWORK_URL,
   97: BSC_TESTNET_URL,
-  1337: LOCAL_NETWORK_URL,
 }
 
 export const injected = new InjectedConnector({
@@ -33,6 +33,7 @@ export const network = new NetworkConnector({
 export const walletconnect = new WalletConnectConnector({
   rpc: RPC_URLS,
   infuraId: process.env.REACT_APP_INFURA_ID,
+  bridge: "https://bridge.walletconnect.org",
   supportedChainIds: SUPPORTED_CHAINS,
   qrcode: true,
   pollingInterval: POLLING_INTERVAL,

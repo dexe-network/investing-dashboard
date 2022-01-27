@@ -60,6 +60,13 @@ export const BuyButton: React.FC<ButtonBaseProps> = ({ onClick }) => {
 
 // BORDERED BUTTON
 
-export const BorderedButton: React.FC = ({ children }) => {
-  return <BorderedContainer>{children}</BorderedContainer>
+export const BorderedButton: React.FC<{
+  size?: string
+  onClick?: () => void
+}> = ({ children, onClick, size }) => {
+  return (
+    <BorderedContainer onClick={onClick} size={size}>
+      {children}
+    </BorderedContainer>
+  )
 }

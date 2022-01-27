@@ -20,6 +20,8 @@ import {
 } from "./styled"
 import { Pool } from "constants/interfaces_v2"
 import { useERC20 } from "hooks/useContract"
+import { ethers } from "ethers"
+import { formatNumber } from "utils"
 
 // @param data - pool data
 // @param index - indicating index in all list of pools
@@ -62,7 +64,15 @@ const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
       </PoolInfoContainer>
       <Divider />
       <PoolStatisticContainer>
-        <Statistic label="TVL" value={data.leverageInfo.totalPoolUSD} />
+        <Statistic
+          label="TVL"
+          value={`$${formatNumber(
+            ethers.utils
+              .formatUnits(data.leverageInfo.totalPoolUSD, 18)
+              .toString(),
+            2
+          )}`}
+        />
         <Statistic label="APY" value="35%" />
         <Statistic label="P&L" value="65%" />
         <Statistic
