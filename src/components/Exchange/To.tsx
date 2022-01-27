@@ -9,6 +9,8 @@ import {
   Price,
   Balance,
   Input,
+  Tokens,
+  Symbol,
   ActiveSymbol,
   SymbolLabel,
   IconDown,
@@ -89,8 +91,8 @@ const ExchangeTo: React.FC<IToProps> = ({
           ≈${price.toFixed(2)} ({priceChange24H.toFixed(2)}%)
         </Price>
         <Balance>
-          <Text color="#F7F7F7">{fromBig(balance, decimal)}</Text>
-          <Text color="#999999">{symbol}</Text>
+          <Tokens>{fromBig(balance, decimal)}</Tokens>
+          <Symbol>{symbol}</Symbol>
         </Balance>
       </Flex>
       <Flex full ai="center">
@@ -103,7 +105,7 @@ const ExchangeTo: React.FC<IToProps> = ({
         />
         <ActiveSymbol onClick={onSelect}>
           {/* // TODO: create FundIcon component */}
-          {/* <TokenIcon size={27} src={icon} /> */}
+          <TokenIcon address="" size={27} />
           <SymbolLabel>{symbol}</SymbolLabel>
           <IconDown src={angleIcon} />
         </ActiveSymbol>

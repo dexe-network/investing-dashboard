@@ -98,7 +98,7 @@ const Member: React.FC<Props> = ({ data }) => {
           </MiddleContent>
 
           <ButtonGroup>
-            <To to={`/pool/0x.../invest`}>
+            <To to={`/pool/invest/0x...`}>
               <Button>Invest</Button>
             </To>
             <Button secondary>Details</Button>

@@ -1,7 +1,9 @@
 import { getAddress } from "@ethersproject/address"
+import { Contract } from "@ethersproject/contracts"
 import { BigNumber } from "@ethersproject/bignumber"
 import { stableCoins } from "constants/index"
 import { ethers } from "ethers"
+import { ERC20 } from "abi"
 
 export function isAddress(value: any): string | false {
   try {
@@ -98,6 +100,14 @@ export function getSignature(nonce, address, lib) {
 
 export function checkMetamask() {
   //
+}
+
+export function getAllowance(address, tokenAddress, contractAddress, lib) {
+  const signer = lib.getSigner(address).connectUnchecked()
+
+  const erc20Contract = new Contract(tokenAddress, ERC20, signer)
+
+  return erc20Contract.allowance(address, contractAddress)
 }
 
 export const focusText = (event) => event.target.select()

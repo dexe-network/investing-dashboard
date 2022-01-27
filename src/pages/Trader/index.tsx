@@ -85,7 +85,7 @@ function Trader(props: Props) {
           </HalfBlock>
         </Block>
         <Buttons>
-          <To to={`/pool/${poolAddress}/exchange`}>
+          <To to={`/pool/exchange/${poolAddress}`}>
             <OpenNewTrade />
           </To>
           <Button

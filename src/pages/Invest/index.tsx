@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Flex } from "theme"
 import { useParams } from "react-router-dom"
+import { useWeb3React } from "@web3-react/core"
 import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 
 import ExchangeFrom from "components/Exchange/From"
@@ -8,29 +9,181 @@ import Tooltip from "components/Tooltip"
 import ExchangeDivider from "components/Exchange/Divider"
 import ExchangeTo from "components/Exchange/To"
 import Button from "components/Button"
-
 import { Label, PriceText } from "components/Exchange/styled"
-import { useExchange } from "pages/Swap"
+
+import { selectBasicPoolByAddress } from "state/pools/selectors"
+
 import { useERC20 } from "hooks/useContract"
 
 import { ethers } from "ethers"
 
-import { ErrorText, Container, PriceContainer } from "./styled"
-import { isStable } from "utils"
+import { ErrorText, Container, PriceContainer, InfoRow } from "./styled"
+import { getAllowance, isStable } from "utils"
+import { useSelector } from "react-redux"
+import { AppState } from "state"
+import MemberMobile from "components/MemberMobile"
+
+export const useInvest = (): [
+  {
+    fromAmount: number
+    toAmount: number
+    fromAddress: string
+    toAddress: string
+    toSelectorOpened: boolean
+    fromSelectorOpened: boolean
+    pending: boolean
+    direction: "deposit" | "withdraw"
+  },
+  {
+    setFromAmount: (amount: number) => void
+    setToAmount: (amount: number) => void
+    setToAddress: (address: string) => void
+    setFromAddress: (address: string) => void
+    setDirection: (v: "deposit" | "withdraw") => void
+    setPercentage: (v: number) => void
+    setToSelector: (state: boolean) => void
+    setFromSelector: (state: boolean) => void
+  }
+] => {
+  const { library } = useWeb3React()
+
+  const [fromAmount, setFromAmount] = useState(0.0)
+  const [toAmount, setToAmount] = useState(0.0)
+  const [hash, setHash] = useState("")
+  const [pending, setPending] = useState(false)
+  const [toSelectorOpened, setToSelector] = useState(false)
+  const [fromSelectorOpened, setFromSelector] = useState(false)
+  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+
+  const [toAddress, setToAddress] = useState(
+    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
+  )
+  const [fromAddress, setFromAddress] = useState(
+    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
+  )
+
+  useEffect(() => {
+    if (!hash || !library) return
+    ;(async () => {
+      try {
+        await library.waitForTransaction(hash)
+
+        setPending(false)
+        setHash("")
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [hash, library])
+
+  const setFromAmountCallback = useCallback(
+    (amount: number): void => setFromAmount(amount),
+    []
+  )
+
+  const setToAmountCallback = useCallback(
+    (amount: number): void => setToAmount(amount),
+    []
+  )
+
+  const setToAddressCallback = useCallback(
+    (address: string): void => setToAddress(address),
+    []
+  )
+
+  const setFromAddressCallback = useCallback(
+    (address: string): void => setFromAddress(address),
+    []
+  )
+
+  const setToSelectorCallback = useCallback(
+    (v: boolean): void => setToSelector(v),
+    []
+  )
+
+  const setFromSelectorCallback = useCallback(
+    (v: boolean): void => setFromSelector(v),
+    []
+  )
+
+  const handleDirectionChange = useCallback(() => {
+    if (direction === "deposit") {
+      setDirection("withdraw")
+    } else {
+      setDirection("deposit")
+    }
+  }, [direction])
+
+  const handlePercentageChange = useCallback((v: number) => {
+    // TODO: decide how to know balance
+    console.log(v)
+  }, [])
+
+  const handleFromChange = useCallback((v: number) => {
+    try {
+      const am = parseFloat(v.toString()) || 0.0
+      setFromAmount(am)
+
+      setToAmount(am * 1)
+    } catch (e) {
+      console.log(e)
+    }
+  }, [])
+
+  const handleToChange = useCallback((v: number) => {
+    try {
+      const am = parseFloat(v.toString()) || 0.0
+      setToAmount(am)
+      setFromAmount(am * 1)
+    } catch (e) {
+      console.log(e)
+    }
+  }, [])
+
+  return [
+    {
+      fromAmount,
+      toAmount,
+      fromAddress,
+      toAddress,
+      toSelectorOpened,
+      fromSelectorOpened,
+      direction,
+      pending,
+    },
+    {
+      setFromAmount: handleFromChange,
+      setToAmount: handleToChange,
+      setToAddress: setToAddressCallback,
+      setFromAddress: setFromAddressCallback,
+      setDirection: handleDirectionChange,
+      setPercentage: handlePercentageChange,
+      setToSelector: setToSelectorCallback,
+      setFromSelector: setFromSelectorCallback,
+    },
+  ]
+}
 
 export default function Invest() {
+  const { account, library } = useWeb3React()
   const [
     { fromAmount, toAmount, toAddress, toSelectorOpened, direction },
     { setFromAmount, setToAmount, setToAddress, setDirection, setToSelector },
-  ] = useExchange()
+  ] = useInvest()
 
   const [pending, setPending] = useState(false)
+  const [allowance, setAllowance] = useState("0")
 
   const [error, setError] = useState("")
 
   const { poolAddress } = useParams<{ poolAddress: string }>()
+  const poolData = useSelector((state: AppState) =>
+    selectBasicPoolByAddress(state, poolAddress)
+  )
 
-  const [fromToken, fromData, fromBalance] = useERC20(poolAddress)
+  const [fromToken, fromData, fromBalance] = useERC20(
+    poolData.parameters.baseToken
+  )
   const [toToken, toData, toBalance] = useERC20(
     "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
   )
@@ -61,6 +214,27 @@ export default function Invest() {
   const getPrice = () => {
     return "0"
   }
+
+  // allowance watcher
+  useEffect(() => {
+    if (
+      !fromToken ||
+      !account ||
+      !library ||
+      !poolData ||
+      direction === "withdraw"
+    )
+      return
+    ;(async () => {
+      const allowance = await getAllowance(
+        account,
+        poolData.parameters.baseToken,
+        poolData.address,
+        library
+      )
+      setAllowance(allowance.toString())
+    })()
+  }, [fromToken, account, library, poolData, direction])
 
   const getButton = () => {
     if (!fromToken || pending) {
@@ -136,22 +310,23 @@ export default function Invest() {
       </Button>
     )
   }
+  console.log(fromBalance.toString())
 
   const price = getPrice()
 
   const priceTemplate =
     price === "0" ? (
-      <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
-        <PriceText color="#F7F7F7">not available</PriceText>
+      <Flex ai="center">
+        <PriceText color="#5A6071">not available</PriceText>
         <Tooltip id="0"></Tooltip>
       </Flex>
     ) : (
-      <Flex m="0 -10px 0 0" p="13px 0 10px" ai="center">
-        <PriceText color="#F7F7F7">
+      <Flex ai="center">
+        <PriceText color="#5A6071">
           1 {fromData?.symbol} = {toBalance.div(fromBalance).toString()}{" "}
           {fromData?.symbol}
         </PriceText>
-        <PriceText color="#999999">(~1.00$)</PriceText>
+        <PriceText color="#5A6071">(~1.00$)</PriceText>
         <Tooltip id="0"></Tooltip>
       </Flex>
     )
@@ -164,7 +339,7 @@ export default function Invest() {
         price={0}
         amount={fromAmount}
         balance={fromBalance}
-        address={poolAddress}
+        address={poolData.parameters.baseToken}
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
         onChange={handleFromChange}
@@ -185,7 +360,7 @@ export default function Invest() {
         amount={toAmount}
         balance={toBalance}
         address={poolAddress}
-        symbol={fromData?.symbol}
+        symbol={poolData.ticker}
         decimal={18}
         isPool
         onChange={handleToChange}
@@ -202,11 +377,27 @@ export default function Invest() {
   )
 
   return (
-    <Container ai="center" jc="center" full>
-      {/* <TokenSelector
-        isOpen={tokenSelectOpened}
-        onRequestClose={() => setModalOpened(false)}
-      /> */}
+    <Container>
+      <MemberMobile data={poolData} />
+      <Flex dir="column" full>
+        <InfoRow
+          label="Investor available Funds"
+          value={`0 ${poolData.ticker}`}
+        />
+        <InfoRow
+          label="Your available Funds"
+          value={`80,017 ${poolData.ticker}`}
+        />
+        <InfoRow
+          label="Locked in positions"
+          value={`(55%) 100,000 ${poolData.ticker}`}
+        />
+        <InfoRow
+          label="Free Liquidity"
+          value={`(55%) 19,983 ${poolData.ticker}`}
+          white
+        />
+      </Flex>
 
       {error.length ? <ErrorText>{error}</ErrorText> : form}
     </Container>

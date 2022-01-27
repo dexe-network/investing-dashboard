@@ -2,27 +2,29 @@ import { useState, useEffect, useCallback } from "react"
 import MemberMobile from "components/MemberMobile"
 import Button, { SecondaryButton } from "components/Button"
 import { useSelector } from "react-redux"
-import { AppState } from "state"
-import { useParams } from "react-router-dom"
+import { useParams, useHistory } from "react-router-dom"
 import PnlWidget from "components/PnlWidget"
 import FundsWidget from "components/FundsWidget"
 import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
 import NavTabs from "components/NavTabs"
+import { selectBasicPoolByAddress } from "state/pools/selectors"
 import { Container, ButtonContainer, Details } from "./styled"
 import { Flex } from "theme"
+import { AppState } from "state"
 
 interface Props {}
 
 const Profile: React.FC<Props> = () => {
   const { poolAddress } = useParams<{ poolAddress: string }>()
-  // TODO: refactor to normalized state
-  const poolData = useSelector((state: AppState) => {
-    const pool = state.pools.list.filter(
-      (value) => value.address === poolAddress
-    )
-    return pool.length ? pool[0] : null
-  })
+  const history = useHistory()
+  const poolData = useSelector((state: AppState) =>
+    selectBasicPoolByAddress(state, poolAddress)
+  )
+
+  const handleBuyRedirect = () => {
+    history.push(`/pool/invest/${poolData?.address}`)
+  }
 
   if (!poolData) {
     return <Container>no data</Container>
@@ -33,7 +35,7 @@ const Profile: React.FC<Props> = () => {
       <MemberMobile data={poolData}>
         <ButtonContainer>
           <SecondaryButton size="small">Investing history</SecondaryButton>
-          <Button m="0" size="small">
+          <Button onClick={handleBuyRedirect} m="0" size="small">
             Buy {poolData.ticker}
           </Button>
         </ButtonContainer>

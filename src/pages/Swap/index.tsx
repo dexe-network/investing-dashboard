@@ -31,7 +31,7 @@ import {
 } from "components/Exchange/styled"
 import useTokensList from "hooks/useTokensList"
 
-export const useExchange = (): [
+export const useSwap = (): [
   {
     fromAmount: number
     toAmount: number
@@ -194,7 +194,7 @@ export default function Swap() {
       setDirection,
       setPercentage,
     },
-  ] = useExchange()
+  ] = useSwap()
 
   const [fromToken, fromData, fromBalance] = useERC20(fromAddress)
   const [toToken, toData, toBalance] = useERC20(toAddress)

@@ -10,7 +10,7 @@ const Container = styled(Flex)`
   margin-top: 5px;
   margin-bottom: 5px;
   user-select: none;
-  background: #2f333b;
+  background: rgba(26, 30, 35, 0.5);
   height: 16px;
   position: relative;
 `
@@ -19,17 +19,28 @@ const PercentButton = styled.div<{ active?: boolean }>`
   height: 16px;
   flex: 1;
   padding-top: 2px;
-  font-family: Gilroy;
-  font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 130%;
+  // font-family: Gilroy;
+  // font-style: normal;
+  // font-family: Gilroy;
+  // font-weight: 400;
+  // font-size: 10px;
+  // line-height: 130%;
+  // color: #c2c3c4;
   text-align: center;
-  color: #c2c3c4;
   cursor: pointer;
 
-  background: ${(props) => (props.active ? "#252830" : "transparent")};
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.5px;
+
+  /* Text / gray */
+
+  color: ${(props) => (props.active ? "#BAC9D6" : "#5a6071")};
+
+  background: ${(props) => (props.active ? "#5a607112" : "transparent")};
   border-radius: 3px;
 
   &:first-child {

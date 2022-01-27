@@ -55,7 +55,7 @@ function TopMembers() {
         style={{ height: window.innerHeight - 117 }}
       >
         {pools.map((pool, index) => (
-          <To key={pool.address} to={`/pool/${pool.address}/profile`}>
+          <To key={pool.address} to={`/pool/profile/${pool.address}`}>
             <MemberMobile data={pool} index={index} />
           </To>
         ))}

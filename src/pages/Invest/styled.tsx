@@ -27,15 +27,15 @@ export const ApproveButton = styled(BaseButton)`
 export const Container = styled(Flex)`
   width: 100%;
   height: 100%;
-  padding: 20px 22px 33px;
-  justify-content: center;
+  padding: 20px 16px 20px;
+  justify-content: space-evenly;
   align-items: center;
   flex-direction: column;
 `
 
 export const PriceContainer = styled(Flex)`
   width: 100%;
-  padding: 34px 0 22px;
+  padding: 16px 0;
 `
 
 export const TooltipLabel = styled.div`
@@ -67,3 +67,39 @@ export const ExchangeName = styled.div`
   font-size: 14px;
   line-height: 130%;
 `
+
+const GreyText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  color: #5a6071;
+`
+
+const WhiteText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  color: #b1b7c9;
+`
+
+const InfoContainer = styled(Flex)`
+  width: 100%;
+  padding-bottom: 8px;
+  &:first-child {
+    padding-top: 16px;
+  }
+  &:last-child {
+    padding-bottom: 16px;
+  }
+`
+
+export const InfoRow = ({ label, value, white = false }) => {
+  return (
+    <InfoContainer>
+      <GreyText>{label}</GreyText>
+      {white ? <WhiteText>{value}</WhiteText> : <GreyText>{value}</GreyText>}
+    </InfoContainer>
+  )
+}

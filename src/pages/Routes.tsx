@@ -60,13 +60,13 @@ export default function Routes() {
                 <Trades />
               </Route>
 
-              <Route path="/pool/:poolAddress/profile">
+              <Route path="/pool/profile/:poolAddress">
                 <Profile />
               </Route>
-              <Route path="/pool/:poolAddress/invest">
+              <Route path="/pool/invest/:poolAddress">
                 <Invest />
               </Route>
-              <Route path="/pool/:poolAddress/exchange">
+              <Route path="/pool/exchange/:poolAddress">
                 <Swap />
               </Route>
 

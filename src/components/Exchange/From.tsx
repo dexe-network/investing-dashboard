@@ -15,9 +15,12 @@ import {
   Input,
   ActiveSymbol,
   SymbolLabel,
+  Tokens,
+  Symbol,
   Unlock,
   IconDown,
 } from "./styled"
+import { formatBigNumber } from "utils"
 
 interface IFromProps {
   price: number
@@ -79,6 +82,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
       </FromContainer>
     )
   }
+
   return (
     <FromContainer full>
       <Flex full dir="column">
@@ -86,15 +90,11 @@ const ExchangeFrom: React.FC<IFromProps> = ({
           <Price>
             ≈$
             {isStable ? amount.toFixed(2) : price.toFixed(2)}
+            <Max onClick={setMaxAmount}> (max)</Max>
           </Price>
           <Balance>
-            <Text fw={600} color="#DADADA">
-              {parseFloat(ethers.utils.formatUnits(balance, decimal))}
-            </Text>
-            <Text fw={600} color="#616A78">
-              {symbol}
-            </Text>
-            <Max onClick={setMaxAmount}>(Max)</Max>
+            <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
+            <Symbol>{symbol}</Symbol>
           </Balance>
         </Flex>
         <Flex full ai="center">
