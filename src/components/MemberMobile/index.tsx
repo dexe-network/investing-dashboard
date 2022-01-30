@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react"
+import { format, formatDistance, formatRelative, subDays } from "date-fns"
 import { Flex, To } from "theme"
 import styled from "styled-components"
 import { Link } from "react-router-dom"
@@ -55,10 +56,15 @@ const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
           <TokenIcon address={baseData?.address} size={38} />
           <div>
             <Title>
-              $22.12
-              <PNL>+332.14%</PNL>
+              {formatNumber(data.lpPrice) === "1"
+                ? "1.00"
+                : formatNumber(data.lpPrice)}
+              <PNL>{data.lpPnl}%</PNL>
             </Title>
-            <Description>10, JAN 2022</Description>
+            <Description>
+              {/* {format(data.history.creatingTime * 1000, "dd, MMM yyyy")} */}
+              {baseData?.symbol}
+            </Description>
           </div>
         </BaseInfo>
       </PoolInfoContainer>
@@ -74,12 +80,12 @@ const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
           )}`}
         />
         <Statistic label="APY" value="35%" />
-        <Statistic label="P&L" value="65%" />
+        <Statistic label="P&L" value={`${data.lpPnl}%`} />
         <Statistic
           label="Investors"
           value={
             <>
-              {data.totalInvestors} <PNL>+13%</PNL>
+              {data.totalInvestors} <PNL>0%</PNL>
             </>
           }
         />

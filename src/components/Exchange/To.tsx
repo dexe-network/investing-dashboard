@@ -22,9 +22,10 @@ import { BigNumber } from "@ethersproject/bignumber"
 import poolLogo from "assets/icons/default-pool-logo.svg"
 import angleIcon from "assets/icons/angle-down.svg"
 import { DebounceInput } from "react-debounce-input"
+import { calcPrice } from "utils"
 
 interface IToProps {
-  price: number
+  price: string
   priceChange24H: number
   amount: number
   balance: BigNumber
@@ -88,7 +89,7 @@ const ExchangeTo: React.FC<IToProps> = ({
     <ToContainer dir="column" full>
       <Flex p="0 0 2px" full>
         <Price>
-          ≈${price.toFixed(2)} ({priceChange24H.toFixed(2)}%)
+          ≈${calcPrice(price, amount).toFixed(2)} ({priceChange24H.toFixed(2)}%)
         </Price>
         <Balance>
           <Tokens>

@@ -20,7 +20,7 @@ import {
   Unlock,
   IconDown,
 } from "./styled"
-import { formatBigNumber } from "utils"
+import { formatBigNumber, calcPrice } from "utils"
 
 interface IFromProps {
   price: number
@@ -89,12 +89,12 @@ const ExchangeFrom: React.FC<IFromProps> = ({
         <Flex p="0 0 2px" full>
           <Price>
             ≈$
-            {isStable ? amount.toFixed(2) : price.toFixed(2)}
-            <Max onClick={setMaxAmount}> (max)</Max>
+            {calcPrice(price, amount).toFixed(2)}
           </Price>
           <Balance>
             <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
             <Symbol>{symbol}</Symbol>
+            <Max onClick={setMaxAmount}> (max)</Max>
           </Balance>
         </Flex>
         <Flex full ai="center">

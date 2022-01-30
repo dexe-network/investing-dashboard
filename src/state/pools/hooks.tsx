@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Pool } from "constants/interfaces_v2"
+import { Pool, BasicPoolHistory } from "constants/interfaces_v2"
 import { poolTypes } from "constants/index"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, AppState } from "state"
@@ -9,24 +9,22 @@ import { useQuery } from "urql"
 
 const BasicPoolQuery = `
   query BasiPool{
-    basicPools(first: 5 orderBy: creatingTime) {
+    basicPools(first: 100 orderBy: creatingTime) {
       id
-      baseToken
-      ticker
-      name
       creatingTime
-      investors { allPools {  id} }
-      positions {  id }
-      invests {  id }
-      divests { id }
-      exchanges { id }
-      history {  id }
-      priceHistory {  id price }
+      priceHistory(orderBy: seconds, orderDirection:desc) {
+        price
+        supply
+        poolBase
+        seconds
+        loss
+      }
     }
   }
 `
 
 import { addPools, setFilter } from "state/pools/actions"
+import { BigNumber, ethers } from "ethers"
 
 export function usePoolsFilters(): [
   AppState["pools"]["filters"],
@@ -40,8 +38,75 @@ export function usePoolsFilters(): [
   return [filters, handleChange]
 }
 
-const generatePoolsData = (address, poolInfos, leverageInfos): Pool => {
-  console.log(poolInfos, leverageInfos)
+const generateBasicPoolQueryData = (data): BasicPoolHistory => {
+  return {
+    id: data.id,
+    creatingTime: data.creatingTime,
+    priceHistory: data.priceHistory,
+  }
+}
+
+const getPriceLP = (base: string, emission: string): string => {
+  if (
+    !base ||
+    !emission ||
+    emission.toString() === "0" ||
+    base.toString() === "0"
+  )
+    return "1"
+  return (Number(base) / Number(emission)).toString()
+}
+
+const calculatePNL = (CP: number, SP: number) => {
+  // calculate profit
+  if (SP > CP) {
+    const profit = SP - CP
+    const profitPercent = ((profit / CP) * 100).toFixed(2)
+    CP = 1
+    return profitPercent
+  }
+
+  // calculate loss
+  if (SP < CP) {
+    const loss = CP - SP
+    const lossPercent = ((loss / CP) * 100).toFixed(2)
+    CP = 1
+    return -lossPercent
+  }
+
+  // price not changed
+  if (SP === CP) {
+    CP = 1
+    return 0
+  }
+  return 0
+}
+
+const genPNL = (price) => {
+  return calculatePNL(1, parseFloat(price))
+}
+
+const getPriceStable = (stable: string, emission: string): string => {
+  if (
+    !stable ||
+    !emission ||
+    emission.toString() === "0" ||
+    stable.toString() === "0"
+  )
+    return "1"
+  return (Number(stable) / Number(emission)).toString()
+}
+
+const generatePoolsData = (
+  address,
+  poolInfos,
+  leverageInfos,
+  history
+): Pool => {
+  const lpPrice = getPriceLP(
+    history.priceHistory[history.priceHistory.length - 1].poolBase,
+    history.priceHistory[history.priceHistory.length - 1].supply
+  )
 
   return {
     address,
@@ -53,6 +118,12 @@ const generatePoolsData = (address, poolInfos, leverageInfos): Pool => {
     totalInvestors: poolInfos.totalInvestors.toString(),
     totalPoolBase: poolInfos.totalPoolBase.toString(),
     lpEmission: poolInfos.lpEmission.toString(),
+    lpPrice,
+    lpPnl: genPNL(lpPrice),
+    stablePrice: getPriceStable(
+      leverageInfos.totalPoolUSD.toString(),
+      history.priceHistory[history.priceHistory.length - 1].supply
+    ),
 
     parameters: {
       baseToken: poolInfos.parameters.baseToken,
@@ -71,11 +142,8 @@ const generatePoolsData = (address, poolInfos, leverageInfos): Pool => {
       totalPoolUSD: leverageInfos.totalPoolUSD.toString(),
       traderLeverageUSDTokens: leverageInfos.traderLeverageUSDTokens.toString(),
     },
+    history: generateBasicPoolQueryData(history),
   }
-}
-
-const generateHistoricalPoolsData = () => {
-  return {}
 }
 
 // TODO: move loading to redux state
@@ -99,8 +167,14 @@ export function usePools(): [Pool[], boolean, () => void] {
   )
 
   useEffect(() => {
-    if (!traderPoolRegistry || !basiPoolQueryData || !dispatch) return
-    console.log(basiPoolQueryData)
+    if (
+      !traderPoolRegistry ||
+      !basiPoolQueryData ||
+      !basiPoolQueryData.data?.basicPools ||
+      basiPoolQueryData.fetching ||
+      !dispatch
+    )
+      return
     ;(async () => {
       try {
         const basicPoolsLength = await traderPoolRegistry.countPools(
@@ -127,7 +201,8 @@ export function usePools(): [Pool[], boolean, () => void] {
               generatePoolsData(
                 address,
                 basicPools.poolInfos[i],
-                basicPools.leverageInfos[i]
+                basicPools.leverageInfos[i],
+                basiPoolQueryData.data.basicPools[i]
               )
             )
           )

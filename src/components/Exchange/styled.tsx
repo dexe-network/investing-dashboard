@@ -94,7 +94,7 @@ export const Input = styled.input`
   outline: none;
   background: transparent;
   border: none;
-  height: 20px;
+  // height: 20px;
   padding: 5px 0 0;
   width: 100%;
 

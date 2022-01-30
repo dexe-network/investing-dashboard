@@ -20,11 +20,16 @@ import { ethers } from "ethers"
 
 import LockedIcon from "assets/icons/LockedIcon"
 import { ErrorText, Container, PriceContainer, InfoRow } from "./styled"
-import { getAllowance, isStable } from "utils"
+import {
+  formatDecimalsNumber,
+  formatNumber,
+  getAllowance,
+  isStable,
+} from "utils"
 import { useSelector } from "react-redux"
 import { AppState } from "state"
 import MemberMobile from "components/MemberMobile"
-import { TraderPool } from "abi"
+import { ERC20, PriceFeed, TraderPool } from "abi"
 
 export const useInvest = (): [
   {
@@ -80,12 +85,13 @@ export const useInvest = (): [
   }, [hash, library])
 
   const setFromAmountCallback = useCallback(
-    (amount: number): void => setFromAmount(amount),
+    (amount: number): void =>
+      setFromAmount(parseFloat(amount.toString()) || 0.0),
     []
   )
 
   const setToAmountCallback = useCallback(
-    (amount: number): void => setToAmount(amount),
+    (amount: number): void => setToAmount(parseFloat(amount.toString()) || 0.0),
     []
   )
 
@@ -122,27 +128,6 @@ export const useInvest = (): [
     console.log(v)
   }, [])
 
-  const handleFromChange = useCallback((v: number) => {
-    try {
-      const am = parseFloat(v.toString()) || 0.0
-      setFromAmount(am)
-
-      setToAmount(am * 1)
-    } catch (e) {
-      console.log(e)
-    }
-  }, [])
-
-  const handleToChange = useCallback((v: number) => {
-    try {
-      const am = parseFloat(v.toString()) || 0.0
-      setToAmount(am)
-      setFromAmount(am * 1)
-    } catch (e) {
-      console.log(e)
-    }
-  }, [])
-
   return [
     {
       fromAmount,
@@ -155,8 +140,8 @@ export const useInvest = (): [
       pending,
     },
     {
-      setFromAmount: handleFromChange,
-      setToAmount: handleToChange,
+      setFromAmount: setFromAmountCallback,
+      setToAmount: setToAmountCallback,
       setToAddress: setToAddressCallback,
       setFromAddress: setFromAddressCallback,
       setDirection: handleDirectionChange,
@@ -177,6 +162,8 @@ export default function Invest() {
   const [pending, setPending] = useState(false)
   const [allowance, setAllowance] = useState("-1")
   const [toBalance, setToBalance] = useState("0")
+  const [inPrice, setInPrice] = useState("0")
+  const [outPrice, setOutPrice] = useState("0")
 
   const [error, setError] = useState("")
 
@@ -184,35 +171,72 @@ export default function Invest() {
   const poolData = useSelector((state: AppState) =>
     selectBasicPoolByAddress(state, poolAddress)
   )
+  const usdAddress = useSelector<AppState, AppState["contracts"]["USD"]>(
+    (state) => state.contracts.USD
+  )
+  const priceFeedAddress = useSelector(
+    (state: AppState) => state.contracts.PriceFeed
+  )
 
   const traderPool = useContract(poolData.address, TraderPool)
+  const priceFeed = useContract(priceFeedAddress, PriceFeed)
   const [fromToken, fromData, fromBalance] = useERC20(
     poolData.parameters.baseToken
   )
-  const [toToken, toData] = useERC20(
-    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
-  )
-  const handleSubmit = async () => {
-    // TODO: write invest page submit function
-    const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
 
-    const receptions = await traderPool?.getInvestTokens(amountInBN.toString())
-    ;(async () => {
-      try {
-        console.log(amountInBN.toString())
-        const investResult = await traderPool?.invest(
-          amountInBN.toHexString(),
-          receptions.receivedAmounts
-        )
-        console.log(investResult)
-      } catch (e) {
-        console.log(e)
-      }
-    })()
+  const handleSubmit = async () => {
+    if (direction === "deposit") {
+      ;(async () => {
+        try {
+          const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
+          const invest = await traderPool?.getInvestTokens(
+            amountInBN.toString()
+          )
+          const investResult = await traderPool?.invest(
+            amountInBN.toHexString(),
+            invest.receivedAmounts
+          )
+          console.log("deposit: ", investResult)
+        } catch (e) {
+          console.log(e)
+        }
+      })()
+    } else {
+      ;(async () => {
+        try {
+          console.log(toAmount)
+          const amountOutBn = ethers.utils.parseUnits(toAmount.toString(), 18)
+          console.log(amountOutBn)
+          const divest = await traderPool?.getDivestAmountsAndCommissions(
+            account,
+            amountOutBn.toHexString()
+          )
+          const divestResult = await traderPool?.divest(
+            amountOutBn.toHexString(),
+            divest.receptions.receivedAmounts,
+            divest.commissions.dexeDexeCommission
+          )
+          console.log("withdraw: ", divestResult)
+        } catch (e) {
+          console.log(e)
+        }
+      })()
+    }
   }
 
   const handlePercentageChange = (percent) => {
-    // TODO: write percentage change function
+    if (direction === "deposit") {
+      try {
+        setFromAmount(
+          parseFloat(
+            ethers.utils.formatUnits(fromBalance.mul(percent), 36).toString()
+          )
+        )
+      } catch (e) {
+        setToAmount(0)
+        console.log(e)
+      }
+    }
   }
 
   const handleDirectionChange = () => {
@@ -226,6 +250,13 @@ export default function Invest() {
   const handleFromChange = (v) => {
     // TODO: write fromChange function
     setFromAmount(v)
+    setToAmount(formatDecimalsNumber(v / parseFloat(poolData.lpPrice)))
+  }
+
+  const handleToChange = (v) => {
+    // TODO: write handle to change function
+    setToAmount(v)
+    setFromAmount(formatDecimalsNumber(v * parseFloat(poolData.lpPrice)))
   }
 
   const approve = () => {
@@ -239,14 +270,6 @@ export default function Invest() {
         console.log(e)
       }
     })()
-  }
-
-  const handleToChange = (v) => {
-    // TODO: write handle to change function
-  }
-
-  const getPrice = () => {
-    return "0"
   }
 
   // allowance watcher
@@ -270,16 +293,17 @@ export default function Invest() {
     })()
   }, [fromToken, account, library, poolData, direction])
 
-  // in token amount listener
-  useEffect(() => {
-    if (!traderPool || !fromData) return
-    ;(async () => {
-      const tokens = await traderPool.getInvestTokens(
-        ethers.utils.parseUnits(fromAmount.toString(), 18).toString()
-      )
-      console.log(ethers.utils.formatUnits(tokens[0], 18).toString())
-    })()
-  }, [traderPool, fromAmount, fromData, account])
+  // INPUT LISTENERS
+
+  // // in token amount listener
+  // useEffect(() => {
+  //   if (!traderPool) return
+  // }, [traderPool, fromAmount, account, poolData.lpPrice, setToAmount])
+
+  // // out token amount listener
+  // useEffect(() => {
+  //   if (!traderPool) return
+  // }, [traderPool, toAmount, account, poolData.lpPrice, setFromAmount])
 
   // get LP tokens balance
   useEffect(() => {
@@ -289,6 +313,32 @@ export default function Invest() {
       setToBalance(lpBalance.toString())
     })()
   }, [traderPool, fromData, account])
+
+  // get exchange rates of LP
+  useEffect(() => {
+    if (!priceFeed || !usdAddress || !poolData.parameters.baseToken) return
+    ;(async () => {
+      try {
+        const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
+          poolData.parameters.baseToken,
+          ethers.utils.parseUnits("1", 18).toString(),
+          []
+        )
+        setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
+        setOutPrice(
+          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [
+    priceFeed,
+    usdAddress,
+    poolData.parameters.baseToken,
+    inPrice,
+    poolData.lpPrice,
+  ])
 
   const getButton = () => {
     const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
@@ -314,7 +364,7 @@ export default function Invest() {
       )
     }
 
-    if (BigNumber.from(allowance).lt(amountIn)) {
+    if (direction === "deposit" && BigNumber.from(allowance).lt(amountIn)) {
       return (
         <BorderedButton onClick={approve} size="big">
           Unlock Token {fromData?.symbol} <LockedIcon />
@@ -333,14 +383,6 @@ export default function Invest() {
       )
     }
 
-    if (fromBalance.toString() === "0") {
-      return (
-        <Button theme="disabled" fz={22} full>
-          not available
-        </Button>
-      )
-    }
-
     return (
       <Button
         theme={direction === "deposit" ? "primary" : "warn"}
@@ -349,38 +391,31 @@ export default function Invest() {
         full
       >
         {direction === "deposit"
-          ? `Buy ${fromData?.symbol}`
-          : `Sell ${fromData?.symbol}`}
+          ? `Buy ${poolData.ticker}`
+          : `Sell ${poolData.ticker}`}
       </Button>
     )
   }
-  console.log(fromBalance.toString())
-
-  const price = getPrice()
-
-  const priceTemplate =
-    price === "0" ? (
-      <Flex ai="center">
-        <PriceText color="#5A6071">not available</PriceText>
-        <Tooltip id="0"></Tooltip>
-      </Flex>
-    ) : (
-      <Flex ai="center">
-        {/* <PriceText color="#5A6071">
-          1 {fromData?.symbol} = {toBalance.div(fromBalance).toString()}{" "}
-          {fromData?.symbol}
-        </PriceText> */}
-        <PriceText color="#5A6071">(~1.00$)</PriceText>
-        <Tooltip id="0"></Tooltip>
-      </Flex>
-    )
 
   const button = getButton()
+
+  const priceTemplate = (
+    <Flex ai="center">
+      <PriceText color="#B1B7C9">
+        {`1 ${poolData.ticker} = ${formatNumber(poolData.lpPrice)} ${
+          fromData?.symbol
+        } (~${formatNumber(
+          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
+        )}$)`}
+      </PriceText>
+      <Tooltip id="0"></Tooltip>
+    </Flex>
+  )
 
   const form = (
     <div>
       <ExchangeFrom
-        price={0}
+        price={parseFloat(inPrice)}
         amount={fromAmount}
         balance={fromBalance}
         address={poolData.parameters.baseToken}
@@ -399,7 +434,7 @@ export default function Invest() {
       />
 
       <ExchangeTo
-        price={0}
+        price={outPrice}
         priceChange24H={0}
         amount={toAmount}
         balance={BigNumber.from(toBalance)}

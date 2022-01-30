@@ -9,6 +9,17 @@ export interface User {
   updated_at: number
 }
 
+export interface BasicPoolHistory {
+  id: string
+  creatingTime: number
+  priceHistory: {
+    price: string
+    supply: string
+    poolBase: string
+    seconds: number
+    loss: string
+  }
+}
 
 /// @notice The structure that is returned from the TraderPoolView contract and stores static information about the pool
 /// @param address pool address
@@ -24,6 +35,10 @@ export interface Pool {
   name: string
   ticker: string
 
+  lpPrice: string
+  lpPnl: string | number
+  stablePrice: string
+
   parameters: PoolParameters
   leverageInfo: LeverageInfo
 
@@ -32,6 +47,7 @@ export interface Pool {
   totalInvestors: BigNumber
   totalPoolBase: BigNumber
   lpEmission: BigNumber
+  history: BasicPoolHistory
 }
 
 interface PoolParameters {

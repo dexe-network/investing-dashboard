@@ -337,14 +337,14 @@ export default function Swap() {
 
             <ExchangeDivider
               direction={direction}
-              changeAmount={setPercentage}
+              changeAmount={(v) => {}}
               changeDirection={() =>
                 setDirection(direction === "deposit" ? "withdraw" : "deposit")
               }
             />
 
             <ExchangeTo
-              price={0}
+              price="0"
               priceChange24H={0}
               amount={toAmount}
               balance={toBalance}

@@ -57,6 +57,8 @@ export const getRandomPnl = () => {
 }
 
 export const formatNumber = (amount: string, decimals = 2) => {
+  if (!amount) return "0"
+
   const numArr = amount.split(".")
 
   const floatPart = numArr[1] && numArr[1] !== "0" ? `.${numArr[1]}` : ""
@@ -71,6 +73,36 @@ export const formatNumber = (amount: string, decimals = 2) => {
       ? floatPart
       : floatPart.substring(0, decimals + 1))
   )
+}
+
+// @params n - number to format
+// @params d - decimals to apply
+// @return - formated number
+export const formatDecimalsNumber = (n: number, d?: number): number => {
+  const decimals = d || 4
+  if (!n) return 0
+  try {
+    const splited = n.toString().split(".")
+    const floatPart = splited[1] && splited[1] !== "0" ? `.${splited[1]}` : ""
+    return parseFloat(
+      `${splited[0]}${
+        floatPart.length < decimals
+          ? floatPart
+          : floatPart.substring(0, decimals + 1)
+      }`
+    )
+  } catch (e) {
+    return 0
+  }
+}
+
+export const calcPrice = (price, amount) => {
+  try {
+    return price * amount
+  } catch (e) {
+    console.log(e)
+    return 0
+  }
 }
 
 export const formatBigNumber = (value: BigNumber, decimals = 18, fix = 6) => {

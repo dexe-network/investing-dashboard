@@ -69,7 +69,7 @@ const SwapButton = styled.div`
 const Icon = styled(motion.img)``
 
 interface IDividerProps {
-  changeAmount: (v: number) => void
+  changeAmount: (v: string) => void
   changeDirection: () => void
   direction: "deposit" | "withdraw"
 }
@@ -81,10 +81,12 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
 }) => {
   return (
     <Container full>
-      <PercentButton active onClick={() => changeAmount(10)}>
+      <PercentButton active onClick={() => changeAmount("0x016345785d8a0000")}>
         10%
       </PercentButton>
-      <PercentButton onClick={() => changeAmount(25)}>25%</PercentButton>
+      <PercentButton onClick={() => changeAmount("0x03782dace9d90000")}>
+        25%
+      </PercentButton>
       <SwapButton onClick={changeDirection}>
         <Icon
           variants={rotateVariants}
@@ -93,8 +95,12 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
           alt=""
         />
       </SwapButton>
-      <PercentButton onClick={() => changeAmount(50)}>50%</PercentButton>
-      <PercentButton onClick={() => changeAmount(75)}>75%</PercentButton>
+      <PercentButton onClick={() => changeAmount("0x06f05b59d3b20000")}>
+        50%
+      </PercentButton>
+      <PercentButton onClick={() => changeAmount("0x0a688906bd8b0000")}>
+        75%
+      </PercentButton>
     </Container>
   )
 }
