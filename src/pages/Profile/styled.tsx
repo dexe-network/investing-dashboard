@@ -7,6 +7,7 @@ export const Container = styled.div`
   height: -webkit-fill-available;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 0 0 50px;
 `
 
 export const ButtonContainer = styled(Flex)`

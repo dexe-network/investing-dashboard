@@ -334,14 +334,14 @@ export default function Swap() {
               isAlloved
               onSelect={() => setFromSelector(true)}
             />
-
+            {/* 
             <ExchangeDivider
               direction={direction}
               changeAmount={(v) => {}}
               changeDirection={() =>
                 setDirection(direction === "deposit" ? "withdraw" : "deposit")
               }
-            />
+            /> */}
 
             <ExchangeTo
               price="0"

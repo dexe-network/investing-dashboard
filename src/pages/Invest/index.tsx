@@ -19,7 +19,7 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { ethers } from "ethers"
 
 import LockedIcon from "assets/icons/LockedIcon"
-import { ErrorText, Container, PriceContainer, InfoRow } from "./styled"
+import transactionSettingsIcon from "assets/icons/transaction-settings.svg"
 import {
   formatDecimalsNumber,
   formatNumber,
@@ -30,6 +30,20 @@ import { useSelector } from "react-redux"
 import { AppState } from "state"
 import MemberMobile from "components/MemberMobile"
 import { ERC20, PriceFeed, TraderPool } from "abi"
+import {
+  ErrorText,
+  Container,
+  PriceContainer,
+  InfoRow,
+  SettingsIcon,
+  SettingsLabel,
+  SettingsCard,
+  SettingsTitle,
+  SettingsDescription,
+  SettingsButton,
+  SettingsInput,
+} from "./styled"
+import Popover from "components/Popover"
 
 export const useInvest = (): [
   {
@@ -63,12 +77,8 @@ export const useInvest = (): [
   const [fromSelectorOpened, setFromSelector] = useState(false)
   const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
 
-  const [toAddress, setToAddress] = useState(
-    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
-  )
-  const [fromAddress, setFromAddress] = useState(
-    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
-  )
+  const [toAddress, setToAddress] = useState("")
+  const [fromAddress, setFromAddress] = useState("")
 
   useEffect(() => {
     if (!hash || !library) return
@@ -160,6 +170,8 @@ export default function Invest() {
   ] = useInvest()
 
   const [pending, setPending] = useState(false)
+  const [slippage, setSlippage] = useState(2)
+  const [isSettingsOpen, setSettingsOpen] = useState(false)
   const [allowance, setAllowance] = useState("-1")
   const [toBalance, setToBalance] = useState("0")
   const [inPrice, setInPrice] = useState("0")
@@ -204,7 +216,6 @@ export default function Invest() {
     } else {
       ;(async () => {
         try {
-          console.log(toAmount)
           const amountOutBn = ethers.utils.parseUnits(toAmount.toString(), 18)
           console.log(amountOutBn)
           const divest = await traderPool?.getDivestAmountsAndCommissions(
@@ -227,15 +238,27 @@ export default function Invest() {
   const handlePercentageChange = (percent) => {
     if (direction === "deposit") {
       try {
-        setFromAmount(
-          parseFloat(
-            ethers.utils.formatUnits(fromBalance.mul(percent), 36).toString()
-          )
+        const from = parseFloat(
+          ethers.utils
+            .formatUnits(
+              fromBalance.mul(percent),
+              (fromData?.decimals || 18) + 18
+            )
+            .toString()
         )
+        setFromAmount(from)
+        setToAmount(formatDecimalsNumber(from / parseFloat(poolData.lpPrice)))
       } catch (e) {
-        setToAmount(0)
         console.log(e)
       }
+    } else {
+      const to = parseFloat(
+        ethers.utils
+          .formatUnits(BigNumber.from(toBalance).mul(percent), 36)
+          .toString()
+      )
+      setToAmount(to)
+      setFromAmount(formatDecimalsNumber(to * parseFloat(poolData.lpPrice)))
     }
   }
 
@@ -356,12 +379,19 @@ export default function Invest() {
       )
     }
 
-    if (direction === "deposit" && amountIn.gt(fromBalance)) {
-      return (
-        <Button theme="disabled" fz={22} full>
-          Inufficient funds
-        </Button>
-      )
+    if (
+      (direction === "deposit" && amountIn.gt(fromBalance)) ||
+      (direction === "deposit" && fromBalance.toString() === "0")
+    ) {
+      return <BorderedButton size="big">Inufficient funds</BorderedButton>
+    }
+
+    if (
+      (direction === "withdraw" &&
+        ethers.utils.parseUnits(toAmount.toString(), 18).gt(toBalance)) ||
+      (direction === "withdraw" && toBalance.toString() === "0")
+    ) {
+      return <BorderedButton size="big">Inufficient funds</BorderedButton>
     }
 
     if (direction === "deposit" && BigNumber.from(allowance).lt(amountIn)) {
@@ -369,17 +399,6 @@ export default function Invest() {
         <BorderedButton onClick={approve} size="big">
           Unlock Token {fromData?.symbol} <LockedIcon />
         </BorderedButton>
-      )
-    }
-
-    if (
-      direction === "withdraw" &&
-      ethers.utils.parseUnits(toAmount.toString(), 18).gt(toBalance)
-    ) {
-      return (
-        <Button theme="disabled" fz={22} full>
-          Inufficient funds
-        </Button>
       )
     }
 
@@ -401,19 +420,71 @@ export default function Invest() {
 
   const priceTemplate = (
     <Flex ai="center">
-      <PriceText color="#B1B7C9">
+      <PriceText>
         {`1 ${poolData.ticker} = ${formatNumber(poolData.lpPrice)} ${
           fromData?.symbol
         } (~${formatNumber(
           (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
         )}$)`}
       </PriceText>
-      <Tooltip id="0"></Tooltip>
+      <Tooltip id="0">
+        <Flex dir="column" full>
+          <InfoRow
+            label="Investor available Funds"
+            value={`0 ${poolData.ticker}`}
+          />
+          <InfoRow
+            label="Your available Funds"
+            value={`80,017 ${poolData.ticker}`}
+          />
+          <InfoRow
+            label="Locked in positions"
+            value={`(55%) 100,000 ${poolData.ticker}`}
+          />
+          <InfoRow
+            label="Free Liquidity"
+            value={`(55%) 19,983 ${poolData.ticker}`}
+            white
+          />
+        </Flex>
+      </Tooltip>
     </Flex>
+  )
+
+  const settings = (
+    <Popover
+      contentHeight={300}
+      isOpen={isSettingsOpen}
+      toggle={() => setSettingsOpen(false)}
+      title="Transaction settings"
+    >
+      <SettingsCard>
+        <SettingsDescription>
+          Your tranzaction will revert if the price changes unfavorably by more
+          than this percentage
+        </SettingsDescription>
+        <Flex p="20px 0" jc="space-evenly" full>
+          <SettingsInput
+            type="number"
+            defaultValue={slippage}
+            onChange={(v) => setSlippage(parseFloat(v.target.value) || 2)}
+            placeholder="Select slippage"
+          />
+          <SettingsButton>AUTO</SettingsButton>
+        </Flex>
+        {/* <SettingsDescription>
+          Please, enter a valid slippage percentage{" "}
+        </SettingsDescription> */}
+      </SettingsCard>
+    </Popover>
   )
 
   const form = (
     <div>
+      <SettingsLabel onClick={() => setSettingsOpen(!isSettingsOpen)}>
+        <SettingsIcon src={transactionSettingsIcon} />
+        Transaction settings
+      </SettingsLabel>
       <ExchangeFrom
         price={parseFloat(inPrice)}
         amount={fromAmount}
@@ -428,6 +499,90 @@ export default function Invest() {
       />
 
       <ExchangeDivider
+        points={[
+          {
+            label: "10%",
+            percent: "0x016345785d8a0000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x016345785d8a0000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x016345785d8a0000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+          {
+            label: "25%",
+            percent: "0x03782dace9d90000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x03782dace9d90000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x03782dace9d90000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+          {
+            label: "50%",
+            percent: "0x06f05b59d3b20000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x06f05b59d3b20000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x06f05b59d3b20000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+          {
+            label: "75%",
+            percent: "0x0a688906bd8b0000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x0a688906bd8b0000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x0a688906bd8b0000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+        ]}
+        fromAmount={fromAmount}
+        toAmount={toAmount}
         direction={direction}
         changeAmount={handlePercentageChange}
         changeDirection={handleDirectionChange}
@@ -457,6 +612,7 @@ export default function Invest() {
   return (
     <Container>
       <MemberMobile data={poolData} />
+      {settings}
       {/* <Flex dir="column" full>
         <InfoRow
           label="Investor available Funds"

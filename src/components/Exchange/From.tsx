@@ -91,10 +91,10 @@ const ExchangeFrom: React.FC<IFromProps> = ({
             ≈$
             {calcPrice(price, amount).toFixed(2)}
           </Price>
-          <Balance>
+          <Balance onClick={setMaxAmount}>
             <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
             <Symbol>{symbol}</Symbol>
-            <Max onClick={setMaxAmount}> (max)</Max>
+            {/* <Max onClick={setMaxAmount}> (max)</Max> */}
           </Balance>
         </Flex>
         <Flex full ai="center">

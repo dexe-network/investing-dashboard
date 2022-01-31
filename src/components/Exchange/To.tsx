@@ -49,11 +49,9 @@ const ExchangeTo: React.FC<IToProps> = ({
   onChange,
   onSelect,
 }) => {
-  // const handleInputChange = (e) => {
-  //   const { value } = e.target
-
-  //   onChange(value)
-  // }
+  const setMaxAmount = () => {
+    onChange(parseFloat(ethers.utils.formatUnits(balance, decimal)))
+  }
 
   const handleInputChange = (e) => {
     const { value } = e.target
@@ -91,7 +89,7 @@ const ExchangeTo: React.FC<IToProps> = ({
         <Price>
           ≈${calcPrice(price, amount).toFixed(2)} ({priceChange24H.toFixed(2)}%)
         </Price>
-        <Balance>
+        <Balance onClick={setMaxAmount}>
           <Tokens>
             {ethers.utils.formatUnits(balance, decimal).toString()}
           </Tokens>
