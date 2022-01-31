@@ -38,7 +38,7 @@ export default function Routes() {
                   <Route path="/me/trader/:poolAddress">
                     <Trader />
                   </Route>
-                  <Route path="/me">
+                  <Route exact path="/me">
                     <Welcome />
                   </Route>
                 </RestrictedContainer>

@@ -1,6 +1,7 @@
 import ReactTooltip from "react-tooltip"
 import TooltipIcon from "assets/icons/TooltipIcon"
 import styled, { createGlobalStyle } from "styled-components"
+import TooltipSmall from "assets/icons/TooltipSmall"
 
 const TooltipStyles = createGlobalStyle`
   .dark-tooltip {
@@ -32,14 +33,15 @@ const TooltipContent = styled.div``
 interface Props {
   id: string
   children?: any
+  size?: "normal" | "small"
 }
 
-const Tooltip: React.FC<Props> = ({ id, children }) => {
+const Tooltip: React.FC<Props> = ({ id, children, size = "normal" }) => {
   return (
     <>
       <TooltipStyles />
       <TooltipArea data-tip data-for={id}>
-        <TooltipIcon />
+        {size === "normal" ? <TooltipIcon /> : <TooltipSmall />}
       </TooltipArea>
 
       <ReactTooltip className="dark-tooltip" id={id}>

@@ -202,7 +202,7 @@ export default function Invest() {
         try {
           const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
           const invest = await traderPool?.getInvestTokens(
-            amountInBN.toString()
+            amountInBN.toHexString()
           )
           const investResult = await traderPool?.invest(
             amountInBN.toHexString(),

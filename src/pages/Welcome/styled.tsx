@@ -9,7 +9,7 @@ export const Container = styled(Flex)`
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 50px 32px 70px;
+  padding: 20px 16px 30px;
   // background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);
 `
 

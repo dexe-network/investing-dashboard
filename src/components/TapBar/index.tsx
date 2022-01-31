@@ -42,7 +42,7 @@ export const TapBar = () => {
           text="My wallet"
         />
       )}
-      <NavItem path="/me" Icon={Profile} text="My profile" />
+      <NavItem path="/me/investor" Icon={Profile} text="My profile" />
       <NavItem path="/" Icon={TopTraders} text="Traders" />
       <NavItem
         path="/notifications"

@@ -2,8 +2,13 @@ import styled from "styled-components"
 import { Text, BaseButton } from "theme"
 
 export const HeadContainer = styled.div`
-  height: 49px;
-  position: relative;
+  touch-action: none;
+  user-select: none;
+  height: 50px;
+  width: 100%;
+  background: #1e212a;
+
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,12 +32,17 @@ export const FloatingButton = styled(BaseButton)<{
   background: none;
   background-color: transparent;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 `
 
 export const FloatingLabel = styled(Text)`
-  color: #c2c3c4;
-  font-size: 14px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  color: #5a6071;
+  transform: translateY(2px);
+  padding-right: 5px;
 `
