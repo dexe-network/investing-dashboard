@@ -1,5 +1,11 @@
 import { IPool } from "constants/interfaces"
-import { AreaChart, Area, Tooltip, ResponsiveContainer } from "recharts"
+import {
+  AreaChart,
+  Area,
+  Tooltip,
+  ResponsiveContainer,
+  ComposedChart,
+} from "recharts"
 import { useUserProMode } from "state/user/hooks"
 import { chartColors, Flex, device } from "theme"
 import styled from "styled-components"
@@ -167,9 +173,26 @@ const Chart: React.FC<{
           )}
         </Bar>
       )}
-      <div style={{ width: "100%", height: props.height || 50 }}>
+      <div
+        style={{
+          width: "calc(100% + 10px)",
+          overflow: "hidden",
+          height: props.height || 50,
+        }}
+      >
         <ResponsiveContainer>
           <AreaChart data={props.data}>
+            <defs>
+              <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="65%" stopColor="#9AE2CB33" stopOpacity={0.3} />
+                <stop offset="70%" stopColor="#9AE2CB33" stopOpacity={0.25} />
+                <stop offset="80%" stopColor="#9AE2CB33" stopOpacity={0.2} />
+                <stop offset="85%" stopColor="#9AE2CB26" stopOpacity={0.15} />
+                <stop offset="90%" stopColor="#9AE2CB20" stopOpacity={0.1} />
+                <stop offset="95%" stopColor="#9AE2CB15" stopOpacity={0.04} />
+                <stop offset="100%" stopColor="#9AE2CB05" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <Tooltip
               content={({ active, payload }) => {
                 if (props.tooltipSize === "lg") {
@@ -186,9 +209,10 @@ const Chart: React.FC<{
             <Area
               type="monotoneX"
               dataKey="y"
-              stroke={chartColors[isPro ? "pro" : "default"].stroke}
-              fill="#1F5281"
-              fillOpacity={0}
+              stroke="#9AE2CB"
+              strokeWidth={2}
+              fill="url(#colorUv)"
+              fillOpacity={1}
             />
           </AreaChart>
         </ResponsiveContainer>

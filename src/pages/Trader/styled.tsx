@@ -3,16 +3,11 @@ import { Flex, Text } from "theme"
 
 export const Container = styled(Flex)`
   width: 100%;
-  padding: 33px 22px;
+  padding: 16px 16px 80px;
   flex-direction: column;
-  min-height: fill-available;
-  max-height: fill-available;
-  height: 100%;
-  height: -moz-available;
-  height: -webkit-fill-available;
-  height: fill-available;
+  justify-cotnent: flex-start;
   overflow-y: auto;
-  justify-content: space-between;
+  height: 100%;
 `
 
 export const AreaWrapper = styled.div`
@@ -27,6 +22,7 @@ export const AreaWrapper = styled.div`
 export const Buttons = styled(Flex)`
   width: 100%;
   justify-self: flex-end;
+  margin-top: auto;
 `
 
 export const Section = styled(Flex)`

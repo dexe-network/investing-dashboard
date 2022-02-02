@@ -7,8 +7,8 @@ import styled from "styled-components"
 import icon from "assets/icons/swap-arrow.svg"
 
 const Container = styled(Flex)`
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 3px;
+  margin-bottom: 3px;
   user-select: none;
   background: rgba(26, 30, 35, 0.5);
   height: 16px;
@@ -19,13 +19,7 @@ const PercentButton = styled.div<{ active?: boolean }>`
   height: 16px;
   flex: 1;
   padding-top: 2px;
-  // font-family: Gilroy;
-  // font-style: normal;
-  // font-family: Gilroy;
-  // font-weight: 400;
-  // font-size: 10px;
-  // line-height: 130%;
-  // color: #c2c3c4;
+  max-width: 70px;
   text-align: center;
   cursor: pointer;
 
@@ -38,7 +32,7 @@ const PercentButton = styled.div<{ active?: boolean }>`
 
   /* Text / gray */
 
-  color: ${(props) => (props.active ? "#BAC9D6" : "#5a6071")};
+  color: ${(props) => (props.active ? "#BAC9D6" : "#5A6071")};
 
   background: ${(props) => (props.active ? "#5a607112" : "transparent")};
   border-radius: 3px;
@@ -72,35 +66,49 @@ interface IDividerProps {
   changeAmount: (v: string) => void
   changeDirection: () => void
   direction: "deposit" | "withdraw"
+  points: { label: string; percent: string; from: number; to: number }[]
+  fromAmount: number
+  toAmount: number
 }
 
 const ExchangeDivider: React.FC<IDividerProps> = ({
   changeAmount,
   changeDirection,
   direction,
+  points,
+  fromAmount,
+  toAmount,
 }) => {
   return (
     <Container full>
-      <PercentButton active onClick={() => changeAmount("0x016345785d8a0000")}>
-        10%
-      </PercentButton>
-      <PercentButton onClick={() => changeAmount("0x03782dace9d90000")}>
-        25%
-      </PercentButton>
-      <SwapButton onClick={changeDirection}>
-        <Icon
-          variants={rotateVariants}
-          animate={direction === "deposit" ? "hidden" : "visible"}
-          src={icon}
-          alt=""
-        />
-      </SwapButton>
-      <PercentButton onClick={() => changeAmount("0x06f05b59d3b20000")}>
-        50%
-      </PercentButton>
-      <PercentButton onClick={() => changeAmount("0x0a688906bd8b0000")}>
-        75%
-      </PercentButton>
+      {points.map((point, index) => (
+        <>
+          <PercentButton
+            key={point.percent}
+            active={
+              (direction === "deposit" &&
+                fromAmount === point.from &&
+                fromAmount !== 0) ||
+              (direction === "withdraw" &&
+                toAmount === point.to &&
+                toAmount !== 0)
+            }
+            onClick={() => changeAmount(point.percent)}
+          >
+            {point.label}
+          </PercentButton>
+          {index + 1 === points.length / 2 && (
+            <SwapButton onClick={changeDirection}>
+              <Icon
+                variants={rotateVariants}
+                animate={direction === "deposit" ? "hidden" : "visible"}
+                src={icon}
+                alt=""
+              />
+            </SwapButton>
+          )}
+        </>
+      ))}
     </Container>
   )
 }

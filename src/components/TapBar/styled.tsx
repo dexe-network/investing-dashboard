@@ -20,7 +20,7 @@ export const MobileMenu = styled(motion.div)`
     width: 100%;
     height: 70px;
     z-index: 100;
-    background: #2c2f36;
+    background: #0c0e11;
     box-shadow: 0px -3px 6px rgba(0, 0, 0, 0.2);
   }
 `

@@ -56,6 +56,33 @@ export const getRandomPnl = () => {
   return r1 * 100 * negative
 }
 
+function reverseString(str) {
+  const splitString = str.split("")
+  const reverseArray = splitString.reverse()
+
+  const joinArray = reverseArray.join("")
+
+  return joinArray
+}
+
+const parseDecimals = (floatPart: string, decimals) => {
+  const firstMatch = floatPart.match("[1-9]")
+  const lastMatch = reverseString(floatPart).match("[1-9]")
+
+  if (
+    !!firstMatch &&
+    !!firstMatch.length &&
+    !!firstMatch.index &&
+    !!lastMatch &&
+    !!lastMatch.index
+  ) {
+    const d = firstMatch.index > decimals ? firstMatch.index + 3 : decimals
+    console.log(d, firstMatch.index)
+    return floatPart.substring(0, d + 1)
+  }
+  return ""
+}
+
 export const formatNumber = (amount: string, decimals = 2) => {
   if (!amount) return "0"
 
@@ -71,7 +98,7 @@ export const formatNumber = (amount: string, decimals = 2) => {
     numArr[0].split(/(?=(?:\d{3})+(?!\d))/).join(",") +
     (floatPart.length < decimals
       ? floatPart
-      : floatPart.substring(0, decimals + 1))
+      : parseDecimals(floatPart, decimals))
   )
 }
 

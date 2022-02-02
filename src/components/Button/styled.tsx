@@ -3,6 +3,7 @@ import { BaseButton, device, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
 const buttonSizes = {
+  large: "16px 25px 16px",
   big: "14px 25px 14px",
   normal: "12px 25px 13px",
   small: "9px 39px 9px",
@@ -72,6 +73,8 @@ export const SecondaryContainer = styled(BaseButton)<{ size: string }>`
   text-align: center;
   letter-spacing: 0.1px;
   color: #c5d1dc;
+  width: 100%;
+  margin-left: 16px;
 `
 
 export const GradientButtonText = styled(Text)`

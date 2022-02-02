@@ -1,6 +1,7 @@
 import styled from "styled-components"
 import { motion } from "framer-motion"
 import { Flex } from "theme"
+import cardBG from "assets/background/wallet-card.png"
 
 export const Container = styled(motion.div)`
   padding: 0 16px;
@@ -19,34 +20,39 @@ export const AvatarWrapper = styled.div`
   &:after {
     content: "+";
     position: absolute;
-    right: -7px;
-    bottom: 0px;
-    padding-top: 4px;
+    right: -11px;
+    bottom: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    line-height: 12px;
     box-sizing: border-box;
-    background: #282b31;
+    background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+    box-shadow: 1px 2px 4px 1px rgba(0, 0, 0, 0.25);
     border-radius: 50px;
+    padding-top: 2px;
     width: 18px;
     height: 18px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #8a8e92;
+    color: #fff;
     font-family: Gilroy;
-    font-weight: 700;
-    font-size: 21px;
+    font-weight: 600;
+    font-size: 17px;
   }
 `
 export const Info = styled(Flex)``
 export const FloatingButtons = styled(Flex)`
   width: 81px;
-  justify-content: space-between;
+  justify-content: flex-end;
 `
 
 export const TextGray = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
+  font-weight: normal;
   font-size: 12px;
   line-height: 14px;
   letter-spacing: 0.5px;
@@ -57,20 +63,20 @@ export const TextGray = styled.div`
 export const UserInfo = styled(Flex)`
   flex-direction: column;
   align-items: flex-start;
-  padding-left: 10px;
+  padding-left: 22px;
 `
 
 export const Name = styled.input`
   font-family: Gilroy;
   font-style: normal;
-  font-family: Gilroy;
-  font-weight: 700;
+  font-weight: normal;
   font-size: 18px;
   line-height: 22px;
   letter-spacing: 0.5px;
+  color: #c5d1dc;
+  letter-spacing: 0.5px;
   appereance: none;
   background: none;
-  color: #d0d0d0;
   outline: none;
   border: none;
   border-bottom: 1px solid transarent;
@@ -82,18 +88,42 @@ export const Name = styled.input`
     border-bottom: 1px solid #5a60717f;
   }
 
+  &::placeholder {
+    color: #c5d1dc;
+  }
+
   &:disabled {
-    color: #d0d0d0;
+    color: #c5d1dc;
   }
 `
 
+export const NameLabel = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: 0.5px;
+  color: #c5d1dc;
+  letter-spacing: 0.5px;
+  appereance: none;
+  background: none;
+  outline: none;
+  border: none;
+  border-bottom: 1px solid transarent;
+  border-radius: 0;
+  max-width: 154px;
+  margin-top: 4px;
+  padding: 0;
+`
+
 export const Card = styled.div`
-  background: linear-gradient(64.44deg, #202227 32.35%, #1b1e23 100%);
+  background: url(${cardBG});
   border-radius: 12px;
-  border: 1px solid #007ff3;
+  border: 1px solid #2f3c3a;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
-  padding: 14px 13px;
-  margin: 33px 0 51px 0;
+  padding: 16px 16px 14px;
+  margin: 43px 0 65px 0;
 `
 
 export const Address = styled.div`
@@ -110,7 +140,7 @@ export const Address = styled.div`
 
 export const CardButtons = styled(Flex)`
   width: 100%;
-  padding: 12px 0 5px;
+  padding: 28px 0 0;
 `
 
 export const TextButton = styled.div<{ color?: string }>`
@@ -241,7 +271,7 @@ export const PathArrow = styled.img`
 export const TransactionsPlaceholder = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 300;
   font-size: 12px;
   line-height: 14px;
   text-align: center;
@@ -255,6 +285,42 @@ export const TransactionsPlaceholder = styled.div`
   flex: 1;
 
   color: #5a6071;
-  height: fill-available;
   min-height: 300px;
+`
+
+export const InsuranceCard = styled(Flex)`
+  padding: 16px;
+  background: linear-gradient(
+      85.6deg,
+      rgba(255, 255, 255, 0.02) 0%,
+      rgba(0, 0, 0, 0) 95.8%
+    ),
+    #111318;
+  border-radius: 10px;
+  border: 1px solid #2f3c3a;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+`
+
+export const InsuranceInfo = styled(Flex)`
+  flex-direction: column;
+  align-items: flex-start;
+`
+
+export const InsuranceTitle = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 28px;
+  letter-spacing: 0.35px;
+  color: #c5d1dc;
+`
+
+export const InsuranceDescription = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 16px;
+  color: #c5d1dc;
 `

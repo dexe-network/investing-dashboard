@@ -24,16 +24,22 @@ import {
   TransactionsGroup,
   TransactionsPlaceholder,
   PathArrow,
+  NameLabel,
   Time,
+  InsuranceCard,
+  InsuranceInfo,
+  InsuranceTitle,
+  InsuranceDescription,
 } from "./styled"
 import FloatingButton from "components/FloatingButton"
 import Avatar from "components/Avatar"
 import NavTabs from "components/NavTabs"
+import Button from "components/Button"
 import TokenIcon from "components/TokenIcon"
-import pencil from "assets/icons/pencil.svg"
-import settings from "assets/icons/settings.svg"
+import more from "assets/icons/more-menu.svg"
 import swap from "assets/icons/swap-path.svg"
 import { shortenAddress } from "utils"
+import { Redirect } from "react-router-dom"
 
 const transactions = [
   {
@@ -1346,6 +1352,13 @@ const transactions = [
 export default function Wallet() {
   const { account, deactivate } = useWeb3React()
 
+  const handleLogout = () => {
+    deactivate()
+    localStorage.removeItem("dexe.network/investing/web3-auth-method")
+  }
+
+  if (!account) return <Redirect to="/welcome" />
+
   return (
     <Container
       initial={{ opacity: 0, y: -15 }}
@@ -1360,12 +1373,11 @@ export default function Wallet() {
           </AvatarWrapper>
           <UserInfo>
             <TextGray>Welcome!</TextGray>
-            <Name value="Ivrin Smith" disabled />
+            <NameLabel>User Name</NameLabel>
           </UserInfo>
         </Info>
         <FloatingButtons>
-          <FloatingButton icon={pencil} />
-          <FloatingButton icon={settings} />
+          <FloatingButton icon={more} />
         </FloatingButtons>
       </Header>
 
@@ -1375,7 +1387,7 @@ export default function Wallet() {
         <CardButtons>
           <TextButton color="#9AE2CB">Change</TextButton>
           <TextButton>Copy</TextButton>
-          <TextButton onClick={() => deactivate()}>Disconnect</TextButton>
+          <TextButton onClick={handleLogout}>Disconnect</TextButton>
         </CardButtons>
       </Card>
 
@@ -1427,6 +1439,15 @@ export default function Wallet() {
           Your transactions will appear here....
         </TransactionsPlaceholder>
       )}
+      <InsuranceCard>
+        <InsuranceInfo>
+          <InsuranceTitle>Funds Insurance</InsuranceTitle>
+          <InsuranceDescription>
+            Minimize your investment risks with DeXe Insurance
+          </InsuranceDescription>
+        </InsuranceInfo>
+        <Button>Open</Button>
+      </InsuranceCard>
     </Container>
   )
 }

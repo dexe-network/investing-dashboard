@@ -49,14 +49,12 @@ function TopMembers() {
       exit={{ y: -62 }}
       transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
     >
-      <MembersList
-        onTouchMove={(e) => console.log(e)}
-        ref={scrollRef}
-        style={{ height: window.innerHeight - 117 }}
-      >
+      <MembersList ref={scrollRef} style={{ height: window.innerHeight - 117 }}>
         {pools.map((pool, index) => (
           <To key={pool.address} to={`/pool/profile/${pool.address}`}>
-            <MemberMobile data={pool} index={index} />
+            <Flex p="16px 0 0" full>
+              <MemberMobile data={pool} index={index} />
+            </Flex>
           </To>
         ))}
         {/* // TODO: make loading indicator stick to bottom of the list */}

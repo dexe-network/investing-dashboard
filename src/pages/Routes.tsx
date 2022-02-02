@@ -10,7 +10,6 @@ import { Content, RestrictedContainer } from "theme/GlobalStyle"
 const TopMembers = lazy(() => import("pages/TopMembers"))
 const NewFund = lazy(() => import("pages/NewFund"))
 const Invest = lazy(() => import("pages/Invest"))
-const Welcome = lazy(() => import("pages/Welcome"))
 const Profile = lazy(() => import("pages/Profile"))
 const Investor = lazy(() => import("pages/Investor"))
 const Trader = lazy(() => import("pages/Trader"))
@@ -36,11 +35,8 @@ export default function Routes() {
                     <Investor />
                   </Route>
 
-                  <Route path="/me/trader/:poolAddress">
+                  <Route path="/me/trader/:poolType/:poolAddress">
                     <Trader />
-                  </Route>
-                  <Route path="/me">
-                    <Welcome />
                   </Route>
                 </RestrictedContainer>
               </Route>
@@ -74,7 +70,7 @@ export default function Routes() {
                 <Swap />
               </Route>
 
-              <Route path="/">
+              <Route exact path="/">
                 <TopMembers />
               </Route>
             </Switch>

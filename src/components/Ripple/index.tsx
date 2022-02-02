@@ -7,15 +7,15 @@ const RippleContainer = styled.div<{
   width: string
 }>`
   width: ${(props) => props.width};
-  height: 17px;
+  height: 22px;
   border-radius: 2px;
   background: linear-gradient(
     90deg,
-    #628596 0%,
-    #4f917b9a 30%,
-    #628596 55%,
-    #4f917b9a 72%,
-    #628596 100%
+    #171b1f 0%,
+    #5a6071 30%,
+    #171b1f 55%,
+    #5a6071 72%,
+    #171b1f 100%
   );
   background-size: 200%;
   background-position: 0% 0%;

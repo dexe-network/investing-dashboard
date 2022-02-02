@@ -112,7 +112,7 @@ export const ActiveSymbol = styled.div`
   align-items: center;
   padding: 3px 9px 3px 3px;
   background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
-  box-shadow: inset -44px 7px 11px rgba(0, 0, 0, 0.03);
+  box-shadow: inset 1px 2px 8px 2px rgba(0, 0, 0, 0.2);
   border-radius: 19px;
 `
 
@@ -149,11 +149,10 @@ export const Unlock = styled.div`
 export const Label = styled(Text)`
   font-family: Gilroy;
   font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
-  font-size: 14px;
+  font-weight: normal;
+  font-size: 12px;
   line-height: 100%;
-  color: #6c757d;
+  color: #5a6071;
 `
 
 export const Value = styled(Text)`
@@ -171,11 +170,7 @@ export const PriceText = styled(Text)`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 130%;
-  /* or 18px */
-
-  display: flex;
-  align-items: center;
-  cursor: pointer;
+  font-size: 12px;
+  line-height: 100%;
+  color: #b1b7c9;
 `

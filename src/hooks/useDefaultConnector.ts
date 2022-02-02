@@ -8,29 +8,29 @@ const useDefaultConnector = (isTried: boolean) => {
 
   // console.log(account)
 
-  // const activateProvider = useCallback(() => {
-  //   if (!activate) return
-  //   if (!!account) return
-  //   if (isActivated) return
+  const activateProvider = useCallback(() => {
+    if (!activate) return
+    if (!!account) return
+    if (isActivated) return
 
-  //   const { network } = connectorsByName
+    const { network } = connectorsByName
 
-  //   activate(network, undefined, true)
-  //     .then(() => console.log("default provider connected"))
-  //     .catch((e) => {
-  //       console.error("default provider not connected")
-  //     })
-  // }, [activate, account, isActivated])
+    activate(network, undefined, true)
+      .then(() => console.log("default provider connected"))
+      .catch((e) => {
+        console.error("default provider not connected")
+      })
+  }, [activate, account, isActivated])
 
-  // // LISTEN TO WALLET ACTIVATOR
-  // useEffect(() => {
-  //   if (isTried === false) {
-  //     activateProvider()
-  //     setActivated(true)
-  //   } else {
-  //     // TODO: deactivate provider
-  //   }
-  // }, [isTried, activateProvider])
+  // LISTEN TO WALLET ACTIVATOR
+  useEffect(() => {
+    if (isTried === false) {
+      activateProvider()
+      setActivated(true)
+    } else {
+      // TODO: deactivate provider
+    }
+  }, [isTried, activateProvider])
 
   return null
 }

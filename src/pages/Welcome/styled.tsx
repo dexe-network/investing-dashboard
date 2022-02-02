@@ -5,12 +5,30 @@ import arrowToLogo from "assets/others/arrow-to-logo.svg"
 import arrowToName from "assets/others/arrow-to-name.svg"
 
 export const Container = styled(Flex)`
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 50px 32px 70px;
+  padding: 40px 32px;
   // background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);
+`
+
+export const Center = styled(Flex)`
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+`
+
+export const LoadingText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: center;
+  letter-spacing: 0.1px;
+  color: #fff;
+  margin-top: 30px;
 `
 
 export const Logo = styled.img``
@@ -25,16 +43,17 @@ export const Content = styled(Flex)`
 export const Title = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 500;
   font-size: 42px;
   line-height: 110%;
   color: #c5d1dc;
+  margin-top: 70px;
 `
 
 export const Description = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 16px;
   line-height: 130%;
   letter-spacing: 0.3px;
@@ -54,4 +73,5 @@ export const SocialIcon = styled.img`
 export const Buttons = styled(Flex)`
   width: 100%;
   justify-content: space-between;
+  margin-top: 70px;
 `

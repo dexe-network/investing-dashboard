@@ -46,6 +46,7 @@
     "graphql": "^16.2.0",
     "ipfs-api": "^26.1.2",
     "js-search": "^2.0.0",
+    "lightweight-charts": "^3.7.0",
     "lodash.debounce": "^4.0.8",
     "popmotion": "9.0.0-beta-8",
     "rc-slider": "^9.7.2",

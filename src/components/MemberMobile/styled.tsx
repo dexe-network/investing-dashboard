@@ -3,17 +3,12 @@ import { Flex, Text, BaseButton, device } from "theme"
 
 export const Card = styled(Flex)`
   width: 100%;
-  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   border-radius: 8px;
-  margin: 16px auto;
   padding: 0 11px;
   box-sizing: border-box;
   flex-direction: column;
   justify-content: space-evenly;
-
-  &:nth-child(1) {
-    margin-top: 18px;
-  }
 `
 
 export const PoolInfoContainer = styled(Flex)`
@@ -30,7 +25,8 @@ export const PoolInfo = styled(Flex)`
 
 export const BaseInfo = styled(Flex)`
   width: 50%;
-  justify-content: flex-start;
+  justify-content: center;
+  padding-right: 16px;
 `
 
 export const Title = styled.div`
@@ -60,12 +56,12 @@ export const Description = styled.div`
 export const Divider = styled.div`
   background: #2e3645;
   width: fill-available;
-  margin-left: 60px;
+  margin-left: 63px;
   height: 1px;
 `
 
 export const PoolStatisticContainer = styled.div`
-  padding-top: 11px;
+  padding: 11px 16px 0;
   height: 60px;
   width: 100%;
   display: grid;
@@ -91,8 +87,22 @@ export const PNL = styled.span`
 
 const ItemContainer = styled(Flex)`
   flex-direction: column;
-  width: 100%;
+  flex: 1;
   height: 41px;
+  align-items: flex-start;
+
+  &:nth-child(1) {
+    justify-self: start;
+  }
+  &:nth-child(2) {
+    justify-self: start;
+  }
+  &:nth-child(3) {
+    justify-self: center;
+  }
+  &:nth-child(4) {
+    justify-self: end;
+  }
 `
 
 const Label = styled.div`
@@ -102,6 +112,7 @@ const Label = styled.div`
   font-weight: 400;
   font-size: 12px;
   line-height: 18px;
+  text-align: left;
 
   color: #5a6071;
 `
@@ -113,6 +124,7 @@ const Value = styled(Flex)`
   font-weight: 400;
   font-size: 16px;
   line-height: 30px;
+  text-align: left;
 
   color: #f7f7f7;
 `

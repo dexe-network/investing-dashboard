@@ -115,10 +115,6 @@ export const FilterSelectableItem = styled.div<{ active?: boolean }>`
   align-items: center;
   width: 100%;
   height: 40px;
-  background: ${(props) =>
-    props.active
-      ? " linear-gradient(244.44deg, #63B49B 0%, #A4EBD4 67.65%)"
-      : "#33363f"};
   font-family: Gilroy;
   font-style: normal;
   font-family: Gilroy;
@@ -126,6 +122,6 @@ export const FilterSelectableItem = styled.div<{ active?: boolean }>`
   font-size: 12px;
   line-height: 200%;
   padding: 7px 10px 8px 16px;
-  color: ${(props) => (props.active ? "#24272D" : "#c2c3c4")};
-  box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.07);
+  color: ${(props) => (props.active ? "#fff" : "#c2c3c4")};
+  // box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.07);
 `

@@ -2,8 +2,8 @@ import styled from "styled-components"
 import { Flex, ease, device, rotateVariants } from "theme"
 import { motion } from "framer-motion"
 
-export const Container = styled.div`
-  padding: 16px;
+export const Container = styled(motion.div)`
+  padding: 16px 16px 50px;
   height: -webkit-fill-available;
   overflow-y: auto;
   overflow-x: hidden;
