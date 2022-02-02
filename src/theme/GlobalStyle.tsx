@@ -128,7 +128,7 @@ export const AppWrapper = styled.div`
   display: grid;
   min-height: -webkit-fill-available;
 
-  background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);
+  background: linear-gradient(9.62deg, #0a0b0d 1.99%, #1e222d 99.3%);
   grid-template-columns: 50px 1fr;
   grid-template-areas: "menu content";
   height: inherit;
@@ -166,15 +166,10 @@ export const Content = styled.div`
   overflow-y: hidden;
   overscroll-behavior: none;
   transition: 0.2s all;
-
-  @media only screen and (${device.md}) {
-    /* padding-bottom: 62px; */
-  }
 `
 
 export const RestrictedContainer = styled(motion.div)`
-  height: calc(100% - 49px);
-  padding-bottom: 42px;
+  height: 100%;
 `
 
 export default GlobalStyle

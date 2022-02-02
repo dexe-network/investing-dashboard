@@ -44,5 +44,5 @@ export const FloatingLabel = styled(Text)`
   font-size: 12px;
   color: #5a6071;
   transform: translateY(2px);
-  padding-right: 5px;
+  padding: 0 8px;
 `

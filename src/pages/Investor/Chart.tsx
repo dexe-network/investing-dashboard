@@ -84,30 +84,7 @@ const Container = styled.div`
   flex: 1;
   width: 100%;
   height: 120px;
-`
-
-const ChartPeriods = styled(Flex)`
-  justify-content: space-around;
-  width: 100%;
-  padding: 15px 0;
-`
-
-const Period = styled.div<{ active?: boolean }>`
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 10px;
-  line-height: 130%;
-  /* identical to box height, or 13px */
-
-  display: flex;
-  align-items: center;
-  text-align: center;
-  letter-spacing: 1px;
-
-  /* Text / gray */
-
-  color: ${(props) => (props.active ? "#C5D1DC" : "#5a607180")};
+  position: relative;
 `
 
 const Chart = () => {
@@ -170,80 +147,6 @@ const Chart = () => {
     })
 
     areaSeries.setData(emptyData)
-
-    const toolTipWidth = 80
-    const toolTipHeight = 80
-    const toolTipMargin = 15
-
-    const toolTip = document.createElement("div")
-    toolTip.className = "floating-tooltip-2"
-    chartContainerRef.current.appendChild(toolTip)
-
-    // update tooltip
-    const subscriber = chart.current.subscribeCrosshairMove(function (param) {
-      if (
-        !chartContainerRef.current ||
-        param.point === undefined ||
-        !param.time ||
-        param.point.x < 0 ||
-        param.point.x > chartContainerRef.current.clientWidth ||
-        param.point.y < 0 ||
-        param.point.y > chartContainerRef.current.clientHeight
-      ) {
-        toolTip.style.display = "none"
-      } else {
-        const dateStr = businessDayToString(param.time)
-        toolTip.style.display = "block"
-        const price = param.seriesPrices.get(areaSeries)
-        toolTip.innerHTML = `
-            <div class="floating-tooltip-2-container">
-                <div class="floating-tooltip-2-date">${dateStr}</div>
-                <div class="floating-tooltip-2-row">
-                    P&L - $ETH:
-                    <div class="floating-tooltip-2-value">
-                    ${Math.round(100 * price) / 100}%
-                    </div>
-                </div>
-                <div class="floating-tooltip-2-row">
-                    P&L - USD:
-                    <div class="floating-tooltip-2-value">
-                    ${Math.round(100 * price) / 100}%
-                    </div>
-                </div>
-            </div>
-
-            
-        `
-        const coordinate = areaSeries.priceToCoordinate(price)
-        let shiftedCoordinate = param.point.x - 50
-        if (coordinate === null) {
-          return
-        }
-        shiftedCoordinate = Math.max(
-          0,
-          Math.min(
-            chartContainerRef.current.clientWidth - toolTipWidth,
-            shiftedCoordinate
-          )
-        )
-        const coordinateY =
-          coordinate - toolTipHeight - toolTipMargin > 0
-            ? coordinate - toolTipHeight - toolTipMargin
-            : Math.max(
-                0,
-                Math.min(
-                  chartContainerRef.current.clientHeight -
-                    toolTipHeight -
-                    toolTipMargin,
-                  coordinate + toolTipMargin
-                )
-              )
-        toolTip.style.left = shiftedCoordinate + "px"
-        toolTip.style.top = coordinateY + "px"
-      }
-    })
-
-    return () => subscriber
   }, [])
 
   // Resize chart on container resizes.
@@ -264,15 +167,6 @@ const Chart = () => {
 
   return (
     <>
-      <ChartPeriods>
-        <Period active>D</Period>
-        <Period>W</Period>
-        <Period>M</Period>
-        <Period>3M</Period>
-        <Period>6M</Period>
-        <Period>1Y</Period>
-        <Period>ALL</Period>
-      </ChartPeriods>
       <ChartWrapper>
         <TooltipStyles />
         <Container ref={chartContainerRef} />

@@ -3,16 +3,15 @@ import { Flex } from "theme"
 
 export const Container = styled(Flex)`
   width: 100%;
-  padding: 16px 16px 46px;
+  padding: 16px 16px 80px;
   flex-direction: column;
   justify-cotnent: flex-start;
-  min-height: fill-available;
-  max-height: fill-available;
   overflow-y: auto;
+  height: 100%;
 `
 
 export const Tab = styled(Flex)`
-  background: linear-gradient(64.44deg, #24272f 32.35%, #333a48 100%);
+  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   box-shadow: 0px 1px 0px rgba(4, 6, 5, 0.3);
   height: 35px;
   font-family: Gilroy;
@@ -36,7 +35,7 @@ export const TabCard = styled(Flex)`
   margin-top: 16px;
   padding: 0 0 6px;
   position: relative;
-  background: linear-gradient(64.44deg, #24272f 32.35%, #333a48 100%);
+  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   border-radius: 6px;
   flex-direction: column;
   justify-content: flex-start;
@@ -45,7 +44,7 @@ export const TabCard = styled(Flex)`
 
 export const Row = styled(Flex)`
   width: 100%;
-  padding: 0 8px 5px;
+  padding: 0 16px 5px;
 `
 
 export const MainText = styled.div`
@@ -59,6 +58,31 @@ export const MainText = styled.div`
 
 export const Buttons = styled(Flex)`
   width: 100%;
-  justify-content: space-evenly;
+  justify-content: space-between;
   margin-top: auto;
+  justify-self: flex-end;
+`
+
+export const ChartPeriods = styled(Flex)`
+  justify-content: space-around;
+  width: 100%;
+  padding: 15px 0;
+`
+
+export const Period = styled.div<{ active?: boolean }>`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 130%;
+  /* identical to box height, or 13px */
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+  letter-spacing: 1px;
+
+  /* Text / gray */
+
+  color: ${(props) => (props.active ? "#C5D1DC" : "#5a607180")};
 `

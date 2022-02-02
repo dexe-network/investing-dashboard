@@ -27,7 +27,7 @@ export const ApproveButton = styled(BaseButton)`
 export const Container = styled(Flex)`
   width: 100%;
   height: 100%;
-  padding: 20px 16px 30px;
+  padding: 16px 16px 40px;
   justify-content: space-between;
   align-items: center;
   flex-direction: column;

@@ -239,7 +239,7 @@ const Token: React.FC<{
         <BaseTokenName>{name}</BaseTokenName>
       </Flex>
       <Flex m="0 0 0 auto" dir="column" ai="flex-end">
-        <BaseBalance>{formatBigNumber(tokenBalance, decimals)}</BaseBalance>
+        <BaseBalance>{formatBigNumber(tokenBalance, decimals, 2)}</BaseBalance>
         <BasePrice>
           $
           {formatNumber(

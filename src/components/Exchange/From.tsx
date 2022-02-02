@@ -50,6 +50,10 @@ const ExchangeFrom: React.FC<IFromProps> = ({
   onSelect,
 }) => {
   const setMaxAmount = () => {
+    console.log(
+      ethers.utils.formatUnits(balance, decimal),
+      parseFloat(ethers.utils.formatUnits(balance, decimal))
+    )
     onChange(parseFloat(ethers.utils.formatUnits(balance, decimal)))
   }
 

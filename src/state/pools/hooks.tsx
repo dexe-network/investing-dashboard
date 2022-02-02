@@ -103,9 +103,14 @@ const generatePoolsData = (
   leverageInfos,
   history
 ): Pool => {
+  console.log(history.priceHistory)
   const lpPrice = getPriceLP(
-    history.priceHistory[history.priceHistory.length - 1].poolBase,
-    history.priceHistory[history.priceHistory.length - 1].supply
+    history.priceHistory.length
+      ? history.priceHistory[history.priceHistory.length - 1].poolBase
+      : "0",
+    history.priceHistory.length
+      ? history.priceHistory[history.priceHistory.length - 1].supply
+      : "0"
   )
 
   return {
@@ -122,7 +127,9 @@ const generatePoolsData = (
     lpPnl: genPNL(lpPrice),
     stablePrice: getPriceStable(
       leverageInfos.totalPoolUSD.toString(),
-      history.priceHistory[history.priceHistory.length - 1].supply
+      history.priceHistory.length
+        ? history.priceHistory[history.priceHistory.length - 1].supply
+        : "0"
     ),
 
     parameters: {

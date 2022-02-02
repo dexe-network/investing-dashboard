@@ -10,11 +10,14 @@ import TopTraders from "assets/menu/mobile/TopTraders"
 import Notifications from "assets/menu/mobile/Notifications"
 
 import { MobileMenu, NavItem } from "./styled"
+import { shortenAddress } from "utils"
 
 export const TapBar = () => {
   const [isFullScreen, setFullScreen] = useState<null | boolean>(null)
   const { account } = useWeb3React()
   const { toggleConnectWallet } = useConnectWalletContext()
+
+  const isBarHidden = !account ? "hidden" : "normal"
 
   useEffect(() => {
     if (window.matchMedia("(display-mode: standalone)").matches) {
@@ -26,15 +29,24 @@ export const TapBar = () => {
 
   return (
     <MobileMenu
-      initial="normal"
-      animate={isFullScreen ? "fullscreen" : "normal"}
+      initial="hidden"
+      animate={isFullScreen ? "fullscreen" : isBarHidden}
       variants={{
-        fullscreen: { height: "75px", padding: "15px 14px 25px 14px" },
-        normal: { height: "59px", padding: "15px 14px 12px 14px" },
+        fullscreen: {
+          height: "80px",
+          padding: "15px 14px 25px 14px",
+          opacity: 1,
+        },
+        normal: { height: "59px", padding: "15px 14px 12px 14px", opacity: 1 },
+        hidden: { height: "0", padding: "15px 14px 12px 14px", opacity: 0 },
       }}
     >
       {!!account ? (
-        <NavItem path="/wallet" Icon={Wallet} text="My wallet" />
+        <NavItem
+          path="/wallet"
+          Icon={Wallet}
+          text={shortenAddress(account, 3)}
+        />
       ) : (
         <NavItem
           onClick={() => toggleConnectWallet(true)}

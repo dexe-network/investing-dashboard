@@ -364,44 +364,47 @@ export default function Invest() {
   ])
 
   const getButton = () => {
-    const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+    try {
+      const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
 
-    if (!fromToken || pending || allowance === "-1") {
-      return (
-        <Button theme="disabled" fz={22} full>
-          <Flex>
-            {"loading "}
-            <Flex p="0 0 0 15px">
-              <PulseSpinner color="#03FF89" size={15} loading />
+      if (!fromToken || pending || allowance === "-1") {
+        return (
+          <Button theme="disabled" fz={22} full>
+            <Flex>
+              {"loading "}
+              <Flex p="0 0 0 15px">
+                <PulseSpinner color="#03FF89" size={15} loading />
+              </Flex>
             </Flex>
-          </Flex>
-        </Button>
-      )
-    }
+          </Button>
+        )
+      }
 
-    if (
-      (direction === "deposit" && amountIn.gt(fromBalance)) ||
-      (direction === "deposit" && fromBalance.toString() === "0")
-    ) {
-      return <BorderedButton size="big">Inufficient funds</BorderedButton>
-    }
+      if (
+        (direction === "deposit" && amountIn.gt(fromBalance)) ||
+        (direction === "deposit" && fromBalance.toString() === "0")
+      ) {
+        return <BorderedButton size="big">Inufficient funds</BorderedButton>
+      }
 
-    if (
-      (direction === "withdraw" &&
-        ethers.utils.parseUnits(toAmount.toString(), 18).gt(toBalance)) ||
-      (direction === "withdraw" && toBalance.toString() === "0")
-    ) {
-      return <BorderedButton size="big">Inufficient funds</BorderedButton>
-    }
+      if (
+        (direction === "withdraw" &&
+          ethers.utils.parseUnits(toAmount.toString(), 18).gt(toBalance)) ||
+        (direction === "withdraw" && toBalance.toString() === "0")
+      ) {
+        return <BorderedButton size="big">Inufficient funds</BorderedButton>
+      }
 
-    if (direction === "deposit" && BigNumber.from(allowance).lt(amountIn)) {
-      return (
-        <BorderedButton onClick={approve} size="big">
-          Unlock Token {fromData?.symbol} <LockedIcon />
-        </BorderedButton>
-      )
+      if (direction === "deposit" && BigNumber.from(allowance).lt(amountIn)) {
+        return (
+          <BorderedButton onClick={approve} size="big">
+            Unlock Token {fromData?.symbol} <LockedIcon />
+          </BorderedButton>
+        )
+      }
+    } catch (e) {
+      console.log(e)
     }
-
     return (
       <Button
         theme={direction === "deposit" ? "primary" : "warn"}
@@ -610,10 +613,15 @@ export default function Invest() {
   )
 
   return (
-    <Container>
+    <Container
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
       <MemberMobile data={poolData} />
       {settings}
-      {/* <Flex dir="column" full>
+      <Flex dir="column" full>
         <InfoRow
           label="Investor available Funds"
           value={`0 ${poolData.ticker}`}
@@ -631,7 +639,7 @@ export default function Invest() {
           value={`(55%) 19,983 ${poolData.ticker}`}
           white
         />
-      </Flex> */}
+      </Flex>
 
       {error.length ? <ErrorText>{error}</ErrorText> : form}
     </Container>

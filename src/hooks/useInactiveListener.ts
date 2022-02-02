@@ -8,7 +8,17 @@ export function useInactiveListener(suppress = false) {
 
   useEffect(() => {
     const { ethereum } = window
-    if (ethereum && ethereum.on && !active && !error && !suppress) {
+    const activeProviderName = localStorage.getItem(
+      "dexe.network/investing/web3-auth-method"
+    )
+    if (
+      activeProviderName === "metamask" &&
+      ethereum &&
+      ethereum.on &&
+      !active &&
+      !error &&
+      !suppress
+    ) {
       const handleConnect = () => {
         console.log("Handling 'connect' event")
         activate(injected)

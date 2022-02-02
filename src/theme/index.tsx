@@ -47,11 +47,11 @@ export default {
 export const chartColors = {
   pro: {
     stroke: "#48AA6E",
-    bg: ["#2A4830", "#333347"],
+    bg: "#9AE2CB33",
   },
   default: {
     stroke: "#00C0FF",
-    bg: ["#1F5281", "#2E313E"],
+    bg: ["#9AE2CB33", "#9AE2CB26", "#9AE2CB00"],
   },
 }
 
