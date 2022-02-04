@@ -203,15 +203,16 @@ export function useBasicPools(): [Pool[], boolean, () => void] {
   const traderPoolRegistryAddress = useSelector(
     (state: AppState) => state.contracts.TraderPoolRegistry
   )
-  const basicPools = useSelector(selectBasicPools)
+  const basicPoolsList = useSelector(selectBasicPools)
 
-  const [basicPoolsQueryData, reexecuteQuery] = useQuery({
-    query: BasicPoolQuery,
-  })
   const traderPoolRegistry = useContract(
     traderPoolRegistryAddress,
     TraderPoolRegistry
   )
+
+  const [basicPoolsQueryData, reexecuteQuery] = useQuery({
+    query: BasicPoolQuery,
+  })
 
   useEffect(() => {
     if (
@@ -271,7 +272,7 @@ export function useBasicPools(): [Pool[], boolean, () => void] {
     }, 1300)
   }
 
-  return [basicPools, loading, handleMore]
+  return [basicPoolsList, loading, handleMore]
 }
 
 // TODO: move loading to redux state
@@ -282,18 +283,13 @@ export function useInvestPools(): [Pool[], boolean, () => void] {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch<AppDispatch>()
 
+  const [investPoolsQueryData, reexecuteQuery] = useQuery({
+    query: InvestPoolQuery,
+  })
   const traderPoolRegistryAddress = useSelector(
     (state: AppState) => state.contracts.TraderPoolRegistry
   )
-  const investPools = useSelector(selectInvestPools)
-
-  const [investPoolsQueryData, reexecuteQuery] = useQuery({
-    context: {
-      url:
-        "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-invest-pool",
-    },
-    query: InvestPoolQuery,
-  })
+  const investPoolsList = useSelector(selectInvestPools)
   const traderPoolRegistry = useContract(
     traderPoolRegistryAddress,
     TraderPoolRegistry
@@ -303,7 +299,7 @@ export function useInvestPools(): [Pool[], boolean, () => void] {
     if (
       !traderPoolRegistry ||
       !investPoolsQueryData ||
-      !investPoolsQueryData.data?.basicPools ||
+      !investPoolsQueryData.data?.investPools ||
       investPoolsQueryData.fetching ||
       !dispatch
     )
@@ -355,5 +351,5 @@ export function useInvestPools(): [Pool[], boolean, () => void] {
     }, 1300)
   }
 
-  return [investPools, loading, handleMore]
+  return [investPoolsList, loading, handleMore]
 }

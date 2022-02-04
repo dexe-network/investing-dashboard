@@ -119,6 +119,7 @@ export const NameLabel = styled.div`
 `
 
 export const Card = styled.div`
+  position: relative;
   background: url(${cardBG});
   background-repeat: no-repeat;
   border-radius: 12px;
@@ -138,6 +139,25 @@ export const Address = styled.div`
   letter-spacing: 1px;
   color: #d0d0d0;
   margin-top: 4px;
+`
+
+export const Network = styled(Flex)`
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: right;
+  letter-spacing: 1px;
+  color: #c5d1dc;
+`
+
+export const NetworkIcon = styled.img`
+  height: 20px;
+  margin-left: 5px;
 `
 
 export const CardButtons = styled(Flex)`
@@ -173,10 +193,11 @@ export const Heading = styled.div`
 
 export const TransactionsList = styled.div`
   position: relative;
-  margin-top: 30px;
-  max-height: 350px;
-  height: 350px;
+  max-height: 200px;
   overflow-y: scroll;
+  margin-top: 15px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
 `
 
 export const Sticky = styled.div`
@@ -256,7 +277,7 @@ export const TransactionText = styled.div`
     transform: translateY(-2px);
   }
 
-  color: #6c757d;
+  color: #696f82;
 `
 
 export const TransactionsGroup = styled.div`

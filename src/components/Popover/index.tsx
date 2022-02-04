@@ -26,7 +26,8 @@ const Popover: React.FC<{
   isOpen: boolean
   toggle: (state: boolean) => void
   contentHeight: number
-}> = ({ title, children, isOpen, toggle, contentHeight }) => {
+  noDrag?: boolean
+}> = ({ title, children, isOpen, toggle, contentHeight, noDrag }) => {
   const [isDragging, setDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
@@ -60,13 +61,13 @@ const Popover: React.FC<{
         }}
       />
       <FloatingContainer
-        drag="y"
+        drag={noDrag ? false : "y"}
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 5 }}
         dragElastic={0.5}
-        animate={isOpen ? "visible" : "hidden"}
-        initial="hidden"
         onDragEnd={handleDragEnd}
         onDragStart={handleDragStart}
+        animate={isOpen ? "visible" : "hidden"}
+        initial="hidden"
         transition={{ duration: 0.4, ease: [0.29, 0.98, 0.29, 1] }}
         variants={{
           visible: {

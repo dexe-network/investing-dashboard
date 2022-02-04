@@ -46,7 +46,7 @@ export const Header = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 24px;
   letter-spacing: 1px;
   color: #c5d1dc;
   line-height: 20px;

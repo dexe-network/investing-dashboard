@@ -1,3 +1,4 @@
+import axios from "axios"
 import { create } from "ipfs-http-client"
 
 export interface AddResult {
@@ -37,6 +38,20 @@ const stringify = (json) => {
     return JSON.stringify(json)
   } catch (e) {
     return ""
+  }
+}
+
+export const parsePoolData = async (hash) => {
+  try {
+    if (hash.length === 46) {
+      const res = await axios.get(
+        `https://ipfs.infura.io:5001/api/v0/cat?arg=${hash}`
+      )
+      return res.data.assets
+    }
+  } catch (e) {
+    console.log(e)
+    return []
   }
 }
 

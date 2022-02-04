@@ -16,7 +16,7 @@ const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades"))
 const Wallet = lazy(() => import("pages/Wallet"))
-const Success = lazy(() => import("pages/Success"))
+const Success = lazy(() => import("pages/NewFund/Success"))
 
 export default function Routes() {
   const location = useLocation()

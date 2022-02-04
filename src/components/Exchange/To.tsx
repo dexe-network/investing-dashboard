@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { ReactComponentElement, useContext } from "react"
 // import styled from "styled-components"
 // import { motion } from "framer-motion"
 import { ethers } from "ethers"
@@ -25,6 +25,7 @@ import { DebounceInput } from "react-debounce-input"
 import { calcPrice } from "utils"
 
 interface IToProps {
+  customIcon?: any
   price: string
   priceChange24H: number
   amount: number
@@ -38,6 +39,7 @@ interface IToProps {
 }
 
 const ExchangeTo: React.FC<IToProps> = ({
+  customIcon,
   price,
   priceChange24H,
   amount,
@@ -106,7 +108,7 @@ const ExchangeTo: React.FC<IToProps> = ({
         />
         <ActiveSymbol onClick={onSelect}>
           {/* // TODO: create FundIcon component */}
-          <TokenIcon address="" size={27} />
+          {customIcon ? customIcon : <TokenIcon address="" size={27} />}
           <SymbolLabel>{symbol}</SymbolLabel>
           {onSelect && <IconDown src={angleIcon} />}
         </ActiveSymbol>

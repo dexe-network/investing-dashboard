@@ -205,21 +205,21 @@ const Token: React.FC<{
     if (!USD) return
     ;(async () => {
       try {
-        const pairAddress = await pancakeFactory.getPair(address, USD)
+        // const pairAddress = await pancakeFactory.getPair(address, USD)
 
-        if (pairAddress === "0x0000000000000000000000000000000000000000") {
-          // TODO: try to handle another USD token
-          return
-        }
+        // if (pairAddress === "0x0000000000000000000000000000000000000000") {
+        //   // TODO: try to handle another USD token
+        //   return
+        // }
 
-        const result = await axios.get(
-          `https://api-2.kattana.trade/rates/pair/pancakeswap/${pairAddress}`
-        )
+        // const result = await axios.get(
+        //   `https://api-2.kattana.trade/rates/pair/pancakeswap/${pairAddress}`
+        // )
 
-        if (!!result && !!result.data && result.data !== null) {
-          console.log(result.data.price_usd)
-          setPrice(result.data.price_usd)
-        }
+        // if (!!result && !!result.data && result.data !== null) {
+        //   console.log(result.data.price_usd)
+        //   setPrice(result.data.price_usd)
+        // }
         setPrice(0)
       } catch (e) {
         console.log(e)

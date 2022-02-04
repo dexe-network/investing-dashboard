@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import { format, formatDistance, formatRelative, subDays } from "date-fns"
 import { Flex, To } from "theme"
 import styled from "styled-components"
@@ -23,6 +23,8 @@ import { Pool } from "constants/interfaces_v2"
 import { useERC20 } from "hooks/useContract"
 import { ethers } from "ethers"
 import { formatNumber } from "utils"
+import { parsePoolData } from "utils/ipfs"
+import IpfsIcon from "components/IpfsIcon"
 
 // @param data - pool data
 // @param index - indicating index in all list of pools
@@ -46,7 +48,7 @@ const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <TokenIcon size={42} />
+          <IpfsIcon size={42} hash={data.parameters.descriptionURL} />
           <div>
             <Title>{data.ticker}</Title>
             <Description>{data.name}</Description>

@@ -20,7 +20,7 @@ export const PoolInfoContainer = styled(Flex)`
 export const PoolInfo = styled(Flex)`
   width: 50%;
   justify-content: flex-start;
-  padding-left: 16px;
+  padding-left: 12px;
 `
 
 export const BaseInfo = styled(Flex)`
@@ -54,7 +54,22 @@ export const Description = styled.div`
 `
 
 export const Divider = styled.div`
-  background: #2e3645;
+  background: radial-gradient(
+      54.8% 53% at 50% 50%,
+      #587eb7 0%,
+      rgba(88, 126, 183, 0) 100%
+    ),
+    radial-gradient(
+      60% 51.57% at 50% 50%,
+      #6d99db 0%,
+      rgba(109, 153, 219, 0) 100%
+    ),
+    radial-gradient(
+      69.43% 69.43% at 50% 50%,
+      rgba(5, 5, 5, 0.5) 0%,
+      rgba(82, 82, 82, 0) 100%
+    );
+  opacity: 0.1;
   width: fill-available;
   margin-left: 63px;
   height: 1px;

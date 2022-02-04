@@ -18,6 +18,18 @@ export const MembersList = styled.div`
   }
 `
 
+export const LoadingText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: center;
+  letter-spacing: 0.1px;
+  color: #fff;
+  margin-top: 30px;
+`
+
 export const MembersGrid = styled.div`
   width: 100%;
   overflow: auto;

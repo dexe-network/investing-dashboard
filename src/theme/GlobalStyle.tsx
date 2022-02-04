@@ -167,6 +167,10 @@ export const Content = styled.div`
   overflow-y: hidden;
   overscroll-behavior: none;
   transition: 0.2s all;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
 `
 
 export const RestrictedContainer = styled(motion.div)`
