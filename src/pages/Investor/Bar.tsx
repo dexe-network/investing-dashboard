@@ -1,10 +1,10 @@
-import { Flex } from "theme"
+import { Flex, device } from "theme"
 import styled, { createGlobalStyle } from "styled-components"
 
 const Container = styled(Flex)`
   width: 100%;
   justify-content: space-evenly;
-  margin: 14px 0 18px;
+  margin: 14px 0 22px;
 `
 
 const Bar = styled.div`

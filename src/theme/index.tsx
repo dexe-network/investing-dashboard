@@ -6,6 +6,7 @@ import { createBreakpoint } from "react-use"
 export const ease = [0.29, 0.98, 0.29, 1]
 
 const breakpoints = {
+  xxs: 375,
   xs: 500,
   sm: 768,
   md: 1024,
@@ -15,6 +16,7 @@ const breakpoints = {
 export const useBreakpoint = createBreakpoint(breakpoints)
 
 const size = {
+  xxs: `${breakpoints.xxs}px`,
   xs: `${breakpoints.xs}px`,
   sm: `${breakpoints.sm}px`,
   md: `${breakpoints.md}px`,
@@ -22,6 +24,7 @@ const size = {
 }
 
 const device = {
+  xxs: `max-width: ${size.xxs}`,
   xs: `max-width: ${size.xs}`,
   sm: `max-width: ${size.sm}`,
   md: `max-width: ${size.md}`,

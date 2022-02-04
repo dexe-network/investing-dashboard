@@ -1,7 +1,8 @@
 import styled from "styled-components"
 import { motion } from "framer-motion"
 import { Flex } from "theme"
-import cardBG from "assets/background/wallet-card.png"
+import cardBG from "assets/background/wallet-card.svg"
+import insuranceBG from "assets/background/insurance-card.svg"
 
 export const Container = styled(motion.div)`
   padding: 0 16px;
@@ -119,6 +120,7 @@ export const NameLabel = styled.div`
 
 export const Card = styled.div`
   background: url(${cardBG});
+  background-repeat: no-repeat;
   border-radius: 12px;
   border: 1px solid #2f3c3a;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
@@ -158,17 +160,15 @@ export const TextButton = styled.div<{ color?: string }>`
 export const Heading = styled.div`
   font-family: Gilroy;
   font-style: normal;
-  font-family: Gilroy;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 20px;
-
-  margin: 0 0 18px;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 28px;
+  margin-bottom: 19px;
 
   text-align: center;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.35px;
 
-  color: #dadada;
+  color: #cfdce8;
 `
 
 export const TransactionsList = styled.div`
@@ -289,6 +289,8 @@ export const TransactionsPlaceholder = styled.div`
 `
 
 export const InsuranceCard = styled(Flex)`
+  position: relative;
+  width: 100%;
   padding: 16px;
   background: linear-gradient(
       85.6deg,
@@ -299,11 +301,24 @@ export const InsuranceCard = styled(Flex)`
   border-radius: 10px;
   border: 1px solid #2f3c3a;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+  z-index: 5;
+  &:before {
+    content: "";
+    z-index: 4;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url(${insuranceBG});
+    background-repeat: no-repeat;
+  }
 `
 
 export const InsuranceInfo = styled(Flex)`
   flex-direction: column;
   align-items: flex-start;
+  flex: 1;
 `
 
 export const InsuranceTitle = styled.div`

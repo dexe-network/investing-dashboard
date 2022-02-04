@@ -1,7 +1,7 @@
 // import React, { useState, useRef } from "react"
 // import styled from "styled-components"
 // import { motion } from "framer-motion"
-import { Label, DescriptionText, Container, Emission, InfoRow } from "./styled"
+import { Label, DescriptionText, Container, InfoRow } from "./styled"
 
 const FundDetailsCard: React.FC = () => {
   return (
@@ -22,7 +22,6 @@ const FundDetailsCard: React.FC = () => {
         for decentralized copying of the best traders/wallets. the creation of
         an easy-to-use product for decentralized
       </DescriptionText>
-      <Emission total={"10000 ISDX"} current={"3000 ISDX"} />
       <InfoRow label={"Min. investment amount"} value={"500 DEXE "} />
       <InfoRow label={"Type of fund"} value={"Standart"} />
       <InfoRow label={"Whitelist"} value={"356 adresess"} />

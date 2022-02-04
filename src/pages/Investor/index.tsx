@@ -5,7 +5,7 @@ import { Redirect, useHistory } from "react-router-dom"
 
 import Button, { BorderedButton } from "components/Button"
 import InvestorMobile from "components/InvestorMobile"
-import investingHistoryButton from "assets/template-buttons/investing-history.svg"
+import investingHistory from "assets/template-buttons/investing-history-big.svg"
 
 // import Chart from "./Chart"
 import AreaChart from "components/AreaChart"
@@ -13,9 +13,11 @@ import BarChart from "./Bar"
 import {
   Container,
   Tab,
+  TabContainer,
   TabCard,
   Row,
   MainText,
+  SecondaryText,
   Buttons,
   Period,
   ChartPeriods,
@@ -144,9 +146,27 @@ function Investor(props: Props) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <InvestorMobile account={account} />
+      <InvestorMobile account={account}>
+        <Buttons>
+          <Flex p="0 20px 0 15px">
+            <img src={investingHistory} />
+          </Flex>
+          <Flex p="0 12px 0 0">
+            <To to="/">
+              <Button>New investment</Button>
+            </To>
+          </Flex>
+        </Buttons>
+      </InvestorMobile>
       <TabCard>
-        <Tab>Profit & Loss</Tab>
+        <TabContainer>
+          <Tab active>Profit & Loss</Tab>
+        </TabContainer>
+        <AreaChart
+          tooltipSize="sm"
+          height={window.innerWidth < 375 ? 120 : 174}
+          data={pnl}
+        />
         <ChartPeriods>
           <Period active>D</Period>
           <Period>W</Period>
@@ -156,23 +176,16 @@ function Investor(props: Props) {
           <Period>1Y</Period>
           <Period>ALL</Period>
         </ChartPeriods>
-        <AreaChart tooltipSize="sm" height={120} data={pnl} />
         <BarChart />
         <Row>
           <MainText>P&L LP - $ETH</MainText>
-          <MainText>+ 13.1% (+112.132 ETH)</MainText>
+          <SecondaryText>+ 13.1% (+112.132 ETH)</SecondaryText>
         </Row>
         <Row>
           <MainText>P&L LP - USD% - USD</MainText>
-          <MainText>+ 19.1% - 19.1 USD </MainText>
+          <SecondaryText>+ 19.1% - 19.1 USD </SecondaryText>
         </Row>
       </TabCard>
-      <Buttons>
-        <Flex p="0 16px 0 0">
-          <img src={investingHistoryButton} />
-        </Flex>
-        <Button full>New investment</Button>
-      </Buttons>
     </Container>
   )
 }

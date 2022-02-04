@@ -6,7 +6,11 @@ import MemberMobile from "components/MemberMobile"
 import LoadMore from "components/LoadMore"
 import { GuardSpinner } from "react-spinners-kit"
 import { Text, Flex, Center, useBreakpoint, To } from "theme"
-import { usePoolsFilters, usePools } from "state/pools/hooks"
+import {
+  usePoolsFilters,
+  useBasicPools,
+  useInvestPools,
+} from "state/pools/hooks"
 import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
 
 import prev from "assets/icons/pagination-prev.svg"
@@ -18,18 +22,29 @@ import "./pagination.css"
 
 function TopMembers() {
   const [pageCount, setPage] = useState(50)
-  const scrollRef = React.useRef<any>(null)
+  const basicScrollRef = React.useRef<any>(null)
+  const investScrollRef = React.useRef<any>(null)
 
-  const [pools, isLoading, loadMorePools] = usePools()
+  const [basicPools, isBasicLoading, loadMoreBasicPools] = useBasicPools()
+  // const [investPools, isInvestLoading, loadMoreInvestPools] = useInvestPools()
+
   const [filters, dispatchFilter] = usePoolsFilters()
 
   // manually disable scrolling *refresh this effect when ref container dissapeared from DOM
-  useEffect(() => {
-    if (!scrollRef.current) return
-    disableBodyScroll(scrollRef.current)
+  // useEffect(() => {
+  //   if (!basicScrollRef.current) return
+  //   disableBodyScroll(basicScrollRef.current)
 
-    return () => clearAllBodyScrollLocks()
-  }, [scrollRef, filters.listType, isLoading])
+  //   return () => clearAllBodyScrollLocks()
+  // }, [basicScrollRef, filters.listType, isBasicLoading])
+
+  // // manually disable scrolling *refresh this effect when ref container dissapeared from DOM
+  // useEffect(() => {
+  //   if (!investScrollRef.current) return
+  //   disableBodyScroll(investScrollRef.current)
+
+  //   return () => clearAllBodyScrollLocks()
+  // }, [investScrollRef, filters.listType, isInvestLoading])
 
   const loadingIndicator = (
     <Center>
@@ -42,15 +57,18 @@ function TopMembers() {
     </Center>
   )
 
-  const listView = (
+  const basicListView = (
     <ListContainer
       initial={{ y: -62 }}
       animate={{ y: 0 }}
       exit={{ y: -62 }}
       transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
     >
-      <MembersList ref={scrollRef} style={{ height: window.innerHeight - 117 }}>
-        {pools.map((pool, index) => (
+      <MembersList
+        ref={basicScrollRef}
+        style={{ height: window.innerHeight - 117 }}
+      >
+        {basicPools.map((pool, index) => (
           <To key={pool.address} to={`/pool/profile/${pool.address}`}>
             <Flex p="16px 0 0" full>
               <MemberMobile data={pool} index={index} />
@@ -59,9 +77,9 @@ function TopMembers() {
         ))}
         {/* // TODO: make loading indicator stick to bottom of the list */}
         <LoadMore
-          isLoading={isLoading && !!pools.length}
-          handleMore={loadMorePools}
-          r={scrollRef}
+          isLoading={isBasicLoading && !!basicPools.length}
+          handleMore={loadMoreBasicPools}
+          r={basicScrollRef}
         />
       </MembersList>
 
@@ -84,12 +102,57 @@ function TopMembers() {
     </ListContainer>
   )
 
-  const body = listView
+  // const investListView = (
+  //   <ListContainer
+  //     initial={{ y: -62 }}
+  //     animate={{ y: 0 }}
+  //     exit={{ y: -62 }}
+  //     transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+  //   >
+  //     <MembersList
+  //       ref={investScrollRef}
+  //       style={{ height: window.innerHeight - 117 }}
+  //     >
+  //       {investPools.map((pool, index) => (
+  //         <To key={pool.address} to={`/pool/profile/invest/${pool.address}`}>
+  //           <Flex p="16px 0 0" full>
+  //             <MemberMobile data={pool} index={index} />
+  //           </Flex>
+  //         </To>
+  //       ))}
+  //       {/* // TODO: make loading indicator stick to bottom of the list */}
+  //       <LoadMore
+  //         isLoading={isInvestLoading && !!investPools.length}
+  //         handleMore={loadMoreInvestPools}
+  //         r={investScrollRef}
+  //       />
+  //     </MembersList>
+
+  //     {/* // TODO: PAGINATION */}
+
+  //     {/* {!isMobile && (
+  //       <ReactPaginate
+  //         previousLabel={<img src={prev} />}
+  //         nextLabel={<img src={next} />}
+  //         breakLabel={"..."}
+  //         breakClassName={"break-me"}
+  //         pageCount={pageCount}
+  //         marginPagesDisplayed={1}
+  //         pageRangeDisplayed={4}
+  //         // onPageChange={({ selected }) => console.log(selected)}
+  //         containerClassName={"pagination"}
+  //         activeClassName={"active"}
+  //       />
+  //     )} */}
+  //   </ListContainer>
+  // )
+
+  const body = basicListView
 
   return (
     <StyledTopMembers>
       <TopMembersBar />
-      {isLoading && !pools.length ? loadingIndicator : body}
+      {isBasicLoading && !basicPools.length ? loadingIndicator : body}
     </StyledTopMembers>
   )
 }

@@ -39,15 +39,10 @@ const InvestorMobile: React.FC<Props> = ({ account, children }) => {
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <Avatar size={38} />
+          <Avatar size={45} />
           <Flex p="0 0 0 10px" dir="column" ai="flex-start">
             <Title>{shortenAddress(account)}</Title>
-            <Description>
-              Investing <PNL>0%</PNL>
-              <Tooltip size="small" id="1">
-                1 week LP price change
-              </Tooltip>
-            </Description>
+            <Description>Investing</Description>
           </Flex>
         </PoolInfo>
         <ShareButton src={shareIcon} />

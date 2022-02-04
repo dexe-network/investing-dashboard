@@ -10,6 +10,12 @@ export const Container = styled(Flex)`
   height: 100%;
 `
 
+export const ButtonContainer = styled(Flex)`
+  padding: 8px 0 16px;
+  justify-content: space-around;
+  width: 100%;
+`
+
 export const AreaWrapper = styled.div`
   position: absolute;
   left: 0;

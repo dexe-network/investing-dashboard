@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { createReducer } from "@reduxjs/toolkit"
 import { IFund, IUserData } from "constants/interfaces"
+import { OwnedPools } from "constants/interfaces_v2"
 import { addOwnedPools, updateUserProMode } from "./actions"
-
-interface OwnedPools {
-  basic: string[]
-  invest: string[]
-}
 
 export interface userState {
   userProMode: boolean

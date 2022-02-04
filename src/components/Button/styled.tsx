@@ -5,7 +5,7 @@ import { ButtonThemeType } from "./types"
 const buttonSizes = {
   large: "16px 25px 16px",
   big: "14px 25px 14px",
-  normal: "12px 25px 13px",
+  normal: "12px 15px 13px",
   small: "9px 39px 9px",
 }
 

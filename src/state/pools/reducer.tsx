@@ -1,14 +1,21 @@
 import { createReducer } from "@reduxjs/toolkit"
-import { addPools, setFilter } from "./actions"
+import {
+  addBasicPools,
+  addInvestPools,
+  setFilter,
+  setPagination,
+} from "./actions"
 import { sortItemsList, currencies } from "constants/index"
-import { ITopMembersFilters } from "constants/interfaces"
+import { ITopMembersFilters, ITopMembersPagination } from "constants/interfaces"
 import { Pool } from "constants/interfaces_v2"
 import { addDays } from "date-fns"
 import { calendarStaticRanges } from "constants/index"
 
 export interface poolsState {
   filters: ITopMembersFilters
-  list: Pool[]
+  pagination: ITopMembersPagination
+  basicList: Pool[]
+  investList: Pool[]
 }
 
 const allPeriodRange = calendarStaticRanges[0].range()
@@ -24,9 +31,22 @@ export const initialState: poolsState = {
     period: initialRange,
     query: "",
     currency: currencies[0],
-    listType: "all",
+    listType: "basic",
   },
-  list: [],
+  pagination: {
+    basic: {
+      total: 0,
+      offset: 0,
+      limit: 100,
+    },
+    invest: {
+      total: 0,
+      offset: 0,
+      limit: 100,
+    },
+  },
+  basicList: [],
+  investList: [],
 }
 
 export default createReducer(initialState, (builder) =>
@@ -34,7 +54,14 @@ export default createReducer(initialState, (builder) =>
     .addCase(setFilter, (state, action) => {
       state.filters[action.payload.name] = action.payload.value
     })
-    .addCase(addPools, (state, action) => {
-      state.list = action.payload
+    .addCase(setPagination, (state, action) => {
+      state.pagination[action.payload.type][action.payload.name] =
+        action.payload.value
+    })
+    .addCase(addBasicPools, (state, action) => {
+      state.basicList = action.payload
+    })
+    .addCase(addInvestPools, (state, action) => {
+      state.investList = action.payload
     })
 )

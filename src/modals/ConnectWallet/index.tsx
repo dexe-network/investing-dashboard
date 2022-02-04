@@ -7,6 +7,7 @@ import { connectorsByName } from "constants/connectors"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import Modal from "components/Modal"
 import Checkbox from "components/Checkbox"
+import { RotateSpinner } from "react-spinners-kit"
 
 import metamask from "assets/wallets/metamask.svg"
 import bsc from "assets/wallets/bsc.svg"
@@ -32,14 +33,16 @@ import {
 } from "./styled"
 
 export default function ConnectWallet({ isOpen, onRequestClose }) {
-  const [termsAccepted, setAccepted] = useState(false)
+  const [isActivating, setActivating] = useState("")
   const { activate, connector } = useWeb3React()
   const active = useActiveWallet()
 
   const activateProvider = (name) => {
+    setActivating(name)
     const provider = connectorsByName[name]
 
     if (provider === connector) {
+      setActivating("")
       return
     }
 
@@ -55,12 +58,16 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
 
       setTimeout(() => {
         activate(provider, undefined, true)
-          .then(onRequestClose)
+          .then(() => {
+            setActivating("")
+            onRequestClose()
+          })
           .catch((e) => {
             if (e) {
               console.log(e)
               setTimeout(() => {
                 activate(provider)
+                setActivating("")
                 onRequestClose()
               }, 500)
             }
@@ -81,15 +88,27 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
 
         <Wallets full>
           <Wallet onClick={() => activateProvider("walletconnect")}>
-            <WalletIcon src={walletconnect} alt="walletconnect" />
+            {isActivating === "walletconnect" ? (
+              <RotateSpinner size={33} loading />
+            ) : (
+              <WalletIcon src={walletconnect} alt="walletconnect" />
+            )}
             <WalletTitle>Wallet Connect</WalletTitle>
           </Wallet>
           <Wallet onClick={() => activateProvider("metamask")}>
-            <WalletIcon src={metamask} alt="metamask" />
+            {isActivating === "metamask" ? (
+              <RotateSpinner size={33} loading />
+            ) : (
+              <WalletIcon src={metamask} alt="metamask" />
+            )}
             <WalletTitle>Metamask</WalletTitle>
           </Wallet>
           <Wallet onClick={() => activateProvider("bsc")}>
-            <WalletIcon src={bsc} alt="bsc" />
+            {isActivating === "bsc" ? (
+              <RotateSpinner size={33} loading />
+            ) : (
+              <WalletIcon src={bsc} alt="bsc" />
+            )}
             <WalletTitle>Binance Smart Chain</WalletTitle>
           </Wallet>
         </Wallets>

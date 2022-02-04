@@ -4,7 +4,7 @@
 import ProgressBar from "components/ProgressBar"
 import chartIcon from "assets/icons/bar-chart-icon.svg"
 import { Flex } from "theme"
-import { Label, InfoRow, Container, Icon } from "./styled"
+import { Label, InfoRow, Container, Icon, Emission } from "./styled"
 
 const FundStatisticsCard: React.FC = () => {
   return (
@@ -19,24 +19,27 @@ const FundStatisticsCard: React.FC = () => {
       </Flex>
 
       <Flex full>
-        <Flex full p="0 25px 0 0">
+        <Flex full p="0 75px 0 0">
           <InfoRow label={"DEXE"} value={"50%"} />
         </Flex>
-        <Flex full p="0 0 0 25px">
+        <Flex full p="0 0 0 75px">
           <InfoRow label={"USD"} value={"52%"} />
         </Flex>
       </Flex>
       <Flex full>
-        <Flex full p="0 25px 0 0">
+        <Flex full p="0 75px 0 0">
           <InfoRow label={"ETH"} value={"43.13%"} />
         </Flex>
-        <Flex full p="0 0 0 25px">
+        <Flex full p="0 0 0 75px">
           <InfoRow label={"BTC"} value={"51%"} />
         </Flex>
       </Flex>
       <Flex p="40px 0 0 0" full jc="flex-start">
         <Icon src={chartIcon} />
         <Label>Funds</Label>
+      </Flex>
+      <Flex full p="14px 0 0">
+        <Emission total={"10000 ISDX"} current={"3000 ISDX"} />
       </Flex>
       <InfoRow label={"Traders LP"} value={"100 ISDX"} />
       <InfoRow label={"Invested"} value={"5000 DEXE"} />

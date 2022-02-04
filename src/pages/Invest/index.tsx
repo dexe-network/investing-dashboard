@@ -621,7 +621,7 @@ export default function Invest() {
     >
       <MemberMobile data={poolData} />
       {settings}
-      <Flex dir="column" full>
+      {/* <Flex dir="column" full>
         <InfoRow
           label="Investor available Funds"
           value={`0 ${poolData.ticker}`}
@@ -639,7 +639,7 @@ export default function Invest() {
           value={`(55%) 19,983 ${poolData.ticker}`}
           white
         />
-      </Flex>
+      </Flex> */}
 
       {error.length ? <ErrorText>{error}</ErrorText> : form}
     </Container>

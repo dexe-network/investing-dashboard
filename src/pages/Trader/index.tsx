@@ -25,6 +25,8 @@ import AreaChart from "components/AreaChart"
 import BarChart from "pages/Investor/Bar"
 
 import newTradeButton from "assets/template-buttons/new-trade.svg"
+import fundPositions from "assets/template-buttons/fund-positions.svg"
+import { IDetailedChart } from "constants/interfaces"
 
 const pnl: IDetailedChart[] = [
   {
@@ -130,13 +132,13 @@ interface Props {}
 import {
   Container,
   Buttons,
+  ButtonContainer,
   Section,
   HalfBlock,
   Label,
   Value,
   Pnl,
 } from "./styled"
-import { IDetailedChart } from "constants/interfaces"
 
 function Trader(props: Props) {
   const {} = props
@@ -170,7 +172,16 @@ function Trader(props: Props) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <MemberMobile data={poolData} />
+      <MemberMobile data={poolData}>
+        <ButtonContainer>
+          <Flex p="0 24px 0 15px">
+            <img src={fundPositions} />
+          </Flex>
+          <Flex full p="0 10px 0 0">
+            <Button full>New trade</Button>
+          </Flex>
+        </ButtonContainer>
+      </MemberMobile>
 
       <TabCard>
         <Tab>Profit & Loss</Tab>
@@ -194,15 +205,6 @@ function Trader(props: Props) {
           <MainText>+ 19.1% - 19.1 USD </MainText>
         </Row>
       </TabCard>
-
-      <Buttons>
-        <Flex p="0 20px 0 0">
-          <img src={newTradeButton} />
-        </Flex>
-        <Flex full>
-          <Button full>Fund positions</Button>
-        </Flex>
-      </Buttons>
     </Container>
   )
 }

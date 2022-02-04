@@ -7,6 +7,7 @@ export const Container = styled(motion.div)`
   height: -webkit-fill-available;
   overflow-y: auto;
   overflow-x: hidden;
+  height: 100%;
 `
 
 export const ButtonContainer = styled(Flex)`
@@ -17,7 +18,7 @@ export const ButtonContainer = styled(Flex)`
 
 export const Details = styled.div`
   padding: 16px;
-  background: linear-gradient(64.44deg, #24272f 32.35%, #333a48 100%);
+  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   border-radius: 10px;
   margin-top: 27px;
 `

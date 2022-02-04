@@ -1,5 +1,6 @@
 import Div100vh from "react-div-100vh"
 import theme from "theme"
+import { useEffect } from "react"
 import { Route, Switch, useLocation } from "react-router-dom"
 import { ThemeProvider } from "styled-components"
 import { ModalProvider } from "styled-react-modal"
@@ -23,7 +24,6 @@ import { SpecialModalBackground, AppWrapper } from "theme/GlobalStyle"
 const App = () => {
   const eager = useEagerConnect()
   useInactiveListener(eager)
-  console.log(eager)
   return (
     <ThemeProvider theme={theme}>
       <ModalProvider backgroundComponent={SpecialModalBackground}>

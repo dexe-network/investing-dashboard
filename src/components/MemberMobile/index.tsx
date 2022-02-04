@@ -46,23 +46,23 @@ const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <TokenIcon size={38} />
+          <TokenIcon size={42} />
           <div>
             <Title>{data.ticker}</Title>
             <Description>{data.name}</Description>
           </div>
         </PoolInfo>
         <BaseInfo>
-          <TokenIcon address={baseData?.address} size={38} />
+          <TokenIcon address={baseData?.address} size={42} />
           <div>
             <Title>
               {formatNumber(data.lpPrice) === "1"
                 ? "1.00"
-                : formatNumber(data.lpPrice)}
+                : formatNumber(data.lpPrice, 4)}
               <PNL>{data.lpPnl}%</PNL>
             </Title>
             <Description>
-              {/* {format(data.history.creatingTime * 1000, "dd, MMM yyyy")} */}
+              {/* {format(data.history.creationTime * 1000, "dd, MMM yyyy")} */}
               {baseData?.symbol}
             </Description>
           </div>

@@ -5,7 +5,7 @@ export const Card = styled(Flex)`
   width: 100%;
   background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   border-radius: 8px;
-  padding: 0 9px;
+  padding: 0 9px 20px;
   box-sizing: border-box;
   flex-direction: column;
   justify-content: space-evenly;
@@ -13,9 +13,13 @@ export const Card = styled(Flex)`
 
 export const PoolInfoContainer = styled(Flex)`
   position: relative;
-  height: 59px;
+  height: 71px;
   width: 100%;
   justify-content: flex-start;
+
+  @media only screen and (${device.xxs}) {
+    height: 59px;
+  }
 `
 
 export const ShareButton = styled.img`
@@ -34,7 +38,7 @@ export const Title = styled.div`
   font-family: Gilroy;
   font-weight: 700;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 20px;
   display: flex;
   align-items: center;
@@ -48,8 +52,8 @@ export const Description = styled.div`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 12px;
+  font-size: 14px;
+  line-height: 15px;
 
   color: #5a6071;
   display: flex;
@@ -65,8 +69,8 @@ export const Divider = styled.div`
 `
 
 export const PoolStatisticContainer = styled.div`
-  padding: 11px 16px 0;
-  height: 60px;
+  padding: 15px 16px 0;
+  height: 80px;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -115,7 +119,7 @@ const Label = styled.div`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 18px;
   text-align: left;
 
@@ -126,8 +130,8 @@ const Value = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
   font-family: Gilroy;
-  font-weight: 400;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 18px;
   line-height: 30px;
   text-align: left;
   color: #f7f7f7;
