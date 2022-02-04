@@ -3,6 +3,7 @@ import styled from "styled-components"
 import defaultAvatar from "assets/icons/default-avatar.svg"
 import unknown from "assets/icons/Unknown.svg"
 import { useWeb3React } from "@web3-react/core"
+import { parsePoolData } from "utils/ipfs"
 // import { motion } from "framer-motion"
 
 export const Icon = styled.img<{ size?: number }>`
@@ -17,26 +18,24 @@ export const Icon = styled.img<{ size?: number }>`
 
 interface IProps {
   size?: number
-  address?: string
+  hash?: string
 }
 
-const getIconsPathByChain = (id, address) => {
-  if (!address) return
-
-  const a = address.toLowerCase()
-  if (id === 97) {
-    return `https://pancake.kiemtienonline360.com/images/coins/${a}.png`
-  }
-  return `https://pancake.kiemtienonline360.com/images/coins/${a}.png`
-}
-
-const TokenIcon: React.FC<IProps> = ({ size, address }) => {
+const IpfsIcon: React.FC<IProps> = ({ size, hash }) => {
+  const [src, setSrc] = useState("")
   const [srcImg, setImg] = useState(unknown)
   const [error, setError] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const { chainId } = useWeb3React()
 
-  const src = getIconsPathByChain(chainId, address)
+  useEffect(() => {
+    ;(async () => {
+      const assets = await parsePoolData(hash)
+      if (assets && assets.length) {
+        setSrc(assets[assets.length - 1])
+      }
+    })()
+  }, [hash])
 
   useEffect(() => {
     const token = new Image()
@@ -64,4 +63,4 @@ const TokenIcon: React.FC<IProps> = ({ size, address }) => {
   return <Icon src={srcImg} size={size} />
 }
 
-export default TokenIcon
+export default IpfsIcon

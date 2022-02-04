@@ -5,40 +5,55 @@ import { Flex, To } from "theme"
 import actionIcon from "assets/icons/stats-action.svg"
 
 export const Container = styled.div`
-  padding: 16px;
+  padding: 16px 0 60px;
+  position: relative;
+  height: 80%;
+  overflow-y: auto;
 `
 
 export const Header = styled(Flex)`
   width: 100%;
-  padding: 16px 0;
+  padding: 16px;
 `
 
-export const PrimaryLabel = styled.div`
+export const PrimaryLabel = styled(Flex)`
+  justify-content: flex-start;
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 15px;
   letter-spacing: 0.5px;
   color: #c5d1dc;
+  width: 200px;
 `
 
-export const SecondaryLabel = styled.div`
+export const PlusIcon = styled.img`
+  margin: 0 5px;
+`
+
+export const SecondaryLabel = styled(Flex)`
   font-family: Gilroy;
   font-style: normal;
   font-weight: normal;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 14px;
-  display: flex;
-  align-items: flex-end;
+  text-align: left;
   letter-spacing: 1px;
   color: #5a6071;
+  flex: 1;
+  justify-content: flex-start;
+
+  &:nth-child(3) {
+    justify-content: center;
+  }
+  &:nth-child(4) {
+    justify-content: flex-end;
+  }
 `
 
-export const List = styled.div`
-  padding: 0 0 30px;
-  max-height: 250px;
-  overflow-y: auto;
+export const List = styled(motion.div)`
+  padding: 0 16px 30px;
 `
 
 const Row = styled(Flex)`
@@ -58,7 +73,7 @@ const Row = styled(Flex)`
 `
 
 const Info = styled(Flex)`
-  width: 40%;
+  width: 200px;
   justify-content: flex-start;
 `
 
@@ -88,15 +103,22 @@ const Name = styled.div`
   color: #5a6071;
 `
 
-const Value = styled.div`
-  width: 25%;
+const Value = styled(Flex)`
+  justify-content: flex-start;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: normal;
+  font-weight: 500;
   font-size: 14px;
   line-height: 100%;
   letter-spacing: 0.5px;
   color: #c5d1dc;
+  flex: 1;
+  &:nth-child(3) {
+    justify-content: center;
+  }
+  &:nth-child(4) {
+    justify-content: flex-end;
+  }
 `
 
 const ActionButton = styled.div``
@@ -136,11 +158,13 @@ export const Token: React.FC<{
       </Info>
       <Value>{tvl}</Value>
       <Value>{pnl}</Value>
-      <To to={`/me/trader/profile/${poolType}/${address}`}>
-        <ActionButton>
-          <Action src={actionIcon} />
-        </ActionButton>
-      </To>
+      <Value>
+        <To to={`/me/trader/profile/${poolType}/${address}`}>
+          <ActionButton>
+            <Action src={actionIcon} />
+          </ActionButton>
+        </To>
+      </Value>
     </Row>
   )
 }

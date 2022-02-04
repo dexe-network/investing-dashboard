@@ -30,6 +30,8 @@ import {
   InsuranceInfo,
   InsuranceTitle,
   InsuranceDescription,
+  Network,
+  NetworkIcon,
 } from "./styled"
 import FloatingButton from "components/FloatingButton"
 import Avatar from "components/Avatar"
@@ -40,6 +42,7 @@ import Confirm from "components/Confirm"
 import more from "assets/icons/more-menu.svg"
 import swap from "assets/icons/swap-path.svg"
 import { shortenAddress } from "utils"
+import bsc from "assets/wallets/bsc.svg"
 import { Redirect } from "react-router-dom"
 
 const transactions = [
@@ -1383,6 +1386,9 @@ export default function Wallet() {
       </Header>
 
       <Card>
+        <Network>
+          BSC <NetworkIcon src={bsc} />
+        </Network>
         <TextGray>Current account</TextGray>
         <Address>{shortenAddress(account, 8)}</Address>
         <CardButtons>
@@ -1403,11 +1409,10 @@ export default function Wallet() {
           { name: "Rewards" },
         ]}
       />
-      {!transactions.length ? (
+      {transactions.length ? (
         <TransactionsList>
           {transactions.map(({ date, transactions }) => (
             <React.Fragment key={date}>
-              <Sticky>{date}</Sticky>
               <TransactionsGroup>
                 {transactions.map(
                   ({ type, address, timestamp, amountIn, amountOut }) => (

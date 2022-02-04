@@ -44,6 +44,7 @@ import {
   SettingsInput,
 } from "./styled"
 import Popover from "components/Popover"
+import IpfsIcon from "components/IpfsIcon"
 
 export const useInvest = (): [
   {
@@ -592,6 +593,9 @@ export default function Invest() {
       />
 
       <ExchangeTo
+        customIcon={
+          <IpfsIcon size={27} hash={poolData.parameters.descriptionURL} />
+        }
         price={outPrice}
         priceChange24H={0}
         amount={toAmount}

@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { Flex } from "theme"
+import { useParams } from "react-router-dom"
 import grayCheck from "assets/icons/gray-check.svg"
 import facebookIcon from "assets/icons/facebook-rounded.svg"
 import twitterIcon from "assets/icons/twitter-rounded.svg"
@@ -91,6 +92,7 @@ const ButtonContainer = styled(Flex)`
 `
 
 const Success = () => {
+  const { ticker } = useParams<{ ticker: string }>()
   return (
     <Container>
       <ContentContainer>
@@ -99,7 +101,7 @@ const Success = () => {
         <Subtitle>Your fund is created</Subtitle>
       </ContentContainer>
       <ContentContainer>
-        <Symbol>ISDX</Symbol>
+        <Symbol>{ticker}</Symbol>
         <Adress>0xhvir2d8...999</Adress>
       </ContentContainer>
       <ContentContainer>

@@ -67,6 +67,7 @@ import {
 } from "modals/CreateFund/styled"
 import { SubContainer, NavIcon } from "./styled"
 import { TraderPoolFactory } from "abi"
+import { addFileMetadata } from "utils/ipfs"
 
 const performanceFees = [
   {
@@ -93,9 +94,11 @@ export const BasicInfo: React.FC = () => {
     fundType,
     fundName,
     fundSymbol,
+    avatarBlobString,
     handleChange,
   } = useCreateFundContext()
-  console.log(fundName)
+
+  console.log(avatarBlobString)
 
   return (
     <SubContainer
@@ -107,7 +110,7 @@ export const BasicInfo: React.FC = () => {
       <Flex full dir="column" ai="flex-start">
         <Flex full jc="center">
           <AvatarWrapper>
-            <Avatar onCrop={() => {}} showUploader size={85} />
+            <Avatar onCrop={handleChange} showUploader size={85} />
           </AvatarWrapper>
         </Flex>
         <Flex full dir="column" ai="flex-start">
@@ -202,21 +205,21 @@ const Token: React.FC<{
     if (!USD) return
     ;(async () => {
       try {
-        const pairAddress = await pancakeFactory.getPair(address, USD)
+        // const pairAddress = await pancakeFactory.getPair(address, USD)
 
-        if (pairAddress === "0x0000000000000000000000000000000000000000") {
-          // TODO: try to handle another USD token
-          return
-        }
+        // if (pairAddress === "0x0000000000000000000000000000000000000000") {
+        //   // TODO: try to handle another USD token
+        //   return
+        // }
 
-        const result = await axios.get(
-          `https://api-2.kattana.trade/rates/pair/pancakeswap/${pairAddress}`
-        )
+        // const result = await axios.get(
+        //   `https://api-2.kattana.trade/rates/pair/pancakeswap/${pairAddress}`
+        // )
 
-        if (!!result && !!result.data && result.data !== null) {
-          console.log(result.data.price_usd)
-          setPrice(result.data.price_usd)
-        }
+        // if (!!result && !!result.data && result.data !== null) {
+        //   console.log(result.data.price_usd)
+        //   setPrice(result.data.price_usd)
+        // }
         setPrice(0)
       } catch (e) {
         console.log(e)
@@ -969,7 +972,7 @@ export const ButtonsGroup = () => {
     exact: true,
   })
   const [isSubmiting, setSubmiting] = useState(false)
-  const history = useHistory.()
+  const history = useHistory()
   const traderPoolFactoryAddress = useSelector<
     AppState,
     ContractsState["TraderPoolFactory"]
@@ -996,6 +999,7 @@ export const ButtonsGroup = () => {
     privatePool,
     strategy,
     totalLPEmission,
+    avatarBlobString,
   } = useCreateFundContext()
   const { account } = useWeb3React()
 
@@ -1003,10 +1007,16 @@ export const ButtonsGroup = () => {
     if (!traderPoolFactory) return
 
     setSubmiting(true)
-
     try {
+      const ipfsReceipt = await addFileMetadata(
+        avatarBlobString,
+        description,
+        strategy,
+        account
+      )
+
       const poolParameters = {
-        descriptionURL: `${description} ${strategy}`,
+        descriptionURL: ipfsReceipt.path,
         trader: account,
         privatePool,
         totalLPEmission: 0,
@@ -1019,14 +1029,18 @@ export const ButtonsGroup = () => {
           25
         ).toString(),
       }
-
-      await traderPoolFactory[
+      const typeName =
         fundType === "basic" ? "deployBasicPool" : "deployInvestPool"
-      ](fundName, fundSymbol, poolParameters)
+      const createReceipt = await traderPoolFactory[typeName](
+        fundName,
+        fundSymbol,
+        poolParameters
+      )
       setSubmiting(false)
+      console.log(createReceipt)
+      history.push(`/new-fund/success/${fundSymbol}`)
     } catch (e) {
       setSubmiting(false)
-      history.push("/success")
       console.log(e)
     }
   }

@@ -44,6 +44,10 @@ export default function Routes() {
                 </RestrictedContainer>
               </Route>
 
+              <Route exact path="/new-fund/success/:ticker">
+                <Success />
+              </Route>
+
               <Route path="/new-fund">
                 <NewFund />
               </Route>
@@ -62,9 +66,6 @@ export default function Routes() {
 
               <Route path="/pool/profile/:poolAddress">
                 <Profile />
-              </Route>
-              <Route path="/pool/invest/success">
-                <Success />
               </Route>
               <Route path="/pool/invest/:poolAddress">
                 <Invest />

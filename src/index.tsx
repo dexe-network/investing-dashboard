@@ -4,7 +4,6 @@ import { createWeb3ReactRoot, Web3ReactProvider } from "@web3-react/core"
 import { Normalize } from "styled-normalize"
 import { createTheme } from "react-data-table-component"
 import { BrowserRouter as Router } from "react-router-dom"
-import { createClient, Provider as GraphProvider } from "urql"
 
 import { Provider } from "react-redux"
 import { ModalProvider } from "styled-react-modal"
@@ -40,12 +39,6 @@ createTheme("dexe", {
   },
 })
 
-// THE GRAPH CLIENT
-const client = createClient({
-  url:
-    "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-basic-pool",
-})
-
 const GlobalComponents = () => (
   <>
     <ContractsRegistryUpdater />
@@ -58,22 +51,20 @@ const GlobalComponents = () => (
 
 ReactDOM.render(
   <React.StrictMode>
-    <GraphProvider value={client}>
-      <ModalProvider>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getLibrary}>
-            <Provider store={store}>
-              <Router>
-                <>
-                  <GlobalComponents />
-                  <App />
-                </>
-              </Router>
-            </Provider>
-          </Web3ProviderNetwork>
-        </Web3ReactProvider>
-      </ModalProvider>
-    </GraphProvider>
+    <ModalProvider>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <Web3ProviderNetwork getLibrary={getLibrary}>
+          <Provider store={store}>
+            <Router>
+              <>
+                <GlobalComponents />
+                <App />
+              </>
+            </Router>
+          </Provider>
+        </Web3ProviderNetwork>
+      </Web3ReactProvider>
+    </ModalProvider>
   </React.StrictMode>,
   document.getElementById("root")
 )
