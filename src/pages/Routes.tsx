@@ -16,6 +16,7 @@ const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades"))
 const Wallet = lazy(() => import("pages/Wallet"))
+const Success = lazy(() => import("pages/Success"))
 
 export default function Routes() {
   const location = useLocation()
@@ -41,6 +42,10 @@ export default function Routes() {
                     <Trader />
                   </Route>
                 </RestrictedContainer>
+              </Route>
+
+              <Route exact path="/new-fund/success/:ticker">
+                <Success />
               </Route>
 
               <Route path="/new-fund">

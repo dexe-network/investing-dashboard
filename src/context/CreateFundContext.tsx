@@ -3,6 +3,7 @@ import { Token } from "constants/interfaces"
 import React from "react"
 
 interface IState {
+  avatarBlobString: string
   fundType: string
   fundName: string
   fundSymbol: string
@@ -26,6 +27,7 @@ interface IContext extends IState {
 }
 
 const defaultState = {
+  avatarBlobString: "",
   fundType: "basic",
   fundName: "",
   fundSymbol: "",
@@ -62,6 +64,7 @@ class CreateFundContext extends React.Component {
   static contextType = FundContext
 
   state = {
+    avatarBlobString: "",
     fundType: "basic",
     fundName: "",
     fundSymbol: "",

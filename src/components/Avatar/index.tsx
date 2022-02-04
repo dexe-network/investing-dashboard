@@ -4,13 +4,14 @@ import ImageCropper from "modals/ImageCropper"
 import defaultAvatar from "assets/icons/default-avatar.svg"
 import camera from "assets/icons/camera-icon.svg"
 import { device } from "theme"
+import { blobToBase64 } from "utils/ipfs"
 
 interface Props {
   url?: string
   size?: number
   m?: string
   showUploader?: boolean
-  onCrop?: Dispatch<SetStateAction<Blob | null>>
+  onCrop?: any
 }
 
 const Img = styled.img<{ size: number }>`
@@ -114,9 +115,11 @@ const Avatar: React.FC<Props> = ({
   }
 
   useEffect(() => {
-    if (!croppedImg || !onCrop) return
-
-    onCrop(croppedImg)
+    if (!croppedImg) return
+    ;(async () => {
+      const url = await blobToBase64(croppedImg)
+      onCrop("avatarBlobString", url)
+    })()
   }, [croppedImg, onCrop])
 
   if (!url || !url.length) {
