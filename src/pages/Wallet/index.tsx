@@ -36,6 +36,7 @@ import Avatar from "components/Avatar"
 import NavTabs from "components/NavTabs"
 import Button from "components/Button"
 import TokenIcon from "components/TokenIcon"
+import Confirm from "components/Confirm"
 import more from "assets/icons/more-menu.svg"
 import swap from "assets/icons/swap-path.svg"
 import { shortenAddress } from "utils"
@@ -1448,6 +1449,7 @@ export default function Wallet() {
         </InsuranceInfo>
         <Button>Open</Button>
       </InsuranceCard>
+      <Confirm></Confirm>
     </Container>
   )
 }
