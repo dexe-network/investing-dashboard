@@ -35,7 +35,10 @@ export default function Routes() {
                     <Investor />
                   </Route>
 
-                  <Route path="/me/trader/:poolType/:poolAddress">
+                  <Route path="/me/trader/profile/:poolType/:poolAddress">
+                    <Trader />
+                  </Route>
+                  <Route path="/me/trader/details/:poolType/:poolAddress">
                     <Trader />
                   </Route>
                 </RestrictedContainer>

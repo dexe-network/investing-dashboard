@@ -11,7 +11,7 @@ export interface User {
 
 export interface BasicPoolHistory {
   id: string
-  creatingTime: number
+  creationTime: number
   priceHistory: {
     price: string
     supply: string
@@ -78,4 +78,9 @@ export interface WhiteList {
   address: string
   decimals: number
   symbol: string
+}
+
+export interface OwnedPools {
+  basic: string[]
+  invest: string[]
 }

@@ -9,9 +9,9 @@ export const TabContainer = styled(Flex)`
   width: 100%;
   justify-content: space-around;
   background: linear-gradient(
-    85.11deg,
-    rgba(255, 255, 255, 0.005) 0.73%,
-    rgba(255, 255, 255, 0.03) 101.29%
+    64.44deg,
+    rgba(31, 35, 44, 0.5) 32.35%,
+    rgba(40, 47, 63, 0.5) 100%
   );
 `
 

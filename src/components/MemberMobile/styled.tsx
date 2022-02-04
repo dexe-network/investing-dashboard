@@ -12,7 +12,7 @@ export const Card = styled(Flex)`
 `
 
 export const PoolInfoContainer = styled(Flex)`
-  height: 59px;
+  height: 70px;
   width: 100%;
   justify-content: space-around;
 `
@@ -33,7 +33,7 @@ export const Title = styled.div`
   font-family: Gilroy;
   font-weight: 700;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 20px;
   display: flex;
   align-items: center;
@@ -47,7 +47,7 @@ export const Description = styled.div`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 12px;
 
   color: #5a6071;
@@ -61,8 +61,8 @@ export const Divider = styled.div`
 `
 
 export const PoolStatisticContainer = styled.div`
-  padding: 11px 16px 0;
-  height: 60px;
+  padding: 20px 16px 0;
+  height: 80px;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -110,7 +110,7 @@ const Label = styled.div`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 18px;
   text-align: left;
 
@@ -122,7 +122,7 @@ const Value = styled(Flex)`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 30px;
   text-align: left;
 

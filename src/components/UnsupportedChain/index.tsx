@@ -30,14 +30,16 @@ export const PopoverText = styled(Text)`
 `
 
 const UnsupportedChain: React.FC = () => {
-  const { error } = useWeb3React()
+  const { error, deactivate } = useWeb3React()
   const isUnsupportedChainIdError = error instanceof UnsupportedChainIdError
 
   const changeNetwork = () => {}
 
+  const disconnect = () => deactivate()
+
   return (
     <Popover
-      contentHeight={300}
+      contentHeight={230}
       title="Unsupported Chain"
       toggle={() => {}}
       isOpen={isUnsupportedChainIdError}
@@ -49,9 +51,18 @@ const UnsupportedChain: React.FC = () => {
         </PopoverText>
       </Flex>
       <Flex p="25px 37px 0" full>
-        <Button onClick={() => {}} full>
-          Change network
-        </Button>
+        <Flex p="0 24px 0 0">
+          <BorderedButton onClick={disconnect}>Disconnect</BorderedButton>
+        </Flex>
+        <Flex>
+          <Button
+            onClick={() =>
+              alert("This feature is not supported by your wallet")
+            }
+          >
+            Change network
+          </Button>
+        </Flex>
       </Flex>
     </Popover>
   )

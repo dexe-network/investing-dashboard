@@ -26,7 +26,18 @@ export interface ITopMembersFilters {
   period: string[]
   query: string
   currency: string
-  listType: "all" | "risk"
+  listType: "basic" | "invest" | "all" | "risk"
+}
+
+export interface PaginationType {
+  total: number
+  offset: number
+  limit: number
+}
+
+export interface ITopMembersPagination {
+  basic: PaginationType
+  invest: PaginationType
 }
 
 export interface Token {

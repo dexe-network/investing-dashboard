@@ -65,22 +65,24 @@ function reverseString(str) {
   return joinArray
 }
 
-const parseDecimals = (floatPart: string, decimals) => {
-  const firstMatch = floatPart.match("[1-9]")
-  const lastMatch = reverseString(floatPart).match("[1-9]")
+const parseDecimals = (float: string, decimals) => {
+  // const firstMatch = floatPart.match("[1-9]")
+  // const lastMatch = reverseString(floatPart).match("[1-9]")
 
-  if (
-    !!firstMatch &&
-    !!firstMatch.length &&
-    !!firstMatch.index &&
-    !!lastMatch &&
-    !!lastMatch.index
-  ) {
-    const d = firstMatch.index > decimals ? firstMatch.index + 3 : decimals
-    console.log(d, firstMatch.index)
-    return floatPart.substring(0, d + 1)
-  }
-  return ""
+  // if (
+  //   !!firstMatch &&
+  //   !!firstMatch.length &&
+  //   !!firstMatch.index &&
+  //   !!lastMatch &&
+  //   !!lastMatch.index
+  // ) {
+  //   const d = firstMatch.index > decimals ? firstMatch.index + 3 : decimals
+
+  //   return floatPart.substring(0, d + 1)
+  // }
+
+  const floatPart = !!float ? `${float}`.substring(0, decimals + 1) : ""
+  return floatPart
 }
 
 export const formatNumber = (amount: string, decimals = 2) => {
@@ -96,9 +98,7 @@ export const formatNumber = (amount: string, decimals = 2) => {
 
   return (
     numArr[0].split(/(?=(?:\d{3})+(?!\d))/).join(",") +
-    (floatPart.length < decimals
-      ? floatPart
-      : parseDecimals(floatPart, decimals))
+    parseDecimals(floatPart, decimals)
   )
 }
 

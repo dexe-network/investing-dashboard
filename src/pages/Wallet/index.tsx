@@ -1443,7 +1443,7 @@ export default function Wallet() {
         <InsuranceInfo>
           <InsuranceTitle>Funds Insurance</InsuranceTitle>
           <InsuranceDescription>
-            Minimize your investment risks with DeXe Insurance
+            Minimize your investment risks <br /> with DeXe Insurance
           </InsuranceDescription>
         </InsuranceInfo>
         <Button>Open</Button>

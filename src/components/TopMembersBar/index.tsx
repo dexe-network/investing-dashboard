@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import IconSearch from "components/IconSearch"
+import { useSelector } from "react-redux"
 
 import { usePoolsFilters } from "state/pools/hooks"
 import Popover from "components/Popover"
@@ -25,6 +26,7 @@ import {
   FilterSelectableItem,
   FiltersBody,
 } from "./styled"
+import { AppState } from "state"
 
 const sortFilter = [
   "Rating",
@@ -45,8 +47,28 @@ const TopMembersBar: React.FC = () => {
   const [isFiltersActive, setFiltersActive] = useState(false)
   const [selectedFilter, setFilterState] = useState("")
 
+  const totalBasicPools = useSelector<
+    AppState,
+    AppState["pools"]["pagination"]["basic"]["total"]
+  >((state) => state.pools.pagination.basic.total)
+  const totalInvestPools = useSelector<
+    AppState,
+    AppState["pools"]["pagination"]["invest"]["total"]
+  >((state) => state.pools.pagination.invest.total)
+
   const handleSearchClick = () => !isSearchActive && setSearchActive(true)
   const handleFiltersClick = () => !isFiltersActive && setFiltersActive(true)
+
+  // *hint.
+  // in older versions listType was "all" || "risk" value,
+  // but now it's deprecated.
+  // so that side effect will make sure that
+  // app not crashed
+  useEffect(() => {
+    if (filters.listType === "all" || filters.listType === "risk") {
+      dispatchFilter("listType", "basic")
+    }
+  }, [filters.listType, dispatchFilter])
 
   return (
     <>
@@ -64,16 +86,16 @@ const TopMembersBar: React.FC = () => {
             transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
           >
             <Tab
-              active={filters.listType === "all"}
-              onClick={() => dispatchFilter("listType", "all")}
+              active={filters.listType === "basic"}
+              onClick={() => dispatchFilter("listType", "basic")}
             >
-              All Pools
+              Basic pools ({totalBasicPools})
             </Tab>
             <Tab
-              active={filters.listType === "risk"}
-              onClick={() => dispatchFilter("listType", "risk")}
+              active={filters.listType === "invest"}
+              onClick={() => dispatchFilter("listType", "invest")}
             >
-              Investment
+              Investment pools ({totalInvestPools})
             </Tab>
           </Tabs>
 

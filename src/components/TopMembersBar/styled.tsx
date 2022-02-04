@@ -38,15 +38,19 @@ export const Tabs = styled(Flex)``
 export const Tab = styled(ClickableArea)<{ active?: boolean }>`
   font-family: Gilroy;
   font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
+  font-weight: normal;
   font-size: 14px;
   line-height: 130%;
-  /* or 18px */
+  /* identical to box height, or 16px */
+
+  display: flex;
+  align-items: center;
+  text-align: center;
+  letter-spacing: 0.5px;
 
   display: flex;
   align-items: flex-end;
-  color: ${(props) => (props.active ? "#9AE2CB" : "#5A6071")};
+  color: ${(props) => (props.active ? "#C5D1DC" : "#838ba3")};
 
   &:nth-child(2) {
     padding-left: 30px;

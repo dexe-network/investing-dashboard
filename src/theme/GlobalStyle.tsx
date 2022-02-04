@@ -104,9 +104,10 @@ export const SpecialModalBackground = styled.div`
   height: 100vh;
   z-index: 10;
   background: linear-gradient(
-    214deg,
-    rgba(41, 49, 52, 0.6) -50%,
-    rgba(53, 52, 75, 0.6) 100%
+    197.82deg,
+    #1c2028 34.02%,
+    #0f1115 63.79%,
+    #101217 98.24%
   );
   backdrop-filter: blur(3px);
   -webkit-align-items: center;
@@ -125,13 +126,13 @@ export const SpecialModalBackground = styled.div`
 `
 
 export const AppWrapper = styled.div`
-  display: grid;
+  // display: grid;
   min-height: -webkit-fill-available;
 
   background: linear-gradient(9.62deg, #0a0b0d 1.99%, #1e222d 99.3%);
-  grid-template-columns: 50px 1fr;
-  grid-template-areas: "menu content";
-  height: inherit;
+  // grid-template-columns: 50px 1fr;
+  // grid-template-areas: "menu content";
+  // height: inherit;
   overscroll-behavior: none;
   touch-action: none;
 

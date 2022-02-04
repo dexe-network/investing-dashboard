@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit"
-import { save, load } from "redux-localstorage-simple"
+import { save, load, clear } from "redux-localstorage-simple"
 
 import user from "./user/reducer"
 import transactions from "./transactions/reducer"
@@ -8,6 +8,19 @@ import contracts from "./contracts/reducer"
 import pricefeed from "./pricefeed/reducer"
 
 const PERSISTED_KEYS: string[] = ["user", "transactions", "pools"]
+
+const shouldReset = () => {
+  const isReseted = localStorage.getItem("redux-reset-03-02-2022") === "true"
+
+  if (!isReseted) {
+    clear({
+      namespace: process.env.REACT_APP_NAMESPACE || "DEXE",
+    })
+    localStorage.setItem("redux-reset-03-02-2022", "true")
+  }
+}
+
+shouldReset()
 
 const store = configureStore({
   reducer: {

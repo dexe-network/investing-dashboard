@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
-import { useRouteMatch } from "react-router-dom"
+import { useHistory, useRouteMatch } from "react-router-dom"
 import axios from "axios"
 import { External, Flex, Text, To } from "theme"
 import { useWeb3React } from "@web3-react/core"
@@ -968,6 +968,8 @@ export const ButtonsGroup = () => {
     path: steps,
     exact: true,
   })
+  const [isSubmiting, setSubmiting] = useState(false)
+  const history = useHistory.()
   const traderPoolFactoryAddress = useSelector<
     AppState,
     ContractsState["TraderPoolFactory"]
@@ -998,6 +1000,10 @@ export const ButtonsGroup = () => {
   const { account } = useWeb3React()
 
   const submit = async () => {
+    if (!traderPoolFactory) return
+
+    setSubmiting(true)
+
     try {
       const poolParameters = {
         descriptionURL: `${description} ${strategy}`,
@@ -1014,11 +1020,13 @@ export const ButtonsGroup = () => {
         ).toString(),
       }
 
-      if (!traderPoolFactory) return
       await traderPoolFactory[
         fundType === "basic" ? "deployBasicPool" : "deployInvestPool"
       ](fundName, fundSymbol, poolParameters)
+      setSubmiting(false)
     } catch (e) {
+      setSubmiting(false)
+      history.push("/success")
       console.log(e)
     }
   }
