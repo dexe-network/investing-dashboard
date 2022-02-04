@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react"
 import styled from "styled-components"
 import { motion } from "framer-motion"
-import Flex from "theme"
+import { Flex } from "theme"
 import warningIcon from "assets/icons/warning-icon.svg"
 
 const Overlay = styled(motion.div)`
