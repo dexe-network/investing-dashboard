@@ -17,27 +17,36 @@ const Overlay = styled(motion.div)`
   width: 100%;
 `
 const Container = styled(motion.div)`
-  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  max-width: 300px;
+  margin: auto;
+  background: #1e2229;
   border-radius: 6px;
+  border: 2px solid;
+  border-color: rgb(105, 105, 117, 0.3);
   position: absolute;
   top: 210px;
   left: 8px;
   right: 8px;
   z-index: 100;
-  padding: 31px 26px;
 `
 const Content = styled(Flex)`
+  box-sizing: border-box;
+  padding: 10px 16px 19px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: auto;
 `
 const Title = styled.div`
+  box-sizing: border-box;
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 22px;
   color: #c5d1dc;
+  margin-top: 10px;
+  margin-bottom: 2px;
 `
 const Subtitle = styled.div`
   font-family: Gilroy;
@@ -46,13 +55,91 @@ const Subtitle = styled.div`
   font-size: 12px;
   line-height: 16px;
   color: #c5d1dc;
+  text-align: center;
+`
+const ButtonContainer = styled(Flex)`
+  width: 100%;
+  left: 0;
+  right: 0;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`
+const ButtonCancel = styled.button`
+  width: 100%;
+  border: none;
+  appearance: none;
+  outline: none;
+  border-top: 2px solid;
+  border-right: 2px solid;
+  border-color: rgb(105, 105, 117, 0.3);
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 22px;
+  text-align: center;
+  color: #5a6071;
+  background: #1e2229;
+  box-sizing: border-box;
+  padding: 10px 40px;
+`
+const ButtonClose = styled.button`
+  width: 100%;
+  border: none;
+  appearance: none;
+  outline: none;
+  border-top: 2px solid;
+  border-color: rgb(105, 105, 117, 0.3);
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  text-align: center;
+  color: #c5d1dc;
+  background: #1e2229;
+  box-sizing: border-box;
+  padding: 10px 24px;
 `
 
-const Confirm: React.FC = () => {
+const Confirm: React.FC<{
+  isOpen: boolean
+  toggle: () => void
+}> = ({ isOpen, toggle }) => {
   return (
     <>
-      <Overlay />
-      <Container>
+      <Overlay
+        onClick={toggle}
+        animate={isOpen ? "visible" : "hidden"}
+        initial="hidden"
+        variants={{
+          visible: {
+            opacity: 0.4,
+            display: "block",
+          },
+          hidden: {
+            opacity: 0,
+            transitionEnd: { display: "none" },
+          },
+        }}
+      />
+      <Container
+        animate={isOpen ? "visible" : "hidden"}
+        initial="hidden"
+        variants={{
+          visible: {
+            opacity: 1,
+            display: "block",
+          },
+          hidden: {
+            opacity: 0,
+            transitionEnd: { display: "none" },
+          },
+        }}
+      >
         <Content>
           <img src={warningIcon} alt="warning-icon" />
           <Title>Are you sure?</Title>
@@ -61,6 +148,10 @@ const Confirm: React.FC = () => {
             сможете
           </Subtitle>
         </Content>
+        <ButtonContainer>
+          <ButtonCancel>Cancel</ButtonCancel>
+          <ButtonClose>Close trade</ButtonClose>
+        </ButtonContainer>
       </Container>
     </>
   )
