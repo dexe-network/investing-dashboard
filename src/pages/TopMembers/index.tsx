@@ -66,7 +66,7 @@ const BasicPoolsList = () => {
         style={{ height: window.innerHeight - 117 }}
       >
         {basicPools.map((pool, index) => (
-          <To key={pool.address} to={`/pool/profile/${pool.address}`}>
+          <To key={pool.address} to={`/pool/profile/basic/${pool.address}`}>
             <Flex p="16px 0 0" full>
               <MemberMobile data={pool} index={index} />
             </Flex>

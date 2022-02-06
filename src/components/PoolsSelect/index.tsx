@@ -36,6 +36,7 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
   const [isDragAlloved, setDragAllowed] = useState(true)
   const scrollRef = React.useRef<any>(null)
   const { account } = useWeb3React()
+
   const basicPools = useSelector((state: AppState) =>
     selectBasicPoolsBatch(state, pools.basic)
   )
@@ -44,11 +45,11 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
   )
 
   useEffect(() => {
-    if (!scrollRef.current) return
+    if (!scrollRef.current || !isOpen) return () => clearAllBodyScrollLocks()
     disableBodyScroll(scrollRef.current)
 
     return () => clearAllBodyScrollLocks()
-  }, [scrollRef])
+  }, [scrollRef, isOpen])
 
   const basicPoolsList = basicPools.map((pool) => (
     <Token

@@ -46,17 +46,24 @@ const ProfileHeader: React.FC = () => {
   const isTraderDetails =
     location.pathname.substr(0, 18) === "/me/trader/details"
 
-  useEffect(() => {
-    document.ontouchmove = function (event) {
-      event.preventDefault()
-    }
+  // useEffect(() => {
+  //   if (!isPoolsOpen)
+  //     return () => {
+  //       document.ontouchmove = function (event) {
+  //         // unset
+  //       }
+  //     }
 
-    return () => {
-      document.ontouchmove = function (event) {
-        //
-      }
-    }
-  }, [])
+  //   document.ontouchmove = function (event) {
+  //     event.preventDefault()
+  //   }
+
+  //   return () => {
+  //     document.ontouchmove = function (event) {
+  //       // unset
+  //     }
+  //   }
+  // }, [isPoolsOpen])
 
   if (isTrader) {
     return (

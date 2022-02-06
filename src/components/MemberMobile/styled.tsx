@@ -18,14 +18,14 @@ export const PoolInfoContainer = styled(Flex)`
 `
 
 export const PoolInfo = styled(Flex)`
-  width: 50%;
+  width: 55%;
   justify-content: flex-start;
   padding-left: 12px;
 `
 
 export const BaseInfo = styled(Flex)`
-  width: 50%;
-  justify-content: center;
+  width: 45%;
+  justify-content: flex-start;
   padding-right: 16px;
 `
 

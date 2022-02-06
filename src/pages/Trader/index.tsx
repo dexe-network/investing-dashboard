@@ -10,13 +10,15 @@ import { GuardSpinner } from "react-spinners-kit"
 import { formatNumber } from "utils"
 import { ethers } from "ethers"
 import PnlWidget from "components/PnlWidget"
+import FundDetailsCard from "components/FundDetailsCard"
+import FundStatisticsCard from "components/FundStatisticsCard"
 import { selectBasicPoolByAddress } from "state/pools/selectors"
 import { AppState } from "state"
 import {
-  Tab,
   TabCard,
   Row,
   MainText,
+  MainValue,
   Period,
   ChartPeriods,
 } from "pages/Investor/styled"
@@ -33,7 +35,7 @@ const pnl: IDetailedChart[] = [
     x: "1",
     y: 1,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 1,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -41,7 +43,7 @@ const pnl: IDetailedChart[] = [
     x: "2",
     y: 1.23,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 1,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -49,7 +51,7 @@ const pnl: IDetailedChart[] = [
     x: "3",
     y: 1.12,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 1,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -57,7 +59,7 @@ const pnl: IDetailedChart[] = [
     x: "4",
     y: 1.34,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 1,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -65,7 +67,7 @@ const pnl: IDetailedChart[] = [
     x: "5",
     y: 1,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 3,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -73,7 +75,7 @@ const pnl: IDetailedChart[] = [
     x: "6",
     y: 1.76,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 3.5,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -81,7 +83,7 @@ const pnl: IDetailedChart[] = [
     x: "7",
     y: 2.34,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 7,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -89,7 +91,7 @@ const pnl: IDetailedChart[] = [
     x: "8",
     y: 1.92,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 7,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -97,7 +99,7 @@ const pnl: IDetailedChart[] = [
     x: "9",
     y: 2.3,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 7,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -105,7 +107,7 @@ const pnl: IDetailedChart[] = [
     x: "10",
     y: 2.3,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 6.1,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -113,7 +115,7 @@ const pnl: IDetailedChart[] = [
     x: "11",
     y: 2.3,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 15,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -121,7 +123,7 @@ const pnl: IDetailedChart[] = [
     x: "12",
     y: 2.63,
     lpBasic: "0",
-    lpBasicPercent: 0,
+    lpBasicPercent: 20,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -133,12 +135,12 @@ import {
   Container,
   Buttons,
   ButtonContainer,
-  Section,
-  HalfBlock,
-  Label,
-  Value,
-  Pnl,
+  Details,
+  TextWhiteBig,
+  TextGrey,
+  FundsUsed,
 } from "./styled"
+import TabsLight from "components/TabsLight"
 
 function Trader(props: Props) {
   const {} = props
@@ -178,33 +180,101 @@ function Trader(props: Props) {
             <img src={fundPositions} />
           </Flex>
           <Flex full p="0 10px 0 0">
-            <Button full>New trade</Button>
+            <Button
+              onClick={() => history.push(`/pool/exchange/${poolData.address}`)}
+              full
+            >
+              New trade
+            </Button>
           </Flex>
         </ButtonContainer>
       </MemberMobile>
 
       <TabCard>
-        <Tab>Profit & Loss</Tab>
-        <ChartPeriods>
-          <Period active>D</Period>
-          <Period>W</Period>
-          <Period>M</Period>
-          <Period>3M</Period>
-          <Period>6M</Period>
-          <Period>1Y</Period>
-          <Period>ALL</Period>
-        </ChartPeriods>
-        <AreaChart tooltipSize="sm" height={120} data={pnl} />
-        <BarChart />
-        <Row>
-          <MainText>P&L LP - $ETH</MainText>
-          <MainText>+ 13.1% (+112.132 ETH)</MainText>
-        </Row>
-        <Row>
-          <MainText>P&L LP - USD% - USD</MainText>
-          <MainText>+ 19.1% - 19.1 USD </MainText>
-        </Row>
+        <TabsLight
+          tabs={[
+            {
+              name: "Profit & Loss",
+              child: (
+                <>
+                  <AreaChart tooltipSize="sm" height={120} data={pnl} />
+                  <ChartPeriods>
+                    <Period active>D</Period>
+                    <Period>W</Period>
+                    <Period>M</Period>
+                    <Period>3M</Period>
+                    <Period>6M</Period>
+                    <Period>1Y</Period>
+                    <Period>ALL</Period>
+                  </ChartPeriods>
+                  <BarChart />
+                  <Row>
+                    <MainText>P&L LP - $ETH</MainText>
+                    <MainValue>+ 13.1% (+112.132 ETH)</MainValue>
+                  </Row>
+                  <Row>
+                    <MainText>P&L LP - USD% - USD</MainText>
+                    <MainValue>+ 19.1% - 19.1 USD </MainValue>
+                  </Row>
+                </>
+              ),
+            },
+            {
+              name: "Locked funds",
+              child: (
+                <>
+                  <AreaChart
+                    multiple
+                    tooltipSize="sm"
+                    height={163}
+                    data={pnl}
+                  />
+                  <ChartPeriods>
+                    <Period active>D</Period>
+                    <Period>W</Period>
+                    <Period>M</Period>
+                    <Period>3M</Period>
+                    <Period>6M</Period>
+                    <Period>1Y</Period>
+                    <Period>ALL</Period>
+                  </ChartPeriods>
+                  <Flex full p="15px 0 0">
+                    <Row>
+                      <MainText>Locked out of investor funds</MainText>
+                      <MainValue>$32.12k</MainValue>
+                    </Row>
+                  </Flex>
+                  <Row>
+                    <TextGrey>Your funds locked</TextGrey>
+                    <TextWhiteBig>$32.12k</TextWhiteBig>
+                  </Row>
+                  <Row>
+                    <FundsUsed
+                      current={"$61.15k / $101.92k"}
+                      total={"Fund used (60%)"}
+                    />
+                  </Row>
+                </>
+              ),
+            },
+          ]}
+        />
       </TabCard>
+
+      <Details>
+        <TabsLight
+          tabs={[
+            {
+              name: "Statistic",
+              child: <FundStatisticsCard data={poolData} />,
+            },
+            {
+              name: "Details",
+              child: <FundDetailsCard />,
+            },
+          ]}
+        />
+      </Details>
     </Container>
   )
 }

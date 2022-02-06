@@ -4,7 +4,7 @@ import styled, { createGlobalStyle } from "styled-components"
 const Container = styled(Flex)`
   width: 100%;
   justify-content: space-evenly;
-  margin: 14px 0 22px;
+  margin: 44px 0 22px;
 `
 
 const Bar = styled.div`

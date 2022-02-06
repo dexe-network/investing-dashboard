@@ -17,6 +17,8 @@ const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades"))
 const Wallet = lazy(() => import("pages/Wallet"))
 const Success = lazy(() => import("pages/NewFund/Success"))
+const Notifications = lazy(() => import("pages/Notifications"))
+const Insurance = lazy(() => import("pages/Insurance"))
 
 export default function Routes() {
   const location = useLocation()
@@ -38,13 +40,14 @@ export default function Routes() {
                   <Route path="/me/trader/profile/:poolType/:poolAddress">
                     <Trader />
                   </Route>
-                  <Route path="/me/trader/details/:poolType/:poolAddress">
-                    <Trader />
-                  </Route>
                 </RestrictedContainer>
               </Route>
 
-              <Route exact path="/new-fund/success/:ticker">
+              <Route exact path="/notifications">
+                <Notifications />
+              </Route>
+
+              <Route exact path="/new-fund/success/:ticker/:address">
                 <Success />
               </Route>
 
@@ -64,14 +67,17 @@ export default function Routes() {
                 <Trades />
               </Route>
 
-              <Route path="/pool/profile/:poolAddress">
+              <Route path="/pool/profile/:poolType/:poolAddress">
                 <Profile />
               </Route>
-              <Route path="/pool/invest/:poolAddress">
+              <Route path="/pool/invest/:poolType/:poolAddress">
                 <Invest />
               </Route>
               <Route path="/pool/exchange/:poolAddress">
                 <Swap />
+              </Route>
+              <Route path="/insurance">
+                <Insurance />
               </Route>
 
               <Route exact path="/">

@@ -91,6 +91,17 @@ export const MainText = styled.div`
   }
 `
 
+export const MainValue = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 130%;
+  text-align: right;
+
+  color: #9ae2cb;
+`
+
 export const SecondaryText = styled(MainText)`
   color: #5a6071;
 `

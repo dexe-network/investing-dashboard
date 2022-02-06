@@ -147,6 +147,7 @@ const Chart: React.FC<{
   title?: boolean
   period?: boolean
   tooltipSize?: "sm" | "lg"
+  multiple?: boolean
 }> = (props) => {
   const [isPro] = useUserProMode()
 
@@ -214,6 +215,16 @@ const Chart: React.FC<{
               fill="url(#colorUv)"
               fillOpacity={1}
             />
+            {props.multiple && (
+              <Area
+                type="monotoneX"
+                dataKey="lpBasicPercent"
+                stroke="#9AE2CB"
+                strokeWidth={2}
+                fill="url(#colorUv)"
+                fillOpacity={1}
+              />
+            )}
           </AreaChart>
         </ResponsiveContainer>
       </div>

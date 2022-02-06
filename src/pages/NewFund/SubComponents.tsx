@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import { useHistory, useRouteMatch } from "react-router-dom"
 import axios from "axios"
+import { format } from "date-fns"
 import { External, Flex, Text, To } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import WalletCard from "components/WalletCard"
@@ -65,6 +66,12 @@ import {
   HintTextCentered,
   PopoverText,
 } from "modals/CreateFund/styled"
+import {
+  FormLabelGreen,
+  Input,
+  IconInput,
+  AreaInput,
+} from "components/Form/styled"
 import { SubContainer, NavIcon } from "./styled"
 import { TraderPoolFactory } from "abi"
 import { addFileMetadata } from "utils/ipfs"
@@ -74,16 +81,19 @@ const performanceFees = [
     id: 0,
     title: "1 Month performance Fee withdrawal",
     description: "Performance Fee limits of 20% to 30%",
+    monthes: 1,
   },
   {
     id: 1,
     title: "3 Months performance Fee withdrawal",
     description: "Performance Fee limits of 20% to 50%",
+    monthes: 3,
   },
   {
     id: 2,
     title: "12 Months performance Fee withdrawal",
     description: "Performance Fee limits of 20% to 70%",
+    monthes: 12,
   },
 ]
 
@@ -800,13 +810,18 @@ export const Summary = () => {
     ownInvestments,
     minimalInvestment,
     commissionPeriod,
+    commissionPercentage,
     totalLPEmission,
     strategy,
     handleChange,
   } = useCreateFundContext()
   const [isTermsAcepted, setTermsState] = useState(false)
+  const [isManagersAdded, setManagers] = useState(!!managers.length)
+  const [isFundPrivate, setPrivate] = useState(!!investors.length)
+  const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
   const { account } = useWeb3React()
   const [token, baseData] = useERC20(baseToken.address)
+  const today = format(new Date(), "MMM d, yyyy")
 
   return (
     <SubContainer
@@ -817,101 +832,140 @@ export const Summary = () => {
       jc="flex-start"
     >
       <Secondary>
-        Please make sure ti check all the entered data bellow
+        Please make sure to check all the entered data bellow
       </Secondary>
       <Warn>Trade settings cannot be changed after creation.</Warn>
-      <CardsRow>
-        <OneValueCard label="Name of Fund" value={fundName} />
-        <OneValueCard label="Ticker symbol" value={fundSymbol} />
-      </CardsRow>
-      <Flex full p="15px 0 0">
-        <SelectUI showSelected type={fundType} handleSelect={() => {}} />
-      </Flex>
-      <Flex p="11px 0 0" full>
-        <WalletCard symbol={baseToken.symbol} token={baseToken.address} />
-      </Flex>
-      <Flex full p="22px 0 11px">
-        <DescriptionCard label="Fund Description" value={description} />
-      </Flex>
-      <Flex full p="11px 0 0">
-        <DescriptionCard label="Fund Strategy" value={strategy} />
+      <Flex p="32px 0 0">
+        <FormLabelGreen>Basic settings</FormLabelGreen>
       </Flex>
       <CardsRow>
-        <OneValueCard
-          label="Own investments"
-          value={`${ownInvestments} ${baseToken.symbol || ""}`}
-        />
-        <OneValueCard
-          label="Min. invest amount"
-          value={`${minimalInvestment} ${baseToken.symbol || ""}`}
+        <Input label="Owner" value={shortenAddress(account, 3)} />
+        <Input label="Basic token" value={baseData?.symbol} />
+      </CardsRow>
+      <CardsRow>
+        <Input label="Created" value={today} />
+        <Input label="Fund type" value={fundType} />
+      </CardsRow>
+      <CardsRow>
+        <Input
+          label={`Performance fee ${
+            performanceFees[commissionPeriod].monthes
+          } ${commissionPeriod === 0 ? "month" : "monthes"}`}
+          value={`${commissionPercentage}%`}
         />
       </CardsRow>
-      <Flex full p="22px 0 11px">
-        <DescriptionCard
-          label="Emission"
-          value={
-            totalLPEmission === "0" || totalLPEmission === ""
-              ? "Unlimited Emission"
-              : `${totalLPEmission} ${
-                  baseToken.symbol ? `LP-${baseToken.symbol}` : ""
-                }`
-          }
+
+      <Flex p="32px 0 0">
+        <FormLabelGreen>Investment settings</FormLabelGreen>
+      </Flex>
+      <CardsRow>
+        <IconInput
+          label="Min. investment amount"
+          value={minimalInvestment}
+          symbol={baseData?.symbol}
+        />
+      </CardsRow>
+      <CardsRow>
+        <AreaInput
+          label="Fund strategy"
+          value={`${
+            !!strategy.length ? `${1000 - strategy.length} / 1000` : "1000"
+          } symbols`}
+          description={strategy}
+        />
+      </CardsRow>
+      <CardsRow>
+        <AreaInput
+          label="Fund description"
+          value={`${
+            !!description.length
+              ? `${1000 - description.length} / 1000`
+              : "1000"
+          } symbols`}
+          description={description}
+        />
+      </CardsRow>
+
+      <Flex p="25px 0 16px" full ai="center">
+        <Flex ai="center">
+          <UserIcon active={isManagersAdded} />
+          <FormLabel>Fund managers</FormLabel>
+        </Flex>
+        <Switch
+          isOn={isManagersAdded}
+          name="_managersRestricted"
+          onChange={(n, v) => setManagers(v)}
         />
       </Flex>
-      <Flex full p="11px 0">
+      <Flex
+        p="15px 0 15px"
+        initial={isManagersAdded ? "visible" : "hidden"}
+        variants={opacityVariants}
+        transition={{ duration: 0.4 }}
+        animate={isManagersAdded ? "visible" : "hidden"}
+        full
+        dir="column"
+      >
         <AddressChips
-          customBg="linear-gradient(64.44deg, #24272F 32.35%, #2C313C 100%)"
-          readonly
           items={managers}
-          onChange={() => {}}
-          label="Managers"
+          onChange={(v) => handleChange("managers", v)}
+          limit={100}
+          label="0x..."
         />
       </Flex>
-      <Flex full p="11px 0">
-        <AddressChips
-          customBg="linear-gradient(64.44deg, #24272F 32.35%, #2C313C 100%)"
-          readonly
-          items={investors}
-          onChange={() => {}}
-          label="Investors"
+      <Flex p="16px 0 16px" full ai="center">
+        <Flex>
+          <EmissionIcon active={isEmissionLimited} />
+          <FormLabel>Limited Emission</FormLabel>
+        </Flex>
+        <Switch
+          isOn={isEmissionLimited}
+          name="emission"
+          onChange={(n, v) => setEmission(v)}
         />
-      </Flex>
-      <Flex full p="11px 0">
-        <PerformanceCard shadow onClick={() => {}}>
-          <Flex p="17px 5px 24px 10px">
-            <img src={pencil} />
-          </Flex>
-          <PerformanceContent>
-            <PerformanceTitle>
-              {
-                performanceFees.filter((v) => v.id === commissionPeriod)[0]
-                  .title
-              }
-            </PerformanceTitle>
-            <PerformanceDescription>
-              {
-                performanceFees.filter((v) => v.id === commissionPeriod)[0]
-                  .description
-              }
-            </PerformanceDescription>
-          </PerformanceContent>
-        </PerformanceCard>
       </Flex>
       <Flex
         full
-        jc="flex-start"
-        p="10px 0 0 15px"
-        onClick={() => setTermsState(!isTermsAcepted)}
+        initial={isEmissionLimited ? "visible" : "hidden"}
+        variants={opacityVariants}
+        transition={{ duration: 0.4 }}
+        animate={isEmissionLimited ? "visible" : "hidden"}
       >
-        <RadioButton
-          selected={isTermsAcepted && "terms&privacy"}
-          onChange={() => setTermsState(!isTermsAcepted)}
-          value="terms&privacy"
+        <InputUI
+          type="number"
+          customPlaceholder={`XXX LP-${fundSymbol}`}
+          label="Emission"
+          onChange={handleChange}
+          name="totalLPEmission"
+          defaultValue={totalLPEmission}
         />
-        <Text fz={12} color="#C5D1DC">
-          Accept <External href="#">Terms of Service</External> and{" "}
-          <External href="#">Privacy Policy</External>
-        </Text>
+      </Flex>
+      <Flex p="16px 0 16px" full ai="center">
+        <Flex>
+          <LimitInvestIcon active={isFundPrivate} />
+          <FormLabel>Limit who can invest</FormLabel>
+        </Flex>
+        <Switch
+          isOn={isFundPrivate}
+          name="public"
+          onChange={(n, v) => setPrivate(v)}
+        />
+      </Flex>
+      <Flex
+        p="15px 0 15px"
+        initial={isFundPrivate ? "visible" : "hidden"}
+        variants={opacityVariants}
+        transition={{ duration: 0.4 }}
+        animate={isFundPrivate ? "visible" : "hidden"}
+        full
+        dir="column"
+      >
+        <AddressChips
+          items={investors}
+          onChange={(v) => handleChange("investors", v)}
+          limit={100}
+          label="0x..."
+        />
       </Flex>
     </SubContainer>
   )
@@ -1001,7 +1055,7 @@ export const ButtonsGroup = () => {
     totalLPEmission,
     avatarBlobString,
   } = useCreateFundContext()
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
 
   const submit = async () => {
     if (!traderPoolFactory) return
@@ -1036,9 +1090,22 @@ export const ButtonsGroup = () => {
         fundSymbol,
         poolParameters
       )
+      const data = await library.getTransactionReceipt(createReceipt.hash)
+
       setSubmiting(false)
-      console.log(createReceipt)
-      history.push(`/new-fund/success/${fundSymbol}`)
+      console.log(data)
+
+      if (data.logs.length && data.logs[0].address) {
+        history.push(
+          `/new-fund/success/${fundSymbol}/${
+            data.logs.length && data.logs[0].address
+          }`
+        )
+      } else {
+        console.log("error", data)
+        // TODO: handle fund creating error
+      }
+      console.log(data.logs.length && data.logs[0].address)
     } catch (e) {
       setSubmiting(false)
       console.log(e)

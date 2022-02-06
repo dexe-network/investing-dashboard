@@ -68,6 +68,7 @@ const TokenName = styled.div`
   font-weight: 500;
   color: #f5f5f5;
   text-transform: uppercase;
+  transform: translate(-2px, 2px);
 `
 
 interface IProps {

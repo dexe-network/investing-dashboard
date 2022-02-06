@@ -8,7 +8,10 @@ import FundsWidget from "components/FundsWidget"
 import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
 import NavTabs from "components/NavTabs"
-import { selectBasicPoolByAddress } from "state/pools/selectors"
+import {
+  selectBasicPoolByAddress,
+  selectInvestPoolByAddress,
+} from "state/pools/selectors"
 import { Container, ButtonContainer, Details } from "./styled"
 import { Flex } from "theme"
 import { AppState } from "state"
@@ -25,6 +28,7 @@ import {
 
 import AreaChart from "components/AreaChart"
 import BarChart from "pages/Investor/Bar"
+import TabsLight from "components/TabsLight"
 
 const pnl: IDetailedChart[] = [
   {
@@ -128,14 +132,23 @@ const pnl: IDetailedChart[] = [
 interface Props {}
 
 const Profile: React.FC<Props> = () => {
-  const { poolAddress } = useParams<{ poolAddress: string }>()
+  const { poolAddress, poolType } = useParams<{
+    poolAddress: string
+    poolType: "basic" | "invest"
+  }>()
   const history = useHistory()
-  const poolData = useSelector((state: AppState) =>
-    selectBasicPoolByAddress(state, poolAddress)
-  )
+  const pools = {
+    basic: useSelector((state: AppState) =>
+      selectBasicPoolByAddress(state, poolAddress)
+    ),
+    invest: useSelector((state: AppState) =>
+      selectInvestPoolByAddress(state, poolAddress)
+    ),
+  }
+  const poolData = pools[poolType]
 
   const handleBuyRedirect = () => {
-    history.push(`/pool/invest/${poolData?.address}`)
+    history.push(`/pool/invest/${poolType}/${poolData?.address}`)
   }
 
   if (!poolData) {
@@ -181,22 +194,14 @@ const Profile: React.FC<Props> = () => {
         </Row>
       </TabCard>
 
-      {/* <Flex full p="16px 0 6px">
-        <PnlWidget
-          pnlPeriod={{ m1: 22.2, m3: 12.3, all: 102.38 }}
-          pnlChart={[]}
-        />
-      </Flex>
-
-      <Flex full p="6px 0">
-        <FundsWidget />
-      </Flex> */}
-
       <Details>
-        <NavTabs
+        <TabsLight
           tabs={[
-            { name: "Statistic", component: <FundStatisticsCard /> },
-            { name: "Details", component: <FundDetailsCard /> },
+            {
+              name: "Statistic",
+              child: <FundStatisticsCard data={poolData} />,
+            },
+            { name: "Details", child: <FundDetailsCard /> },
           ]}
         />
       </Details>

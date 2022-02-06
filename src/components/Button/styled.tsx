@@ -45,7 +45,7 @@ export const GradientButton = styled(BaseButton)<{
   z-index: 20;
   overflow: hidden;
   background: linear-gradient(64.44deg, #63b49b 12.29%, #a4ebd4 76.64%);
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
 
   ${Text} {
     font-family: Gilroy;

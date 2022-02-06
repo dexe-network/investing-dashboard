@@ -45,11 +45,17 @@ import {
   SettingsDescription,
   SettingsButton,
   SettingsInput,
+  Title,
+  WhiteLabel,
+  WhiteValue,
+  GreyValue,
+  GreyValueSm,
 } from "./styled"
 import Popover from "components/Popover"
 import IpfsIcon from "components/IpfsIcon"
+import NavTabs from "components/NavTabs"
 
-export const useInvest = (): [
+export const useInsurance = (): [
   {
     fromAmount: number
     toAmount: number
@@ -166,12 +172,19 @@ export const useInvest = (): [
   ]
 }
 
-export default function Invest() {
+export default function Insurance() {
   const { account, library } = useWeb3React()
   const [
-    { fromAmount, toAmount, toAddress, toSelectorOpened, direction },
+    {
+      fromAmount,
+      toAmount,
+      toAddress,
+      fromAddress,
+      toSelectorOpened,
+      direction,
+    },
     { setFromAmount, setToAmount, setToAddress, setDirection, setToSelector },
-  ] = useInvest()
+  ] = useInsurance()
 
   const [pending, setPending] = useState(false)
   const [slippage, setSlippage] = useState(2)
@@ -183,69 +196,12 @@ export default function Invest() {
 
   const [error, setError] = useState("")
 
-  const { poolAddress, poolType } = useParams<{
-    poolAddress: string
-    poolType: "basic" | "invest"
-  }>()
-  const pools = {
-    basic: useSelector((state: AppState) =>
-      selectBasicPoolByAddress(state, poolAddress)
-    ),
-    invest: useSelector((state: AppState) =>
-      selectInvestPoolByAddress(state, poolAddress)
-    ),
-  }
-  const poolData = pools[poolType]
-  const usdAddress = useSelector<AppState, AppState["contracts"]["USD"]>(
-    (state) => state.contracts.USD
-  )
-  const priceFeedAddress = useSelector(
-    (state: AppState) => state.contracts.PriceFeed
-  )
-
-  const traderPool = useContract(poolData.address, TraderPool)
-  const priceFeed = useContract(priceFeedAddress, PriceFeed)
   const [fromToken, fromData, fromBalance] = useERC20(
-    poolData.parameters.baseToken
+    "0xa651edbbf77e1a2678defae08a33c5004b491457"
   )
 
   const handleSubmit = async () => {
-    if (direction === "deposit") {
-      ;(async () => {
-        try {
-          const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
-          const invest = await traderPool?.getInvestTokens(
-            amountInBN.toHexString()
-          )
-          const investResult = await traderPool?.invest(
-            amountInBN.toHexString(),
-            invest.receivedAmounts
-          )
-          console.log("deposit: ", investResult)
-        } catch (e) {
-          console.log(e)
-        }
-      })()
-    } else {
-      ;(async () => {
-        try {
-          const amountOutBn = ethers.utils.parseUnits(toAmount.toString(), 18)
-          console.log(amountOutBn)
-          const divest = await traderPool?.getDivestAmountsAndCommissions(
-            account,
-            amountOutBn.toHexString()
-          )
-          const divestResult = await traderPool?.divest(
-            amountOutBn.toHexString(),
-            divest.receptions.receivedAmounts,
-            divest.commissions.dexeDexeCommission
-          )
-          console.log("withdraw: ", divestResult)
-        } catch (e) {
-          console.log(e)
-        }
-      })()
-    }
+    // TODO: handle stake
   }
 
   const handlePercentageChange = (percent) => {
@@ -260,7 +216,7 @@ export default function Invest() {
             .toString()
         )
         setFromAmount(from)
-        setToAmount(formatDecimalsNumber(from / parseFloat(poolData.lpPrice)))
+        setToAmount(formatDecimalsNumber(from * 10))
       } catch (e) {
         console.log(e)
       }
@@ -271,7 +227,7 @@ export default function Invest() {
           .toString()
       )
       setToAmount(to)
-      setFromAmount(formatDecimalsNumber(to * parseFloat(poolData.lpPrice)))
+      setFromAmount(formatDecimalsNumber(to / 10))
     }
   }
 
@@ -286,13 +242,13 @@ export default function Invest() {
   const handleFromChange = (v) => {
     // TODO: write fromChange function
     setFromAmount(v)
-    setToAmount(formatDecimalsNumber(v / parseFloat(poolData.lpPrice)))
+    setToAmount(formatDecimalsNumber(v * 10))
   }
 
   const handleToChange = (v) => {
     // TODO: write handle to change function
     setToAmount(v)
-    setFromAmount(formatDecimalsNumber(v * parseFloat(poolData.lpPrice)))
+    setFromAmount(formatDecimalsNumber(v / 10))
   }
 
   const approve = () => {
@@ -300,8 +256,8 @@ export default function Invest() {
     ;(async () => {
       try {
         const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
-        const receipt = await fromToken.approve(poolData.address, amountInBN)
-        console.log(receipt)
+        // const receipt = await fromToken.approve(poolData.address, amountInBN)
+        // console.log(receipt)
       } catch (e) {
         console.log(e)
       }
@@ -310,24 +266,17 @@ export default function Invest() {
 
   // allowance watcher
   useEffect(() => {
-    if (
-      !fromToken ||
-      !account ||
-      !library ||
-      !poolData ||
-      direction === "withdraw"
-    )
-      return
+    if (!fromToken || !account || !library || direction === "withdraw") return
     ;(async () => {
-      const allowance = await getAllowance(
-        account,
-        poolData.parameters.baseToken,
-        poolData.address,
-        library
-      )
-      setAllowance(allowance.toString())
+      //   const allowance = await getAllowance(
+      //     account,
+      //     poolData.parameters.baseToken,
+      //     poolData.address,
+      //     library
+      //   )
+      setAllowance("0")
     })()
-  }, [fromToken, account, library, poolData, direction])
+  }, [fromToken, account, library, direction])
 
   // INPUT LISTENERS
 
@@ -343,38 +292,36 @@ export default function Invest() {
 
   // get LP tokens balance
   useEffect(() => {
-    if (!traderPool || !fromData) return
     ;(async () => {
-      const lpBalance = await traderPool.balanceOf(account)
-      setToBalance(lpBalance.toString())
+      setToBalance("0")
     })()
-  }, [traderPool, fromData, account])
+  }, [account])
 
   // get exchange rates of LP
-  useEffect(() => {
-    if (!priceFeed || !usdAddress || !poolData.parameters.baseToken) return
-    ;(async () => {
-      try {
-        const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
-          poolData.parameters.baseToken,
-          ethers.utils.parseUnits("1", 18).toString(),
-          []
-        )
-        setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
-        setOutPrice(
-          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
-        )
-      } catch (e) {
-        console.log(e)
-      }
-    })()
-  }, [
-    priceFeed,
-    usdAddress,
-    poolData.parameters.baseToken,
-    inPrice,
-    poolData.lpPrice,
-  ])
+  //   useEffect(() => {
+  //     if (!priceFeed || !usdAddress || !poolData.parameters.baseToken) return
+  //     ;(async () => {
+  //       try {
+  //         const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
+  //           poolData.parameters.baseToken,
+  //           ethers.utils.parseUnits("1", 18).toString(),
+  //           []
+  //         )
+  //         setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
+  //         setOutPrice(
+  //           (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
+  //         )
+  //       } catch (e) {
+  //         console.log(e)
+  //       }
+  //     })()
+  //   }, [
+  //     priceFeed,
+  //     usdAddress,
+  //     poolData.parameters.baseToken,
+  //     inPrice,
+  //     poolData.lpPrice,
+  //   ])
 
   const getButton = () => {
     try {
@@ -428,47 +375,12 @@ export default function Invest() {
         fz={22}
         full
       >
-        {direction === "deposit"
-          ? `Buy ${poolData.ticker}`
-          : `Sell ${poolData.ticker}`}
+        {direction === "deposit" ? `Stake DEXE` : `Unstake DEXE`}
       </Button>
     )
   }
 
   const button = getButton()
-
-  const priceTemplate = (
-    <Flex ai="center">
-      <PriceText>
-        {`1 ${poolData.ticker} = ${formatNumber(poolData.lpPrice)} ${
-          fromData?.symbol
-        } (~${formatNumber(
-          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
-        )}$)`}
-      </PriceText>
-      <Tooltip id="0">
-        <Flex dir="column" full>
-          <InfoRow
-            label="Investor available Funds"
-            value={`0 ${poolData.ticker}`}
-          />
-          <InfoRow
-            label="Your available Funds"
-            value={`80,017 ${poolData.ticker}`}
-          />
-          <InfoRow
-            label="Locked in positions"
-            value={`(55%) 100,000 ${poolData.ticker}`}
-          />
-          <InfoRow
-            label="Free Liquidity"
-            value={`(55%) 19,983 ${poolData.ticker}`}
-            white
-          />
-        </Flex>
-      </Tooltip>
-    </Flex>
-  )
 
   const settings = (
     <Popover
@@ -508,7 +420,7 @@ export default function Invest() {
         price={parseFloat(inPrice)}
         amount={fromAmount}
         balance={fromBalance}
-        address={poolData.parameters.baseToken}
+        address={fromAddress}
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
         onChange={handleFromChange}
@@ -608,26 +520,19 @@ export default function Invest() {
       />
 
       <ExchangeTo
-        customIcon={
-          <IpfsIcon size={27} hash={poolData.parameters.descriptionURL} />
-        }
         price={outPrice}
         priceChange24H={0}
         amount={toAmount}
         balance={BigNumber.from(toBalance)}
-        address={poolAddress}
-        symbol={poolData.ticker}
+        address={toAddress}
+        symbol={`DEXE-LP`}
         decimal={18}
         isPool
         onChange={handleToChange}
       />
-
-      <PriceContainer>
-        <Label>Price: </Label>
-        {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
-      </PriceContainer>
-
-      {button}
+      <Flex p="20px 0" full>
+        {button}
+      </Flex>
     </div>
   )
 
@@ -638,27 +543,33 @@ export default function Invest() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <MemberMobile data={poolData} />
+      <Title>Insurance</Title>
+      <NavTabs
+        tabs={[
+          { name: "Management", component: null },
+          { name: "Proposals", component: null },
+          { name: "Voting", component: null },
+        ]}
+      ></NavTabs>
+      <Flex p="20px 0 0" full jc="space-between">
+        <WhiteLabel>Total stake</WhiteLabel>
+        <Flex>
+          <WhiteValue>3000</WhiteValue> <GreyValue>DEXE</GreyValue>
+        </Flex>
+      </Flex>
+      <Flex full jc="space-between">
+        <WhiteLabel>Insurance amount</WhiteLabel>
+        <Flex>
+          <WhiteValue>30,000</WhiteValue> <GreyValue>DEXE</GreyValue>
+        </Flex>
+      </Flex>
+      <Flex m="0 0 auto" full jc="space-between">
+        <GreyValueSm>In USD</GreyValueSm>
+        <Flex>
+          <GreyValueSm>220,200.00</GreyValueSm>
+        </Flex>
+      </Flex>
       {settings}
-      {/* <Flex dir="column" full>
-        <InfoRow
-          label="Investor available Funds"
-          value={`0 ${poolData.ticker}`}
-        />
-        <InfoRow
-          label="Your available Funds"
-          value={`80,017 ${poolData.ticker}`}
-        />
-        <InfoRow
-          label="Locked in positions"
-          value={`(55%) 100,000 ${poolData.ticker}`}
-        />
-        <InfoRow
-          label="Free Liquidity"
-          value={`(55%) 19,983 ${poolData.ticker}`}
-          white
-        />
-      </Flex> */}
 
       {error.length ? <ErrorText>{error}</ErrorText> : form}
     </Container>

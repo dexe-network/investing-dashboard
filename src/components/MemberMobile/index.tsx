@@ -83,14 +83,7 @@ const MemberMobile: React.FC<{ data: Pool; index?: number }> = ({
         />
         <Statistic label="APY" value="0%" />
         <Statistic label="P&L" value={`${data.lpPnl}%`} />
-        <Statistic
-          label="Investors"
-          value={
-            <>
-              {data.totalInvestors} <PNL>0%</PNL>
-            </>
-          }
-        />
+        <Statistic label="Investors" value={<>{data.totalInvestors}</>} />
       </PoolStatisticContainer>
       {children}
     </Card>

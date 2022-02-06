@@ -43,7 +43,7 @@ import more from "assets/icons/more-menu.svg"
 import swap from "assets/icons/swap-path.svg"
 import { shortenAddress } from "utils"
 import bsc from "assets/wallets/bsc.svg"
-import { Redirect } from "react-router-dom"
+import { Redirect, useHistory } from "react-router-dom"
 
 const transactions = [
   {
@@ -1355,6 +1355,7 @@ const transactions = [
 
 export default function Wallet() {
   const { account, deactivate } = useWeb3React()
+  const history = useHistory()
 
   const handleLogout = () => {
     deactivate()
@@ -1452,9 +1453,8 @@ export default function Wallet() {
             Minimize your investment risks <br /> with DeXe Insurance
           </InsuranceDescription>
         </InsuranceInfo>
-        <Button>Open</Button>
+        <Button onClick={() => history.push("/insurance")}>Open</Button>
       </InsuranceCard>
-      <Confirm></Confirm>
     </Container>
   )
 }

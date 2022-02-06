@@ -124,6 +124,7 @@ export const SymbolLabel = styled.span`
   line-height: 20px;
   letter-spacing: 0.5px;
   margin-right: 10px;
+  white-space: nowrap;
 
   color: #c5d1dc;
   margin-top: 4px;

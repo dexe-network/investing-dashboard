@@ -1,35 +1,50 @@
-import { useState, useCallback, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import { Flex } from "theme"
-import { StageSpinner, PulseSpinner } from "react-spinners-kit"
-import { useWeb3React } from "@web3-react/core"
-import { useUniswapExchangeTool, useERC20 } from "hooks/useContract"
-import MemberMobile from "components/MemberMobile"
-import Tooltip from "components/Tooltip"
-import Popover from "components/Popover"
 import { useParams } from "react-router-dom"
+import { useWeb3React } from "@web3-react/core"
+import { BigNumber } from "@ethersproject/bignumber"
+import { StageSpinner, PulseSpinner } from "react-spinners-kit"
+
 import ExchangeFrom from "components/Exchange/From"
+import Tooltip from "components/Tooltip"
 import ExchangeDivider from "components/Exchange/Divider"
 import ExchangeTo from "components/Exchange/To"
-import Button from "components/Button"
-import { BigNumber } from "@ethersproject/bignumber"
-import { ethers } from "ethers"
-import { isStable, formatNumber } from "utils"
+import Button, { BorderedButton } from "components/Button"
+import { Label, PriceText } from "components/Exchange/styled"
 
+import { selectBasicPoolByAddress } from "state/pools/selectors"
+
+import useContract, { useERC20 } from "hooks/useContract"
+
+import { ethers } from "ethers"
+
+import LockedIcon from "assets/icons/LockedIcon"
+import transactionSettingsIcon from "assets/icons/transaction-settings.svg"
 import {
-  PriceContainer,
+  formatDecimalsNumber,
+  formatNumber,
+  getAllowance,
+  isStable,
+} from "utils"
+import { useSelector } from "react-redux"
+import { AppState } from "state"
+import MemberMobile from "components/MemberMobile"
+import { ERC20, PriceFeed, TraderPool } from "abi"
+import {
+  ErrorText,
   Container,
-  TooltipValue,
-  TooltipLabel,
-  ExchangeName,
-} from "pages/Invest/styled"
-import { HalfBlock } from "pages/Trader/styled"
-import {
-  Label,
-  PriceText,
-  InfoContainer,
-  Value,
-} from "components/Exchange/styled"
-import useTokensList from "hooks/useTokensList"
+  PriceContainer,
+  InfoRow,
+  SettingsIcon,
+  SettingsLabel,
+  SettingsCard,
+  SettingsTitle,
+  SettingsDescription,
+  SettingsButton,
+  SettingsInput,
+} from "./styled"
+import Popover from "components/Popover"
+import IpfsIcon from "components/IpfsIcon"
 
 export const useSwap = (): [
   {
@@ -63,12 +78,8 @@ export const useSwap = (): [
   const [fromSelectorOpened, setFromSelector] = useState(false)
   const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
 
-  const [toAddress, setToAddress] = useState(
-    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
-  )
-  const [fromAddress, setFromAddress] = useState(
-    "0xde4EE8057785A7e8e800Db58F9784845A5C2Cbd6"
-  )
+  const [toAddress, setToAddress] = useState("")
+  const [fromAddress, setFromAddress] = useState("")
 
   useEffect(() => {
     if (!hash || !library) return
@@ -85,12 +96,13 @@ export const useSwap = (): [
   }, [hash, library])
 
   const setFromAmountCallback = useCallback(
-    (amount: number): void => setFromAmount(amount),
+    (amount: number): void =>
+      setFromAmount(parseFloat(amount.toString()) || 0.0),
     []
   )
 
   const setToAmountCallback = useCallback(
-    (amount: number): void => setToAmount(amount),
+    (amount: number): void => setToAmount(parseFloat(amount.toString()) || 0.0),
     []
   )
 
@@ -127,27 +139,6 @@ export const useSwap = (): [
     console.log(v)
   }, [])
 
-  const handleFromChange = useCallback((v: number) => {
-    try {
-      const am = parseFloat(v.toString()) || 0.0
-      setFromAmount(am)
-
-      setToAmount(am * 1)
-    } catch (e) {
-      console.log(e)
-    }
-  }, [])
-
-  const handleToChange = useCallback((v: number) => {
-    try {
-      const am = parseFloat(v.toString()) || 0.0
-      setToAmount(am)
-      setFromAmount(am * 1)
-    } catch (e) {
-      console.log(e)
-    }
-  }, [])
-
   return [
     {
       fromAmount,
@@ -160,8 +151,8 @@ export const useSwap = (): [
       pending,
     },
     {
-      setFromAmount: handleFromChange,
-      setToAmount: handleToChange,
+      setFromAmount: setFromAmountCallback,
+      setToAmount: setToAmountCallback,
       setToAddress: setToAddressCallback,
       setFromAddress: setFromAddressCallback,
       setDirection: handleDirectionChange,
@@ -173,197 +164,488 @@ export const useSwap = (): [
 }
 
 export default function Swap() {
-  const { poolAddress } = useParams<{ poolAddress: string }>()
-
+  const { account, library } = useWeb3React()
   const [
-    {
-      pending,
-      fromAmount,
-      toAmount,
-      toAddress,
-      fromAddress,
-      toSelectorOpened,
-      fromSelectorOpened,
-      direction,
-    },
-    {
-      setFromAmount,
-      setToAmount,
-      setToSelector,
-      setFromSelector,
-      setDirection,
-      setPercentage,
-    },
+    { fromAmount, toAmount, toAddress, toSelectorOpened, direction },
+    { setFromAmount, setToAmount, setToAddress, setDirection, setToSelector },
   ] = useSwap()
 
-  const [fromToken, fromData, fromBalance] = useERC20(fromAddress)
-  const [toToken, toData, toBalance] = useERC20(toAddress)
+  const [pending, setPending] = useState(false)
+  const [slippage, setSlippage] = useState(2)
+  const [isSettingsOpen, setSettingsOpen] = useState(false)
+  const [allowance, setAllowance] = useState("-1")
+  const [toBalance, setToBalance] = useState("0")
+  const [inPrice, setInPrice] = useState("0")
+  const [outPrice, setOutPrice] = useState("0")
 
-  const handleSubmit = () => {
-    // TODO: create transaction builder
+  const [error, setError] = useState("")
+
+  const { poolAddress } = useParams<{ poolAddress: string }>()
+  const poolData = useSelector((state: AppState) =>
+    selectBasicPoolByAddress(state, poolAddress)
+  )
+  const usdAddress = useSelector<AppState, AppState["contracts"]["USD"]>(
+    (state) => state.contracts.USD
+  )
+  const priceFeedAddress = useSelector(
+    (state: AppState) => state.contracts.PriceFeed
+  )
+
+  const traderPool = useContract(poolData.address, TraderPool)
+  const priceFeed = useContract(priceFeedAddress, PriceFeed)
+  const [fromToken, fromData, fromBalance] = useERC20(
+    poolData.parameters.baseToken
+  )
+
+  const handleSubmit = async () => {
+    if (direction === "deposit") {
+      ;(async () => {
+        try {
+          // const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
+          // const invest = await traderPool?.getInvestTokens(
+          //   amountInBN.toHexString()
+          // )
+          // const investResult = await traderPool?.invest(
+          //   amountInBN.toHexString(),
+          //   invest.receivedAmounts
+          // )
+          // console.log("deposit: ", investResult)
+        } catch (e) {
+          console.log(e)
+        }
+      })()
+    } else {
+      ;(async () => {
+        try {
+          // const amountOutBn = ethers.utils.parseUnits(toAmount.toString(), 18)
+          // console.log(amountOutBn)
+          // const divest = await traderPool?.getDivestAmountsAndCommissions(
+          //   account,
+          //   amountOutBn.toHexString()
+          // )
+          // const divestResult = await traderPool?.divest(
+          //   amountOutBn.toHexString(),
+          //   divest.receptions.receivedAmounts,
+          //   divest.commissions.dexeDexeCommission
+          // )
+          // console.log("withdraw: ", divestResult)
+        } catch (e) {
+          console.log(e)
+        }
+      })()
+    }
   }
 
-  const getButton = () => {
-    // loading state
-    if (!fromData || !toData || pending) {
-      return (
-        <Button theme="disabled" fz={22} full>
-          <Flex>
-            {"loading "}
-            <Flex p="0 0 0 15px">
-              <PulseSpinner color="#03FF89" size={15} loading />
-            </Flex>
-          </Flex>
-        </Button>
-      )
-    }
-
+  const handlePercentageChange = (percent) => {
     if (direction === "deposit") {
-      return (
-        <Button theme="disabled" fz={22} full>
-          Inufficient balance
-        </Button>
+      try {
+        const from = parseFloat(
+          ethers.utils
+            .formatUnits(
+              fromBalance.mul(percent),
+              (fromData?.decimals || 18) + 18
+            )
+            .toString()
+        )
+        setFromAmount(from)
+        setToAmount(formatDecimalsNumber(from / parseFloat(poolData.lpPrice)))
+      } catch (e) {
+        console.log(e)
+      }
+    } else {
+      const to = parseFloat(
+        ethers.utils
+          .formatUnits(BigNumber.from(toBalance).mul(percent), 36)
+          .toString()
       )
+      setToAmount(to)
+      setFromAmount(formatDecimalsNumber(to * parseFloat(poolData.lpPrice)))
     }
+  }
 
+  const handleDirectionChange = () => {
+    if (direction === "deposit") {
+      setDirection("withdraw")
+    } else {
+      setDirection("deposit")
+    }
+  }
+
+  const handleFromChange = (v) => {
+    // TODO: write fromChange function
+    setFromAmount(v)
+    setToAmount(formatDecimalsNumber(v / parseFloat(poolData.lpPrice)))
+  }
+
+  const handleToChange = (v) => {
+    // TODO: write handle to change function
+    setToAmount(v)
+    setFromAmount(formatDecimalsNumber(v * parseFloat(poolData.lpPrice)))
+  }
+
+  const approve = () => {
+    if (!fromToken) return
+    ;(async () => {
+      try {
+        const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
+        const receipt = await fromToken.approve(poolData.address, amountInBN)
+        console.log(receipt)
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }
+
+  // allowance watcher
+  useEffect(() => {
     if (
-      direction === "withdraw" &&
-      toBalance.lt(
-        ethers.utils.parseUnits(toAmount.toString(), toData.decimals)
+      !fromToken ||
+      !account ||
+      !library ||
+      !poolData ||
+      direction === "withdraw"
+    )
+      return
+    ;(async () => {
+      const allowance = await getAllowance(
+        account,
+        poolData.parameters.baseToken,
+        poolData.address,
+        library
       )
-    ) {
-      return (
-        <Button theme="disabled" fz={22} full>
-          Inufficient balance
-        </Button>
-      )
-    }
+      setAllowance(allowance.toString())
+    })()
+  }, [fromToken, account, library, poolData, direction])
 
+  // INPUT LISTENERS
+
+  // // in token amount listener
+  // useEffect(() => {
+  //   if (!traderPool) return
+  // }, [traderPool, fromAmount, account, poolData.lpPrice, setToAmount])
+
+  // // out token amount listener
+  // useEffect(() => {
+  //   if (!traderPool) return
+  // }, [traderPool, toAmount, account, poolData.lpPrice, setFromAmount])
+
+  // get LP tokens balance
+  useEffect(() => {
+    if (!traderPool || !fromData) return
+    ;(async () => {
+      const lpBalance = await traderPool.balanceOf(account)
+      setToBalance(lpBalance.toString())
+    })()
+  }, [traderPool, fromData, account])
+
+  // get exchange rates of LP
+  useEffect(() => {
+    if (!priceFeed || !usdAddress || !poolData.parameters.baseToken) return
+    ;(async () => {
+      try {
+        const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
+          poolData.parameters.baseToken,
+          ethers.utils.parseUnits("1", 18).toString(),
+          []
+        )
+        setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
+        setOutPrice(
+          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
+        )
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [
+    priceFeed,
+    usdAddress,
+    poolData.parameters.baseToken,
+    inPrice,
+    poolData.lpPrice,
+  ])
+
+  const getButton = () => {
+    try {
+      const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+
+      if (!fromToken || pending || allowance === "-1") {
+        return (
+          <Button theme="disabled" fz={22} full>
+            <Flex>
+              {"loading "}
+              <Flex p="0 0 0 15px">
+                <PulseSpinner color="#03FF89" size={15} loading />
+              </Flex>
+            </Flex>
+          </Button>
+        )
+      }
+
+      if (
+        (direction === "deposit" && amountIn.gt(fromBalance)) ||
+        (direction === "deposit" && fromBalance.toString() === "0")
+      ) {
+        return <BorderedButton size="big">Inufficient funds</BorderedButton>
+      }
+
+      if (
+        (direction === "withdraw" &&
+          ethers.utils.parseUnits(toAmount.toString(), 18).gt(toBalance)) ||
+        (direction === "withdraw" && toBalance.toString() === "0")
+      ) {
+        return <BorderedButton size="big">Inufficient funds</BorderedButton>
+      }
+
+      if (direction === "deposit" && BigNumber.from(allowance).lt(amountIn)) {
+        return (
+          <BorderedButton onClick={approve} size="big">
+            Unlock Token {fromData?.symbol} <LockedIcon />
+          </BorderedButton>
+        )
+      }
+    } catch (e) {
+      console.log(e)
+    }
     return (
-      <Button onClick={handleSubmit} theme={"warn"} fz={22} full>
-        {`Sell ${toData?.symbol}`}
+      <Button
+        theme={direction === "deposit" ? "primary" : "warn"}
+        onClick={handleSubmit}
+        fz={22}
+        full
+      >
+        {direction === "deposit"
+          ? `Buy ${poolData.ticker}`
+          : `Sell ${poolData.ticker}`}
       </Button>
     )
   }
 
   const button = getButton()
 
-  const tooltip = (
-    <Tooltip id="0">
-      <Flex p="6.5px 0 6.5px" full>
-        <TooltipLabel>Liquiduty Provider Fee</TooltipLabel>
-        <TooltipValue>9,997 DAI</TooltipValue>
-      </Flex>
-      <Flex p="6.5px 0 2px" full>
-        <TooltipLabel>Route</TooltipLabel>
-        <TooltipValue>DAI {">"} USDT &gt; ETH</TooltipValue>
-      </Flex>
-      <Flex p="0 0 5px" jc="flex-end" full>
-        <ExchangeName>(Pancakeswap)</ExchangeName>
-      </Flex>
-      <Flex p="6.5px 0 6.5px" full>
-        <TooltipLabel>Price Impact</TooltipLabel>
-        <TooltipLabel>-0.4%</TooltipLabel>
-      </Flex>
-      <Flex p="6.5px 0 6.5px" full>
-        <TooltipLabel>Minimum Received</TooltipLabel>
-        <TooltipValue>3.46364834 ETH</TooltipValue>
-      </Flex>
-      <Flex p="6.5px 0 6.5px" full>
-        <TooltipLabel>Slippage tolerance</TooltipLabel>
-        <TooltipValue>0.50%</TooltipValue>
-      </Flex>
-    </Tooltip>
-  )
-
   const priceTemplate = (
     <Flex ai="center">
-      <PriceText color="#C2C3C4">
-        1.00 {toData?.symbol} = {"1.00 "}
-        {fromData?.symbol}
+      <PriceText>
+        {`1 ${poolData.ticker} = ${formatNumber(poolData.lpPrice)} ${
+          fromData?.symbol
+        } (~${formatNumber(
+          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
+        )}$)`}
       </PriceText>
-      <PriceText color="#596073">(~{"1.00"}$)</PriceText>
-      {tooltip}
+      <Tooltip id="0">
+        <Flex dir="column" full>
+          <InfoRow
+            label="Investor available Funds"
+            value={`0 ${poolData.ticker}`}
+          />
+          <InfoRow
+            label="Your available Funds"
+            value={`80,017 ${poolData.ticker}`}
+          />
+          <InfoRow
+            label="Locked in positions"
+            value={`(55%) 100,000 ${poolData.ticker}`}
+          />
+          <InfoRow
+            label="Free Liquidity"
+            value={`(55%) 19,983 ${poolData.ticker}`}
+            white
+          />
+        </Flex>
+      </Tooltip>
     </Flex>
   )
 
+  const settings = (
+    <Popover
+      contentHeight={300}
+      isOpen={isSettingsOpen}
+      toggle={() => setSettingsOpen(false)}
+      title="Transaction settings"
+    >
+      <SettingsCard>
+        <SettingsDescription>
+          Your tranzaction will revert if the price changes unfavorably by more
+          than this percentage
+        </SettingsDescription>
+        <Flex p="20px 0" jc="space-evenly" full>
+          <SettingsInput
+            type="number"
+            defaultValue={slippage}
+            onChange={(v) => setSlippage(parseFloat(v.target.value) || 2)}
+            placeholder="Select slippage"
+          />
+          <SettingsButton>AUTO</SettingsButton>
+        </Flex>
+        {/* <SettingsDescription>
+          Please, enter a valid slippage percentage{" "}
+        </SettingsDescription> */}
+      </SettingsCard>
+    </Popover>
+  )
+
+  const form = (
+    <div>
+      <SettingsLabel onClick={() => setSettingsOpen(!isSettingsOpen)}>
+        <SettingsIcon src={transactionSettingsIcon} />
+        Transaction settings
+      </SettingsLabel>
+      <ExchangeFrom
+        price={parseFloat(inPrice)}
+        amount={fromAmount}
+        balance={fromBalance}
+        address={poolData.parameters.baseToken}
+        symbol={fromData?.symbol}
+        decimal={fromData?.decimals}
+        onChange={handleFromChange}
+        isAlloved
+        onSelect={() => {}}
+        isStable
+      />
+
+      <ExchangeDivider
+        points={[
+          {
+            label: "10%",
+            percent: "0x016345785d8a0000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x016345785d8a0000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x016345785d8a0000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+          {
+            label: "25%",
+            percent: "0x03782dace9d90000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x03782dace9d90000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x03782dace9d90000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+          {
+            label: "50%",
+            percent: "0x06f05b59d3b20000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x06f05b59d3b20000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x06f05b59d3b20000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+          {
+            label: "75%",
+            percent: "0x0a688906bd8b0000",
+            from: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  fromBalance.mul("0x0a688906bd8b0000"),
+                  (fromData?.decimals || 18) + 18
+                )
+                .toString()
+            ),
+            to: parseFloat(
+              ethers.utils
+                .formatUnits(
+                  BigNumber.from(toBalance).mul("0x0a688906bd8b0000"),
+                  36
+                )
+                .toString()
+            ),
+          },
+        ]}
+        fromAmount={fromAmount}
+        toAmount={toAmount}
+        direction={direction}
+        changeAmount={handlePercentageChange}
+        changeDirection={handleDirectionChange}
+      />
+
+      <ExchangeTo
+        customIcon={
+          <IpfsIcon size={27} hash={poolData.parameters.descriptionURL} />
+        }
+        price={outPrice}
+        priceChange24H={0}
+        amount={toAmount}
+        balance={BigNumber.from(toBalance)}
+        address={poolAddress}
+        symbol={poolData.ticker}
+        decimal={18}
+        isPool
+        onChange={handleToChange}
+      />
+
+      <PriceContainer>
+        <Label>Price: </Label>
+        {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
+      </PriceContainer>
+
+      {button}
+    </div>
+  )
+
   return (
-    <>
-      <Popover
-        title="Select a token"
-        isOpen={fromSelectorOpened}
-        toggle={setFromSelector}
-        contentHeight={650}
-      ></Popover>
-      <Popover
-        title="Select a token"
-        isOpen={toSelectorOpened}
-        toggle={setToSelector}
-        contentHeight={650}
-      ></Popover>
-      <Container>
-        <HalfBlock>
-          <Flex dir="column" full>
-            {/* <MemberMobile index={0} /> */}
-          </Flex>
-          <Flex dir="column" full>
-            <InfoContainer>
-              <Label>Investor available Funds</Label>
-              <Value>0 TRX</Value>
-            </InfoContainer>
-            <InfoContainer>
-              <Label>Your available Funds</Label>
-              <Value>80,028 TRX</Value>
-            </InfoContainer>
-            <InfoContainer>
-              <Label>Locked In positions</Label>
-              <Value>(0%) 0 TRX</Value>
-            </InfoContainer>
-          </Flex>
-        </HalfBlock>
-        <HalfBlock>
-          <div>
-            <ExchangeFrom
-              price={0}
-              amount={toAmount}
-              balance={toBalance}
-              address={toAddress}
-              symbol={toData?.symbol}
-              decimal={toData?.decimals}
-              onChange={setFromAmount}
-              isAlloved
-              onSelect={() => setFromSelector(true)}
-            />
-            {/* 
-            <ExchangeDivider
-              direction={direction}
-              changeAmount={(v) => {}}
-              changeDirection={() =>
-                setDirection(direction === "deposit" ? "withdraw" : "deposit")
-              }
-            /> */}
+    <Container
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <MemberMobile data={poolData} />
+      {settings}
+      <Flex m="0 0 auto" p="16px 0 0" dir="column" full>
+        <InfoRow
+          label="Investor available Funds"
+          value={`${poolData.leverageInfo.freeLeverageUSD}`}
+        />
+        <InfoRow
+          label="Your available Funds"
+          value={`${poolData.leverageInfo.traderLeverageUSDTokens} ${poolData.ticker}`}
+        />
+        <InfoRow
+          label="Locked in positions"
+          value={`(55%) 100,000 ${poolData.ticker}`}
+        />
+        <InfoRow
+          label="Free Liquidity"
+          value={`(55%) 19,983 ${poolData.ticker}`}
+          white
+        />
+      </Flex>
 
-            <ExchangeTo
-              price="0"
-              priceChange24H={0}
-              amount={toAmount}
-              balance={toBalance}
-              address={toAddress}
-              symbol={toData?.symbol}
-              decimal={toData?.decimals}
-              onChange={setToAmount}
-              onSelect={() => setToSelector(true)}
-            />
-
-            <PriceContainer>
-              <Label>Price: </Label>
-              {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
-            </PriceContainer>
-
-            {button}
-          </div>
-        </HalfBlock>
-      </Container>
-    </>
+      {error.length ? <ErrorText>{error}</ErrorText> : form}
+    </Container>
   )
 }

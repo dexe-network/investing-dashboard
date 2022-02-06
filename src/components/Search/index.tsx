@@ -6,12 +6,11 @@ import remove from "assets/icons/remove.svg"
 import { useFocus } from "hooks"
 // import { motion } from "framer-motion"
 
-export const Container = styled(Flex)<{ height: string }>`
-  background: linear-gradient(
-    0deg,
-    rgba(29, 33, 41, 0.7),
-    rgba(29, 33, 41, 0.7)
-  );
+export const Container = styled(Flex)<{ height: string; bg?: string }>`
+  background: ${(props) =>
+    !!props.bg
+      ? props.bg
+      : "linear-gradient(0deg,rgba(29, 33, 41, 0.7),rgba(29, 33, 41, 0.7))"};
   border-radius: 10px;
   padding: 0 10px;
   width: 100%;
@@ -36,7 +35,7 @@ export const Input = styled.input`
     font-family: Gilroy;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 14px;
 
     color: #5a6071;
@@ -47,7 +46,7 @@ export const Input = styled.input`
     font-family: Gilroy;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 14px;
 
     color: #5a6071;
@@ -58,7 +57,7 @@ export const Input = styled.input`
     font-family: Gilroy;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 14px;
 
     color: #5a6071;
@@ -69,7 +68,7 @@ export const Input = styled.input`
     font-family: Gilroy;
     font-style: normal;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 14px;
     line-height: 14px;
 
     color: #5a6071;
@@ -83,6 +82,7 @@ export const Icon = styled.img<{ top?: string }>`
 `
 
 interface Props {
+  customBG?: string
   height: string
   placeholder: string
   value: string
@@ -90,6 +90,7 @@ interface Props {
 }
 
 const Search: React.FC<Props> = ({
+  customBG,
   height,
   placeholder,
   handleChange,
@@ -97,7 +98,7 @@ const Search: React.FC<Props> = ({
 }) => {
   const [ref, setFocus] = useFocus()
   return (
-    <Container height={height}>
+    <Container bg={customBG} height={height}>
       <Input
         value={value}
         ref={ref}

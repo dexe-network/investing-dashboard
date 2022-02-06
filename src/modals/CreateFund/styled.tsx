@@ -1083,11 +1083,7 @@ export const Footer = styled(Flex)`
 export const CardsRow = styled(Flex)`
   width: 100%;
   justify-content: space-between;
-  margin-top: 20px;
-
-  & > div:nth-child(2) {
-    margin-left: 22px;
-  }
+  margin-top: 8px;
 `
 
 export const WhitelistTokensContainer = styled.div`

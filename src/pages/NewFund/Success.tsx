@@ -8,6 +8,7 @@ import telegramIcon from "assets/icons/telegram-rounded.svg"
 import shareIcon from "assets/icons/share-rounded.svg"
 import ButtonImg from "assets/template-buttons/button-img.svg"
 import Button from "components/Button"
+import { shortenAddress } from "utils"
 
 const Container = styled(Flex)`
   box-sizing: border-box;
@@ -92,9 +93,14 @@ const ButtonContainer = styled(Flex)`
 `
 
 const Success = () => {
-  const { ticker } = useParams<{ ticker: string }>()
+  const { ticker, address } = useParams<{ ticker: string; address: string }>()
   return (
-    <Container>
+    <Container
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
       <ContentContainer>
         <img src={grayCheck} alt="gray-check" />
         <Title>Success</Title>
@@ -102,7 +108,7 @@ const Success = () => {
       </ContentContainer>
       <ContentContainer>
         <Symbol>{ticker}</Symbol>
-        <Adress>0xhvir2d8...999</Adress>
+        <Adress>{shortenAddress(address)}</Adress>
       </ContentContainer>
       <ContentContainer>
         <AnotherSubtitle>Share my fund</AnotherSubtitle>
@@ -117,7 +123,9 @@ const Success = () => {
         <Flex p="0 21px 0 0">
           <img src={ButtonImg} alt="button-img" />
         </Flex>
-        <Button full>{Button}My ISDX fund</Button>
+        <Button full>
+          {Button}My {ticker} fund
+        </Button>
       </ButtonContainer>
     </Container>
   )

@@ -19,6 +19,11 @@ const BasicPoolQuery = `
         seconds
         loss
       }
+      investors {
+        id
+        insurance
+        claimedAmount
+      }
     }
   }
 `
@@ -34,6 +39,11 @@ const InvestPoolQuery = `
         poolBase
         seconds
         loss
+      }
+      investors {
+        id
+        insurance
+        claimedAmount
       }
     }
   }
@@ -119,6 +129,8 @@ const calculatePNL = (CP: number, SP: number) => {
 }
 
 const genPNL = (price) => {
+  if (price === "0") return 0
+
   return calculatePNL(1, parseFloat(price))
 }
 
@@ -157,7 +169,8 @@ const generatePoolsData = (
 
     openPositions: poolInfos.openPositions,
     baseAndPositionBalances: poolInfos.baseAndPositionBalances.toString(),
-    totalInvestors: poolInfos.totalInvestors.toString(),
+    totalInvestors:
+      history && history.investors ? history.investors.length.toString() : "0",
     totalPoolBase: poolInfos.totalPoolBase.toString(),
     lpEmission: poolInfos.lpEmission.toString(),
     lpPrice,
@@ -242,6 +255,7 @@ export function useBasicPools(): [Pool[], boolean, () => void] {
           0,
           basicPoolsLength
         )
+        console.log(basicPools.poolInfos)
 
         dispatch(
           addBasicPools(

@@ -33,15 +33,14 @@ const Value = styled.div`
   color: #5a6071;
 `
 
-const ProgressBar: React.FC<{ label: string; value: string }> = ({
-  label,
-  value,
-}) => {
-  const percentage = 66
-
+const ProgressBar: React.FC<{
+  label: string
+  value: string
+  percent: number
+}> = ({ label, value, percent }) => {
   return (
     <Container>
-      <CircularProgressbarWithChildren value={percentage}>
+      <CircularProgressbarWithChildren value={percent}>
         <Label>{label}</Label>
         <Value>{value}</Value>
       </CircularProgressbarWithChildren>

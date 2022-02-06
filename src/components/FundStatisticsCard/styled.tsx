@@ -11,6 +11,9 @@ export const Label = styled.div`
   letter-spacing: 0.5px;
   color: #9ae2cb;
 `
+export const LabelIcon = styled.img`
+  transform: translate(0, 2px);
+`
 
 export const SecondaryLabel = styled.div`
   font-family: Gilroy;
@@ -83,7 +86,7 @@ const EmissionContainer = styled.div`
 const CurrentEmission = ({ value }) => {
   return (
     <Flex>
-      <SecondaryLabel>left</SecondaryLabel>
+      <SecondaryLabel>current</SecondaryLabel>
       <EmissionGreen>{value}</EmissionGreen>
     </Flex>
   )
@@ -98,18 +101,19 @@ const TotalEmission = ({ value }) => {
   )
 }
 
-const EmissionBar = () => {
+const EmissionBar = ({ progress }) => {
   return (
     <BarContainer>
-      <BarProgress w="40%" />
+      <BarProgress w={`${progress}%`} />
     </BarContainer>
   )
 }
 
-export const Emission: React.FC<{ total: string; current: string }> = ({
-  total,
-  current,
-}) => {
+export const Emission: React.FC<{
+  total: any
+  current: string
+  percent: number
+}> = ({ total, current, percent }) => {
   return (
     <EmissionContainer>
       <Flex full>
@@ -117,7 +121,7 @@ export const Emission: React.FC<{ total: string; current: string }> = ({
         <CurrentEmission value={current} />
       </Flex>
       <Flex p="7px 0 6px" full>
-        <EmissionBar />
+        <EmissionBar progress={percent} />
       </Flex>
     </EmissionContainer>
   )
