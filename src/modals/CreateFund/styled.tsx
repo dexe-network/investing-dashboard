@@ -322,7 +322,7 @@ export const InputUI: React.FC<{
         {label}
       </Label>
       <Flex jc="center" ai="center" p="15px">
-        {icon}
+        {active && icon}
       </Flex>
     </BaseContainer>
   )

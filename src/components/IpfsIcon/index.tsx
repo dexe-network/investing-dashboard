@@ -30,9 +30,9 @@ const IpfsIcon: React.FC<IProps> = ({ size, hash }) => {
 
   useEffect(() => {
     ;(async () => {
-      const assets = await parsePoolData(hash)
-      if (assets && assets.length) {
-        setSrc(assets[assets.length - 1])
+      const data = await parsePoolData(hash)
+      if (data && data.assets && data.assets.length) {
+        setSrc(data.assets[data.assets.length - 1])
       }
     })()
   }, [hash])

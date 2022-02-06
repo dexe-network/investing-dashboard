@@ -2,12 +2,12 @@ import React, { useState, useRef } from "react"
 import styled from "styled-components"
 import { motion } from "framer-motion"
 import { Flex } from "theme"
-import { CircleSpinner } from "react-spinners-kit"
+import warningIcon from "assets/icons/warning-icon.svg"
 
 const Overlay = styled(motion.div)`
   background: rgba(27, 27, 27, 0.6);
   backdrop-filter: blur(6px);
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -15,7 +15,6 @@ const Overlay = styled(motion.div)`
   z-index: 80;
   height: 100%;
   width: 100%;
-  z-index: 104;
 `
 const Container = styled(motion.div)`
   max-width: 300px;
@@ -25,13 +24,10 @@ const Container = styled(motion.div)`
   border: 2px solid;
   border-color: rgb(105, 105, 117, 0.3);
   position: absolute;
-  transform: translateY(-50%);
-  top: 0px;
+  top: 210px;
   left: 8px;
   right: 8px;
-  bottom: 0;
-  height: fit-content;
-  z-index: 105;
+  z-index: 100;
 `
 const Content = styled(Flex)`
   box-sizing: border-box;
@@ -46,7 +42,7 @@ const Title = styled.div`
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
-  font-size: 18px;
+  font-size: 16px;
   line-height: 22px;
   color: #c5d1dc;
   margin-top: 10px;
@@ -56,12 +52,11 @@ const Subtitle = styled.div`
   font-family: Gilroy;
   font-style: normal;
   font-weight: normal;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 16px;
   color: #c5d1dc;
   text-align: center;
 `
-
 const ButtonContainer = styled(Flex)`
   width: 100%;
   left: 0;
@@ -72,7 +67,25 @@ const ButtonContainer = styled(Flex)`
   justify-content: center;
   align-items: center;
 `
-
+const ButtonCancel = styled.button`
+  width: 100%;
+  border: none;
+  appearance: none;
+  outline: none;
+  border-top: 2px solid;
+  border-right: 2px solid;
+  border-color: rgb(105, 105, 117, 0.3);
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 22px;
+  text-align: center;
+  color: #5a6071;
+  background: #1e2229;
+  box-sizing: border-box;
+  padding: 10px 40px;
+`
 const ButtonClose = styled.button`
   width: 100%;
   border: none;
@@ -92,10 +105,11 @@ const ButtonClose = styled.button`
   padding: 10px 24px;
 `
 
-const Confirm: React.FC<{
+const Error: React.FC<{
   isOpen: boolean
+  submit: () => void
   toggle: () => void
-}> = ({ isOpen, toggle }) => {
+}> = ({ isOpen, toggle, submit }) => {
   return (
     <>
       <Overlay
@@ -128,16 +142,19 @@ const Confirm: React.FC<{
         }}
       >
         <Content>
-          <CircleSpinner size={60} loading />
-          <Title>Sign transaction</Title>
-          <Subtitle>Open your wallet and sign transactions</Subtitle>
+          <img src={warningIcon} alt="warning-icon" />
+          <Title>Transaction failed</Title>
+          <Subtitle>
+            Please try again, it may happend when nodes are fully loaded
+          </Subtitle>
         </Content>
         <ButtonContainer>
-          <ButtonClose onClick={toggle}>Cancel</ButtonClose>
+          <ButtonCancel onClick={toggle}>Cancel</ButtonCancel>
+          <ButtonClose onClick={submit}>Try again</ButtonClose>
         </ButtonContainer>
       </Container>
     </>
   )
 }
 
-export default Confirm
+export default Error

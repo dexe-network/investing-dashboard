@@ -182,7 +182,7 @@ const generatePoolsData = (
             ? history.priceHistory[history.priceHistory.length - 1].supply
             : "0"
         )
-      : "0",
+      : "1",
 
     parameters: {
       baseToken: poolInfos.parameters.baseToken,

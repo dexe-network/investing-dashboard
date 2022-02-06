@@ -1,32 +1,47 @@
-// import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 // import styled from "styled-components"
 // import { motion } from "framer-motion"
+import { Pool } from "constants/interfaces_v2"
 import { Label, DescriptionText, Container, InfoRow } from "./styled"
+import { parsePoolData } from "utils/ipfs"
+import { useERC20 } from "hooks/useContract"
+import { ethers } from "ethers"
 
-const FundDetailsCard: React.FC = () => {
+const FundDetailsCard: React.FC<{ data: Pool }> = ({ data }) => {
+  const [description, setDescription] = useState("")
+  const [strategy, setStrategy] = useState("")
+  const [baseToken, baseData] = useERC20(data.parameters.baseToken)
+
+  useEffect(() => {
+    if (!data) return
+    ;(async () => {
+      const parsed = await parsePoolData(data.parameters.descriptionURL)
+      if (!!parsed) {
+        setDescription(parsed.description)
+        setStrategy(parsed.strategy)
+      }
+    })()
+  }, [data])
+
   return (
     <Container>
       <Label>Fund strategy</Label>
-      <DescriptionText>
-        Owner Our team has been developing this product since 2019 using their
-        own experience and industry standards of trading. During this time, we
-        managed to reach the key goal — the creation of an easy-to-use product
-        for decentralized copying of the best traders/wallets. the creation of
-        an easy-to-use product for decentralized
-      </DescriptionText>
+      <DescriptionText>{strategy}</DescriptionText>
       <Label>Fund description</Label>
-      <DescriptionText>
-        Owner Our team has been developing this product since 2019 using their
-        own experience and industry standards of trading. During this time, we
-        managed to reach the key goal — the creation of an easy-to-use product
-        for decentralized copying of the best traders/wallets. the creation of
-        an easy-to-use product for decentralized
-      </DescriptionText>
-      <InfoRow label={"Min. investment amount"} value={"500 DEXE "} />
+      <DescriptionText>{description}</DescriptionText>
+      <InfoRow
+        label={"Min. investment amount"}
+        value={`0 ${baseData?.symbol}`}
+      />
       <InfoRow label={"Type of fund"} value={"Standart"} />
-      <InfoRow label={"Whitelist"} value={"356 adresess"} />
-      <InfoRow label={"Fund manager"} value={"5 managers"} />
-      <InfoRow label={"Performance Fee"} value={"35 %"} />
+      <InfoRow label={"Whitelist"} value={"0 adresess"} />
+      <InfoRow label={"Fund manager"} value={"0 managers"} />
+      <InfoRow
+        label={"Performance Fee"}
+        value={`${ethers.utils
+          .formatUnits(data.parameters.comissionPercentage, 25)
+          .toString()}%`}
+      />
     </Container>
   )
 }

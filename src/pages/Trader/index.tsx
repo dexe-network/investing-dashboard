@@ -270,7 +270,7 @@ function Trader(props: Props) {
             },
             {
               name: "Details",
-              child: <FundDetailsCard />,
+              child: <FundDetailsCard data={poolData} />,
             },
           ]}
         />

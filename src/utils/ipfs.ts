@@ -47,7 +47,7 @@ export const parsePoolData = async (hash) => {
       const res = await axios.get(
         `https://ipfs.infura.io:5001/api/v0/cat?arg=${hash}`
       )
-      return res.data.assets
+      return res.data
     }
   } catch (e) {
     console.log(e)

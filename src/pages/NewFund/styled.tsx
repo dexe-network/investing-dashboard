@@ -25,3 +25,13 @@ export const NavIcon = styled(BaseButton)`
   width: 52px;
   height: 52px;
 `
+
+export const BalanceText = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  white-space: nowrap;
+
+  color: #5a6071;
+`

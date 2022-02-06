@@ -132,7 +132,7 @@ const ProfileHeader: React.FC = () => {
             </FloatingButton>
           </Link>
         ) : (
-          <Link to={`/me/trader/profile/basic-pool/${ownedPools.basic[0]}`}>
+          <Link to={`/me/trader/profile/basic/${ownedPools.basic[0]}`}>
             <FloatingButton
               position="right"
               initial={{ opacity: 0, x: -15 }}

@@ -5,6 +5,7 @@ import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 import { StageSpinner, PulseSpinner } from "react-spinners-kit"
 
+import Payload from "components/Payload"
 import ExchangeFrom from "components/Exchange/From"
 import Tooltip from "components/Tooltip"
 import ExchangeDivider from "components/Exchange/Divider"
@@ -28,6 +29,7 @@ import {
   formatNumber,
   getAllowance,
   isStable,
+  useUpdate,
 } from "utils"
 import { useSelector } from "react-redux"
 import { AppState } from "state"
@@ -174,6 +176,7 @@ export default function Invest() {
   ] = useInvest()
 
   const [pending, setPending] = useState(false)
+  const [isSubmiting, setSubmiting] = useState(false)
   const [slippage, setSlippage] = useState(2)
   const [isSettingsOpen, setSettingsOpen] = useState(false)
   const [allowance, setAllowance] = useState("-1")
@@ -206,10 +209,12 @@ export default function Invest() {
   const traderPool = useContract(poolData.address, TraderPool)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
   const [fromToken, fromData, fromBalance] = useERC20(
-    poolData.parameters.baseToken
+    poolData.parameters.baseToken,
+    true
   )
 
   const handleSubmit = async () => {
+    setSubmiting(true)
     if (direction === "deposit") {
       ;(async () => {
         try {
@@ -222,7 +227,9 @@ export default function Invest() {
             invest.receivedAmounts
           )
           console.log("deposit: ", investResult)
+          setSubmiting(false)
         } catch (e) {
+          setSubmiting(false)
           console.log(e)
         }
       })()
@@ -240,8 +247,10 @@ export default function Invest() {
             divest.receptions.receivedAmounts,
             divest.commissions.dexeDexeCommission
           )
+          setSubmiting(false)
           console.log("withdraw: ", divestResult)
         } catch (e) {
+          setSubmiting(false)
           console.log(e)
         }
       })()
@@ -297,12 +306,17 @@ export default function Invest() {
 
   const approve = () => {
     if (!fromToken) return
+    setSubmiting(true)
     ;(async () => {
       try {
         const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
         const receipt = await fromToken.approve(poolData.address, amountInBN)
         console.log(receipt)
+        setTimeout(() => {
+          setSubmiting(false)
+        }, 3000)
       } catch (e) {
+        setSubmiting(false)
         console.log(e)
       }
     })()
@@ -327,6 +341,18 @@ export default function Invest() {
       )
       setAllowance(allowance.toString())
     })()
+    setInterval(() => {
+      ;(async () => {
+        console.log("update allovance")
+        const allowance = await getAllowance(
+          account,
+          poolData.parameters.baseToken,
+          poolData.address,
+          library
+        )
+        setAllowance(allowance.toString())
+      })()
+    }, 5000)
   }, [fromToken, account, library, poolData, direction])
 
   // INPUT LISTENERS
@@ -345,9 +371,19 @@ export default function Invest() {
   useEffect(() => {
     if (!traderPool || !fromData) return
     ;(async () => {
+      console.log("update lp balance")
       const lpBalance = await traderPool.balanceOf(account)
       setToBalance(lpBalance.toString())
     })()
+    const interval = setInterval(() => {
+      ;(async () => {
+        console.log("update lp balance")
+        const lpBalance = await traderPool.balanceOf(account)
+        setToBalance(lpBalance.toString())
+      })()
+    }, 5000)
+
+    return () => clearInterval(interval)
   }, [traderPool, fromData, account])
 
   // get exchange rates of LP
@@ -659,6 +695,8 @@ export default function Invest() {
           white
         />
       </Flex> */}
+
+      <Payload isOpen={isSubmiting} toggle={() => setSubmiting(false)} />
 
       {error.length ? <ErrorText>{error}</ErrorText> : form}
     </Container>

@@ -17,7 +17,14 @@ import TokenIcon from "components/TokenIcon"
 import OneValueCard from "components/OneValueCard"
 import { opacityVariants } from "motion/variants"
 import { AppState } from "state"
-import { formatNumber, formatBigNumber, shortenAddress, bigify } from "utils"
+import {
+  formatNumber,
+  formatBigNumber,
+  shortenAddress,
+  bigify,
+  getAllowance,
+  delay,
+} from "utils"
 import { useSelector } from "react-redux"
 import swipeLeft from "assets/icons/swipe-arrow-left.svg"
 import warnBig from "assets/icons/warn-big.svg"
@@ -29,6 +36,7 @@ import { useCreateFundContext } from "context/CreateFundContext"
 import { PricefeedState } from "state/pricefeed/reducer"
 import useContract, { useERC20, usePancakeFactory } from "hooks/useContract"
 import { ContractsState } from "state/contracts/reducer"
+import Payload from "components/Payload"
 import whitelisted from "./whitelisted"
 import {
   AvatarWrapper,
@@ -72,9 +80,11 @@ import {
   IconInput,
   AreaInput,
 } from "components/Form/styled"
-import { SubContainer, NavIcon } from "./styled"
-import { TraderPoolFactory } from "abi"
+import { SubContainer, NavIcon, BalanceText } from "./styled"
+import { TraderPool, TraderPoolFactory } from "abi"
 import { addFileMetadata } from "utils/ipfs"
+import { BigNumber, ethers } from "ethers"
+import Error from "components/Error"
 
 const performanceFees = [
   {
@@ -542,7 +552,7 @@ export const InvestmentsAndRestrictions = () => {
   const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
   const [isFundPrivate, setPrivate] = useState(!!investors.length)
   const [showPopup, setPopupState] = useState(false)
-  const [token, tokenData] = useERC20(baseToken.address)
+  const [token, tokenData, userBalance] = useERC20(baseToken.address)
 
   // listen to toggle, run show popup function
   useEffect(() => {
@@ -584,6 +594,11 @@ export const InvestmentsAndRestrictions = () => {
         onChange={handleChange}
         name="ownInvestments"
         defaultValue={ownInvestments}
+        icon={
+          <BalanceText>
+            {`${formatBigNumber(userBalance, 18)} ${baseToken.symbol}`}
+          </BalanceText>
+        }
       />
       <InputUI
         type="number"
@@ -815,7 +830,7 @@ export const Summary = () => {
     strategy,
     handleChange,
   } = useCreateFundContext()
-  const [isTermsAcepted, setTermsState] = useState(false)
+  const [isError, setError] = useState(false)
   const [isManagersAdded, setManagers] = useState(!!managers.length)
   const [isFundPrivate, setPrivate] = useState(!!investors.length)
   const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
@@ -1003,6 +1018,7 @@ export const HeaderGroup = () => {
     path: steps,
     exact: true,
   })
+  const history = useHistory()
   const index =
     match && steps.indexOf(match.path) !== -1 ? steps.indexOf(match.path) : 0
   return (
@@ -1013,7 +1029,9 @@ export const HeaderGroup = () => {
       full
       ai="flex-start"
     >
-      <NavIcon>{index === 0 && <img src={swipeLeft} alt="left" />}</NavIcon>
+      <NavIcon onClick={() => history.goBack()}>
+        {index === 0 && <img src={swipeLeft} alt="left" />}
+      </NavIcon>
       <Title>{stepNamings[index]}</Title>
       <NavIcon>{/* <img src={swipeRight} alt="right" /> */}</NavIcon>
     </Flex>
@@ -1026,6 +1044,7 @@ export const ButtonsGroup = () => {
     exact: true,
   })
   const [isSubmiting, setSubmiting] = useState(false)
+  const [isError, setError] = useState(false)
   const history = useHistory()
   const traderPoolFactoryAddress = useSelector<
     AppState,
@@ -1056,10 +1075,41 @@ export const ButtonsGroup = () => {
     avatarBlobString,
   } = useCreateFundContext()
   const { account, library } = useWeb3React()
+  const [baseContract] = useERC20(baseToken.address)
+  const [contractAddress, setCreactedAddress] = useState("")
+
+  const traderPool = useContract(contractAddress, TraderPool)
+
+  function getReceipt(hash, requestCount = 0) {
+    return new Promise(async (resolve, reject) => {
+      console.log("count: ", requestCount)
+      if (requestCount < 30) {
+        try {
+          const receipt = await library.getTransactionReceipt(hash)
+          console.log("receipt", receipt)
+          if (!receipt || !receipt.logs || !receipt.logs.length) {
+            await delay(2000)
+            resolve(await getReceipt(hash, requestCount + 1))
+          } else {
+            resolve(receipt)
+          }
+        } catch (e) {}
+      } else {
+        reject("Request limits overload")
+      }
+    })
+  }
+
+  useEffect(() => {
+    console.log("1: ", traderPool)
+    if (!contractAddress.length || !traderPool) return
+    console.log("2: ", traderPool)
+    history.push(`/new-fund/success/${fundSymbol}/${contractAddress}`)
+  }, [contractAddress, traderPool, fundSymbol, history])
 
   const submit = async () => {
     if (!traderPoolFactory) return
-
+    setError(false)
     setSubmiting(true)
     try {
       const ipfsReceipt = await addFileMetadata(
@@ -1067,6 +1117,11 @@ export const ButtonsGroup = () => {
         description,
         strategy,
         account
+      )
+
+      const amountIn = ethers.utils.parseUnits(
+        (parseFloat(ownInvestments.toString()) || 0.0).toString(),
+        18
       )
 
       const poolParameters = {
@@ -1090,22 +1145,39 @@ export const ButtonsGroup = () => {
         fundSymbol,
         poolParameters
       )
-      const data = await library.getTransactionReceipt(createReceipt.hash)
-
+      const data: any = await getReceipt(createReceipt.hash)
       setSubmiting(false)
-      console.log(data)
 
-      if (data.logs.length && data.logs[0].address) {
-        history.push(
-          `/new-fund/success/${fundSymbol}/${
-            data.logs.length && data.logs[0].address
-          }`
-        )
+      if (
+        !!data &&
+        ((data.logs.length && data.logs[0].address) || data.address)
+      ) {
+        const createdAddress = data.address
+          ? data.address
+          : data.logs[0].address
+        setCreactedAddress(createdAddress)
+
+        // const allowance: BigNumber = await getAllowance(
+        //   account,
+        //   baseToken.address,
+        //   createdAddress,
+        //   library
+        // )
+
+        // const isApproved = allowance.lt(amountIn)
+
+        // if (!isApproved && !!baseContract) {
+        //   const receipt = await baseContract.approve(
+        //     createdAddress,
+        //     amountIn.toHexString()
+        //   )
+        //   console.log(receipt)
+        // }
       } else {
         console.log("error", data)
+        setError(true)
         // TODO: handle fund creating error
       }
-      console.log(data.logs.length && data.logs[0].address)
     } catch (e) {
       setSubmiting(false)
       console.log(e)
@@ -1113,35 +1185,39 @@ export const ButtonsGroup = () => {
   }
 
   return (
-    <Footer
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: [0.29, 0.98, 0.29, 1] }}
-    >
-      {index === 5 ? (
-        <Button onClick={submit} full>
-          Create new fund
-        </Button>
-      ) : (
-        <>
-          <DotsWrapper>
-            {steps.map((v) => (
-              <Dot key={v} to={v} />
-            ))}
-          </DotsWrapper>
-          <ButtonsCoontainer>
-            {index !== 0 && (
-              <To to={steps[index - 1]}>
-                <PrevButton>Previous</PrevButton>
-              </To>
-            )}
+    <>
+      <Footer
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 1 }}
+        transition={{ duration: 0.3, ease: [0.29, 0.98, 0.29, 1] }}
+      >
+        {index === 5 ? (
+          <Button onClick={submit} full>
+            Create new fund
+          </Button>
+        ) : (
+          <>
+            <DotsWrapper>
+              {steps.map((v) => (
+                <Dot key={v} to={v} />
+              ))}
+            </DotsWrapper>
+            <ButtonsCoontainer>
+              {index !== 0 && (
+                <To to={steps[index - 1]}>
+                  <PrevButton>Previous</PrevButton>
+                </To>
+              )}
 
-            <To to={steps[index + 1]}>
-              <NextButton>Next</NextButton>
-            </To>
-          </ButtonsCoontainer>
-        </>
-      )}
-    </Footer>
+              <To to={steps[index + 1]}>
+                <NextButton>Next</NextButton>
+              </To>
+            </ButtonsCoontainer>
+          </>
+        )}
+      </Footer>
+      <Payload isOpen={isSubmiting} toggle={() => setSubmiting(false)} />
+      <Error isOpen={isError} toggle={() => setError(false)} submit={submit} />
+    </>
   )
 }

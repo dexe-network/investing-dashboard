@@ -201,7 +201,7 @@ const Profile: React.FC<Props> = () => {
               name: "Statistic",
               child: <FundStatisticsCard data={poolData} />,
             },
-            { name: "Details", child: <FundDetailsCard /> },
+            { name: "Details", child: <FundDetailsCard data={poolData} /> },
           ]}
         />
       </Details>

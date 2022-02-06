@@ -4,6 +4,21 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { stableCoins } from "constants/index"
 import { ethers } from "ethers"
 import { ERC20 } from "abi"
+import { useEffect, useState } from "react"
+
+export const useUpdate = (ms: number) => {
+  const [updator, setUpdate] = useState(0)
+
+  useEffect(() => {
+    const interval = setInterval(() => setUpdate(updator + 1), ms)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return updator
+}
+
+export const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 export function isAddress(value: any): string | false {
   try {
