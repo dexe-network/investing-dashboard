@@ -1,78 +1,42 @@
 import { createSelector } from "@reduxjs/toolkit"
-import { Pool } from "constants/interfaces_v2"
-
 import { AppState } from "state"
 
 const selectPools = (state: AppState) => state.pools
 
-// TODO: refactor to normalized state
+export const selectPoolsFilters = createSelector(
+  [selectPools],
+  (pools) => pools.filters
+)
+
 export const selectBasicPools = createSelector(
-  [
-    // Usual first input - extract value from `state`
-    selectPools,
-  ],
-  // Output selector gets (`items, category)` as args
+  [selectPools],
   (pools) => pools.basicList || []
 )
 
-// TODO: refactor to normalized state
 export const selectInvestPools = createSelector(
-  [
-    // Usual first input - extract value from `state`
-    selectPools,
-  ],
-  // Output selector gets (`items, category)` as args
+  [selectPools],
   (pools) => pools.investList || []
 )
 
-// TODO: refactor to normalized state
 export const selectBasicPoolByAddress = createSelector(
-  [
-    // Usual first input - extract value from `state`
-    selectPools,
-    (state, address: string) => address,
-  ],
-  // Output selector gets (`items, category)` as args
-  (pools, address) =>
-    pools.basicList.filter((value) => value.address === address)[0]
+  [selectPools, (state, address: string) => address],
+  (pools, address) => pools.basicList.filter((value) => value.id === address)[0]
 )
 
-// TODO: refactor to normalized state
 export const selectInvestPoolByAddress = createSelector(
-  [
-    // Usual first input - extract value from `state`
-    selectPools,
-    (state, address: string) => address,
-  ],
-  // Output selector gets (`items, category)` as args
+  [selectPools, (state, address: string) => address],
   (pools, address) =>
-    pools.investList.filter((value) => value.address === address)[0]
+    pools.investList.filter((value) => value.id === address)[0]
 )
 
-// TODO: refactor to normalized state
 export const selectBasicPoolsBatch = createSelector(
-  [
-    // Usual first input - extract value from `state`
-    selectPools,
-    (state, poolsAddresses: string[]) => poolsAddresses,
-  ],
-  // Output selector gets (`items, category)` as args
+  [selectPools, (state, poolsAddresses: string[]) => poolsAddresses],
   (pools, poolsAddresses) =>
-    pools.basicList.filter(
-      (value) => poolsAddresses.indexOf(value.address) !== -1
-    )
+    pools.basicList.filter((value) => poolsAddresses.indexOf(value.id) !== -1)
 )
 
-// TODO: refactor to normalized state
 export const selectInvestPoolsBatch = createSelector(
-  [
-    // Usual first input - extract value from `state`
-    selectPools,
-    (state, poolsAddresses: string[]) => poolsAddresses,
-  ],
-  // Output selector gets (`items, category)` as args
+  [selectPools, (state, poolsAddresses: string[]) => poolsAddresses],
   (pools, poolsAddresses) =>
-    pools.investList.filter(
-      (value) => poolsAddresses.indexOf(value.address) !== -1
-    )
+    pools.investList.filter((value) => poolsAddresses.indexOf(value.id) !== -1)
 )

@@ -50,6 +50,7 @@ import {
 } from "./styled"
 import Popover from "components/Popover"
 import IpfsIcon from "components/IpfsIcon"
+import { getPriceLP } from "utils/formulas"
 
 export const useInvest = (): [
   {
@@ -199,6 +200,7 @@ export default function Invest() {
     ),
   }
   const poolData = pools[poolType]
+  const priceLP = getPriceLP(poolData.priceHistory)
   const usdAddress = useSelector<AppState, AppState["contracts"]["USD"]>(
     (state) => state.contracts.USD
   )
@@ -206,12 +208,9 @@ export default function Invest() {
     (state: AppState) => state.contracts.PriceFeed
   )
 
-  const traderPool = useContract(poolData.address, TraderPool)
+  const traderPool = useContract(poolData.id, TraderPool)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
-  const [fromToken, fromData, fromBalance] = useERC20(
-    poolData.parameters.baseToken,
-    true
-  )
+  const [fromToken, fromData, fromBalance] = useERC20(poolData.baseToken, true)
 
   const handleSubmit = async () => {
     setSubmiting(true)
@@ -269,7 +268,7 @@ export default function Invest() {
             .toString()
         )
         setFromAmount(from)
-        setToAmount(formatDecimalsNumber(from / parseFloat(poolData.lpPrice)))
+        setToAmount(formatDecimalsNumber(from / parseFloat(priceLP)))
       } catch (e) {
         console.log(e)
       }
@@ -280,7 +279,7 @@ export default function Invest() {
           .toString()
       )
       setToAmount(to)
-      setFromAmount(formatDecimalsNumber(to * parseFloat(poolData.lpPrice)))
+      setFromAmount(formatDecimalsNumber(to * parseFloat(priceLP)))
     }
   }
 
@@ -295,13 +294,16 @@ export default function Invest() {
   const handleFromChange = (v) => {
     // TODO: write fromChange function
     setFromAmount(v)
-    setToAmount(formatDecimalsNumber(v / parseFloat(poolData.lpPrice)))
+    console.log(priceLP)
+    setToAmount(
+      formatDecimalsNumber(v / parseFloat(priceLP === "0" ? "1" : priceLP))
+    )
   }
 
   const handleToChange = (v) => {
     // TODO: write handle to change function
     setToAmount(v)
-    setFromAmount(formatDecimalsNumber(v * parseFloat(poolData.lpPrice)))
+    setFromAmount(formatDecimalsNumber(v * parseFloat(priceLP)))
   }
 
   const approve = () => {
@@ -310,7 +312,7 @@ export default function Invest() {
     ;(async () => {
       try {
         const amountInBN = ethers.utils.parseUnits(fromAmount.toString(), 18)
-        const receipt = await fromToken.approve(poolData.address, amountInBN)
+        const receipt = await fromToken.approve(poolData.id, amountInBN)
         console.log(receipt)
         setTimeout(() => {
           setSubmiting(false)
@@ -335,8 +337,8 @@ export default function Invest() {
     ;(async () => {
       const allowance = await getAllowance(
         account,
-        poolData.parameters.baseToken,
-        poolData.address,
+        poolData.baseToken,
+        poolData.id,
         library
       )
       setAllowance(allowance.toString())
@@ -346,8 +348,8 @@ export default function Invest() {
         console.log("update allovance")
         const allowance = await getAllowance(
           account,
-          poolData.parameters.baseToken,
-          poolData.address,
+          poolData.baseToken,
+          poolData.id,
           library
         )
         setAllowance(allowance.toString())
@@ -360,12 +362,12 @@ export default function Invest() {
   // // in token amount listener
   // useEffect(() => {
   //   if (!traderPool) return
-  // }, [traderPool, fromAmount, account, poolData.lpPrice, setToAmount])
+  // }, [traderPool, fromAmount, account, priceLP, setToAmount])
 
   // // out token amount listener
   // useEffect(() => {
   //   if (!traderPool) return
-  // }, [traderPool, toAmount, account, poolData.lpPrice, setFromAmount])
+  // }, [traderPool, toAmount, account, priceLP, setFromAmount])
 
   // get LP tokens balance
   useEffect(() => {
@@ -388,29 +390,21 @@ export default function Invest() {
 
   // get exchange rates of LP
   useEffect(() => {
-    if (!priceFeed || !usdAddress || !poolData.parameters.baseToken) return
+    if (!priceFeed || !usdAddress || !poolData.baseToken) return
     ;(async () => {
       try {
         const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
-          poolData.parameters.baseToken,
+          poolData.baseToken,
           ethers.utils.parseUnits("1", 18).toString(),
           []
         )
         setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
-        setOutPrice(
-          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
-        )
+        setOutPrice((parseFloat(inPrice) * parseFloat(priceLP)).toString())
       } catch (e) {
         console.log(e)
       }
     })()
-  }, [
-    priceFeed,
-    usdAddress,
-    poolData.parameters.baseToken,
-    inPrice,
-    poolData.lpPrice,
-  ])
+  }, [priceFeed, usdAddress, poolData.baseToken, inPrice, priceLP])
 
   const getButton = () => {
     try {
@@ -476,10 +470,10 @@ export default function Invest() {
   const priceTemplate = (
     <Flex ai="center">
       <PriceText>
-        {`1 ${poolData.ticker} = ${formatNumber(poolData.lpPrice)} ${
+        {`1 ${poolData.ticker} = ${formatNumber(priceLP)} ${
           fromData?.symbol
         } (~${formatNumber(
-          (parseFloat(inPrice) * parseFloat(poolData.lpPrice)).toString()
+          (parseFloat(inPrice) * parseFloat(priceLP)).toString()
         )}$)`}
       </PriceText>
       <Tooltip id="0">
@@ -544,7 +538,7 @@ export default function Invest() {
         price={parseFloat(inPrice)}
         amount={fromAmount}
         balance={fromBalance}
-        address={poolData.parameters.baseToken}
+        address={poolData.baseToken}
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
         onChange={handleFromChange}
@@ -644,9 +638,7 @@ export default function Invest() {
       />
 
       <ExchangeTo
-        customIcon={
-          <IpfsIcon size={27} hash={poolData.parameters.descriptionURL} />
-        }
+        customIcon={<IpfsIcon size={27} hash={""} />}
         price={outPrice}
         priceChange24H={0}
         amount={toAmount}
@@ -676,25 +668,6 @@ export default function Invest() {
     >
       <MemberMobile data={poolData} />
       {settings}
-      {/* <Flex dir="column" full>
-        <InfoRow
-          label="Investor available Funds"
-          value={`0 ${poolData.ticker}`}
-        />
-        <InfoRow
-          label="Your available Funds"
-          value={`80,017 ${poolData.ticker}`}
-        />
-        <InfoRow
-          label="Locked in positions"
-          value={`(55%) 100,000 ${poolData.ticker}`}
-        />
-        <InfoRow
-          label="Free Liquidity"
-          value={`(55%) 19,983 ${poolData.ticker}`}
-          white
-        />
-      </Flex> */}
 
       <Payload isOpen={isSubmiting} toggle={() => setSubmiting(false)} />
 

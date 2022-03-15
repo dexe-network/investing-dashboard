@@ -137,12 +137,12 @@ export const BasicInfo: React.FC = () => {
           <HintText>
             Basic settings for fund cannot be changed after creation.
           </HintText>
-          <Flex>
+          <Flex dir="column" full>
             <InputUI
               defaultValue={fundName}
               onFocus={() => setNameFocused(true)}
               onBlur={() => setNameFocused(false)}
-              width="59%"
+              width="100%"
               customPlaceholder="xxxxxx"
               label="Fund Name"
               onChange={(n, v) => handleChange("fundName", v)}
@@ -152,7 +152,7 @@ export const BasicInfo: React.FC = () => {
               defaultValue={fundSymbol}
               onFocus={() => setSymbolFocused(true)}
               onBlur={() => setSymbolFocused(false)}
-              width="37%"
+              width="100%"
               label="Symbol"
               customPlaceholder="xxx"
               onChange={handleChange}

@@ -7,15 +7,15 @@ import {
 } from "./actions"
 import { sortItemsList, currencies } from "constants/index"
 import { ITopMembersFilters, ITopMembersPagination } from "constants/interfaces"
-import { Pool } from "constants/interfaces_v2"
+import { IBasicPoolQuery, Pool } from "constants/interfaces_v2"
 import { addDays } from "date-fns"
 import { calendarStaticRanges } from "constants/index"
 
 export interface poolsState {
   filters: ITopMembersFilters
   pagination: ITopMembersPagination
-  basicList: Pool[]
-  investList: Pool[]
+  basicList: IBasicPoolQuery[]
+  investList: IBasicPoolQuery[]
 }
 
 const allPeriodRange = calendarStaticRanges[0].range()
@@ -59,9 +59,9 @@ export default createReducer(initialState, (builder) =>
         action.payload.value
     })
     .addCase(addBasicPools, (state, action) => {
-      state.basicList = action.payload
+      state.basicList = action.payload || []
     })
     .addCase(addInvestPools, (state, action) => {
-      state.investList = action.payload
+      state.investList = action.payload || []
     })
 )

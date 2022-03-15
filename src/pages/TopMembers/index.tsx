@@ -35,10 +35,13 @@ import {
 } from "./styled"
 
 import "./pagination.css"
+import { useSelector } from "react-redux"
+import { selectBasicPools, selectInvestPools } from "state/pools/selectors"
 
 const BasicPoolsList = () => {
   const basicScrollRef = React.useRef<any>(null)
-  const [basicPools, isBasicLoading, loadMoreBasicPools] = useBasicPools()
+  const basicPools = useSelector(selectBasicPools)
+  const [isBasicLoading, loadMoreBasicPools] = useBasicPools()
 
   // manually disable scrolling *refresh this effect when ref container dissapeared from DOM
   // useEffect(() => {
@@ -55,18 +58,13 @@ const BasicPoolsList = () => {
       </Flex>
     </Center>
   ) : (
-    <ListContainer
-      initial={{ y: -62 }}
-      animate={{ y: 0 }}
-      exit={{ y: -62 }}
-      transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
-    >
+    <ListContainer>
       <MembersList
         ref={basicScrollRef}
         style={{ height: window.innerHeight - 117 }}
       >
         {basicPools.map((pool, index) => (
-          <To key={pool.address} to={`/pool/profile/basic/${pool.address}`}>
+          <To key={pool.id} to={`/pool/profile/basic/${pool.id}`}>
             <Flex p="16px 0 0" full>
               <MemberMobile data={pool} index={index} />
             </Flex>
@@ -102,7 +100,8 @@ const BasicPoolsList = () => {
 
 const InvestPoolsList = () => {
   const investScrollRef = React.useRef<any>(null)
-  const [investPools, isInvestLoading, loadMoreInvestPools] = useInvestPools()
+  const investPools = useSelector(selectInvestPools)
+  const [isInvestLoading, loadMoreInvestPools] = useInvestPools()
 
   // // manually disable scrolling *refresh this effect when ref container dissapeared from DOM
   // useEffect(() => {
@@ -120,18 +119,13 @@ const InvestPoolsList = () => {
       </Flex>
     </Center>
   ) : (
-    <ListContainer
-      initial={{ y: -62 }}
-      animate={{ y: 0 }}
-      exit={{ y: -62 }}
-      transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
-    >
+    <ListContainer>
       <MembersList
         ref={investScrollRef}
         style={{ height: window.innerHeight - 117 }}
       >
         {investPools.map((pool, index) => (
-          <To key={pool.address} to={`/pool/profile/invest/${pool.address}`}>
+          <To key={pool.id} to={`/pool/profile/invest/${pool.id}`}>
             <Flex p="16px 0 0" full>
               <MemberMobile data={pool} index={index} />
             </Flex>

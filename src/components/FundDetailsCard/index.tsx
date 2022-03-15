@@ -10,18 +10,18 @@ import { ethers } from "ethers"
 const FundDetailsCard: React.FC<{ data: Pool }> = ({ data }) => {
   const [description, setDescription] = useState("")
   const [strategy, setStrategy] = useState("")
-  const [baseToken, baseData] = useERC20(data.parameters.baseToken)
+  // const [baseToken, baseData] = useERC20(data.parameters.baseToken)
 
-  useEffect(() => {
-    if (!data) return
-    ;(async () => {
-      const parsed = await parsePoolData(data.parameters.descriptionURL)
-      if (!!parsed) {
-        setDescription(parsed.description)
-        setStrategy(parsed.strategy)
-      }
-    })()
-  }, [data])
+  // useEffect(() => {
+  //   if (!data) return
+  //   ;(async () => {
+  //     const parsed = await parsePoolData(data.parameters.descriptionURL)
+  //     if (!!parsed) {
+  //       setDescription(parsed.description)
+  //       setStrategy(parsed.strategy)
+  //     }
+  //   })()
+  // }, [data])
 
   return (
     <Container>
@@ -29,19 +29,19 @@ const FundDetailsCard: React.FC<{ data: Pool }> = ({ data }) => {
       <DescriptionText>{strategy}</DescriptionText>
       <Label>Fund description</Label>
       <DescriptionText>{description}</DescriptionText>
-      <InfoRow
+      {/* <InfoRow
         label={"Min. investment amount"}
         value={`0 ${baseData?.symbol}`}
-      />
+      /> */}
       <InfoRow label={"Type of fund"} value={"Standart"} />
       <InfoRow label={"Whitelist"} value={"0 adresess"} />
       <InfoRow label={"Fund manager"} value={"0 managers"} />
-      <InfoRow
+      {/* <InfoRow
         label={"Performance Fee"}
         value={`${ethers.utils
           .formatUnits(data.parameters.comissionPercentage, 25)
           .toString()}%`}
-      />
+      /> */}
     </Container>
   )
 }

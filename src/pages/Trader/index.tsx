@@ -9,7 +9,6 @@ import { useState } from "react"
 import { GuardSpinner } from "react-spinners-kit"
 import { formatNumber } from "utils"
 import { ethers } from "ethers"
-import PnlWidget from "components/PnlWidget"
 import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
 import { selectBasicPoolByAddress } from "state/pools/selectors"
@@ -29,6 +28,49 @@ import BarChart from "pages/Investor/Bar"
 import newTradeButton from "assets/template-buttons/new-trade.svg"
 import fundPositions from "assets/template-buttons/fund-positions.svg"
 import { IDetailedChart } from "constants/interfaces"
+
+const pnlNew: IDetailedChart[] = [
+  {
+    x: "1",
+    y: 0,
+    lpBasic: "0",
+    lpBasicPercent: 0,
+    lpUsd: "0",
+    lpUsdPercent: 0,
+  },
+  {
+    x: "1",
+    y: 0,
+    lpBasic: "0",
+    lpBasicPercent: 0,
+    lpUsd: "0",
+    lpUsdPercent: 0,
+  },
+  {
+    x: "1",
+    y: 0,
+    lpBasic: "0",
+    lpBasicPercent: 0,
+    lpUsd: "0",
+    lpUsdPercent: 0,
+  },
+  {
+    x: "1",
+    y: 0,
+    lpBasic: "0",
+    lpBasicPercent: 0,
+    lpUsd: "0",
+    lpUsdPercent: 0,
+  },
+  {
+    x: "1",
+    y: 0,
+    lpBasic: "0",
+    lpBasicPercent: 0,
+    lpUsd: "0",
+    lpUsdPercent: 0,
+  },
+]
 
 const pnl: IDetailedChart[] = [
   {
@@ -133,7 +175,6 @@ interface Props {}
 
 import {
   Container,
-  Buttons,
   ButtonContainer,
   Details,
   TextWhiteBig,
@@ -141,12 +182,15 @@ import {
   FundsUsed,
 } from "./styled"
 import TabsLight from "components/TabsLight"
+import { useBasicPools, useInvestPools } from "state/pools/hooks"
 
 function Trader(props: Props) {
   const {} = props
 
   const { poolAddress } = useParams<{ poolAddress: string }>()
 
+  // const [basic] = useBasicPools()
+  // const [invest] = useInvestPools()
   const poolData = useSelector((state: AppState) =>
     selectBasicPoolByAddress(state, poolAddress)
   )
@@ -181,7 +225,7 @@ function Trader(props: Props) {
           </Flex>
           <Flex full p="0 10px 0 0">
             <Button
-              onClick={() => history.push(`/pool/exchange/${poolData.address}`)}
+              onClick={() => history.push(`/pool/exchange/${poolData.id}`)}
               full
             >
               New trade
@@ -197,7 +241,7 @@ function Trader(props: Props) {
               name: "Profit & Loss",
               child: (
                 <>
-                  <AreaChart tooltipSize="sm" height={120} data={pnl} />
+                  <AreaChart tooltipSize="sm" height={120} data={pnlNew} />
                   <ChartPeriods>
                     <Period active>D</Period>
                     <Period>W</Period>
@@ -209,12 +253,12 @@ function Trader(props: Props) {
                   </ChartPeriods>
                   <BarChart />
                   <Row>
-                    <MainText>P&L LP - $ETH</MainText>
-                    <MainValue>+ 13.1% (+112.132 ETH)</MainValue>
+                    <TextGrey>P&L LP - $ETH</TextGrey>
+                    <MainValue>0% (0 ETH)</MainValue>
                   </Row>
                   <Row>
-                    <MainText>P&L LP - USD% - USD</MainText>
-                    <MainValue>+ 19.1% - 19.1 USD </MainValue>
+                    <TextGrey>P&L LP - USD% - USD</TextGrey>
+                    <MainValue>0% - 0 USD </MainValue>
                   </Row>
                 </>
               ),
@@ -227,7 +271,7 @@ function Trader(props: Props) {
                     multiple
                     tooltipSize="sm"
                     height={163}
-                    data={pnl}
+                    data={pnlNew}
                   />
                   <ChartPeriods>
                     <Period active>D</Period>
@@ -245,7 +289,7 @@ function Trader(props: Props) {
                     </Row>
                   </Flex>
                   <Row>
-                    <TextGrey>Your funds locked</TextGrey>
+                    <MainText>Your funds locked</MainText>
                     <TextWhiteBig>$32.12k</TextWhiteBig>
                   </Row>
                   <Row>
@@ -261,7 +305,7 @@ function Trader(props: Props) {
         />
       </TabCard>
 
-      <Details>
+      {/* <Details>
         <TabsLight
           tabs={[
             {
@@ -274,7 +318,7 @@ function Trader(props: Props) {
             },
           ]}
         />
-      </Details>
+      </Details> */}
     </Container>
   )
 }

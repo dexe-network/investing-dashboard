@@ -15,7 +15,7 @@ export const Details = styled.div`
   padding: 0 16px 16px;
   background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   border-radius: 10px;
-  margin-top: 27px;
+  margin-top: 16px;
   width: 100%;
 `
 

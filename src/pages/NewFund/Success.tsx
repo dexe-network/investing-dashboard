@@ -1,16 +1,19 @@
 import styled from "styled-components"
-import { Flex } from "theme"
+import { Flex, To } from "theme"
 import { useParams } from "react-router-dom"
 import grayCheck from "assets/icons/gray-check.svg"
 import facebookIcon from "assets/icons/facebook-rounded.svg"
 import twitterIcon from "assets/icons/twitter-rounded.svg"
 import telegramIcon from "assets/icons/telegram-rounded.svg"
 import shareIcon from "assets/icons/share-rounded.svg"
-import ButtonImg from "assets/template-buttons/button-img.svg"
+import ButtonImg from "assets/template-buttons/new-positions.svg"
 import Button from "components/Button"
 import { shortenAddress } from "utils"
+import bottomAsset from "assets/background/welcome-bottom.svg"
+import rightAsset from "assets/background/welcome-right.svg"
 
 const Container = styled(Flex)`
+  position: relative;
   box-sizing: border-box;
   padding-left: 28px;
   padding-right: 22px;
@@ -20,6 +23,29 @@ const Container = styled(Flex)`
   justify-content: space-evenly;
   align-items: center;
   flex-direction: column;
+
+  &:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: url(${rightAsset});
+    background-position: 100% 0;
+    background-repeat: no-repeat;
+  }
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: url(${bottomAsset});
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+  }
 `
 const Title = styled.div`
   font-family: Gilroy;
@@ -90,6 +116,7 @@ const ButtonContainer = styled(Flex)`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  max-width: 350px;
 `
 
 const Success = () => {
@@ -123,9 +150,11 @@ const Success = () => {
         <Flex p="0 21px 0 0">
           <img src={ButtonImg} alt="button-img" />
         </Flex>
-        <Button full>
-          {Button}My {ticker} fund
-        </Button>
+        <To to="/">
+          <Flex>
+            <Button>Go to Funds list</Button>
+          </Flex>
+        </To>
       </ButtonContainer>
     </Container>
   )

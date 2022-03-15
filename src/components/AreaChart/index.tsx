@@ -11,49 +11,69 @@ import { chartColors, Flex, device } from "theme"
 import styled from "styled-components"
 
 const StyledTooltip = styled(Flex)`
-  width: 288px;
-  height: 113px;
-  background: rgb(41, 49, 52);
-  background: linear-gradient(
-    135deg,
-    rgba(41, 49, 52, 1) 0%,
-    rgba(32, 79, 124, 1) 65%
-  );
-  border-radius: 10px;
+  width: 140px;
+  height: 60px;
+  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  border-radius: 8px;
   box-shadow: 0 3px 15px 0 rgba(0, 0, 0, 0.35);
-  padding: 12px 10px;
+  padding: 8px;
+  flex-direction: column;
+  align-items: flex-start;
 `
 
 const StyledTooltipSm = styled(StyledTooltip)`
-  width: 100px;
-  height: 30px;
+  width: 145px;
+  height: 50px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 8px;
 `
 const TooltipText = styled.div`
-  color: #f5f5f5;
-  font-size: 16px;
   font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 15px;
+  color: #c5d1dc;
+`
+
+export const TooltipDate = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+
+  /* Text / gray */
+
+  color: #5a6071;
+
+  opacity: 0.6;
+`
+
+export const TooltipValue = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
   font-weight: 500;
+  font-size: 14px;
+  line-height: 15px;
+  color: #9ae2cb;
 `
 
 const LargeTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <StyledTooltip dir="column" jc="space-around" ai="center">
-        <Flex full jc="space-between">
-          <TooltipText>P&L LP-$ETH</TooltipText>
-          <TooltipText>{payload[0].payload.lpBasic} ETH</TooltipText>
+      <StyledTooltip>
+        <TooltipDate>MON,{payload[0].payload.y}.01.2022</TooltipDate>
+        <Flex full>
+          <TooltipText>My funds</TooltipText>
+          <TooltipValue>{payload[0].payload.y.toFixed(2)}%</TooltipValue>
         </Flex>
-        <Flex full jc="space-between">
-          <TooltipText>P&L LP-$ETH percent</TooltipText>
-          <TooltipText>{payload[0].payload.lpBasicPercent}%</TooltipText>
-        </Flex>
-        <Flex full jc="space-between">
-          <TooltipText>P&L LP-USD</TooltipText>
-          <TooltipText>{payload[0].payload.lpUsd} USD</TooltipText>
-        </Flex>
-        <Flex full jc="space-between">
-          <TooltipText>P&L LP-USD percent</TooltipText>
-          <TooltipText>{payload[0].payload.lpUsdPercent}%</TooltipText>
+        <Flex full>
+          <TooltipText>Investor</TooltipText>
+          <TooltipValue>{(payload[0].payload.y + 15).toFixed(2)}%</TooltipValue>
         </Flex>
       </StyledTooltip>
     )
@@ -65,8 +85,12 @@ const LargeTooltip = ({ active, payload }) => {
 const SmallTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <StyledTooltipSm dir="column" jc="space-around" ai="center">
-        <TooltipText>{payload[0].payload.y.toFixed(2)}%</TooltipText>
+      <StyledTooltipSm>
+        <TooltipDate>MON,03.01.2022</TooltipDate>
+        <Flex full>
+          <TooltipText>P&L - LP</TooltipText>
+          <TooltipValue>{payload[0].payload.y.toFixed(2)}%</TooltipValue>
+        </Flex>
       </StyledTooltipSm>
     )
   }

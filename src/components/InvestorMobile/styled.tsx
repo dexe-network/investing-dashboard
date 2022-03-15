@@ -104,7 +104,7 @@ const ItemContainer = styled(Flex)`
     justify-self: start;
   }
   &:nth-child(2) {
-    justify-self: end;
+    justify-self: center;
   }
   &:nth-child(3) {
     justify-self: end;

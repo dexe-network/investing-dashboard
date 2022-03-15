@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Flex, Text, BaseButton, device } from "theme"
+import { Flex, Text, BaseButton, device, size } from "theme"
 
 export const Card = styled(Flex)`
   width: 100%;
@@ -9,10 +9,15 @@ export const Card = styled(Flex)`
   box-sizing: border-box;
   flex-direction: column;
   justify-content: space-evenly;
+  z-index: 5;
+
+  @media only screen and (min-width: ${size.xs}) {
+    flex-direction: row;
+  }
 `
 
 export const PoolInfoContainer = styled(Flex)`
-  height: 70px;
+  height: 62px;
   width: 100%;
   justify-content: space-around;
 `
@@ -26,7 +31,7 @@ export const PoolInfo = styled(Flex)`
 export const BaseInfo = styled(Flex)`
   width: 45%;
   justify-content: flex-start;
-  padding-right: 16px;
+  padding-left: 16px;
 `
 
 export const Title = styled.div`
@@ -76,8 +81,8 @@ export const Divider = styled.div`
 `
 
 export const PoolStatisticContainer = styled.div`
-  padding: 20px 16px 0;
-  height: 80px;
+  padding: 7px 16px 0;
+  height: 57px;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -113,10 +118,10 @@ const ItemContainer = styled(Flex)`
     justify-self: start;
   }
   &:nth-child(3) {
-    justify-self: center;
+    justify-self: start;
   }
   &:nth-child(4) {
-    justify-self: end;
+    justify-self: center;
   }
 `
 

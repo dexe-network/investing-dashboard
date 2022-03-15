@@ -14,7 +14,7 @@ export const MembersList = styled.div`
   -webkit-overflow-scrolling: touch;
 
   @media only screen and (${device.sm}) {
-    padding: 15px 20px 30px 20px;
+    padding: 0px 20px 30px 20px;
   }
 `
 

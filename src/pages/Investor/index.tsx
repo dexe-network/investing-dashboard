@@ -17,6 +17,7 @@ import {
   TabCard,
   Row,
   MainText,
+  MainValue,
   SecondaryText,
   Buttons,
   Period,
@@ -37,7 +38,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "2",
-    y: 1.23,
+    y: 1,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -45,7 +46,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "3",
-    y: 1.12,
+    y: 1,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -61,7 +62,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "5",
-    y: 1,
+    y: 1.15,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -85,7 +86,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "8",
-    y: 1.92,
+    y: 5.5,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -93,7 +94,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "9",
-    y: 2.3,
+    y: 4.87,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -101,7 +102,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "10",
-    y: 2.3,
+    y: 5.56,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -109,7 +110,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "11",
-    y: 2.3,
+    y: 5.5,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -117,7 +118,7 @@ const pnl: IDetailedChart[] = [
   },
   {
     x: "12",
-    y: 2.63,
+    y: 7.63,
     lpBasic: "0",
     lpBasicPercent: 0,
     lpUsd: "0",
@@ -179,11 +180,11 @@ function Investor(props: Props) {
         <BarChart />
         <Row>
           <MainText>P&L LP - $ETH</MainText>
-          <SecondaryText>+ 13.1% (+112.132 ETH)</SecondaryText>
+          <MainValue>+ 13.1% (+112.132 ETH)</MainValue>
         </Row>
         <Row>
           <MainText>P&L LP - USD% - USD</MainText>
-          <SecondaryText>+ 19.1% - 19.1 USD </SecondaryText>
+          <MainValue>+ 19.1% - 19.1 USD </MainValue>
         </Row>
       </TabCard>
     </Container>

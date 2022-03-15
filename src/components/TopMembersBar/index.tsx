@@ -8,19 +8,22 @@ import Popover from "components/Popover"
 import NavTabs from "components/NavTabs"
 import RadioButton from "components/RadioButton"
 
+import more from "assets/icons/more-menu.svg"
 import filtersIcon from "assets/icons/filters.svg"
 
 import {
   StyledBar,
+  SearchOverlay,
   ClickableArea,
-  TopMenu,
-  BottomMenu,
+  TabsMenu,
   Tabs,
   Tab,
   Icons,
   IconButton,
-  Badge,
+  Title,
+  TitleMenu,
   tabsVariants,
+  overlayVariants,
   FormLabel,
   FilterContainer,
   FilterSelectableItem,
@@ -40,7 +43,6 @@ const sortFilter = [
 ]
 
 const TopMembersBar: React.FC = () => {
-  const commonBases = ["ALL", "USDT", "BUSD", "ETH", "BNB"]
   const [filters, dispatchFilter] = usePoolsFilters()
 
   const [isSearchActive, setSearchActive] = useState(false)
@@ -78,13 +80,35 @@ const TopMembersBar: React.FC = () => {
         exit={{ y: -102 }}
         transition={{ duration: 0.4, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        <TopMenu>
-          <Tabs
+        <TitleMenu>
+          <Icons>
+            <ClickableArea onClick={handleFiltersClick}>
+              <IconButton src={filtersIcon} />
+            </ClickableArea>
+          </Icons>
+          <Title
             initial="visible"
             animate={isSearchActive ? "hidden" : "visible"}
             variants={tabsVariants}
             transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
           >
+            Investing
+          </Title>
+          <Icons>
+            <IconSearch
+              q={filters.query}
+              onChange={(q) => dispatchFilter("query", q)}
+              onClick={handleSearchClick}
+              active={isSearchActive}
+              toggle={setSearchActive}
+            />
+            <ClickableArea onClick={() => {}}>
+              <IconButton src={more} />
+            </ClickableArea>
+          </Icons>
+        </TitleMenu>
+        <TabsMenu>
+          <Tabs>
             <Tab
               active={filters.listType === "basic"}
               onClick={() => dispatchFilter("listType", "basic")}
@@ -98,24 +122,14 @@ const TopMembersBar: React.FC = () => {
               Investment pools ({totalInvestPools})
             </Tab>
           </Tabs>
-
-          <Icons>
-            <ClickableArea onClick={handleSearchClick}>
-              <IconSearch active={isSearchActive} toggle={setSearchActive} />
-            </ClickableArea>
-            <ClickableArea onClick={handleFiltersClick}>
-              <IconButton src={filtersIcon} />
-            </ClickableArea>
-          </Icons>
-        </TopMenu>
-        {/* <BottomMenu>
-          {commonBases.map((symbol) => (
-            <Badge active={symbol === "ALL"} key={symbol}>
-              {symbol}
-            </Badge>
-          ))}
-        </BottomMenu> */}
+        </TabsMenu>
       </StyledBar>
+
+      <SearchOverlay
+        initial="hidden"
+        animate={!isSearchActive ? "hidden" : "visible"}
+        variants={overlayVariants}
+      />
 
       <Popover
         contentHeight={650}

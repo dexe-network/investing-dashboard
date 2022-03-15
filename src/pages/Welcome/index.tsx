@@ -34,6 +34,7 @@ const Welcome: React.FC<Props> = (props) => {
   const { children } = props
   const [isLoading, setLoading] = useState(true)
   const { toggleConnectWallet } = useConnectWalletContext()
+
   const activeProviderName = localStorage.getItem(
     "dexe.network/investing/web3-auth-method"
   )

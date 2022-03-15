@@ -17,21 +17,21 @@ const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
   const [traderLp, setTraderLp] = useState<BigNumber>(BigNumber.from("0"))
   const [accountLp, setAccountLp] = useState<BigNumber>(BigNumber.from("0"))
   const { account } = useWeb3React()
-  const totalEmission = ethers.utils.formatEther(
-    data.parameters.totalLPEmission
-  )
-  const traderPool = useContract(data.address, TraderPool)
-  const circulatingSupply = formatBigNumber(data.lpEmission, 18, 6)
+  // const totalEmission = ethers.utils.formatEther(
+  //   data.parameters.totalLPEmission
+  // )
+  // const traderPool = useContract(data.address, TraderPool)
+  // const circulatingSupply = formatBigNumber(data.lpEmission, 18, 6)
 
-  useEffect(() => {
-    if (!traderPool || !account || !data.parameters.trader) return
-    ;(async () => {
-      const userLpBalance = await traderPool.balanceOf(account)
-      const traderLpBalance = await traderPool.balanceOf(data.parameters.trader)
-      setTraderLp(traderLpBalance)
-      setAccountLp(userLpBalance)
-    })()
-  }, [traderPool, account, data.parameters.trader])
+  // useEffect(() => {
+  //   if (!traderPool || !account || !data.parameters.trader) return
+  //   ;(async () => {
+  //     const userLpBalance = await traderPool.balanceOf(account)
+  //     const traderLpBalance = await traderPool.balanceOf(data.parameters.trader)
+  //     setTraderLp(traderLpBalance)
+  //     setAccountLp(userLpBalance)
+  //   })()
+  // }, [traderPool, account, data.parameters.trader])
 
   return (
     <Container>
@@ -68,7 +68,7 @@ const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
         <Icon src={chartIcon} />
         <Label>Funds</Label>
       </Flex>
-      <Flex full p="14px 0 0">
+      {/* <Flex full p="14px 0 0">
         <Emission
           percent={9}
           total={
@@ -80,7 +80,7 @@ const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
           }
           current={`${circulatingSupply} ${data.ticker}`}
         />
-      </Flex>
+      </Flex> */}
       <InfoRow
         label={"Traders LP"}
         value={`${ethers.utils.formatEther(traderLp).toString()} ${

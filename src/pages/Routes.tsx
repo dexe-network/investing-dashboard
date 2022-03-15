@@ -9,16 +9,16 @@ import { Content, RestrictedContainer } from "theme/GlobalStyle"
 
 const TopMembers = lazy(() => import("pages/TopMembers"))
 const NewFund = lazy(() => import("pages/NewFund"))
-const Invest = lazy(() => import("pages/Invest"))
+// const Invest = lazy(() => import("pages/Invest"))
 const Profile = lazy(() => import("pages/Profile"))
-const Investor = lazy(() => import("pages/Investor"))
-const Trader = lazy(() => import("pages/Trader"))
-const Swap = lazy(() => import("pages/Swap"))
-const Trades = lazy(() => import("pages/Trades"))
-const Wallet = lazy(() => import("pages/Wallet"))
-const Success = lazy(() => import("pages/NewFund/Success"))
-const Notifications = lazy(() => import("pages/Notifications"))
-const Insurance = lazy(() => import("pages/Insurance"))
+// const Investor = lazy(() => import("pages/Investor"))
+// const Trader = lazy(() => import("pages/Trader"))
+// const Swap = lazy(() => import("pages/Swap"))
+// const Trades = lazy(() => import("pages/Trades"))
+// const Wallet = lazy(() => import("pages/Wallet"))
+// const Success = lazy(() => import("pages/NewFund/Success"))
+// const Notifications = lazy(() => import("pages/Notifications"))
+// const Insurance = lazy(() => import("pages/Insurance"))
 
 export default function Routes() {
   const location = useLocation()
@@ -29,7 +29,7 @@ export default function Routes() {
         <CreateFundContext>
           <AnimatePresence exitBeforeEnter initial>
             <Switch location={location} key={location.pathname}>
-              <Route path="/me">
+              {/* <Route path="/me">
                 <RestrictedContainer>
                   <ProfileHeader />
 
@@ -51,10 +51,6 @@ export default function Routes() {
                 <Success />
               </Route>
 
-              <Route path="/new-fund">
-                <NewFund />
-              </Route>
-
               <Route path="/wallet">
                 <Wallet />
               </Route>
@@ -67,17 +63,21 @@ export default function Routes() {
                 <Trades />
               </Route>
 
+              <Route path="/pool/invest/:poolType/:poolAddress">
+              <Invest />
+              </Route>
+              <Route path="/pool/exchange/:poolAddress">
+              <Swap />
+              </Route>
+              <Route path="/insurance">
+              <Insurance />
+            </Route> */}
               <Route path="/pool/profile/:poolType/:poolAddress">
                 <Profile />
               </Route>
-              <Route path="/pool/invest/:poolType/:poolAddress">
-                <Invest />
-              </Route>
-              <Route path="/pool/exchange/:poolAddress">
-                <Swap />
-              </Route>
-              <Route path="/insurance">
-                <Insurance />
+
+              <Route path="/new-fund">
+                <NewFund />
               </Route>
 
               <Route exact path="/">

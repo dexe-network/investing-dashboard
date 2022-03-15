@@ -6,18 +6,21 @@ export const IconArea = styled(motion.div)`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 30px;
+  height: 36px;
+  width: 24px;
   background: rgba(90, 96, 113, 0.15);
   box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.07);
   border-radius: 10px;
-  position: fixed;
+  position: absolute;
   right: 60px;
-  top: 8px;
-  padding: 2px 0 0 10px;
+  top: 4px;
+  padding: 0 10px;
 `
 
 export const Icon = styled.img`
-  margin: 0 3px;
+  width: 24px;
+  height: 24px;
+  z-index: 10;
 `
 
 export const Input = styled(motion.input)`
@@ -25,7 +28,11 @@ export const Input = styled(motion.input)`
   border: none;
   background: transparent;
   width: fill-available;
+  width: -webkit-fill-available;
   outline: none;
+  color: #e4f2ff;
+  font-size: 14px;
+  z-index: 10;
 
   &::placeholder {
     font-family: Gilroy;
@@ -42,7 +49,7 @@ export const Divider = styled.div``
 
 export const wrapperVariants = {
   visible: {
-    width: "calc(100vw - 78px)",
+    width: "calc(100vw - 118px)",
     background: "rgba(90, 96, 113, 0.15)",
     boxShadow: "0px 7px 4px rgba(0, 0, 0, 0.07)",
   },
@@ -55,14 +62,12 @@ export const wrapperVariants = {
 
 export const inputVariants = {
   visible: {
-    width: "150px",
     transitionEnd: {
       display: "inline",
       opacity: 1,
     },
   },
   hidden: {
-    width: "0px",
     display: "none",
     opacity: 0,
   },

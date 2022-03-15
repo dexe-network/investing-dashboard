@@ -4,25 +4,21 @@ import { motion } from "framer-motion"
 import { useRouteMatch } from "react-router-dom"
 
 export const MobileMenu = styled(motion.div)`
-  display: none;
-
-  @media only screen and (${device.sm}) {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    user-select: none;
-    grid-area: bottom;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    padding: 15px 14px 23px 14px;
-    width: 100%;
-    height: 70px;
-    z-index: 100;
-    background: #0c0e11;
-    box-shadow: 0px -3px 6px rgba(0, 0, 0, 0.2);
-  }
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  user-select: none;
+  grid-area: bottom;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 15px 14px 23px 14px;
+  width: 100%;
+  height: 70px;
+  z-index: 100;
+  background: #1d222a;
+  box-shadow: 0px -3px 6px rgba(0, 0, 0, 0.2);
 `
 
 const MobileItem = styled(motion.div)`

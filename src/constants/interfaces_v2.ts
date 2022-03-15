@@ -13,12 +13,30 @@ export interface BasicPoolHistory {
   id: string
   creationTime: number
   priceHistory: {
-    price: string
+    price: string // usdTVS
     supply: string
-    poolBase: string
+    poolBase: string // baseTVL
     seconds: number
     loss: string
   }
+}
+
+export interface IBasicPoolQuery {
+  id: string
+  baseToken: string
+  name: string
+  ticker: string
+  creationTime: number
+  priceHistory: {
+    price: number // usdTVL
+    supply: number
+    poolBase: number // baseTVL
+    seconds: number
+    loss: number
+  }[]
+  investors: {
+    id: string
+  }[]
 }
 
 /// @notice The structure that is returned from the TraderPoolView contract and stores static information about the pool
@@ -39,8 +57,8 @@ export interface Pool {
   lpPnl: string | number
   stablePrice: string
 
-  parameters: PoolParameters
-  leverageInfo: LeverageInfo
+  parameters?: PoolParameters
+  leverageInfo?: LeverageInfo
 
   openPositions: string[]
   baseAndPositionBalances: BigNumber[]

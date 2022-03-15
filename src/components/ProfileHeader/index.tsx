@@ -99,8 +99,8 @@ const ProfileHeader: React.FC = () => {
               My Funds
               <Funds>
                 {basicPools.slice(0, 2).map((pool) => (
-                  <FundWrapper key={pool.address}>
-                    <TokenIcon size={24} address={pool.parameters.baseToken} />
+                  <FundWrapper key={pool.id}>
+                    <TokenIcon size={24} address={pool.baseToken} />
                   </FundWrapper>
                 ))}
               </Funds>
@@ -114,7 +114,7 @@ const ProfileHeader: React.FC = () => {
   if (isInvestor) {
     return (
       <HeadContainer>
-        {!ownedPools.basic.length && !ownedPools.invest.length ? (
+        {!ownedPools.invest.length ? (
           <Link to="/new-fund">
             <FloatingButton
               position="right"
@@ -132,7 +132,7 @@ const ProfileHeader: React.FC = () => {
             </FloatingButton>
           </Link>
         ) : (
-          <Link to={`/me/trader/profile/basic/${ownedPools.basic[0]}`}>
+          <Link to={`/me/trader/profile/invest/${ownedPools.invest[0]}`}>
             <FloatingButton
               position="right"
               initial={{ opacity: 0, x: -15 }}

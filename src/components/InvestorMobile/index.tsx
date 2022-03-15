@@ -49,9 +49,9 @@ const InvestorMobile: React.FC<Props> = ({ account, children }) => {
       </PoolInfoContainer>
       <Divider />
       <PoolStatisticContainer>
-        <Statistic label="Invested" value={`$213.34`} />
-        <Statistic label="TV" value="$328.82" />
-        <Statistic label="P&L" value={`12%`} />
+        <Statistic label="Invested" value={`$213k`} />
+        <Statistic label="TV" value="$312k" />
+        <Statistic label="P&L" value={`12.38%`} />
         <Statistic label="Pools" value={<>3</>} />
       </PoolStatisticContainer>
       {children}

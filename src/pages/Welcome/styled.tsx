@@ -1,8 +1,5 @@
-import { Flex, BaseButton, Text, device } from "theme"
+import { Flex } from "theme"
 import styled from "styled-components"
-
-import arrowToLogo from "assets/others/arrow-to-logo.svg"
-import arrowToName from "assets/others/arrow-to-name.svg"
 
 import bottomAsset from "assets/background/welcome-bottom.svg"
 import rightAsset from "assets/background/welcome-right.svg"
@@ -11,7 +8,7 @@ export const Container = styled(Flex)`
   justify-content: flex-start;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   position: realtive;
   padding: 40px 32px;
   // background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);

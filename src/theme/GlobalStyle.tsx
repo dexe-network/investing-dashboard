@@ -126,39 +126,27 @@ export const SpecialModalBackground = styled.div`
 `
 
 export const AppWrapper = styled.div`
-  // display: grid;
+  background: linear-gradient(64.44deg, #0c1017 32.35%, #181d26 100%);
   min-height: -webkit-fill-available;
 
-  background: linear-gradient(9.62deg, #0a0b0d 1.99%, #1e222d 99.3%);
+  // display: grid;
+
   // grid-template-columns: 50px 1fr;
   // grid-template-areas: "menu content";
   // height: inherit;
-  overscroll-behavior: none;
-  touch-action: none;
+  // overscroll-behavior: none;
+  // touch-action: none;
 
-  @media only screen and (${device.sm}) {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 62px;
-    grid-template-areas: "content" "bottom";
-    gap: 0px 0px;
-    justify-items: stretch;
-    align-items: stretch;
-  }
+  // @media only screen and (${device.sm}) {
+  //   display: grid;
+  //   grid-template-columns: 1fr;
+  //   grid-template-rows: 1fr 0px;
+  //   grid-template-areas: "content" "bottom";
+  //   gap: 0px 0px;
+  //   justify-items: stretch;
+  //   align-items: stretch;
+  // }
 `
-
-// export const Overlay = styled.div`
-//   background: url($./font/Gilroy/{background});
-//   background-repeat: no-repeat;
-//   background-size: cover;
-//   background-position: center;
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   z-index: 1;
-// `
 
 export const Content = styled.div`
   z-index: 5;

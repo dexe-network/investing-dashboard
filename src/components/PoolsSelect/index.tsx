@@ -51,37 +51,37 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
     return () => clearAllBodyScrollLocks()
   }, [scrollRef, isOpen])
 
-  const basicPoolsList = basicPools.map((pool) => (
-    <Token
-      baseAddress={pool.parameters.baseToken}
-      poolType="basic"
-      name={pool.name}
-      symbol={pool.ticker}
-      pnl={`${pool.lpPnl}%`}
-      address={pool.address}
-      key={pool.address}
-      tvl={`$${formatNumber(
-        ethers.utils.formatUnits(pool.leverageInfo.totalPoolUSD, 18).toString(),
-        2
-      )}`}
-    />
-  ))
+  // const basicPoolsList = basicPools.map((pool) => (
+  //   <Token
+  //     baseAddress={pool.parameters.baseToken}
+  //     poolType="basic"
+  //     name={pool.name}
+  //     symbol={pool.ticker}
+  //     pnl={`${pool.lpPnl}%`}
+  //     address={pool.address}
+  //     key={pool.address}
+  //     tvl={`$${formatNumber(
+  //       ethers.utils.formatUnits(pool.leverageInfo.totalPoolUSD, 18).toString(),
+  //       2
+  //     )}`}
+  //   />
+  // ))
 
-  const investPoolsList = investPools.map((pool) => (
-    <Token
-      baseAddress={pool.parameters.baseToken}
-      poolType="invest"
-      name={pool.name}
-      symbol={pool.ticker}
-      pnl={`${pool.lpPnl}%`}
-      address={pool.address}
-      key={pool.address}
-      tvl={`$${formatNumber(
-        ethers.utils.formatUnits(pool.leverageInfo.totalPoolUSD, 18).toString(),
-        2
-      )}`}
-    />
-  ))
+  // const investPoolsList = investPools.map((pool) => (
+  //   <Token
+  //     baseAddress={pool.parameters.baseToken}
+  //     poolType="invest"
+  //     name={pool.name}
+  //     symbol={pool.ticker}
+  //     pnl={`${pool.lpPnl}%`}
+  //     address={pool.address}
+  //     key={pool.address}
+  //     tvl={`$${formatNumber(
+  //       ethers.utils.formatUnits(pool.leverageInfo.totalPoolUSD, 18).toString(),
+  //       2
+  //     )}`}
+  //   />
+  // ))
 
   return (
     <Popover
@@ -122,9 +122,7 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
                 <PlusIcon src={plus} />
               </Link>
             </EmptyText>
-          ) : (
-            basicPoolsList
-          )}
+          ) : null}
         </List>
         <Header>
           <PrimaryLabel>
@@ -147,9 +145,7 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
                 <PlusIcon src={plus} />
               </Link>
             </EmptyText>
-          ) : (
-            investPoolsList
-          )}
+          ) : null}
         </List>
 
         <Header>
