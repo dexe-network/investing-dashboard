@@ -28,7 +28,7 @@ export const Container = styled(Flex)`
   width: 100%;
   height: 100%;
   padding: 16px 16px 40px;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
 `

@@ -12,7 +12,6 @@ import AddressChips from "components/AddressChips"
 import Switch from "components/Switch"
 import TokenIcon from "components/TokenIcon"
 
-import TokenSelector from "modals/TokenSelector"
 import { commonsTokensList } from "constants/index"
 
 import { opacityVariants } from "motion/variants"
@@ -141,11 +140,6 @@ export default function Slider<Props>({ close }) {
             <Secondary>Basic settings for your fund.</Secondary>
             <Warn>*Basic settings cannot be changed after creation.</Warn>
           </Flex>
-          <TokenSelector
-            onSelect={(v) => setForm("_basicToken", v)}
-            isOpen={isSelectorOpened}
-            onRequestClose={() => setSelectorModal(false)}
-          />
           <InputUI label="Token name" onChange={setForm} name="_name" />
           <InputUI label="Ticker symbol" onChange={setForm} name="_symbol" />
 

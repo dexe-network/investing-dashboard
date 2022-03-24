@@ -3,7 +3,7 @@ import { BaseButton, device, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
 const buttonSizes = {
-  large: "16px 25px 16px",
+  large: "17px 25px 17px",
   big: "14px 25px 14px",
   normal: "12px 15px 13px",
   small: "9px 39px 9px",

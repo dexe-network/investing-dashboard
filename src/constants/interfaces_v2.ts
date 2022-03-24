@@ -27,12 +27,19 @@ export interface IBasicPoolQuery {
   name: string
   ticker: string
   creationTime: number
+  descriptionURL: string
+  maxLoss: number
+  totalTrades: number
+  totalClosedPositions: number
+  averageTrades: number
+  averagePositionTime: number
   priceHistory: {
-    price: number // usdTVL
+    usdTVL: number
+    baseTVL: number
     supply: number
-    poolBase: number // baseTVL
+    absPNL: number
+    percPNL: number
     seconds: number
-    loss: number
   }[]
   investors: {
     id: string

@@ -1,9 +1,6 @@
-import { ReactComponentElement, useContext } from "react"
-// import styled from "styled-components"
-// import { motion } from "framer-motion"
 import { ethers } from "ethers"
 
-import { Flex, Text } from "theme"
+import { Flex } from "theme"
 import {
   ToContainer,
   Price,
@@ -13,13 +10,11 @@ import {
   Symbol,
   ActiveSymbol,
   SymbolLabel,
-  IconDown,
+  Icon,
 } from "./styled"
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
-import { fromBig } from "utils"
 import { BigNumber } from "@ethersproject/bignumber"
-import poolLogo from "assets/icons/default-pool-logo.svg"
 import angleIcon from "assets/icons/angle-down.svg"
 import { DebounceInput } from "react-debounce-input"
 import { calcPrice } from "utils"
@@ -28,13 +23,13 @@ interface IToProps {
   customIcon?: any
   price: string
   priceChange24H: number
-  amount: number
+  amount: number | string
   balance: BigNumber
   address?: string
   symbol?: string
   decimal?: number
   isPool?: boolean
-  onChange: (amount: number) => void
+  onChange: (amount: number | string) => void
   onSelect?: () => void
 }
 
@@ -108,9 +103,9 @@ const ExchangeTo: React.FC<IToProps> = ({
         />
         <ActiveSymbol onClick={onSelect}>
           {/* // TODO: create FundIcon component */}
-          {customIcon ? customIcon : <TokenIcon address="" size={27} />}
+          {customIcon ? customIcon : <TokenIcon address={address} size={27} />}
           <SymbolLabel>{symbol}</SymbolLabel>
-          {onSelect && <IconDown src={angleIcon} />}
+          {onSelect && <Icon src={angleIcon} />}
         </ActiveSymbol>
       </Flex>
     </ToContainer>

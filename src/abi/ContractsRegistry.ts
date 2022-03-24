@@ -163,6 +163,19 @@ export default [
   },
   {
     inputs: [],
+    name: "USER_REGISTRY_NAME",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "__ContractsRegistry_init",
     outputs: [],
     stateMutability: "nonpayable",
@@ -401,6 +414,19 @@ export default [
   {
     inputs: [],
     name: "getUniswapV2RouterContract",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getUserRegistryContract",
     outputs: [
       {
         internalType: "address",

@@ -8,6 +8,7 @@ import { OwnedPools } from "constants/interfaces_v2"
 import { useSelector } from "react-redux"
 import { AppState } from "state"
 import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
+import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
 
 import {
   Container,
@@ -23,8 +24,6 @@ import {
   selectBasicPoolsBatch,
   selectInvestPoolsBatch,
 } from "state/pools/selectors"
-import { formatNumber } from "utils"
-import { ethers } from "ethers"
 
 interface Props {
   isOpen: boolean
@@ -32,7 +31,7 @@ interface Props {
   pools: OwnedPools
 }
 
-const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
+const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
   const [isDragAlloved, setDragAllowed] = useState(true)
   const scrollRef = React.useRef<any>(null)
   const { account } = useWeb3React()
@@ -51,37 +50,43 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
     return () => clearAllBodyScrollLocks()
   }, [scrollRef, isOpen])
 
-  // const basicPoolsList = basicPools.map((pool) => (
-  //   <Token
-  //     baseAddress={pool.parameters.baseToken}
-  //     poolType="basic"
-  //     name={pool.name}
-  //     symbol={pool.ticker}
-  //     pnl={`${pool.lpPnl}%`}
-  //     address={pool.address}
-  //     key={pool.address}
-  //     tvl={`$${formatNumber(
-  //       ethers.utils.formatUnits(pool.leverageInfo.totalPoolUSD, 18).toString(),
-  //       2
-  //     )}`}
-  //   />
-  // ))
+  const basicPoolsList = basicPools.map((pool) => {
+    const priceLP = getPriceLP(pool.priceHistory)
+    const pnl = getPNL(priceLP)
+    const lastHistoryPoint = getLastInArray(pool.priceHistory)
 
-  // const investPoolsList = investPools.map((pool) => (
-  //   <Token
-  //     baseAddress={pool.parameters.baseToken}
-  //     poolType="invest"
-  //     name={pool.name}
-  //     symbol={pool.ticker}
-  //     pnl={`${pool.lpPnl}%`}
-  //     address={pool.address}
-  //     key={pool.address}
-  //     tvl={`$${formatNumber(
-  //       ethers.utils.formatUnits(pool.leverageInfo.totalPoolUSD, 18).toString(),
-  //       2
-  //     )}`}
-  //   />
-  // ))
+    return (
+      <Token
+        baseAddress={pool.baseToken}
+        poolType="basic"
+        name={pool.name}
+        symbol={pool.ticker}
+        pnl={`${pnl}%`}
+        address={pool.id}
+        key={pool.id}
+        tvl={`$${getUSDPrice(lastHistoryPoint ? lastHistoryPoint.usdTVL : 0)}`}
+      />
+    )
+  })
+
+  const investPoolsList = investPools.map((pool) => {
+    const priceLP = getPriceLP(pool.priceHistory)
+    const pnl = getPNL(priceLP)
+    const lastHistoryPoint = getLastInArray(pool.priceHistory)
+
+    return (
+      <Token
+        baseAddress={pool.baseToken}
+        poolType="invest"
+        name={pool.name}
+        symbol={pool.ticker}
+        pnl={`${pnl}%`}
+        address={pool.id}
+        key={pool.id}
+        tvl={`$${getUSDPrice(lastHistoryPoint ? lastHistoryPoint.usdTVL : 0)}`}
+      />
+    )
+  })
 
   return (
     <Popover
@@ -122,7 +127,9 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
                 <PlusIcon src={plus} />
               </Link>
             </EmptyText>
-          ) : null}
+          ) : (
+            basicPoolsList
+          )}
         </List>
         <Header>
           <PrimaryLabel>
@@ -145,7 +152,9 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
                 <PlusIcon src={plus} />
               </Link>
             </EmptyText>
-          ) : null}
+          ) : (
+            investPoolsList
+          )}
         </List>
 
         <Header>
@@ -165,4 +174,4 @@ const PoolsSelect: React.FC<Props> = ({ isOpen, toggle, pools }) => {
   )
 }
 
-export default PoolsSelect
+export default OwnedPoolsList

@@ -24,7 +24,7 @@ import { useERC20 } from "hooks/useContract"
 import { formatNumber } from "utils"
 import { parsePoolData } from "utils/ipfs"
 import IpfsIcon from "components/IpfsIcon"
-import { getPNL, getPriceLP } from "utils/formulas"
+import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
 
 // @param data - pool data
 // @param index - indicating index in all list of pools
@@ -35,6 +35,7 @@ const MemberMobile: React.FC<{
   const [baseContract, baseData] = useERC20(data.baseToken)
   const priceLP = getPriceLP(data.priceHistory)
   const pnl = getPNL(priceLP)
+  const lastHistoryPoint = getLastInArray(data.priceHistory)
 
   return (
     <Card
@@ -49,7 +50,7 @@ const MemberMobile: React.FC<{
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <IpfsIcon size={42} hash={""} />
+          <IpfsIcon size={42} hash={data.descriptionURL} />
           <div>
             <Title>{data.ticker}</Title>
             <Description>{data.name}</Description>
@@ -68,7 +69,12 @@ const MemberMobile: React.FC<{
       </PoolInfoContainer>
       <Divider />
       <PoolStatisticContainer>
-        <Statistic label="TVL" value={`$0`} />
+        <Statistic
+          label="TVL"
+          value={`$${getUSDPrice(
+            lastHistoryPoint ? lastHistoryPoint.usdTVL : 0
+          )}`}
+        />
         <Statistic label="APY" value="0%" />
         <Statistic label="P&L" value={`0%`} />
         <Statistic label="Depositors" value={<>{data.investors.length}</>} />

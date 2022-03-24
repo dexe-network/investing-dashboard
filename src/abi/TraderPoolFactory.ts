@@ -44,6 +44,12 @@ export default [
         name: "name",
         type: "string",
       },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "descriptionURL",
+        type: "string",
+      },
     ],
     name: "Deployed",
     type: "event",

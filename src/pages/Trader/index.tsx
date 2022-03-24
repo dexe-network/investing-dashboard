@@ -225,7 +225,11 @@ function Trader(props: Props) {
           </Flex>
           <Flex full p="0 10px 0 0">
             <Button
-              onClick={() => history.push(`/pool/exchange/${poolData.id}`)}
+              onClick={() =>
+                history.push(
+                  `/pool/swap/whitelist/${poolData.id}/0x78867bbeef44f2326bf8ddd1941a4439382ef2a7`
+                )
+              }
               full
             >
               New trade

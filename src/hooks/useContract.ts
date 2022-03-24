@@ -57,8 +57,7 @@ export function usePancakeFactory(): Contract | null {
 }
 
 export function useERC20(
-  address: string | undefined,
-  withUpdate?: boolean
+  address: string | undefined
 ): [
   Contract | null,
   { address: string; name: string; symbol: string; decimals: number } | null,
@@ -121,25 +120,25 @@ export function useERC20(
     init()
   }, [contract, account, address, library, init])
 
-  useEffect(() => {
-    if (withUpdate) {
-      const interval = setInterval(() => {
-        ;(async () => {
-          console.log("update erc20 balance")
-          try {
-            const balance = await (isETH
-              ? library.getBalance(account)
-              : contract?.balanceOf(account))
-            setBalance(balance)
-          } catch (e) {
-            // console.log(e, e.message)
-          }
-        })()
-      }, 5000)
-      return () => clearInterval(interval)
-    }
-    return () => {}
-  }, [])
+  // useEffect(() => {
+  //   if (withUpdate) {
+  //     const interval = setInterval(() => {
+  //       ;(async () => {
+  //         console.log("update erc20 balance")
+  //         try {
+  //           const balance = await (isETH
+  //             ? library.getBalance(account)
+  //             : contract?.balanceOf(account))
+  //           setBalance(balance)
+  //         } catch (e) {
+  //           // console.log(e, e.message)
+  //         }
+  //       })()
+  //     }, 5000)
+  //     return () => clearInterval(interval)
+  //   }
+  //   return () => {}
+  // }, [])
 
   return [contract, tokenData, balance, init]
 }

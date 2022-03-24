@@ -34,7 +34,6 @@ const App = () => {
               <NotificationsContext>
                 <Welcome>
                   <>
-                    {/* <Menu /> */}
                     <Routes />
                     <TapBar />
                   </>

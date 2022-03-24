@@ -1,21 +1,19 @@
 import React, { useState, useRef } from "react"
 import styled from "styled-components"
-import { Flex } from "theme"
+import { Flex, GradientBorder, GradientBorderLight } from "theme"
 import search from "assets/icons/search.svg"
 import remove from "assets/icons/remove.svg"
 import { useFocus } from "hooks"
 // import { motion } from "framer-motion"
 
-export const Container = styled(Flex)<{ height: string; bg?: string }>`
-  background: ${(props) =>
-    !!props.bg
-      ? props.bg
-      : "linear-gradient(0deg,rgba(29, 33, 41, 0.7),rgba(29, 33, 41, 0.7))"};
-  border-radius: 10px;
-  padding: 0 10px;
+export const Container = styled(GradientBorder)<{ height: string }>`
+  background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
+  border-radius: 32px;
+  padding: 0 20px 0 14px;
   width: 100%;
   height: ${(props) => props.height || "30px"};
   box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.07);
+  align-items: center;
 `
 
 export const Input = styled.input`
@@ -24,56 +22,46 @@ export const Input = styled.input`
   border: none;
 
   flex: 1;
+  font-family: "Gilroy";
   font-style: normal;
-  font-family: Gilroy;
   font-weight: 400;
-  font-size: 13px;
-  line-height: 16px;
+  font-size: 12px;
+  line-height: 14px;
   color: #c5d1dc;
+  padding-top: 5px;
+  padding-left: 5px;
 
   &::-webkit-input-placeholder {
-    font-family: Gilroy;
+    font-family: "Gilroy";
     font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: 12px;
     line-height: 14px;
-
-    color: #5a6071;
-
-    opacity: 0.5;
+    color: #666f87;
   }
   &:-moz-placeholder {
-    font-family: Gilroy;
+    font-family: "Gilroy";
     font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: 12px;
     line-height: 14px;
-
-    color: #5a6071;
-
-    opacity: 0.5;
+    color: #666f87;
   }
   &::-moz-placeholder {
-    font-family: Gilroy;
+    font-family: "Gilroy";
     font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: 12px;
     line-height: 14px;
-
-    color: #5a6071;
-
-    opacity: 0.5;
+    color: #666f87;
   }
   &:-ms-input-placeholder {
-    font-family: Gilroy;
+    font-family: "Gilroy";
     font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
+    font-weight: 400;
+    font-size: 12px;
     line-height: 14px;
-
-    color: #5a6071;
-
-    opacity: 0.5;
+    color: #666f87;
   }
 `
 
@@ -82,7 +70,6 @@ export const Icon = styled.img<{ top?: string }>`
 `
 
 interface Props {
-  customBG?: string
   height: string
   placeholder: string
   value: string
@@ -90,32 +77,31 @@ interface Props {
 }
 
 const Search: React.FC<Props> = ({
-  customBG,
   height,
   placeholder,
   handleChange,
   value,
 }) => {
-  const [ref, setFocus] = useFocus()
+  const ref = useRef<any>(null)
+  const [isFocused, setFocused] = useState(false)
   return (
-    <Container bg={customBG} height={height}>
+    <Container height={height} focused={isFocused}>
+      <Icon
+        top="1px"
+        src={search}
+        onClick={() => ref.current && ref.current?.focus && ref.current.focus()}
+      />
       <Input
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
         value={value}
         ref={ref}
         onChange={(e) => handleChange(e.target.value)}
         placeholder={placeholder}
       />
 
-      {!!value ? (
+      {!!value && (
         <Icon top="-1px" onClick={() => handleChange("")} src={remove} />
-      ) : (
-        <Icon
-          top="1px"
-          src={search}
-          onClick={() =>
-            ref.current && ref.current?.focus && ref.current.focus()
-          }
-        />
       )}
     </Container>
   )

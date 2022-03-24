@@ -9,16 +9,17 @@ import { Content, RestrictedContainer } from "theme/GlobalStyle"
 
 const TopMembers = lazy(() => import("pages/TopMembers"))
 const NewFund = lazy(() => import("pages/NewFund"))
-// const Invest = lazy(() => import("pages/Invest"))
+const Invest = lazy(() => import("pages/Invest"))
 const Profile = lazy(() => import("pages/Profile"))
-// const Investor = lazy(() => import("pages/Investor"))
-// const Trader = lazy(() => import("pages/Trader"))
-// const Swap = lazy(() => import("pages/Swap"))
-// const Trades = lazy(() => import("pages/Trades"))
-// const Wallet = lazy(() => import("pages/Wallet"))
-// const Success = lazy(() => import("pages/NewFund/Success"))
-// const Notifications = lazy(() => import("pages/Notifications"))
-// const Insurance = lazy(() => import("pages/Insurance"))
+const Investor = lazy(() => import("pages/Investor"))
+const Trader = lazy(() => import("pages/Trader"))
+const Swap = lazy(() => import("pages/Swap"))
+const Trades = lazy(() => import("pages/Trades"))
+const Wallet = lazy(() => import("pages/Wallet"))
+const Success = lazy(() => import("pages/NewFund/Success"))
+const Notifications = lazy(() => import("pages/Notifications"))
+const TokenSelect = lazy(() => import("pages/TokenSelect"))
+const Insurance = lazy(() => import("pages/Insurance"))
 
 export default function Routes() {
   const location = useLocation()
@@ -29,7 +30,7 @@ export default function Routes() {
         <CreateFundContext>
           <AnimatePresence exitBeforeEnter initial>
             <Switch location={location} key={location.pathname}>
-              {/* <Route path="/me">
+              <Route path="/me">
                 <RestrictedContainer>
                   <ProfileHeader />
 
@@ -47,10 +48,6 @@ export default function Routes() {
                 <Notifications />
               </Route>
 
-              <Route exact path="/new-fund/success/:ticker/:address">
-                <Success />
-              </Route>
-
               <Route path="/wallet">
                 <Wallet />
               </Route>
@@ -63,15 +60,23 @@ export default function Routes() {
                 <Trades />
               </Route>
 
-              <Route path="/pool/invest/:poolType/:poolAddress">
-              <Invest />
-              </Route>
-              <Route path="/pool/exchange/:poolAddress">
-              <Swap />
-              </Route>
               <Route path="/insurance">
-              <Insurance />
-            </Route> */}
+                <Insurance />
+              </Route>
+
+              <Route path="/select-token/:type/:poolAddress">
+                <TokenSelect />
+              </Route>
+
+              <Route path="/pool/swap/whitelist/:poolAddress/:outputTokenAddress">
+                <Swap />
+              </Route>
+              <Route path="/pool/invest/:poolType/:poolAddress">
+                <Invest />
+              </Route>
+              <Route exact path="/new-fund/success/:ticker/:address">
+                <Success />
+              </Route>
               <Route path="/pool/profile/:poolType/:poolAddress">
                 <Profile />
               </Route>
