@@ -2,11 +2,11 @@ import React from "react"
 import { Flex, Text } from "theme"
 import { ethers } from "ethers"
 import { BigNumber } from "@ethersproject/bignumber"
-import lock from "assets/icons/lock-solid.svg"
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
 import { DebounceInput } from "react-debounce-input"
 import angleIcon from "assets/icons/angle-down.svg"
+import locker from "assets/icons/locker.svg"
 import {
   FromContainer,
   Price,
@@ -16,9 +16,7 @@ import {
   ActiveSymbol,
   SymbolLabel,
   Tokens,
-  Symbol,
-  Unlock,
-  IconDown,
+  Icon,
 } from "./styled"
 import { formatBigNumber, calcPrice } from "utils"
 
@@ -29,11 +27,10 @@ interface IFromProps {
   address?: string
   symbol?: string
   decimal?: number
-  isAlloved: boolean
   isPool?: boolean
   isStable?: boolean
   onChange: (amount: number) => void
-  onSelect: () => void
+  onSelect?: () => void
 }
 
 const ExchangeFrom: React.FC<IFromProps> = ({
@@ -43,12 +40,13 @@ const ExchangeFrom: React.FC<IFromProps> = ({
   address,
   symbol,
   decimal,
-  isAlloved,
   isPool = false,
   isStable = false,
   onChange,
   onSelect,
 }) => {
+  const select = onSelect ? onSelect : () => {}
+
   const setMaxAmount = () => {
     console.log(
       ethers.utils.formatUnits(balance, decimal),
@@ -76,12 +74,12 @@ const ExchangeFrom: React.FC<IFromProps> = ({
             <Ripple width="67px" />
           </Price>
           <Balance>
-            <Ripple width="80px" />
+            <Ripple width="70px" />
           </Balance>
         </Flex>
-        <Flex full ai="center">
+        <Flex p="9px 0 0" full ai="center">
           <Ripple width="120px" />
-          <Ripple width="60px" />
+          <Ripple width="100px" />
         </Flex>
       </FromContainer>
     )
@@ -90,15 +88,14 @@ const ExchangeFrom: React.FC<IFromProps> = ({
   return (
     <FromContainer full>
       <Flex full dir="column">
-        <Flex p="0 0 2px" full>
+        <Flex full>
           <Price>
             ≈$
             {calcPrice(price, amount).toFixed(2)}
           </Price>
           <Balance onClick={setMaxAmount}>
-            <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
-            <Symbol>{symbol}</Symbol>
-            {/* <Max onClick={setMaxAmount}> (max)</Max> */}
+            <Tokens>Balance: {formatBigNumber(balance, decimal, 6)}</Tokens>
+            <Max onClick={setMaxAmount}>Max</Max>
           </Balance>
         </Flex>
         <Flex full ai="center">
@@ -109,18 +106,13 @@ const ExchangeFrom: React.FC<IFromProps> = ({
             onChange={handleInputChange}
             value={amount}
           />
-          <ActiveSymbol onClick={onSelect}>
-            <TokenIcon size={27} address={address} />
+          <ActiveSymbol onClick={select}>
+            <TokenIcon size={26} address={address} />
             <SymbolLabel>{symbol}</SymbolLabel>
-            <IconDown src={angleIcon} />
+            <Icon src={onSelect ? angleIcon : locker} />
           </ActiveSymbol>
         </Flex>
       </Flex>
-      {!isAlloved && (
-        <Unlock>
-          <img src={lock} alt="" />
-        </Unlock>
-      )}
     </FromContainer>
   )
 }

@@ -16,7 +16,7 @@ import GlobalStyle from "theme/GlobalStyle"
 import getLibrary from "utils/getLibrary"
 
 import { ContractsRegistryUpdater } from "state/contracts/updater"
-import { PriceFeedUpdater } from "state/pricefeed/updater"
+import { PriceFeedUpdater, TokensListUpdater } from "state/pricefeed/updater"
 import { UserPoolsUpdater } from "state/user/updater"
 import "react-virtualized/styles.css"
 
@@ -44,6 +44,7 @@ const GlobalComponents = () => (
     <ContractsRegistryUpdater />
     <UserPoolsUpdater />
     <PriceFeedUpdater />
+    {/* <TokensListUpdater /> */}
     <Normalize />
     <GlobalStyle />
   </>

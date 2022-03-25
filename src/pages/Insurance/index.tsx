@@ -22,7 +22,6 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { ethers } from "ethers"
 
 import LockedIcon from "assets/icons/LockedIcon"
-import transactionSettingsIcon from "assets/icons/transaction-settings.svg"
 import {
   formatDecimalsNumber,
   formatNumber,
@@ -412,10 +411,6 @@ export default function Insurance() {
 
   const form = (
     <div>
-      <SettingsLabel onClick={() => setSettingsOpen(!isSettingsOpen)}>
-        <SettingsIcon src={transactionSettingsIcon} />
-        Transaction settings
-      </SettingsLabel>
       <ExchangeFrom
         price={parseFloat(inPrice)}
         amount={fromAmount}
@@ -424,7 +419,6 @@ export default function Insurance() {
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
         onChange={handleFromChange}
-        isAlloved
         onSelect={() => {}}
         isStable
       />

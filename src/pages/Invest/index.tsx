@@ -23,7 +23,6 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { ethers } from "ethers"
 
 import LockedIcon from "assets/icons/LockedIcon"
-import transactionSettingsIcon from "assets/icons/transaction-settings.svg"
 import {
   formatDecimalsNumber,
   formatNumber,
@@ -210,7 +209,7 @@ export default function Invest() {
 
   const traderPool = useContract(poolData.id, TraderPool)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
-  const [fromToken, fromData, fromBalance] = useERC20(poolData.baseToken, true)
+  const [fromToken, fromData, fromBalance] = useERC20(poolData.baseToken)
 
   const handleSubmit = async () => {
     setSubmiting(true)
@@ -354,7 +353,7 @@ export default function Invest() {
         )
         setAllowance(allowance.toString())
       })()
-    }, 5000)
+    }, 1000 * 20)
   }, [fromToken, account, library, poolData, direction])
 
   // INPUT LISTENERS
@@ -383,7 +382,7 @@ export default function Invest() {
         const lpBalance = await traderPool.balanceOf(account)
         setToBalance(lpBalance.toString())
       })()
-    }, 5000)
+    }, 1000 * 20)
 
     return () => clearInterval(interval)
   }, [traderPool, fromData, account])
@@ -453,6 +452,7 @@ export default function Invest() {
     }
     return (
       <Button
+        size="large"
         theme={direction === "deposit" ? "primary" : "warn"}
         onClick={handleSubmit}
         fz={22}
@@ -467,73 +467,8 @@ export default function Invest() {
 
   const button = getButton()
 
-  const priceTemplate = (
-    <Flex ai="center">
-      <PriceText>
-        {`1 ${poolData.ticker} = ${formatNumber(priceLP)} ${
-          fromData?.symbol
-        } (~${formatNumber(
-          (parseFloat(inPrice) * parseFloat(priceLP)).toString()
-        )}$)`}
-      </PriceText>
-      <Tooltip id="0">
-        <Flex dir="column" full>
-          <InfoRow
-            label="Investor available Funds"
-            value={`0 ${poolData.ticker}`}
-          />
-          <InfoRow
-            label="Your available Funds"
-            value={`80,017 ${poolData.ticker}`}
-          />
-          <InfoRow
-            label="Locked in positions"
-            value={`(55%) 100,000 ${poolData.ticker}`}
-          />
-          <InfoRow
-            label="Free Liquidity"
-            value={`(55%) 19,983 ${poolData.ticker}`}
-            white
-          />
-        </Flex>
-      </Tooltip>
-    </Flex>
-  )
-
-  const settings = (
-    <Popover
-      contentHeight={300}
-      isOpen={isSettingsOpen}
-      toggle={() => setSettingsOpen(false)}
-      title="Transaction settings"
-    >
-      <SettingsCard>
-        <SettingsDescription>
-          Your tranzaction will revert if the price changes unfavorably by more
-          than this percentage
-        </SettingsDescription>
-        <Flex p="20px 0" jc="space-evenly" full>
-          <SettingsInput
-            type="number"
-            defaultValue={slippage}
-            onChange={(v) => setSlippage(parseFloat(v.target.value) || 2)}
-            placeholder="Select slippage"
-          />
-          <SettingsButton>AUTO</SettingsButton>
-        </Flex>
-        {/* <SettingsDescription>
-          Please, enter a valid slippage percentage{" "}
-        </SettingsDescription> */}
-      </SettingsCard>
-    </Popover>
-  )
-
   const form = (
     <div>
-      <SettingsLabel onClick={() => setSettingsOpen(!isSettingsOpen)}>
-        <SettingsIcon src={transactionSettingsIcon} />
-        Transaction settings
-      </SettingsLabel>
       <ExchangeFrom
         price={parseFloat(inPrice)}
         amount={fromAmount}
@@ -542,8 +477,6 @@ export default function Invest() {
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
         onChange={handleFromChange}
-        isAlloved
-        onSelect={() => {}}
         isStable
       />
 
@@ -649,13 +582,9 @@ export default function Invest() {
         isPool
         onChange={handleToChange}
       />
-
-      <PriceContainer>
-        <Label>Price: </Label>
-        {!fromData ? <StageSpinner size={12} loading /> : priceTemplate}
-      </PriceContainer>
-
-      {button}
+      <Flex p="16px 0 0" full>
+        {button}
+      </Flex>
     </div>
   )
 
@@ -666,12 +595,9 @@ export default function Invest() {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
-      <MemberMobile data={poolData} />
-      {settings}
-
       <Payload isOpen={isSubmiting} toggle={() => setSubmiting(false)} />
 
-      {error.length ? <ErrorText>{error}</ErrorText> : form}
+      {form}
     </Container>
   )
 }

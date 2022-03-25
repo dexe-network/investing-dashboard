@@ -158,6 +158,83 @@ export const Block = styled(Flex)`
   justify-content: space-around;
 `
 
+export const BasicCard = styled(Flex)`
+  width: 100%;
+  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
+
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+`
+
+export const GradientBorder = styled(Flex)<{ focused?: boolean }>`
+  position: relative;
+  z-index: 5;
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    transition: all 0.3s ease-in-out;
+    background-image: ${(props) =>
+      props.focused
+        ? "linear-gradient(to bottom right,#2680eb 0%,#7fffd4 40%,#2680eb 60%,#2680eb 100%)"
+        : "linear-gradient(to bottom right,#587eb76e 0%,#26324482 20%,#2632447d 40%,#6d99db80 100%)"};
+  }
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(
+        0deg,
+        rgba(16, 20, 32, 0.32),
+        rgba(16, 20, 32, 0.32)
+      ),
+      linear-gradient(64.44deg, #222630 32.35%, #2e3442 100%);
+  }
+`
+
+export const GradientBorderLight = styled(Flex)`
+  position: relative;
+  z-index: 5;
+
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: linear-gradient(
+      to bottom right,
+      #2680eb 0%,
+      #7fffd4 40%,
+      #2680eb 60%,
+      #2680eb 100%
+    );
+  }
+  &:after {
+    content: "";
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
+  }
+`
+
 export const External: React.FC<{
   href: string
 }> = ({ href, children }) => (

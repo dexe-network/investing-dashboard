@@ -61,7 +61,7 @@ export const Tabs = styled(Flex)`
   width: 100%;
   padding: 0 10px;
   position: relative;
-  justify-content: flex-start;
+  justify-content: space-around;
   height: 34px;
 
   &:before {
@@ -104,7 +104,6 @@ export const Tab = styled(ClickableArea)<{ active?: boolean }>`
 
   text-align: center;
   letter-spacing: 0.5px;
-  margin-right: 40px;
 
   display: flex;
   align-items: flex-end;

@@ -29,6 +29,19 @@ export default [
     inputs: [
       {
         indexed: false,
+        internalType: "string",
+        name: "descriptionURL",
+        type: "string",
+      },
+    ],
+    name: "DescriptionURLChanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "investor",
         type: "address",
@@ -78,31 +91,6 @@ export default [
       },
     ],
     name: "Exchanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "investor",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "toMintLP",
-        type: "uint256",
-      },
-    ],
-    name: "Invest",
     type: "event",
   },
   {
@@ -734,7 +722,7 @@ export default [
         components: [
           {
             internalType: "uint256",
-            name: "totalPoolUSD",
+            name: "totalPoolUSDWithProposals",
             type: "uint256",
           },
           {
@@ -856,7 +844,12 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "lpEmission",
+            name: "lpSupply",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lpLockedInProposals",
             type: "uint256",
           },
         ],

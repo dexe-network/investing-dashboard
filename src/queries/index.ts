@@ -1,94 +1,72 @@
+const BasicPool = `
+  id
+  baseToken
+  name
+  ticker
+  creationTime
+  descriptionURL
+  maxLoss
+  totalTrades
+  totalClosedPositions
+  averageTrades
+  averagePositionTime
+  priceHistory(orderBy: seconds, orderDirection: desc) {
+    usdTVL
+    baseTVL
+    supply
+    absPNL
+    percPNL
+    seconds
+  }
+  investors {
+    id
+  }
+`
+
 const BasicPoolQuery = `
+  query ($address: String!) {
+    basicPool(id: $address) {
+      ${BasicPool}
+    }
+  }
+`
+
+const BasicPoolsQuery = `
   query {
     basicPools(first: 100 orderBy: creationTime) {
-      id
-      baseToken
-      name
-      ticker
-      creationTime
-      priceHistory {
-        price
-        supply
-        poolBase
-        seconds
-        loss
-      }
-      investors {
-        id
-      }
+      ${BasicPool}
     }
   }
 `
 
-const BasicPoolQueryByName = `
+const BasicPoolsQueryByName = `
   query ($q: String!) {
     basicPools(where: {name: $q} first: 100 orderBy: creationTime) {
-      id
-      baseToken
-      name
-      ticker
-      creationTime
-      priceHistory {
-        price
-        supply
-        poolBase
-        seconds
-        loss
-      }
-      investors {
-        id
-      }
+      ${BasicPool}
     }
   }
 `
 
-const BasicPoolQueryByTicker = `
+const BasicPoolsQueryByTicker = `
   query ($q: String!) {
     basicPools(where: { ticker_contains: $q } first: 100 orderBy: creationTime) {
-      id
-      baseToken
-      name
-      ticker
-      creationTime
-      priceHistory {
-        price
-        supply
-        poolBase
-        seconds
-        loss
-      }
-      investors {
-        id
-      }
+      ${BasicPool}
     }
   }
 `
 
-const InvestPoolQuery = `
+const InvestPoolsQuery = `
   query InvestPool{
     investPools(first: 100 orderBy: creationTime) {
-      id
-      baseToken
-      name
-      ticker
-      creationTime
-      priceHistory {
-        price
-        supply
-        poolBase
-        seconds
-        loss
-      }
-      investors {
-        id
-      }
+      ${BasicPool}
     }
   }
 `
 
 export {
   BasicPoolQuery,
-  BasicPoolQueryByName,
-  BasicPoolQueryByTicker,
-  InvestPoolQuery,
+  BasicPoolsQuery,
+  BasicPoolsQueryByName,
+  BasicPoolsQueryByTicker,
+  InvestPoolsQuery,
 }

@@ -44,7 +44,7 @@ const stringify = (json) => {
 export const parsePoolData = async (hash) => {
   try {
     if (hash.length === 46) {
-      const res = await axios.get(
+      const res = await axios.post(
         `https://ipfs.infura.io:5001/api/v0/cat?arg=${hash}`
       )
       return res.data

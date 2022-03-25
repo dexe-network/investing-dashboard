@@ -1,3 +1,6 @@
+import { ethers } from "ethers"
+import { formatNumber } from "utils"
+
 export const getPNL = (SP: string) => {
   let CP = 1
   const SP_PARSED = parseFloat(SP)
@@ -29,12 +32,12 @@ export const getPNL = (SP: string) => {
 }
 
 export const getPriceLP = (history): string => {
-  if (!history.length) {
+  if (!history || !history.length) {
     return "1.00"
   }
 
-  const base = history[history.length - 1].baseTVL
-  const emission = history[history.length - 1].supply
+  const base = history[0].baseTVL
+  const emission = history[0].supply
 
   if (
     !base ||
@@ -58,3 +61,10 @@ export const getPriceStable = (stable: string, emission: string): string => {
     return "1"
   return (Number(stable) / Number(emission)).toString()
 }
+
+export const getUSDPrice = (value) => {
+  return formatNumber(ethers.utils.formatUnits(value, 18).toString(), 2)
+}
+
+export const getLastInArray = (array) =>
+  array.length ? array[array.length - 1] : false

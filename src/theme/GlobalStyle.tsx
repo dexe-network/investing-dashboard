@@ -129,6 +129,14 @@ export const AppWrapper = styled.div`
   background: linear-gradient(64.44deg, #0c1017 32.35%, #181d26 100%);
   min-height: -webkit-fill-available;
 
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 59px;
+  grid-template-areas: "content" "bottom";
+  gap: 0px 0px;
+  justify-items: stretch;
+  align-items: stretch;
+
   // display: grid;
 
   // grid-template-columns: 50px 1fr;
@@ -159,6 +167,7 @@ export const Content = styled.div`
   overflow-y: hidden;
   touch-action: none;
   overscroll-behavior: none;
+  min-height: -webkit-fill-available;
 `
 
 export const RestrictedContainer = styled(motion.div)`

@@ -96,12 +96,12 @@ const parseDecimals = (float: string, decimals) => {
   //   return floatPart.substring(0, d + 1)
   // }
 
-  const floatPart = !!float ? `${float}`.substring(0, decimals + 1) : ""
+  const floatPart = !!float ? `${float}`.substring(0, decimals + 1) : ".00"
   return floatPart
 }
 
 export const formatNumber = (amount: string, decimals = 2) => {
-  if (!amount) return "0"
+  if (!amount) return "0.00"
 
   const numArr = amount.split(".")
 

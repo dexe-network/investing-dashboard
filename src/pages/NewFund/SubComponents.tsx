@@ -85,6 +85,7 @@ import { TraderPool, TraderPoolFactory } from "abi"
 import { addFileMetadata } from "utils/ipfs"
 import { BigNumber, ethers } from "ethers"
 import Error from "components/Error"
+import { selectWhitelist } from "state/pricefeed/selectors"
 
 const performanceFees = [
   {
@@ -283,9 +284,7 @@ export const SelectToken = () => {
   const { baseToken, handleChange } = useCreateFundContext()
   const headRef = useRef<HTMLDivElement | null>(null)
   const handleSearch = useCallback((v: string) => setQuery(v), [])
-  const whitelisted = useSelector<AppState, PricefeedState["whitelist"]>(
-    (state) => state.pricefeed.whitelist
-  )
+  const whitelisted = useSelector(selectWhitelist)
   const list = whitelisted.filter((v) =>
     query !== "" ? v.address.toLowerCase() === query.toLowerCase() : true
   )

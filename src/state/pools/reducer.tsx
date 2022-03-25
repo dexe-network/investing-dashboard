@@ -59,9 +59,15 @@ export default createReducer(initialState, (builder) =>
         action.payload.value
     })
     .addCase(addBasicPools, (state, action) => {
-      state.basicList = action.payload || []
+      state.basicList = (action.payload || []).map((v) => ({
+        ...v,
+        id: v.id.toLocaleLowerCase(),
+      }))
     })
     .addCase(addInvestPools, (state, action) => {
-      state.investList = action.payload || []
+      state.investList = (action.payload || []).map((v) => ({
+        ...v,
+        id: v.id.toLocaleLowerCase(),
+      }))
     })
 )

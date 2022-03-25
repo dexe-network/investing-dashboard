@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react"
+import { AppState } from "state"
+import { Flex } from "theme"
 import { useLocation, Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 
-import { AppState } from "state"
-import { Flex } from "theme"
 import TokenIcon from "components/TokenIcon"
+import OwnedPoolsList from "modals/OwnedPoolsList"
 
 import swipeRight from "assets/icons/swipe-arrow-right.svg"
 import swipeLeft from "assets/icons/swipe-arrow-left.svg"
-
 import penncilEdit from "assets/icons/pencil.svg"
-import PoolsSelect from "components/PoolsSelect"
 
 import {
   FloatingLabel,
@@ -68,7 +67,7 @@ const ProfileHeader: React.FC = () => {
   if (isTrader) {
     return (
       <>
-        <PoolsSelect
+        <OwnedPoolsList
           pools={ownedPools}
           isOpen={isPoolsOpen}
           toggle={() => setPoolsOpen(false)}
@@ -114,7 +113,7 @@ const ProfileHeader: React.FC = () => {
   if (isInvestor) {
     return (
       <HeadContainer>
-        {!ownedPools.invest.length ? (
+        {!ownedPools.basic.length && !ownedPools.invest.length ? (
           <Link to="/new-fund">
             <FloatingButton
               position="right"
@@ -132,7 +131,7 @@ const ProfileHeader: React.FC = () => {
             </FloatingButton>
           </Link>
         ) : (
-          <Link to={`/me/trader/profile/invest/${ownedPools.invest[0]}`}>
+          <Link to={`/me/trader/profile/invest/${ownedPools.basic[0]}`}>
             <FloatingButton
               position="right"
               initial={{ opacity: 0, x: -15 }}

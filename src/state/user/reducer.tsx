@@ -26,6 +26,11 @@ export default createReducer(initialState, (builder) =>
       state.userProMode = !state.userProMode
     })
     .addCase(addOwnedPools, (state, action) => {
-      state.ownedPools = action.payload
+      state.ownedPools.basic = action.payload.basic.map((v) =>
+        v.toLocaleLowerCase()
+      )
+      state.ownedPools.invest = action.payload.invest.map((v) =>
+        v.toLocaleLowerCase()
+      )
     })
 )

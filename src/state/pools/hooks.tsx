@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react"
 import { IBasicPoolQuery } from "constants/interfaces_v2"
 import { poolTypes } from "constants/index"
+import { Contract } from "@ethersproject/contracts"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, AppState } from "state"
-import { TraderPoolRegistry } from "abi"
+import { TraderPoolRegistry, TraderPool } from "abi"
 import useContract from "hooks/useContract"
 import { useQuery } from "urql"
 import {
   BasicPoolQuery,
-  BasicPoolQueryByName,
-  BasicPoolQueryByTicker,
-  InvestPoolQuery,
+  BasicPoolsQuery,
+  BasicPoolsQueryByName,
+  BasicPoolsQueryByTicker,
+  InvestPoolsQuery,
 } from "queries"
 import {
   addBasicPools,
@@ -33,6 +35,33 @@ export function usePoolsFilters(): [
   return [filters, handleChange]
 }
 
+export function useBasicPool(
+  address: string
+): [Contract | null, IBasicPoolQuery | undefined, any | null, any | null] {
+  const traderPool = useContract(address, TraderPool)
+  const [leverageInfo, setLeverageInfo] = useState(null)
+  const [poolInfo, setPoolInfo] = useState(null)
+
+  const [basicPool] = useQuery<{
+    basicPool: IBasicPoolQuery
+  }>({
+    query: BasicPoolQuery,
+    variables: { address },
+  })
+
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      const leverage = await traderPool?.getLeverageInfo()
+      const poolInfo = await traderPool?.getPoolInfo()
+      setPoolInfo(poolInfo)
+      setLeverageInfo(leverage)
+    })()
+  }, [traderPool])
+
+  return [traderPool, basicPool.data?.basicPool, leverageInfo, poolInfo]
+}
+
 // TODO: move loading to redux state
 // @return loading indicator of pools
 // @return loadMore function to start fetching new batch of pools
@@ -51,7 +80,7 @@ export function useBasicPools(): [boolean, () => void] {
   const [basicPoolsQueryData, executeQuery] = useQuery<{
     basicPools: IBasicPoolQuery[]
   }>({
-    query: filters.query.length ? BasicPoolQueryByTicker : BasicPoolQuery,
+    query: filters.query.length ? BasicPoolsQueryByTicker : BasicPoolsQuery,
     variables: { q: filters.query },
   })
 
@@ -115,7 +144,7 @@ export function useInvestPools(): [boolean, () => void] {
   const [investPoolsQueryData] = useQuery<{
     investPools: IBasicPoolQuery[]
   }>({
-    query: InvestPoolQuery,
+    query: InvestPoolsQuery,
   })
 
   const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)

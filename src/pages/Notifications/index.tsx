@@ -39,7 +39,6 @@ const Notifications: React.FC = () => {
       <Header>
         <Flex full>
           <Search
-            customBG="rgba(45, 48, 56, 0.4)"
             value={query}
             handleChange={(v) => setQuery(v)}
             placeholder="Name, Ticker, Address"
