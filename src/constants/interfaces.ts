@@ -47,6 +47,8 @@ export interface Token {
   decimals: number
 }
 
+export type FundTypes = "basic" | "investment"
+
 export interface ITokenBase {
   address: string
   name: string

@@ -519,11 +519,11 @@ export const AboutManagers = () => {
             already created risk proposals.
           </PopoverText>
           <Flex p="20px 0 0" onClick={() => setHideMessage(!hideMessage)}>
-            <RadioButton
+            {/* <RadioButton
               selected={hideMessage && "hide"}
               onChange={() => setHideMessage(!hideMessage)}
               value="hide"
-            />
+            /> */}
             <PopoverText align="left">
               Don&apos;t show this message in future
             </PopoverText>
@@ -756,11 +756,11 @@ export const Fees = () => {
           onClick={() => handleChange("commissionPeriod", id)}
         >
           <Flex p="17px 5px 24px 16px">
-            <RadioButton
+            {/* <RadioButton
               selected={commissionPeriod}
               value={id}
               onChange={() => handleChange("commissionPeriod", id)}
-            />
+            /> */}
           </Flex>
           <PerformanceContent>
             <PerformanceTitle>{title}</PerformanceTitle>

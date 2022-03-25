@@ -2,7 +2,7 @@ import { useState, useEffect, Dispatch, SetStateAction } from "react"
 import styled from "styled-components"
 import ImageCropper from "modals/ImageCropper"
 import defaultAvatar from "assets/icons/default-avatar.svg"
-import camera from "assets/icons/camera-icon.svg"
+import picture from "assets/icons/picture.svg"
 import { device } from "theme"
 import { blobToBase64 } from "utils/ipfs"
 
@@ -12,6 +12,7 @@ interface Props {
   m?: string
   showUploader?: boolean
   onCrop?: any
+  top?: string
 }
 
 const Img = styled.img<{ size: number }>`
@@ -40,6 +41,8 @@ const HoverCamera = styled.div`
   width: 100%;
   border-radius: 150px;
   transition: all 0.4s ease-in-out;
+  background: rgba(40, 43, 49, 0.8);
+  backdrop-filter: blur(3px);
 
   @media only screen and (${device.xs}) {
     opacity: 1;
@@ -69,13 +72,14 @@ const CameraIcon = styled.img`
   right: 0;
   bottom: 10px;
   width: 18px;
+  top: 24px;
 
   @media only screen and (${device.xs}) {
     bottom: 25px;
   }
 `
 
-const Container = styled.div<{ size: number; margin: string }>`
+const Container = styled.div<{ size: number; margin: string; top?: string }>`
   position: relative;
   border-radius: 150px;
   width: ${(props) => `${props.size}px`};
@@ -83,6 +87,7 @@ const Container = styled.div<{ size: number; margin: string }>`
   min-width: ${(props) => `${props.size}px`};
   min-height: ${(props) => `${props.size}px`};
   margin: ${(props) => props.margin};
+  top: ${(props) => `${props.top || 0}`};
   /* overflow: hidden; */
 
   &:hover {
@@ -101,6 +106,7 @@ const Avatar: React.FC<Props> = ({
   m = "0",
   showUploader = false,
   onCrop,
+  top,
 }) => {
   const [upImg, setUpImg] = useState<string | ArrayBuffer | null>()
   const [croppedImg, setCroppedImg] = useState<Blob | null>(null)
@@ -130,7 +136,7 @@ const Avatar: React.FC<Props> = ({
 
   // console.log(url)
   return (
-    <Container size={size} margin={m}>
+    <Container top={top} size={size} margin={m}>
       <Img
         src={croppedImg ? URL.createObjectURL(croppedImg) : url}
         size={size}
@@ -143,7 +149,7 @@ const Avatar: React.FC<Props> = ({
               accept="image/*"
               onChange={handleSelectFile}
             />
-            {/* <CameraIcon src={camera} alt="upload avatar" /> */}
+            <CameraIcon src={picture} alt="upload avatar" />
           </HoverCamera>
           <ImageCropper
             submit={setCroppedImg}

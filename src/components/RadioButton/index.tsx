@@ -1,9 +1,9 @@
 import { InnerCircle, OuterCircle, Container } from "./styled"
 
 const RadioButton: React.FC<{
-  selected: any
+  selected: string
   onChange: (value: any) => void
-  value: any
+  value: string
 }> = ({ selected, onChange, value }) => {
   return (
     <Container
