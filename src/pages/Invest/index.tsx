@@ -198,7 +198,7 @@ export default function Invest() {
       selectInvestPoolByAddress(state, poolAddress)
     ),
   }
-  const poolData = pools[poolType]
+  const poolData = pools[poolType || "basic"]
   const priceLP = getPriceLP(poolData.priceHistory)
   const usdAddress = useSelector<AppState, AppState["contracts"]["USD"]>(
     (state) => state.contracts.USD

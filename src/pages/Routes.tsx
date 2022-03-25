@@ -45,7 +45,7 @@ export default function Routes() {
                 </RestrictedContainer>
               </Route>
 
-              <Route exact path="/notifications">
+              <Route path="/notifications">
                 <Notifications />
               </Route>
 
@@ -75,7 +75,7 @@ export default function Routes() {
               <Route path="/pool/invest/:poolType/:poolAddress">
                 <Invest />
               </Route>
-              <Route exact path="/new-fund/success/:ticker/:address">
+              <Route path="/new-fund/success/:ticker/:address">
                 <Success />
               </Route>
               <Route path="/pool/profile/:poolType/:poolAddress">
@@ -91,7 +91,7 @@ export default function Routes() {
                 <NewFund />
               </Route>
 
-              <Route exact path="/">
+              <Route path="/">
                 <TopMembers />
               </Route>
             </Switch>

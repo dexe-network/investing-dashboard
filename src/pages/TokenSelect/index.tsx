@@ -19,15 +19,9 @@ import {
 } from "./styled"
 import { useHistory, useParams } from "react-router-dom"
 
-interface TokenSelectParams {
-  operation: string
-  type: string
-  poolAddress: string
-}
-
 const TokenSelect: React.FC = () => {
   const history = useHistory()
-  const { type, poolAddress } = useParams<TokenSelectParams>()
+  const { type, poolAddress } = useParams()
   const [q, setQuery] = useState("")
   const whitelisted = useSelector(selectWhitelist)
 

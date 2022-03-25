@@ -32,14 +32,8 @@ import {
 } from "state/contracts/selectors"
 import { useBasicPool } from "state/pools/hooks"
 
-interface SwapParams {
-  poolAddress: string
-  outputTokenAddress: string
-}
-
 const basicPoolsClient = createClient({
-  url:
-    "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-basic-pool",
+  url: "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-basic-pool",
 })
 
 export const useSwap = (): [
@@ -173,11 +167,10 @@ function Swap() {
   const [inPrice, setInPrice] = useState("0")
   const [outPrice, setOutPrice] = useState("0")
 
-  const { poolAddress, outputTokenAddress } = useParams<SwapParams>()
+  const { poolAddress, outputTokenAddress } = useParams()
 
-  const [traderPool, poolData, leverageData, poolInfoData] = useBasicPool(
-    poolAddress
-  )
+  const [traderPool, poolData, leverageData, poolInfoData] =
+    useBasicPool(poolAddress)
 
   const usdAddress = useSelector(selectUsdAddress)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)

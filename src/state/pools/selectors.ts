@@ -19,12 +19,12 @@ export const selectInvestPools = createSelector(
 )
 
 export const selectBasicPoolByAddress = createSelector(
-  [selectPools, (state, address: string) => address],
+  [selectPools, (state, address: string | undefined) => address],
   (pools, address) => pools.basicList.filter((value) => value.id === address)[0]
 )
 
 export const selectInvestPoolByAddress = createSelector(
-  [selectPools, (state, address: string) => address],
+  [selectPools, (state, address: string | undefined) => address],
   (pools, address) =>
     pools.investList.filter((value) => value.id === address)[0]
 )

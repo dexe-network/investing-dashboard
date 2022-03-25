@@ -36,7 +36,7 @@ export function usePoolsFilters(): [
 }
 
 export function useBasicPool(
-  address: string
+  address: string | undefined
 ): [Contract | null, IBasicPoolQuery | undefined, any | null, any | null] {
   const traderPool = useContract(address, TraderPool)
   const [leverageInfo, setLeverageInfo] = useState(null)

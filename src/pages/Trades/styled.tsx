@@ -146,10 +146,8 @@ export const ClosePosition = styled(TextButtonBase)`
 export const gradients = {
   default:
     "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(122, 122, 122, 0.2) 100%);",
-  buy:
-    "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(127, 255, 212, 0.1) 100%);",
-  sell:
-    "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(255, 127, 127, 0.1) 100%);",
+  buy: "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(127, 255, 212, 0.1) 100%);",
+  sell: "linear-gradient(90deg,rgba(49, 45, 73, 0) 0%,rgba(255, 127, 127, 0.1) 100%);",
 }
 
 export const Wrapper = styled(Flex)<{ gradient: string; shadow?: boolean }>`

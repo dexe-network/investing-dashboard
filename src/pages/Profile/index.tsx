@@ -151,7 +151,7 @@ const Profile: React.FC<Props> = () => {
       selectInvestPoolByAddress(state, poolAddress)
     ),
   }
-  const poolData = pools[poolType]
+  const poolData = pools[poolType || "basic"]
 
   const handleBuyRedirect = () => {
     history.push(`/pool/invest/${poolType}/${poolData.id}`)

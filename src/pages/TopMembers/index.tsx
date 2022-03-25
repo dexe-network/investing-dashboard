@@ -19,12 +19,10 @@ import next from "assets/icons/pagination-next.svg"
 
 // THE GRAPH CLIENT
 const basicPoolsClient = createClient({
-  url:
-    "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-basic-pool",
+  url: "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-basic-pool",
 })
 const investPoolsClient = createClient({
-  url:
-    "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-invest-pool",
+  url: "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-invest-pool",
 })
 
 import {

@@ -111,13 +111,8 @@ const performanceFees = [
 export const BasicInfo: React.FC = () => {
   const [isNameFocused, setNameFocused] = useState(false)
   const [isSymbolFocused, setSymbolFocused] = useState(false)
-  const {
-    fundType,
-    fundName,
-    fundSymbol,
-    avatarBlobString,
-    handleChange,
-  } = useCreateFundContext()
+  const { fundType, fundName, fundSymbol, avatarBlobString, handleChange } =
+    useCreateFundContext()
 
   console.log(avatarBlobString)
 
@@ -404,13 +399,8 @@ export const SelectToken = () => {
 }
 
 export const AboutManagers = () => {
-  const {
-    description,
-    strategy,
-    baseToken,
-    managers,
-    handleChange,
-  } = useCreateFundContext()
+  const { description, strategy, baseToken, managers, handleChange } =
+    useCreateFundContext()
   const [isManagersAdded, setManagers] = useState(!!managers.length)
   const [hideMessage, setHideMessage] = useState(false)
   const [showPopup, setPopupState] = useState(false)
@@ -733,11 +723,8 @@ const sliderPropsByPeriodType = {
 }
 
 export const Fees = () => {
-  const {
-    commissionPercentage,
-    commissionPeriod,
-    handleChange,
-  } = useCreateFundContext()
+  const { commissionPercentage, commissionPeriod, handleChange } =
+    useCreateFundContext()
   const [isReadMoreOpened, toggleReadMore] = useState(false)
   return (
     <SubContainer
