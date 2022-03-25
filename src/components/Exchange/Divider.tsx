@@ -59,7 +59,7 @@ interface IDividerProps {
   direction: "deposit" | "withdraw"
   points: { label: string; percent: string; from: number; to: number }[]
   fromAmount: number
-  toAmount: number
+  toAmount: number | string
 }
 
 const ExchangeDivider: React.FC<IDividerProps> = ({

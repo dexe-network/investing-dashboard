@@ -21,14 +21,30 @@ const SwapPrice: React.FC = () => {
     setTimeout(() => setLoading(false), 3000)
   }, [])
 
+  const variants = {
+    visible: {
+      opacity: 1,
+    },
+    hidden: {
+      opacity: 0,
+    },
+  }
+
+  const icon = (
+    <AngleIcon
+      initial="hidden"
+      animate={loading ? "hidden" : "visible"}
+      variants={variants}
+      src={angle}
+    />
+  )
+
   const loaderContent = (
     <>
       <Flex ai="center">
         <WhiteText>Fetching best price...</WhiteText>
       </Flex>
-      <Flex ai="center">
-        <AngleIcon src={angle} />
-      </Flex>
+      <Flex ai="center">{icon}</Flex>
     </>
   )
 
@@ -41,7 +57,7 @@ const SwapPrice: React.FC = () => {
       <Flex ai="center">
         <GasIcon src={gas} />
         <GasPrice>$20.18</GasPrice>
-        <AngleIcon src={angle} />
+        {icon}
       </Flex>
     </>
   )

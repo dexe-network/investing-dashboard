@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { Flex, GradientBorder } from "theme"
+import { motion } from "framer-motion"
 
 export const Container = styled(GradientBorder)`
   width: 100%;
@@ -47,6 +48,6 @@ export const GasIcon = styled.img`
   height: 12px;
 `
 
-export const AngleIcon = styled.img`
+export const AngleIcon = styled(motion.img)`
   transform: translateY(1px);
 `

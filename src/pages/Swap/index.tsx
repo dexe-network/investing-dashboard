@@ -98,7 +98,8 @@ export const useSwap = (): [
   )
 
   const setToAmountCallback = useCallback(
-    (amount: number): void => setToAmount(parseFloat(amount.toString()) || 0.0),
+    (amount: number | string): void =>
+      setToAmount(parseFloat(amount.toString()) || 0.0),
     []
   )
 
