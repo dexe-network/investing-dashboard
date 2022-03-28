@@ -5,7 +5,7 @@ import { CircleSpinner } from "react-spinners-kit"
 import { useDebounce } from "react-use"
 import { DebounceInput } from "react-debounce-input"
 
-import search from "assets/icons/search.svg"
+import search from "assets/icons/search-white.svg"
 import remove from "assets/icons/remove-big.svg"
 
 import {
@@ -48,7 +48,12 @@ const IconSearch: React.FC<Props> = ({
   }
 
   const clear = () => {
-    onChange("")
+    if (q.length) {
+      onChange("")
+    }
+    if (!q.length) {
+      toggle(false)
+    }
   }
 
   return (

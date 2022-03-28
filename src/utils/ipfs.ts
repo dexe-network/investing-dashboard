@@ -1,5 +1,6 @@
 import axios from "axios"
 import { create } from "ipfs-http-client"
+import { Buffer } from "buffer"
 
 export interface AddResult {
   cid: any

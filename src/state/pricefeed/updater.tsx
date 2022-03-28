@@ -34,8 +34,8 @@ export const PriceFeedUpdater: React.FC = () => {
     // get whitelist tokens list
     ;(async () => {
       try {
-        const total: number = await priceFeed.totalBaseTokens()
-        const list: string[] = await priceFeed.getBaseTokens(0, total)
+        // const total: number = await priceFeed.totalBaseTokens()
+        // const list: string[] = await priceFeed.getBaseTokens(0, total)
         dispatch(updateWhitelist({ params: whitelist[chainId || 0] }))
       } catch (e) {
         console.log(e)

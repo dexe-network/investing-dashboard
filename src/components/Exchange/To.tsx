@@ -17,11 +17,11 @@ import Ripple from "components/Ripple"
 import { BigNumber } from "@ethersproject/bignumber"
 import angleIcon from "assets/icons/angle-down.svg"
 import { DebounceInput } from "react-debounce-input"
-import { calcPrice } from "utils"
+import { calcPrice, formatBigNumber } from "utils"
 
 interface IToProps {
   customIcon?: any
-  price: string
+  price: BigNumber
   priceChange24H: number
   amount: number | string
   balance: BigNumber
@@ -84,12 +84,10 @@ const ExchangeTo: React.FC<IToProps> = ({
     <ToContainer dir="column" full>
       <Flex p="0 0 2px" full>
         <Price>
-          ≈${calcPrice(price, amount).toFixed(2)} ({priceChange24H.toFixed(2)}%)
+          ≈${formatBigNumber(price, 18, 2)} ({priceChange24H.toFixed(2)}%)
         </Price>
         <Balance onClick={setMaxAmount}>
-          <Tokens>
-            {ethers.utils.formatUnits(balance, decimal).toString()}
-          </Tokens>
+          <Tokens>{formatBigNumber(balance, decimal, 8)}</Tokens>
           <Symbol>{symbol}</Symbol>
         </Balance>
       </Flex>

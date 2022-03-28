@@ -181,8 +181,8 @@ export default function Invest() {
   const [isSettingsOpen, setSettingsOpen] = useState(false)
   const [allowance, setAllowance] = useState("-1")
   const [toBalance, setToBalance] = useState("0")
-  const [inPrice, setInPrice] = useState("0")
-  const [outPrice, setOutPrice] = useState("0")
+  const [inPrice, setInPrice] = useState(BigNumber.from("0"))
+  const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
 
   const [error, setError] = useState("")
 
@@ -293,16 +293,35 @@ export default function Invest() {
   const handleFromChange = (v) => {
     // TODO: write fromChange function
     setFromAmount(v)
-    console.log(priceLP)
     setToAmount(
       formatDecimalsNumber(v / parseFloat(priceLP === "0" ? "1" : priceLP))
     )
+    const fetchAndUpdatePrice = async () => {
+      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        poolData.baseToken,
+        ethers.utils.parseUnits("1", 18).toString(),
+        []
+      )
+      setInPrice(fromPrice)
+    }
+
+    fetchAndUpdatePrice().catch(console.error)
   }
 
   const handleToChange = (v) => {
     // TODO: write handle to change function
     setToAmount(v)
     setFromAmount(formatDecimalsNumber(v * parseFloat(priceLP)))
+    const fetchAndUpdatePrice = async () => {
+      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        poolData.baseToken,
+        ethers.utils.parseUnits("1", 18).toString(),
+        []
+      )
+      setInPrice(fromPrice)
+    }
+
+    fetchAndUpdatePrice().catch(console.error)
   }
 
   const approve = () => {
@@ -387,23 +406,28 @@ export default function Invest() {
     return () => clearInterval(interval)
   }, [traderPool, fromData, account])
 
-  // get exchange rates of LP
-  useEffect(() => {
-    if (!priceFeed || !usdAddress || !poolData.baseToken) return
-    ;(async () => {
-      try {
-        const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
-          poolData.baseToken,
-          ethers.utils.parseUnits("1", 18).toString(),
-          []
-        )
-        setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
-        setOutPrice((parseFloat(inPrice) * parseFloat(priceLP)).toString())
-      } catch (e) {
-        console.log(e)
-      }
-    })()
-  }, [priceFeed, usdAddress, poolData.baseToken, inPrice, priceLP])
+  // // get exchange rates of LP
+  // useEffect(() => {
+  //   if (!priceFeed || !usdAddress || !poolData.baseToken) return
+  //   ;(async () => {
+  //     try {
+  //       const fromPrice = await priceFeed.getNormalizedPriceOutUSD(
+  //         poolData.baseToken,
+  //         ethers.utils.parseUnits("1", 18).toString(),
+  //         []
+  //       )
+  //       const toPrice = await priceFeed.getNormalizedPriceOutUSD(
+  //         poolAddress,
+  //         ethers.utils.parseUnits("1", 18).toString(),
+  //         []
+  //       )
+  //       setInPrice(fromPrice)
+  //       setOutPrice(toPrice)
+  //     } catch (e) {
+  //       console.log(e)
+  //     }
+  //   })()
+  // }, [priceFeed, usdAddress, poolData.baseToken, inPrice, priceLP, poolAddress])
 
   const getButton = () => {
     try {
@@ -470,7 +494,7 @@ export default function Invest() {
   const form = (
     <div>
       <ExchangeFrom
-        price={parseFloat(inPrice)}
+        price={inPrice}
         amount={fromAmount}
         balance={fromBalance}
         address={poolData.baseToken}
