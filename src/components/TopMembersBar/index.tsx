@@ -30,6 +30,7 @@ import {
   FiltersBody,
 } from "./styled"
 import { AppState } from "state"
+import Header from "components/Header"
 
 const sortFilter = [
   "Rating",
@@ -61,6 +62,42 @@ const TopMembersBar: React.FC = () => {
   const handleSearchClick = () => !isSearchActive && setSearchActive(true)
   const handleFiltersClick = () => !isFiltersActive && setFiltersActive(true)
 
+  const tabs = [
+    {
+      title: `Basic pools (${totalBasicPools})`,
+      source: "basic",
+      amount: 1,
+    },
+    {
+      title: `Investment pools (${totalInvestPools})`,
+      source: "invest",
+      amount: 1,
+    },
+  ]
+
+  const Left = () => (
+    <Icons>
+      <ClickableArea onClick={handleFiltersClick}>
+        <IconButton src={filtersIcon} />
+      </ClickableArea>
+    </Icons>
+  )
+
+  const Right = () => (
+    <Icons>
+      <IconSearch
+        q={filters.query}
+        onChange={(q) => dispatchFilter("query", q)}
+        onClick={handleSearchClick}
+        active={isSearchActive}
+        toggle={setSearchActive}
+      />
+      <ClickableArea onClick={() => {}}>
+        <IconButton src={more} />
+      </ClickableArea>
+    </Icons>
+  )
+
   // *hint.
   // in older versions listType was "all" || "risk" value,
   // but now it's deprecated.
@@ -74,56 +111,13 @@ const TopMembersBar: React.FC = () => {
 
   return (
     <>
-      <StyledBar
-        initial={{ y: -102 }}
-        animate={{ y: 0 }}
-        exit={{ y: -102 }}
-        transition={{ duration: 0.4, ease: [0.29, 0.98, 0.29, 1] }}
-      >
-        <TitleMenu>
-          <Icons>
-            <ClickableArea onClick={handleFiltersClick}>
-              <IconButton src={filtersIcon} />
-            </ClickableArea>
-          </Icons>
-          <Title
-            initial="visible"
-            animate={isSearchActive ? "hidden" : "visible"}
-            variants={tabsVariants}
-            transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
-          >
-            Investing
-          </Title>
-          <Icons>
-            <IconSearch
-              q={filters.query}
-              onChange={(q) => dispatchFilter("query", q)}
-              onClick={handleSearchClick}
-              active={isSearchActive}
-              toggle={setSearchActive}
-            />
-            <ClickableArea onClick={() => {}}>
-              <IconButton src={more} />
-            </ClickableArea>
-          </Icons>
-        </TitleMenu>
-        <TabsMenu>
-          <Tabs>
-            <Tab
-              active={filters.listType === "basic"}
-              onClick={() => dispatchFilter("listType", "basic")}
-            >
-              Basic pools ({totalBasicPools})
-            </Tab>
-            <Tab
-              active={filters.listType === "invest"}
-              onClick={() => dispatchFilter("listType", "invest")}
-            >
-              Investment pools ({totalInvestPools})
-            </Tab>
-          </Tabs>
-        </TabsMenu>
-      </StyledBar>
+      <Header
+        LeftComponent={Left}
+        RightComponent={Right}
+        tabs={tabs}
+        title="Investing"
+        isTitleHidden={isSearchActive}
+      />
 
       <SearchOverlay
         initial="hidden"
