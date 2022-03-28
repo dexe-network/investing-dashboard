@@ -1,5 +1,4 @@
 import { StyledBar, TitleMenu, TabsMenu } from "components/TopMembersBar/styled"
-import { useState } from "react"
 import { usePoolsFilters } from "state/pools/hooks"
 import { Tabs, Tab, Title, titleVariants } from "./styled"
 

@@ -12,17 +12,10 @@ import more from "assets/icons/more-menu.svg"
 import filtersIcon from "assets/icons/filters.svg"
 
 import {
-  StyledBar,
   SearchOverlay,
   ClickableArea,
-  TabsMenu,
-  Tabs,
-  Tab,
   Icons,
   IconButton,
-  Title,
-  TitleMenu,
-  tabsVariants,
   overlayVariants,
   FormLabel,
   FilterContainer,
