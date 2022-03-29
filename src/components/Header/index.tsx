@@ -49,8 +49,8 @@ const Header = ({
             return (
               <Tab
                 key={tab.title}
-                active={filters.listType === tab.title}
-                onClick={() => dispatchFilter("listType", tab.title)}
+                active={filters.listType === tab.source}
+                onClick={() => dispatchFilter("listType", tab.source)}
               >
                 {tab.title}
               </Tab>
