@@ -59,12 +59,12 @@ const TopMembersBar: React.FC = () => {
     {
       title: `Basic pools (${totalBasicPools})`,
       source: "basic",
-      amount: 1,
+      amount: 3,
     },
     {
       title: `Investment pools (${totalInvestPools})`,
       source: "invest",
-      amount: 1,
+      amount: 2,
     },
   ]
 

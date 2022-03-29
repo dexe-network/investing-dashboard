@@ -1,6 +1,6 @@
 import { StyledBar, TitleMenu, TabsMenu } from "components/TopMembersBar/styled"
 import { usePoolsFilters } from "state/pools/hooks"
-import { Tabs, Tab, Title, titleVariants } from "./styled"
+import { Tabs, Tab, Title, titleVariants, TabAmount } from "./styled"
 
 interface ITab {
   title: string
@@ -53,6 +53,8 @@ const Header = ({
                 onClick={() => dispatchFilter("listType", tab.source)}
               >
                 {tab.title}
+
+                {tab.amount > 1 && <TabAmount>{tab.amount}</TabAmount>}
               </Tab>
             )
           })}

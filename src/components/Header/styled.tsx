@@ -59,7 +59,7 @@ export const Tab = styled(ClickableArea)<{ active?: boolean }>`
   letter-spacing: 0.5px;
 
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   position: relative;
   color: ${(props) => (props.active ? "#C5D1DC" : "#838ba3")};
 
@@ -78,6 +78,20 @@ export const Tab = styled(ClickableArea)<{ active?: boolean }>`
     height: 2px;
     width: 100%;
   }
+`
+
+export const TabAmount = styled(Flex)`
+  width: 12px;
+  height: 12px;
+  margin-left: 3px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #ee4c4c;
+  font-weight: 700;
+  font-size: 9px;
+  line-height: 9px;
+  color: #ffffff;
 `
 
 export const Title = styled(Flex)`
