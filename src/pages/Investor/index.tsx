@@ -7,7 +7,6 @@ import Button, { BorderedButton } from "components/Button"
 import InvestorMobile from "components/InvestorMobile"
 import investingHistory from "assets/template-buttons/investing-history-big.svg"
 
-// import Chart from "./Chart"
 import AreaChart from "components/AreaChart"
 import BarChart from "./Bar"
 import {

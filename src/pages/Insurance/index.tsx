@@ -190,8 +190,8 @@ export default function Insurance() {
   const [isSettingsOpen, setSettingsOpen] = useState(false)
   const [allowance, setAllowance] = useState("-1")
   const [toBalance, setToBalance] = useState("0")
-  const [inPrice, setInPrice] = useState("0")
-  const [outPrice, setOutPrice] = useState("0")
+  const [inPrice, setInPrice] = useState(BigNumber.from("0"))
+  const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
 
   const [error, setError] = useState("")
 
@@ -412,7 +412,7 @@ export default function Insurance() {
   const form = (
     <div>
       <ExchangeFrom
-        price={parseFloat(inPrice)}
+        price={inPrice}
         amount={fromAmount}
         balance={fromBalance}
         address={fromAddress}

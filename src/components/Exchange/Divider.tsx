@@ -58,7 +58,7 @@ interface IDividerProps {
   changeDirection: () => void
   direction: "deposit" | "withdraw"
   points: { label: string; percent: string; from: number; to: number }[]
-  fromAmount: number
+  fromAmount: number | string
   toAmount: number | string
 }
 
@@ -75,7 +75,7 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
       {points.map((point, index) => (
         <>
           <PercentButton
-            key={point.percent}
+            key={point.label}
             active={
               (direction === "deposit" &&
                 fromAmount === point.from &&

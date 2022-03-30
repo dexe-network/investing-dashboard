@@ -21,15 +21,15 @@ import {
 import { formatBigNumber, calcPrice } from "utils"
 
 interface IFromProps {
-  price: number
-  amount: number
+  price: BigNumber
+  amount: number | string
   balance: BigNumber
   address?: string
   symbol?: string
   decimal?: number
   isPool?: boolean
   isStable?: boolean
-  onChange: (amount: number) => void
+  onChange: (amount: number | string) => void
   onSelect?: () => void
 }
 
@@ -89,10 +89,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
     <FromContainer full>
       <Flex full dir="column">
         <Flex full>
-          <Price>
-            ≈$
-            {calcPrice(price, amount).toFixed(2)}
-          </Price>
+          <Price>≈${formatBigNumber(price, 18, 2)}</Price>
           <Balance onClick={setMaxAmount}>
             <Tokens>Balance: {formatBigNumber(balance, decimal, 6)}</Tokens>
             <Max onClick={setMaxAmount}>Max</Max>

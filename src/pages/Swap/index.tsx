@@ -38,7 +38,7 @@ const basicPoolsClient = createClient({
 
 export const useSwap = (): [
   {
-    fromAmount: number
+    fromAmount: number | string
     toAmount: number | string
     fromAddress: string
     toAddress: string
@@ -48,7 +48,7 @@ export const useSwap = (): [
     direction: "deposit" | "withdraw"
   },
   {
-    setFromAmount: (amount: number) => void
+    setFromAmount: (amount: number | string) => void
     setToAmount: (amount: number | string) => void
     setToAddress: (address: string) => void
     setFromAddress: (address: string) => void
@@ -86,7 +86,7 @@ export const useSwap = (): [
   }, [hash, library])
 
   const setFromAmountCallback = useCallback(
-    (amount: number): void =>
+    (amount: number | string): void =>
       setFromAmount(parseFloat(amount.toString()) || 0.0),
     []
   )
@@ -164,8 +164,8 @@ function Swap() {
 
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
   const [fromBalance, setFromBalance] = useState(BigNumber.from("0"))
-  const [inPrice, setInPrice] = useState("0")
-  const [outPrice, setOutPrice] = useState("0")
+  const [inPrice, setInPrice] = useState(BigNumber.from("0"))
+  const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
 
   const { poolAddress, outputTokenAddress } = useParams()
 
@@ -196,15 +196,14 @@ function Swap() {
             amount,
             []
           )
-          console.log(exchange.toString())
-          // const receipt = await traderPool?.exchangeFromExact(
-          //   from,
-          //   to,
-          //   amount,
-          //   exchange,
-          //   []
-          // )
-          // console.log(receipt)
+          const receipt = await traderPool?.exchangeFromExact(
+            from,
+            to,
+            amount,
+            exchange,
+            []
+          )
+          console.log(receipt)
         } catch (e) {
           console.log(e)
         }
@@ -242,8 +241,7 @@ function Swap() {
             )
             .toString()
         )
-        setFromAmount(from)
-        setToAmount(formatDecimalsNumber(from / parseFloat(priceLP)))
+        handleFromChange(from)
       } catch (e) {
         console.log(e)
       }
@@ -268,71 +266,79 @@ function Swap() {
 
   const handleFromChange = (v) => {
     setFromAmount(v)
-    ;(async () => {
-      console.log(ethers.utils.parseUnits(fromAmount.toString(), 18))
-      try {
-        const from = poolData?.baseToken
-        const to = outputTokenAddress
-        const amount = ethers.utils.parseUnits(fromAmount.toString(), 18)
 
-        const exchange = await traderPool?.getExchangeFromExactAmount(
-          from,
-          to,
-          amount,
-          []
-        )
+    const fetchAndUpdateTo = async () => {
+      const from = poolData?.baseToken
+      const to = outputTokenAddress
+      const amount = ethers.utils.parseUnits(v.toString(), 18)
 
-        console.log(ethers.utils.formatEther(exchange))
-        const outAmount = formatBigNumber(exchange, 18, 8)
-        setToAmount(outAmount)
-      } catch (e) {
-        console.log(e)
-      }
-    })()
+      const exchange = await traderPool?.getExchangeFromExactAmount(
+        from,
+        to,
+        amount,
+        []
+      )
+      const outAmount = formatBigNumber(exchange, 18, 8)
+
+      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        from,
+        amount,
+        []
+      )
+      const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        to,
+        exchange,
+        []
+      )
+      setToAmount(outAmount)
+      setInPrice(fromPrice)
+      setOutPrice(toPrice)
+    }
+
+    fetchAndUpdateTo().catch(console.error)
   }
 
   const handleToChange = (v) => {
-    // TODO: write handle to change function
     setToAmount(v)
+    const fetchAndUpdateFrom = async () => {
+      const from = poolData?.baseToken
+      const to = outputTokenAddress
+      const amount = ethers.utils.parseUnits(v.toString(), 18)
+
+      const exchange = await traderPool?.getExchangeToExactAmount(
+        from,
+        to,
+        amount,
+        []
+      )
+
+      const outAmount = formatBigNumber(exchange, 18, 8)
+      setFromAmount(outAmount)
+    }
+
+    fetchAndUpdateFrom().catch(console.error)
     setFromAmount(formatDecimalsNumber(v * parseFloat(priceLP)))
   }
-
-  // get LP tokens balance
-  useEffect(() => {
-    if (!traderPool || !fromData) return
-    ;(async () => {
-      const lpBalance: BigNumber = await traderPool.balanceOf(account)
-      setToBalance(lpBalance)
-    })()
-  }, [traderPool, fromData, leverageData, account])
 
   useEffect(() => {
     if (
       !poolInfoData ||
       !poolInfoData.baseAndPositionBalances ||
-      !poolInfoData.baseAndPositionBalances.length
+      !poolInfoData.baseAndPositionBalances.length ||
+      !poolInfoData.openPositions ||
+      !poolInfoData.openPositions.length ||
+      !outputTokenAddress
     )
       return
-    setFromBalance(poolInfoData.baseAndPositionBalances[0])
-  }, [poolInfoData])
 
-  // get exchange rates of LP
-  useEffect(() => {
-    if (!priceFeed || !usdAddress || !poolData?.baseToken) return
-    ;(async () => {
-      try {
-        const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
-          poolData.baseToken,
-          ethers.utils.parseUnits("1", 18).toString(),
-          []
-        )
-        setInPrice(ethers.utils.formatEther(baseTokenPrice).toString())
-        setOutPrice((parseFloat(inPrice) * parseFloat(priceLP)).toString())
-      } catch (e) {
-        console.log(e)
-      }
-    })()
-  }, [priceFeed, usdAddress, poolData, inPrice, priceLP])
+    const positionIndex = poolInfoData.openPositions
+      .map((address) => address.toLocaleLowerCase())
+      .indexOf(outputTokenAddress.toLocaleLowerCase())
+    setFromBalance(poolInfoData.baseAndPositionBalances[0])
+    if (positionIndex !== -1) {
+      setToBalance(poolInfoData.baseAndPositionBalances[positionIndex + 1])
+    }
+  }, [poolInfoData, outputTokenAddress])
 
   const getButton = () => {
     try {
@@ -392,7 +398,7 @@ function Swap() {
       </CardHeader>
 
       <ExchangeFrom
-        price={parseFloat(inPrice)}
+        price={inPrice}
         amount={fromAmount}
         balance={fromBalance}
         address={poolData?.baseToken}

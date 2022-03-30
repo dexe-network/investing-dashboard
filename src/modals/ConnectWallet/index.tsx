@@ -46,10 +46,7 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
       return
     }
 
-    if (
-      provider instanceof WalletConnectConnector &&
-      provider.walletConnectProvider?.wc?.uri
-    ) {
+    if (provider instanceof WalletConnectConnector) {
       provider.walletConnectProvider = undefined
     }
 
