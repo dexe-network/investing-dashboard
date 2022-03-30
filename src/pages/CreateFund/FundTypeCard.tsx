@@ -21,6 +21,7 @@ const ContainerCard = styled.div<{
   background: linear-gradient(64.44deg, #10151f 32.35%, #181d26 100%);
   mix-blend-mode: normal;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
+  border: 1px solid #26324482;
   border-radius: 16px;
   margin-bottom: 16px;
   background: ${(props) =>
@@ -67,6 +68,7 @@ const Link = styled.a`
   line-height: 16px;
   letter-spacing: 0.03em;
   color: #0165c2;
+  text-decoration: none;
 `
 
 const FundTypeCard: React.FC<FundTypeCardProps> = ({
@@ -88,10 +90,8 @@ const FundTypeCard: React.FC<FundTypeCardProps> = ({
         <RadioButton selected={selected} value={name} onChange={handleSelect} />
         <Text>
           <Label>{label}</Label>
-          <Description>
-            {description}
-            <Link>{link}</Link>
-          </Description>
+          <Description>{description}</Description>
+          <Link href={link}>Read more</Link>
         </Text>
       </Body>
     </ContainerCard>

@@ -67,4 +67,9 @@ export const Step = styled.div`
 `
 export const FundTypeCards = styled.div`
   margin-bottom: 81px;
+  padding: 41px 1px 0 38px;
+`
+
+export const FeeCards = styled.div`
+  padding: 0 1px 0 37px;
 `
