@@ -22,19 +22,19 @@ import FeeCard from "./FeeCard"
 const performanceFees = [
   {
     id: 0,
-    title: "1 Month performance Fee withdrawal",
+    title: "1 Month Fee withdrawal",
     description: "Performance Fee limits of 20% to 30%",
     monthes: 1,
   },
   {
     id: 1,
-    title: "3 Months performance Fee withdrawal",
+    title: "3 Months Fee withdrawal",
     description: "Performance Fee limits of 20% to 50%",
     monthes: 3,
   },
   {
     id: 2,
-    title: "12 Months performance Fee withdrawal",
+    title: "12 Months Fee withdrawal",
     description: "Performance Fee limits of 20% to 70%",
     monthes: 12,
   },
