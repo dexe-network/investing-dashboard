@@ -220,4 +220,23 @@ export const stableCoins = {
   bsc: [],
 }
 
+export const EXCHANGE_DEFAULT_PERCENTS = [
+  {
+    label: "10%",
+    percent: "0x016345785d8a0000",
+  },
+  {
+    label: "25%",
+    percent: "0x03782dace9d90000",
+  },
+  {
+    label: "50%",
+    percent: "0x06f05b59d3b20000",
+  },
+  {
+    label: "75%",
+    percent: "0x0a688906bd8b0000",
+  },
+]
+
 export default {}

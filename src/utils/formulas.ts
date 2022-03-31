@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { formatNumber } from "utils"
 
 export const getPNL = (SP: string) => {
@@ -68,3 +68,13 @@ export const getUSDPrice = (value) => {
 
 export const getLastInArray = (array) =>
   array.length ? array[array.length - 1] : false
+
+export const getDividedBalance = (
+  balance: BigNumber,
+  decimals: number | undefined = 18,
+  percent: string
+): number => {
+  return parseFloat(
+    ethers.utils.formatUnits(balance.mul(percent), decimals + 18).toString()
+  )
+}

@@ -292,13 +292,14 @@ export const Text = styled(motion.span)<{
   fw?: number
   fs?: string
   align?: string
+  p?: string
 }>`
   font-size: ${(props) => (props?.fz ? `${props.fz}px` : "14px")};
   font-weight: ${(props) => (props?.fw ? props.fw : 400)};
   color: ${(props) => (props.color ? props.color : "#999999")};
-  white-space: nowrap;
   text-align: ${(props) => (props?.align ? props.align : "left")};
   font-style: ${(props) => props.fs || "normal"};
+  padding: ${(props) => props.p || "0px"};
 `
 
 export const TextIcon = styled.svg<{ side?: "left" | "right" }>`
