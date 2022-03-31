@@ -1,4 +1,5 @@
 import styled from "styled-components"
+import { motion } from "framer-motion"
 import { Flex, Text, GradientBorder } from "theme"
 
 export const FromContainer = styled(GradientBorder)`
@@ -17,8 +18,6 @@ export const InfoContainer = styled(Flex)`
   width: 100%;
   padding-bottom: 11px;
 `
-
-export const Icon = styled.img``
 
 export const Price = styled(Text)`
   font-family: "Gilroy";
@@ -165,3 +164,52 @@ export const PriceText = styled(Text)`
   line-height: 100%;
   color: #b1b7c9;
 `
+
+// DIVIDER
+
+export const Container = styled(Flex)`
+  margin-top: 3px;
+  margin-bottom: 3px;
+  user-select: none;
+  height: 24px;
+  position: relative;
+`
+
+export const PercentButton = styled.div<{ active?: boolean }>`
+  flex: 1;
+  max-width: 70px;
+  text-align: center;
+  cursor: pointer;
+
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.5px;
+
+  color: ${(props) => (props.active ? "#E4F2FF" : "#666f87")};
+
+  border-radius: 3px;
+
+  &:first-child {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+`
+
+export const SwapButton = styled.div`
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+export const Icon = styled(motion.img)``

@@ -4,7 +4,6 @@ import { ethers } from "ethers"
 import { useSelector } from "react-redux"
 import { useParams, useHistory } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
-import { PulseSpinner } from "react-spinners-kit"
 import { BigNumber } from "@ethersproject/bignumber"
 
 import SwapPrice from "components/SwapPrice"
@@ -14,22 +13,20 @@ import ExchangeFrom from "components/Exchange/From"
 import ExchangeDivider from "components/Exchange/Divider"
 import Button, { BorderedButton } from "components/Button"
 import CircularProgress from "components/CircularProgress"
+import TransactionSlippage from "components/TransactionSlippage"
 
 import useContract, { useERC20 } from "hooks/useContract"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
-import { getPriceLP } from "utils/formulas"
-import { formatBigNumber, formatDecimalsNumber, fromBig } from "utils"
+import { getDividedBalance } from "utils/formulas"
+import { formatBigNumber } from "utils"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
 
 import { Container, Card, CardHeader, Title, IconsGroup } from "./styled"
-import {
-  selectPriceFeedAddress,
-  selectUsdAddress,
-} from "state/contracts/selectors"
+import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { useBasicPool } from "state/pools/hooks"
 
 const basicPoolsClient = createClient({
@@ -52,7 +49,7 @@ export const useSwap = (): [
     setToAmount: (amount: number | string) => void
     setToAddress: (address: string) => void
     setFromAddress: (address: string) => void
-    setDirection: (v: "deposit" | "withdraw") => void
+    setDirection: () => void
     setPercentage: (v: number) => void
     setToSelector: (state: boolean) => void
     setFromSelector: (state: boolean) => void
@@ -155,11 +152,10 @@ export const useSwap = (): [
 }
 
 function Swap() {
-  const { account } = useWeb3React()
   const history = useHistory()
   const [
-    { fromAmount, toAmount, toAddress, toSelectorOpened, direction },
-    { setFromAmount, setToAmount, setToAddress, setDirection, setToSelector },
+    { fromAmount, toAmount, direction },
+    { setFromAmount, setToAmount, setDirection },
   ] = useSwap()
 
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
@@ -167,20 +163,39 @@ function Swap() {
   const [inPrice, setInPrice] = useState(BigNumber.from("0"))
   const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
 
+  const [isSlippageOpen, setSlippageOpen] = useState(false)
+
   const { poolAddress, outputTokenAddress } = useParams()
 
-  const [traderPool, poolData, leverageData, poolInfoData] =
-    useBasicPool(poolAddress)
+  const [traderPool, poolData, , poolInfoData] = useBasicPool(poolAddress)
 
-  const usdAddress = useSelector(selectUsdAddress)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
-
-  const priceLP = getPriceLP(poolData?.priceHistory)
 
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
-  const [fromToken, fromData] = useERC20(poolData?.baseToken)
-  const [toToken, toData] = useERC20(outputTokenAddress)
+  const [, fromData] = useERC20(poolData?.baseToken)
+  const [, toData] = useERC20(outputTokenAddress)
+
+  // read and update balances
+  useEffect(() => {
+    if (
+      !poolInfoData ||
+      !poolInfoData.baseAndPositionBalances ||
+      !poolInfoData.baseAndPositionBalances.length ||
+      !poolInfoData.openPositions ||
+      !poolInfoData.openPositions.length ||
+      !outputTokenAddress
+    )
+      return
+
+    const positionIndex = poolInfoData.openPositions
+      .map((address) => address.toLocaleLowerCase())
+      .indexOf(outputTokenAddress.toLocaleLowerCase())
+    setFromBalance(poolInfoData.baseAndPositionBalances[0])
+    if (positionIndex !== -1) {
+      setToBalance(poolInfoData.baseAndPositionBalances[positionIndex + 1])
+    }
+  }, [poolInfoData, outputTokenAddress])
 
   const handleSubmit = async () => {
     if (direction === "deposit") {
@@ -232,35 +247,11 @@ function Swap() {
 
   const handlePercentageChange = (percent) => {
     if (direction === "deposit") {
-      try {
-        const from = parseFloat(
-          ethers.utils
-            .formatUnits(
-              fromBalance.mul(percent),
-              (fromData?.decimals || 18) + 18
-            )
-            .toString()
-        )
-        handleFromChange(from)
-      } catch (e) {
-        console.log(e)
-      }
+      const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
+      handleFromChange(from)
     } else {
-      const to = parseFloat(
-        ethers.utils
-          .formatUnits(BigNumber.from(toBalance).mul(percent), 36)
-          .toString()
-      )
-      setToAmount(to)
-      setFromAmount(formatDecimalsNumber(to * parseFloat(priceLP)))
-    }
-  }
-
-  const handleDirectionChange = () => {
-    if (direction === "deposit") {
-      setDirection("withdraw")
-    } else {
-      setDirection("deposit")
+      const to = getDividedBalance(toBalance, toData?.decimals, percent)
+      handleToChange(to)
     }
   }
 
@@ -293,6 +284,8 @@ function Swap() {
       setToAmount(outAmount)
       setInPrice(fromPrice)
       setOutPrice(toPrice)
+      console.log(fromPrice)
+      console.log(toPrice)
     }
 
     fetchAndUpdateTo().catch(console.error)
@@ -313,62 +306,36 @@ function Swap() {
       )
 
       const outAmount = formatBigNumber(exchange, 18, 8)
+
+      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        to,
+        amount,
+        []
+      )
+      const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        from,
+        exchange,
+        []
+      )
       setFromAmount(outAmount)
+      setInPrice(fromPrice)
+      setOutPrice(toPrice)
     }
 
     fetchAndUpdateFrom().catch(console.error)
-    setFromAmount(formatDecimalsNumber(v * parseFloat(priceLP)))
   }
 
-  useEffect(() => {
-    if (
-      !poolInfoData ||
-      !poolInfoData.baseAndPositionBalances ||
-      !poolInfoData.baseAndPositionBalances.length ||
-      !poolInfoData.openPositions ||
-      !poolInfoData.openPositions.length ||
-      !outputTokenAddress
-    )
-      return
-
-    const positionIndex = poolInfoData.openPositions
-      .map((address) => address.toLocaleLowerCase())
-      .indexOf(outputTokenAddress.toLocaleLowerCase())
-    setFromBalance(poolInfoData.baseAndPositionBalances[0])
-    if (positionIndex !== -1) {
-      setToBalance(poolInfoData.baseAndPositionBalances[positionIndex + 1])
-    }
-  }, [poolInfoData, outputTokenAddress])
-
   const getButton = () => {
-    try {
-      const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+    const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+    const amountOut = ethers.utils.parseUnits(toAmount.toString(), 18)
 
-      if (!fromToken) {
-        return (
-          <Button theme="disabled" fz={22} full>
-            <Flex>
-              {"loading "}
-              <Flex p="0 0 0 15px">
-                <PulseSpinner color="#03FF89" size={15} loading />
-              </Flex>
-            </Flex>
-          </Button>
-        )
-      }
+    const isAmountInValid = direction === "deposit" && amountIn.gt(fromBalance)
+    const isAmountOutValid = direction === "withdraw" && amountOut.gt(toBalance)
 
-      if (
-        (direction === "deposit" && amountIn.gt(fromBalance)) ||
-        (direction === "deposit" && fromBalance.toString() === "0") ||
-        (direction === "withdraw" &&
-          ethers.utils.parseUnits(toAmount.toString(), 18).gt(toBalance)) ||
-        (direction === "withdraw" && toBalance.toString() === "0")
-      ) {
-        return <BorderedButton size="big">Inufficient funds</BorderedButton>
-      }
-    } catch (e) {
-      console.log(e)
+    if (isAmountInValid || isAmountOutValid) {
+      return <BorderedButton size="big">Inufficient funds</BorderedButton>
     }
+
     return (
       <Button
         size="large"
@@ -392,7 +359,10 @@ function Swap() {
         <Title>Open new trade</Title>
         <IconsGroup>
           <CircularProgress />
-          <IconButton media={settings} onClick={() => {}} />
+          <IconButton
+            media={settings}
+            onClick={() => setSlippageOpen(!isSlippageOpen)}
+          />
           <IconButton media={close} onClick={() => {}} />
         </IconsGroup>
       </CardHeader>
@@ -409,93 +379,9 @@ function Swap() {
       />
 
       <ExchangeDivider
-        points={[
-          {
-            label: "10%",
-            percent: "0x016345785d8a0000",
-            from: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  fromBalance.mul("0x016345785d8a0000"),
-                  (fromData?.decimals || 18) + 18
-                )
-                .toString()
-            ),
-            to: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  BigNumber.from(toBalance).mul("0x016345785d8a0000"),
-                  36
-                )
-                .toString()
-            ),
-          },
-          {
-            label: "25%",
-            percent: "0x03782dace9d90000",
-            from: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  fromBalance.mul("0x03782dace9d90000"),
-                  (fromData?.decimals || 18) + 18
-                )
-                .toString()
-            ),
-            to: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  BigNumber.from(toBalance).mul("0x03782dace9d90000"),
-                  36
-                )
-                .toString()
-            ),
-          },
-          {
-            label: "50%",
-            percent: "0x06f05b59d3b20000",
-            from: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  fromBalance.mul("0x06f05b59d3b20000"),
-                  (fromData?.decimals || 18) + 18
-                )
-                .toString()
-            ),
-            to: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  BigNumber.from(toBalance).mul("0x06f05b59d3b20000"),
-                  36
-                )
-                .toString()
-            ),
-          },
-          {
-            label: "75%",
-            percent: "0x0a688906bd8b0000",
-            from: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  fromBalance.mul("0x0a688906bd8b0000"),
-                  (fromData?.decimals || 18) + 18
-                )
-                .toString()
-            ),
-            to: parseFloat(
-              ethers.utils
-                .formatUnits(
-                  BigNumber.from(toBalance).mul("0x0a688906bd8b0000"),
-                  36
-                )
-                .toString()
-            ),
-          },
-        ]}
-        fromAmount={fromAmount}
-        toAmount={toAmount}
         direction={direction}
         changeAmount={handlePercentageChange}
-        changeDirection={handleDirectionChange}
+        changeDirection={setDirection}
       />
 
       <ExchangeTo
@@ -516,6 +402,11 @@ function Swap() {
       </Flex>
 
       {button}
+
+      <TransactionSlippage
+        isOpen={isSlippageOpen}
+        toggle={(v) => setSlippageOpen(v)}
+      />
     </Card>
   )
 

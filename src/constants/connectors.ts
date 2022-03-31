@@ -36,6 +36,7 @@ export const walletconnect = new WalletConnectConnector({
   bridge: "https://bridge.walletconnect.org",
   supportedChainIds: SUPPORTED_CHAINS,
   qrcode: true,
+  pollingInterval: POLLING_INTERVAL,
 })
 
 export const bsc = new BscConnector({

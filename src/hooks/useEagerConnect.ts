@@ -36,7 +36,10 @@ export function useEagerConnect() {
       activeProviderName === "walletconnect"
     ) {
       const provider = connectorsByName[activeProviderName]
-      if (provider instanceof WalletConnectConnector) {
+      if (
+        provider instanceof WalletConnectConnector &&
+        provider.walletConnectProvider?.wc?.uri
+      ) {
         provider.walletConnectProvider = undefined
       }
       activate(provider, undefined, true)

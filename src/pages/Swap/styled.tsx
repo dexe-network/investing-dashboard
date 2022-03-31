@@ -13,6 +13,7 @@ export const Container = styled(Flex)`
 export const Card = styled(BasicCard)`
   flex-direction: column;
   padding: 20px 16px;
+  position: relative;
 `
 
 export const CardHeader = styled(Flex)`
