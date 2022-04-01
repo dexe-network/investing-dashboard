@@ -1,7 +1,9 @@
+/**
+ * Renders Header
+ */
 import {
   StyledBar,
   TitleMenu,
-  TabsMenu,
   FilterContainer,
   FiltersBody,
   FilterSelectableItem,
@@ -9,35 +11,22 @@ import {
   overlayVariants,
   SearchOverlay,
 } from "components/TopMembersBar/styled"
-import { ITab, ITopMembersFilters } from "constants/interfaces"
-import IconSearch from "components/IconSearch"
-import filtersIcon from "assets/icons/filters.svg"
-import more from "assets/icons/more-menu.svg"
-import link from "assets/icons/link.svg"
-import goBack from "assets/icons/pagination-prev.svg"
-import people from "assets/icons/people.svg"
 import { usePoolsFilters } from "state/pools/hooks"
-import {
-  Tabs,
-  Tab,
-  Title,
-  titleVariants,
-  TabAmount,
-  Icons,
-  ClickableArea,
-  IconButton,
-  PortraitsPlus,
-} from "./styled"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Title, titleVariants, Icons } from "./styled"
+import { useState } from "react"
 import NavTabs from "components/NavTabs"
 import Popover from "components/Popover"
 import RadioButton from "components/RadioButton"
-import { useSelector } from "react-redux"
-import { AppState } from "state"
-interface Props {
-  title: EHeaderTitles
-  isTabSectionVisible?: boolean // provide with a 'false' value if need to hide
-}
+import HeaderTabs from "./Tabs"
+import {
+  Filters,
+  Profiles,
+  Portaits,
+  GoBack,
+  Link,
+  Search,
+  More,
+} from "./Components"
 
 const sortFilter = [
   "Rating",
@@ -50,6 +39,9 @@ const sortFilter = [
   "Max Loss",
 ]
 
+/**
+ * Possible components which can be in the header
+ */
 enum EFields {
   goBack = "go back",
   filters = "filters",
@@ -60,10 +52,13 @@ enum EFields {
   // more = "more", // Probably this field is not needed since every header will have it
 }
 
+/**
+ * Possible titles
+ */
 export enum EHeaderTitles {
   investing = "Investing",
-  fundPositionsTrader = "Fund Positions Traider",
-  fundPositionsInvestor = "Fund Positions Investor",
+  fundPositionsTrader = "Fund Positions Traider", // used to create different tabs with the same header
+  fundPositionsInvestor = "Fund Positions Investor", // used to create different tabs with the same header
   insurance = "Insurance",
   myInvestorProfile = "My Investor Profile",
   myTraiderProfile = "My traider profile",
@@ -73,6 +68,9 @@ export enum EHeaderTitles {
   wallet = "",
 }
 
+/**
+ * Get components depending on the title
+ */
 const getHeaderFileds = (title: EHeaderTitles) => {
   switch (title) {
     case EHeaderTitles.investing:
@@ -95,227 +93,14 @@ const getHeaderFileds = (title: EHeaderTitles) => {
   }
 }
 
-interface IHeaderTabsProps {
+/**
+ *  Main component
+ */
+
+interface Props {
   title: EHeaderTitles
+  isTabSectionVisible?: boolean // provide with a 'false' value if need to hide
 }
-const HeaderTabs = ({ title }: IHeaderTabsProps) => {
-  const [filters, dispatchFilter] = usePoolsFilters()
-  {
-    /**
-      TODO: rework next 10 lines (till useState with tabs). 
-      They are not OK I think. We need to get totalBasicPools and totalInvestPools only if it's "investing" header, 
-      however we can't use hooks inside functions
-    */
-  }
-  const totalBasicPools = useSelector<
-    AppState,
-    AppState["pools"]["pagination"]["basic"]["total"]
-  >((state) => state.pools.pagination.basic.total)
-  const totalInvestPools = useSelector<
-    AppState,
-    AppState["pools"]["pagination"]["invest"]["total"]
-  >((state) => state.pools.pagination.invest.total)
-  const [tabs] = useState(
-    getHeaderTabs(title, totalBasicPools, totalInvestPools)
-  )
-
-  return tabs.length > 0 ? (
-    <TabsMenu>
-      <Tabs>
-        {tabs.map((tab: ITab) => {
-          return (
-            <Tab
-              key={tab.title}
-              active={filters.listType === tab.source}
-              onClick={() => dispatchFilter("listType", tab.source)}
-            >
-              {tab.title}
-
-              {tab.amount > 0 && <TabAmount>{tab.amount}</TabAmount>}
-            </Tab>
-          )
-        })}
-      </Tabs>
-    </TabsMenu>
-  ) : null
-}
-
-const getHeaderTabs = (
-  title: EHeaderTitles,
-  firstPool?: number,
-  secondPool?: number
-) => {
-  switch (title) {
-    case EHeaderTitles.investing:
-      return [
-        {
-          title: `All funds (1201)`,
-          source: "invest",
-          amount: 2,
-        },
-        {
-          title: `Basic ${firstPool ? `(${firstPool})` : ""}`,
-          source: "basic",
-          amount: 0,
-        },
-        {
-          title: `Investment ${secondPool ? `(${secondPool})` : ""}`,
-          source: "invest",
-          amount: 2,
-        },
-      ]
-    case EHeaderTitles.myInvestment:
-      return [
-        {
-          title: "Open positions",
-          source: "basic",
-          amount: 0,
-        },
-        {
-          title: "Proposals",
-          source: "invest",
-          amount: 0,
-        },
-        {
-          title: "Closed positions",
-          source: "invest",
-          amount: 0,
-        },
-      ]
-    case EHeaderTitles.insurance:
-      return [
-        {
-          title: "Management",
-          source: "basic",
-          amount: 0,
-        },
-        {
-          title: "Proposals",
-          source: "invest",
-          amount: 0,
-        },
-        {
-          title: "Voting",
-          source: "invest",
-          amount: 0,
-        },
-      ]
-    case EHeaderTitles.fundPositionsTrader:
-      return [
-        {
-          title: "Open positions",
-          source: "basic",
-          amount: 0,
-        },
-        {
-          title: "Closed positions",
-          source: "invest",
-          amount: 0,
-        },
-      ]
-    case EHeaderTitles.myISDXfund:
-      return [
-        {
-          title: "Fund details",
-          source: "basic",
-          amount: 0,
-        },
-        {
-          title: "Performance Fees",
-          source: "invest",
-          amount: 0,
-        },
-      ]
-    case EHeaderTitles.fundPositionsInvestor:
-      return [
-        {
-          title: "Whitelist",
-          source: "basic",
-          amount: 0,
-        },
-        {
-          title: "Risk Proposals",
-          source: "invest",
-          amount: 0,
-        },
-        {
-          title: "Fund History",
-          source: "invest",
-          amount: 0,
-        },
-      ]
-    default:
-      return []
-  }
-}
-interface IFiltersProps {
-  onClick: () => void
-}
-const Filters = ({ onClick }: IFiltersProps) => {
-  return (
-    <ClickableArea onClick={onClick}>
-      <IconButton src={filtersIcon} />
-    </ClickableArea>
-  )
-}
-
-interface IProfilesProps {}
-const Profiles = ({}: IProfilesProps) => {
-  return (
-    <ClickableArea onClick={() => {}}>
-      <IconButton src={people} />
-    </ClickableArea>
-  )
-}
-
-interface IGoBackProps {}
-const GoBack = ({}: IGoBackProps) => {
-  return (
-    <ClickableArea onClick={() => {}}>
-      <IconButton src={goBack} />
-    </ClickableArea>
-  )
-}
-
-interface IPortaitsProps {}
-const Portaits = ({}: IPortaitsProps) => {
-  return <PortraitsPlus>+</PortraitsPlus>
-}
-
-interface ILinkProps {}
-const Link = ({}: ILinkProps) => {
-  return (
-    <ClickableArea onClick={() => {}}>
-      <IconButton src={link} />
-    </ClickableArea>
-  )
-}
-
-interface ISearchProps {
-  onClick: () => void
-  toggle: Dispatch<SetStateAction<boolean>>
-  isSearchActive: boolean
-  filters: ITopMembersFilters
-  dispatchFilter: (field: string, value: string) => void
-}
-const Search = ({
-  onClick,
-  toggle,
-  isSearchActive,
-  filters,
-  dispatchFilter,
-}: ISearchProps) => {
-  return (
-    <IconSearch
-      q={filters.query}
-      onChange={(q) => dispatchFilter("query", q)}
-      onClick={onClick}
-      active={isSearchActive}
-      toggle={toggle}
-    />
-  )
-}
-
 const Header = ({ title, isTabSectionVisible = true }: Props) => {
   const [fields] = useState<EFields[]>(getHeaderFileds(title))
 
@@ -337,6 +122,9 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
     return title
   }
 
+  /**
+   * Left part of the header
+   */
   const Left = () => (
     <Icons>
       {fields.includes(EFields.filters) && (
@@ -347,6 +135,9 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
     </Icons>
   )
 
+  /**
+   * Middle part of the header
+   */
   const Middle = () => (
     <Title
       initial="visible"
@@ -360,6 +151,9 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
     </Title>
   )
 
+  /**
+   * Right part of the header
+   */
   const Right = () => (
     <Icons>
       {fields.includes(EFields.search) && (
@@ -371,14 +165,13 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
           dispatchFilter={dispatchFilter}
         />
       )}
-      <ClickableArea onClick={() => {}}>
-        <IconButton src={more} />
-      </ClickableArea>
+      <More />
     </Icons>
   )
 
   return (
     <>
+      {/* Header */}
       <StyledBar
         initial={{ y: -102 }}
         animate={{ y: 0 }}
@@ -398,6 +191,7 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
         variants={overlayVariants}
       />
 
+      {/* Helpers */}
       <Popover
         contentHeight={650}
         title="Filters"
