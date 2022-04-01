@@ -7,19 +7,19 @@ import CreateFundContext from "context/CreateFundContext"
 
 import { Content, RestrictedContainer } from "theme/GlobalStyle"
 
-const TopMembers = lazy(() => import("pages/TopMembers"))
+const TopMembers = lazy(() => import("pages/TopMembers")) // TODO
 const NewFund = lazy(() => import("pages/NewFund"))
-const Invest = lazy(() => import("pages/Invest"))
-const Profile = lazy(() => import("pages/Profile"))
+const Invest = lazy(() => import("pages/Invest")) // TODO
+const Profile = lazy(() => import("pages/Profile")) // TODO
 const CreateFund = lazy(() => import("pages/CreateFund"))
-const Investor = lazy(() => import("pages/Investor"))
-const Trader = lazy(() => import("pages/Trader"))
+const Investor = lazy(() => import("pages/Investor")) // TODO
+const Trader = lazy(() => import("pages/Trader")) // TODO
 const Swap = lazy(() => import("pages/Swap"))
-const Trades = lazy(() => import("pages/Trades"))
-const Wallet = lazy(() => import("pages/Wallet"))
+const Trades = lazy(() => import("pages/Trades")) // TODO
+const Wallet = lazy(() => import("pages/Wallet")) // TODO
 const Success = lazy(() => import("pages/NewFund/Success"))
 const Notifications = lazy(() => import("pages/Notifications"))
-const TokenSelect = lazy(() => import("pages/TokenSelect"))
+const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO
 const Insurance = lazy(() => import("pages/Insurance"))
 
 export default function Routes() {

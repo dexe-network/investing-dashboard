@@ -219,3 +219,9 @@ export interface IPoolPosition {
 }
 
 // END of POOL
+
+export interface ITab {
+  title: string
+  source: string
+  amount: number
+}

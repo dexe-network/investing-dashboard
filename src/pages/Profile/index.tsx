@@ -35,6 +35,7 @@ import {
 import AreaChart from "components/AreaChart"
 import BarChart from "pages/Investor/Bar"
 import TabsLight from "components/TabsLight"
+import Header, { EHeaderTitles } from "components/Header"
 
 const pnl: IDetailedChart[] = [
   {
@@ -168,6 +169,7 @@ const Profile: React.FC<Props> = () => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
     >
+      {/* <Header title={EHeaderTitles.myTraiderProfile} /> */}
       <MemberMobile data={poolData}>
         <ButtonContainer>
           <img src={investingHistory} />

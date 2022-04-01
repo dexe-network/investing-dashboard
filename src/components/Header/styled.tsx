@@ -115,3 +115,35 @@ export const titleVariants = {
     opacity: 0,
   },
 }
+
+export const Icons = styled(Flex)`
+  width: 70px;
+
+  &:first-child {
+    justify-content: flex-start;
+  }
+  &:last-child {
+    justify-content: flex-end;
+  }
+`
+
+export const PortraitsPlus = styled(Flex)`
+  background: linear-gradient(
+    266deg,
+    rgba(169, 221, 251, 0) 2.35%,
+    rgba(193, 218, 255, 0.04) 96.05%
+  );
+  filter: drop-shadow(0px 3.5px 5.5px rgba(0, 0, 0, 0.02));
+  border-radius: 9px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 7px;
+  text-align: center;
+  width: 26px;
+  height: 26px;
+`
+
+export const IconButton = styled.img`
+  margin: 0 3px;
+`
