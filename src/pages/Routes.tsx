@@ -9,17 +9,17 @@ import { Content, RestrictedContainer } from "theme/GlobalStyle"
 
 const TopMembers = lazy(() => import("pages/TopMembers"))
 const NewFund = lazy(() => import("pages/NewFund"))
-const Invest = lazy(() => import("pages/Invest"))
-const Profile = lazy(() => import("pages/Profile"))
+const Invest = lazy(() => import("pages/Invest")) // TODO
+const Profile = lazy(() => import("pages/Profile")) // TODO
 const CreateFund = lazy(() => import("pages/CreateFund"))
 const Investor = lazy(() => import("pages/Investor"))
 const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
-const Trades = lazy(() => import("pages/Trades"))
+const Trades = lazy(() => import("pages/Trades")) // TODO: page is needed
 const Wallet = lazy(() => import("pages/Wallet"))
 const Success = lazy(() => import("pages/NewFund/Success"))
 const Notifications = lazy(() => import("pages/Notifications"))
-const TokenSelect = lazy(() => import("pages/TokenSelect"))
+const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO: my trader profile
 const Insurance = lazy(() => import("pages/Insurance"))
 
 export default function Routes() {
@@ -33,8 +33,6 @@ export default function Routes() {
             <Switch location={location} key={location.pathname}>
               <Route path="/me">
                 <RestrictedContainer>
-                  <ProfileHeader />
-
                   <Route path="/me/investor">
                     <Investor />
                   </Route>
