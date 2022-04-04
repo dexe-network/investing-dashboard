@@ -130,7 +130,7 @@ const getHeaderTabs = (
           amount: 0,
         },
       ]
-    case EHeaderTitles.myISDXfund:
+    case EHeaderTitles.myFund:
       return [
         {
           title: "Fund details",

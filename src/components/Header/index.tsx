@@ -64,7 +64,7 @@ export enum EHeaderTitles {
   myTraiderProfile = "My traider profile",
   myWallet = "My Wallet",
   myInvestment = "My Investment",
-  myISDXfund = "My ISDX fund",
+  myFund = "My fund",
   wallet = "",
 }
 
@@ -79,7 +79,7 @@ const getHeaderFileds = (title: EHeaderTitles) => {
     case EHeaderTitles.fundPositionsInvestor:
     case EHeaderTitles.myInvestment:
     case EHeaderTitles.insurance:
-    case EHeaderTitles.myISDXfund:
+    case EHeaderTitles.myFund:
       return [EFields.goBack]
     case EHeaderTitles.myInvestorProfile:
       return [EFields.profiles]
@@ -102,6 +102,7 @@ interface Props {
   isTabSectionVisible?: boolean // provide with a 'false' value if need to hide
 }
 const Header = ({ title, isTabSectionVisible = true }: Props) => {
+  const fundName = "ISDX"
   const [fields] = useState<EFields[]>(getHeaderFileds(title))
 
   const [filters, dispatchFilter] = usePoolsFilters()
@@ -119,6 +120,7 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
       title === EHeaderTitles.fundPositionsTrader
     )
       return fundTitle
+    if (title === EHeaderTitles.myFund) return `My ${fundName} fund`
     return title
   }
 
