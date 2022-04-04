@@ -1,28 +1,26 @@
-import RadioButton from "components/RadioButton"
-import { FundTypes } from "constants/interfaces"
 import React from "react"
 import styled from "styled-components"
+import RadioButton from "components/RadioButton"
 
-interface FundTypeCardProps {
+interface FeeCardProps {
   label: string
   description: string
-  name: "basic" | "investment"
-  selected: string
+  name: number
+  selected: number
   handleSelect: (value: any) => void
-  link: string
 }
 
 const ContainerCard = styled.div<{
   withBackground?: boolean
   shadow?: boolean
 }>`
-  padding: 28px 10px 26px 16px;
+  padding: 17px 6px 24px 16px;
   box-sizing: border-box;
   background: linear-gradient(64.44deg, #10151f 32.35%, #181d26 100%);
   mix-blend-mode: normal;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
   border: 1px solid #26324482;
-  border-radius: 16px;
+  border-radius: 15px;
   margin-bottom: 16px;
   background: ${(props) =>
     props.withBackground
@@ -44,10 +42,9 @@ const Label = styled.div`
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
-  line-height: 14px;
+  line-height: 20px;
   color: #e4f2ff;
-  text-align: left;
-  margin-bottom: 12px;
+  margin-bottom: 7px;
 `
 
 const Description = styled.div`
@@ -55,29 +52,17 @@ const Description = styled.div`
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.03em;
+  line-height: 14px;
   color: #e4f2ff;
+  opacity: 0.9;
 `
 
-const Link = styled.a`
-  font-family: "Gilroy";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.03em;
-  color: #0165c2;
-  text-decoration: none;
-`
-
-const FundTypeCard: React.FC<FundTypeCardProps> = ({
+const FeeCard: React.FC<FeeCardProps> = ({
   label,
   description,
-  selected,
   name,
+  selected,
   handleSelect,
-  link,
 }) => {
   const isActive = name === selected
   return (
@@ -87,15 +72,18 @@ const FundTypeCard: React.FC<FundTypeCardProps> = ({
       shadow={isActive}
     >
       <Body>
-        <RadioButton selected={selected} value={name} onChange={handleSelect} />
+        <RadioButton
+          selected={selected.toString()}
+          value={name.toString()}
+          onChange={handleSelect}
+        />
         <Text>
           <Label>{label}</Label>
           <Description>{description}</Description>
-          <Link href={link}>Read more</Link>
         </Text>
       </Body>
     </ContainerCard>
   )
 }
 
-export default FundTypeCard
+export default FeeCard

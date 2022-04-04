@@ -9,6 +9,7 @@ import {
   Steps,
   Step,
   FundTypeCards,
+  FeeCards,
 } from "./styled"
 import Avatar from "components/Avatar"
 import HeaderStep from "./Header"
@@ -16,9 +17,31 @@ import { useCreateFundContext } from "context/CreateFundContext"
 import Close from "assets/icons/close-gray.svg"
 import Menu from "assets/icons/menu-dots.svg"
 import FundTypeCard from "./FundTypeCard"
+import FeeCard from "./FeeCard"
+
+const performanceFees = [
+  {
+    id: 0,
+    title: "1 Month Fee withdrawal",
+    description: "Performance Fee limits of 20% to 30%",
+    monthes: 1,
+  },
+  {
+    id: 1,
+    title: "3 Months Fee withdrawal",
+    description: "Performance Fee limits of 20% to 50%",
+    monthes: 3,
+  },
+  {
+    id: 2,
+    title: "12 Months Fee withdrawal",
+    description: "Performance Fee limits of 20% to 70%",
+    monthes: 12,
+  },
+]
 
 const CreateFund: React.FC = () => {
-  const { handleChange, fundType } = useCreateFundContext()
+  const { handleChange, fundType, commissionPeriod } = useCreateFundContext()
   return (
     <Container>
       <Header>
@@ -44,6 +67,20 @@ const CreateFund: React.FC = () => {
               description="This settings can not be changed afrer creation"
               index="1"
             />
+            <FeeCards>
+              {performanceFees.map((fee) => (
+                <FeeCard
+                  key={fee.id}
+                  name={fee.id}
+                  label={fee.title}
+                  description={fee.description}
+                  selected={commissionPeriod}
+                  handleSelect={(value: any) =>
+                    handleChange("commissionPeriod", value)
+                  }
+                />
+              ))}
+            </FeeCards>
           </Step>
           <Step>
             <HeaderStep
