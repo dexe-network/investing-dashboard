@@ -18,6 +18,7 @@ import {
   TokenItem,
 } from "./styled"
 import { useHistory, useParams } from "react-router-dom"
+import Header, { EHeaderTitles } from "components/Header"
 
 const TokenSelect: React.FC = () => {
   const history = useHistory()
@@ -32,36 +33,39 @@ const TokenSelect: React.FC = () => {
   }
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <Card>
-        <CardHeader>
-          <TitleContainer>
-            <IconButton media={back} onClick={() => {}} />
-            <Title>Select token</Title>
-          </TitleContainer>
-          <Search
-            placeholder="Name, ticker, address"
-            value={q}
-            handleChange={setQuery}
-            height="38px"
-          />
-        </CardHeader>
-        <CardList>
-          {whitelisted.map((token) => (
-            <TokenItem
-              onClick={onSelect}
-              key={token.address}
-              tokenData={token}
+    <>
+      <Header title={EHeaderTitles.myTraiderProfile} />
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Card>
+          <CardHeader>
+            <TitleContainer>
+              <IconButton media={back} onClick={() => {}} />
+              <Title>Select token</Title>
+            </TitleContainer>
+            <Search
+              placeholder="Name, ticker, address"
+              value={q}
+              handleChange={setQuery}
+              height="38px"
             />
-          ))}
-        </CardList>
-      </Card>
-    </Container>
+          </CardHeader>
+          <CardList>
+            {whitelisted.map((token) => (
+              <TokenItem
+                onClick={onSelect}
+                key={token.address}
+                tokenData={token}
+              />
+            ))}
+          </CardList>
+        </Card>
+      </Container>
+    </>
   )
 }
 

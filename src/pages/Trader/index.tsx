@@ -23,6 +23,7 @@ import {
 } from "pages/Investor/styled"
 
 import AreaChart from "components/AreaChart"
+import Header, { EHeaderTitles } from "components/Header"
 import BarChart from "pages/Investor/Bar"
 
 import newTradeButton from "assets/template-buttons/new-trade.svg"
@@ -212,104 +213,106 @@ function Trader(props: Props) {
   }
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <MemberMobile data={poolData}>
-        <ButtonContainer>
-          <Flex p="0 24px 0 15px">
-            <img src={fundPositions} />
-          </Flex>
-          <Flex full p="0 10px 0 0">
-            <Button
-              onClick={() =>
-                history.push(
-                  `/pool/swap/whitelist/${poolData.id}/0x78867bbeef44f2326bf8ddd1941a4439382ef2a7`
-                )
-              }
-              full
-            >
-              New trade
-            </Button>
-          </Flex>
-        </ButtonContainer>
-      </MemberMobile>
+    <>
+      <Header title={EHeaderTitles.myTraiderProfile} />
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <MemberMobile data={poolData}>
+          <ButtonContainer>
+            <Flex p="0 24px 0 15px">
+              <img src={fundPositions} />
+            </Flex>
+            <Flex full p="0 10px 0 0">
+              <Button
+                onClick={() =>
+                  history.push(
+                    `/pool/swap/whitelist/${poolData.id}/0x78867bbeef44f2326bf8ddd1941a4439382ef2a7`
+                  )
+                }
+                full
+              >
+                New trade
+              </Button>
+            </Flex>
+          </ButtonContainer>
+        </MemberMobile>
 
-      <TabCard>
-        <TabsLight
-          tabs={[
-            {
-              name: "Profit & Loss",
-              child: (
-                <>
-                  <AreaChart tooltipSize="sm" height={120} data={pnlNew} />
-                  <ChartPeriods>
-                    <Period active>D</Period>
-                    <Period>W</Period>
-                    <Period>M</Period>
-                    <Period>3M</Period>
-                    <Period>6M</Period>
-                    <Period>1Y</Period>
-                    <Period>ALL</Period>
-                  </ChartPeriods>
-                  <BarChart />
-                  <Row>
-                    <TextGrey>P&L LP - $ETH</TextGrey>
-                    <MainValue>0% (0 ETH)</MainValue>
-                  </Row>
-                  <Row>
-                    <TextGrey>P&L LP - USD% - USD</TextGrey>
-                    <MainValue>0% - 0 USD </MainValue>
-                  </Row>
-                </>
-              ),
-            },
-            {
-              name: "Locked funds",
-              child: (
-                <>
-                  <AreaChart
-                    multiple
-                    tooltipSize="sm"
-                    height={163}
-                    data={pnlNew}
-                  />
-                  <ChartPeriods>
-                    <Period active>D</Period>
-                    <Period>W</Period>
-                    <Period>M</Period>
-                    <Period>3M</Period>
-                    <Period>6M</Period>
-                    <Period>1Y</Period>
-                    <Period>ALL</Period>
-                  </ChartPeriods>
-                  <Flex full p="15px 0 0">
+        <TabCard>
+          <TabsLight
+            tabs={[
+              {
+                name: "Profit & Loss",
+                child: (
+                  <>
+                    <AreaChart tooltipSize="sm" height={120} data={pnlNew} />
+                    <ChartPeriods>
+                      <Period active>D</Period>
+                      <Period>W</Period>
+                      <Period>M</Period>
+                      <Period>3M</Period>
+                      <Period>6M</Period>
+                      <Period>1Y</Period>
+                      <Period>ALL</Period>
+                    </ChartPeriods>
+                    <BarChart />
                     <Row>
-                      <MainText>Locked out of investor funds</MainText>
-                      <MainValue>$32.12k</MainValue>
+                      <TextGrey>P&L LP - $ETH</TextGrey>
+                      <MainValue>0% (0 ETH)</MainValue>
                     </Row>
-                  </Flex>
-                  <Row>
-                    <MainText>Your funds locked</MainText>
-                    <TextWhiteBig>$32.12k</TextWhiteBig>
-                  </Row>
-                  <Row>
-                    <FundsUsed
-                      current={"$61.15k / $101.92k"}
-                      total={"Fund used (60%)"}
+                    <Row>
+                      <TextGrey>P&L LP - USD% - USD</TextGrey>
+                      <MainValue>0% - 0 USD </MainValue>
+                    </Row>
+                  </>
+                ),
+              },
+              {
+                name: "Locked funds",
+                child: (
+                  <>
+                    <AreaChart
+                      multiple
+                      tooltipSize="sm"
+                      height={163}
+                      data={pnlNew}
                     />
-                  </Row>
-                </>
-              ),
-            },
-          ]}
-        />
-      </TabCard>
+                    <ChartPeriods>
+                      <Period active>D</Period>
+                      <Period>W</Period>
+                      <Period>M</Period>
+                      <Period>3M</Period>
+                      <Period>6M</Period>
+                      <Period>1Y</Period>
+                      <Period>ALL</Period>
+                    </ChartPeriods>
+                    <Flex full p="15px 0 0">
+                      <Row>
+                        <MainText>Locked out of investor funds</MainText>
+                        <MainValue>$32.12k</MainValue>
+                      </Row>
+                    </Flex>
+                    <Row>
+                      <MainText>Your funds locked</MainText>
+                      <TextWhiteBig>$32.12k</TextWhiteBig>
+                    </Row>
+                    <Row>
+                      <FundsUsed
+                        current={"$61.15k / $101.92k"}
+                        total={"Fund used (60%)"}
+                      />
+                    </Row>
+                  </>
+                ),
+              },
+            ]}
+          />
+        </TabCard>
 
-      {/* <Details>
+        {/* <Details>
         <TabsLight
           tabs={[
             {
@@ -323,7 +326,8 @@ function Trader(props: Props) {
           ]}
         />
       </Details> */}
-    </Container>
+      </Container>
+    </>
   )
 }
 

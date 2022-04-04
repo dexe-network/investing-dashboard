@@ -18,7 +18,7 @@ const TopMembersBar: React.FC = () => {
     }
   }, [filters.listType, dispatchFilter])
 
-  return <Header title={EHeaderTitles.fundPositionsTrader} />
+  return <Header title={EHeaderTitles.investing} />
 }
 
 export default TopMembersBar

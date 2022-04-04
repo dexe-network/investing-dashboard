@@ -23,6 +23,7 @@ import {
   ChartPeriods,
 } from "./styled"
 import { IDetailedChart } from "constants/interfaces"
+import Header, { EHeaderTitles } from "components/Header"
 
 interface Props {}
 
@@ -140,53 +141,56 @@ function Investor(props: Props) {
   })
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <InvestorMobile account={account}>
-        <Buttons>
-          <Flex p="0 20px 0 15px">
-            <img src={investingHistory} />
-          </Flex>
-          <Flex p="0 12px 0 0">
-            <To to="/">
-              <Button>New investment</Button>
-            </To>
-          </Flex>
-        </Buttons>
-      </InvestorMobile>
-      <TabCard>
-        <TabContainer>
-          <Tab active>Profit & Loss</Tab>
-        </TabContainer>
-        <AreaChart
-          tooltipSize="sm"
-          height={window.innerWidth < 375 ? 120 : 174}
-          data={pnl}
-        />
-        <ChartPeriods>
-          <Period active>D</Period>
-          <Period>W</Period>
-          <Period>M</Period>
-          <Period>3M</Period>
-          <Period>6M</Period>
-          <Period>1Y</Period>
-          <Period>ALL</Period>
-        </ChartPeriods>
-        <BarChart />
-        <Row>
-          <MainText>P&L LP - $ETH</MainText>
-          <MainValue>+ 13.1% (+112.132 ETH)</MainValue>
-        </Row>
-        <Row>
-          <MainText>P&L LP - USD% - USD</MainText>
-          <MainValue>+ 19.1% - 19.1 USD </MainValue>
-        </Row>
-      </TabCard>
-    </Container>
+    <>
+      <Header title={EHeaderTitles.myInvestorProfile} />
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <InvestorMobile account={account}>
+          <Buttons>
+            <Flex p="0 20px 0 15px">
+              <img src={investingHistory} />
+            </Flex>
+            <Flex p="0 12px 0 0">
+              <To to="/">
+                <Button>New investment</Button>
+              </To>
+            </Flex>
+          </Buttons>
+        </InvestorMobile>
+        <TabCard>
+          <TabContainer>
+            <Tab active>Profit & Loss</Tab>
+          </TabContainer>
+          <AreaChart
+            tooltipSize="sm"
+            height={window.innerWidth < 375 ? 120 : 174}
+            data={pnl}
+          />
+          <ChartPeriods>
+            <Period active>D</Period>
+            <Period>W</Period>
+            <Period>M</Period>
+            <Period>3M</Period>
+            <Period>6M</Period>
+            <Period>1Y</Period>
+            <Period>ALL</Period>
+          </ChartPeriods>
+          <BarChart />
+          <Row>
+            <MainText>P&L LP - $ETH</MainText>
+            <MainValue>+ 13.1% (+112.132 ETH)</MainValue>
+          </Row>
+          <Row>
+            <MainText>P&L LP - USD% - USD</MainText>
+            <MainValue>+ 19.1% - 19.1 USD </MainValue>
+          </Row>
+        </TabCard>
+      </Container>
+    </>
   )
 }
 
