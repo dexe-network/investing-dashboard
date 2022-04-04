@@ -100,6 +100,33 @@ const parseDecimals = (float: string, decimals) => {
   return floatPart
 }
 
+const humanizeBigNumber = (amount: string | number): string => {
+  const numArr = `${amount}`.split(".")
+
+  // no decimal places
+  if (!numArr[1]) {
+    return numArr[0]
+  }
+
+  // passes without formating
+  if (numArr[1].length < 6) {
+    return `${numArr[0]}.${numArr[1]}`
+  }
+
+  const firstMatch = numArr[1].match("[1-9]")
+
+  if (
+    !!firstMatch &&
+    !!firstMatch.length &&
+    !!firstMatch.index &&
+    firstMatch.index > 6
+  ) {
+    return Number(amount).toFixed(firstMatch.index + 2)
+  }
+
+  return Number(amount).toFixed(6)
+}
+
 export const formatNumber = (amount: string, decimals = 2) => {
   if (!amount) return "0.00"
 
@@ -151,6 +178,12 @@ export const formatBigNumber = (value: BigNumber, decimals = 18, fix = 6) => {
   const amount = ethers.utils.formatUnits(value, decimals).toString()
 
   return formatNumber(amount, fix)
+}
+
+export const normalizeBigNumber = (value: BigNumber, decimals = 18) => {
+  const amount = ethers.utils.formatUnits(value, decimals).toString()
+
+  return humanizeBigNumber(amount)
 }
 
 export const isStable = (address: string) =>

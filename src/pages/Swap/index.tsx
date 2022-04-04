@@ -20,7 +20,7 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
 import { getDividedBalance } from "utils/formulas"
-import { formatBigNumber } from "utils"
+import { formatBigNumber, normalizeBigNumber } from "utils"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
@@ -269,8 +269,7 @@ function Swap() {
         amount,
         []
       )
-      const outAmount = formatBigNumber(exchange, 18, 8)
-
+      const outAmount = normalizeBigNumber(exchange, 18)
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         from,
         amount,
@@ -284,8 +283,6 @@ function Swap() {
       setToAmount(outAmount)
       setInPrice(fromPrice)
       setOutPrice(toPrice)
-      console.log(fromPrice)
-      console.log(toPrice)
     }
 
     fetchAndUpdateTo().catch(console.error)
@@ -305,7 +302,7 @@ function Swap() {
         []
       )
 
-      const outAmount = formatBigNumber(exchange, 18, 8)
+      const outAmount = normalizeBigNumber(exchange, 18)
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         to,
@@ -326,15 +323,15 @@ function Swap() {
   }
 
   const getButton = () => {
-    const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
-    const amountOut = ethers.utils.parseUnits(toAmount.toString(), 18)
+    // const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+    // const amountOut = ethers.utils.parseUnits(toAmount.toString(), 18)
 
-    const isAmountInValid = direction === "deposit" && amountIn.gt(fromBalance)
-    const isAmountOutValid = direction === "withdraw" && amountOut.gt(toBalance)
+    // const isAmountInValid = direction === "deposit" && amountIn.gt(fromBalance)
+    // const isAmountOutValid = direction === "withdraw" && amountOut.gt(toBalance)
 
-    if (isAmountInValid || isAmountOutValid) {
-      return <BorderedButton size="big">Inufficient funds</BorderedButton>
-    }
+    // if (isAmountInValid || isAmountOutValid) {
+    //   return <BorderedButton size="big">Inufficient funds</BorderedButton>
+    // }
 
     return (
       <Button
