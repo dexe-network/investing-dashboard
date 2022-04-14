@@ -9,21 +9,21 @@ export interface User {
   updated_at: number
 }
 
-export interface BasicPoolHistory {
-  id: string
-  creationTime: number
-  priceHistory: {
-    price: string // usdTVS
-    supply: string
-    poolBase: string // baseTVL
-    seconds: number
-    loss: string
-  }
+export type PoolType = "all" | "basic" | "invest"
+
+export interface IPriceHistory {
+  usdTVL: number
+  baseTVL: number
+  supply: number
+  absPNL: number
+  percPNL: number
+  seconds: number
 }
 
-export interface IBasicPoolQuery {
+export interface IPoolQuery {
   id: string
   baseToken: string
+  type: PoolType
   name: string
   ticker: string
   creationTime: number
@@ -32,18 +32,13 @@ export interface IBasicPoolQuery {
   totalTrades: number
   totalClosedPositions: number
   averageTrades: number
+  investorsCount: number
   averagePositionTime: number
-  priceHistory: {
-    usdTVL: number
-    baseTVL: number
-    supply: number
-    absPNL: number
-    percPNL: number
-    seconds: number
-  }[]
-  investors: {
-    id: string
-  }[]
+  priceHistory: IPriceHistory[]
+}
+
+export interface IPriceHistoryQuery {
+  priceHistory: IPriceHistory[]
 }
 
 /// @notice The structure that is returned from the TraderPoolView contract and stores static information about the pool
@@ -55,24 +50,24 @@ export interface IBasicPoolQuery {
 /// @param baseAndPositionBalances the array of balances. [0] is the balance of base tokens (array is normalized)
 /// @param totalPoolUSD is the current USD TVL in this pool
 /// @param lpEmission is the current number of LP tokens
-export interface Pool {
-  address: string
-  name: string
-  ticker: string
-
-  lpPrice: string
-  lpPnl: string | number
-  stablePrice: string
-
-  parameters?: PoolParameters
-  leverageInfo?: LeverageInfo
-
-  openPositions: string[]
+export interface PoolInfo {
   baseAndPositionBalances: BigNumber[]
+  lpLockedInProposals: BigNumber
+  lpSupply: BigNumber
+  name: string
+  openPositions: string[]
+  ticker: string
   totalInvestors: BigNumber
   totalPoolBase: BigNumber
-  lpEmission: BigNumber
-  history: BasicPoolHistory
+  totalPoolUSD: BigNumber
+  parameters: PoolParameters
+}
+
+export interface UsersInfo {
+  investedBase: BigNumber
+  poolBaseShare: BigNumber
+  poolLPBalance: BigNumber
+  poolUSDShare: BigNumber
 }
 
 interface PoolParameters {
@@ -88,12 +83,12 @@ interface PoolParameters {
 }
 
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
-/// @param totalPoolUSD the total USD value of the pool
+/// @param totalPoolUSDWithProposals the total USD value of the pool
 /// @param traderLeverageUSDTokens the maximal amount of USD that the trader is allowed to own
 /// @param freeLeverageUSD the amount of USD that could be invested into the pool
 /// @param freeLeverageBase the amount of base tokens that could be invested into the pool (basically converted freeLeverageUSD)
-interface LeverageInfo {
-  totalPoolUSD: BigNumber
+export interface LeverageInfo {
+  totalPoolUSDWithProposals: BigNumber
   freeLeverageBase: BigNumber
   freeLeverageUSD: BigNumber
   traderLeverageUSDTokens: BigNumber

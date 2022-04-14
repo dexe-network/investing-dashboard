@@ -1,11 +1,11 @@
 import { Flex, Center, To } from "theme"
 import { useSwipeable } from "react-swipeable"
-import { useHistory, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import FundsList from "components/FundsList"
 import { useSelector } from "react-redux"
 import MemberMobile from "components/MemberMobile"
-import Button, { BorderedButton } from "components/Button"
-import { useState } from "react"
+import Button, { SecondaryButton } from "components/Button"
+import { useState, useEffect } from "react"
 import { GuardSpinner } from "react-spinners-kit"
 import { formatNumber } from "utils"
 import { ethers } from "ethers"
@@ -26,8 +26,6 @@ import AreaChart from "components/AreaChart"
 import Header, { EHeaderTitles } from "components/Header"
 import BarChart from "pages/Investor/Bar"
 
-import newTradeButton from "assets/template-buttons/new-trade.svg"
-import fundPositions from "assets/template-buttons/fund-positions.svg"
 import { IDetailedChart } from "constants/interfaces"
 
 const pnlNew: IDetailedChart[] = [
@@ -183,25 +181,35 @@ import {
   FundsUsed,
 } from "./styled"
 import TabsLight from "components/TabsLight"
-import { useBasicPools, useInvestPools } from "state/pools/hooks"
+import { usePool } from "state/pools/hooks"
+import { createClient, Provider as GraphProvider } from "urql"
+import ProfitLossChart from "components/ProfitLossChart"
+
+const poolsClient = createClient({
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+})
 
 function Trader(props: Props) {
   const {} = props
 
-  const { poolAddress } = useParams<{ poolAddress: string }>()
+  const { pathname } = useLocation()
+  const { poolAddress, poolType } = useParams<{
+    poolAddress: string
+    poolType: string
+  }>()
 
-  // const [basic] = useBasicPools()
-  // const [invest] = useInvestPools()
-  const poolData = useSelector((state: AppState) =>
-    selectBasicPoolByAddress(state, poolAddress)
-  )
-  const history = useHistory()
+  useEffect(() => {
+    localStorage.setItem("last-visited-profile", pathname)
+  }, [pathname])
+
+  const [, poolData, leverageInfo, poolInfoData] = usePool(poolAddress)
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
 
   const redirectToInvestor = () => {
-    history.push("/me/investor")
+    navigate("/me/investor")
   }
 
   if (!poolData) {
@@ -214,7 +222,7 @@ function Trader(props: Props) {
 
   return (
     <>
-      <Header title={EHeaderTitles.myTraiderProfile} />
+      <Header title={EHeaderTitles.myTraderProfile} />
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -224,14 +232,12 @@ function Trader(props: Props) {
         <MemberMobile data={poolData}>
           <ButtonContainer>
             <Flex p="0 24px 0 15px">
-              <img src={fundPositions} />
+              <SecondaryButton full>Positions</SecondaryButton>
             </Flex>
             <Flex full p="0 10px 0 0">
               <Button
                 onClick={() =>
-                  history.push(
-                    `/pool/swap/whitelist/${poolData.id}/0x78867bbeef44f2326bf8ddd1941a4439382ef2a7`
-                  )
+                  navigate(`/pool/swap/whitelist/${poolData.id}/0x`)
                 }
                 full
               >
@@ -248,7 +254,7 @@ function Trader(props: Props) {
                 name: "Profit & Loss",
                 child: (
                   <>
-                    <AreaChart tooltipSize="sm" height={120} data={pnlNew} />
+                    <ProfitLossChart address={poolAddress} />
                     <ChartPeriods>
                       <Period active>D</Period>
                       <Period>W</Period>
@@ -312,23 +318,39 @@ function Trader(props: Props) {
           />
         </TabCard>
 
-        {/* <Details>
-        <TabsLight
-          tabs={[
-            {
-              name: "Statistic",
-              child: <FundStatisticsCard data={poolData} />,
-            },
-            {
-              name: "Details",
-              child: <FundDetailsCard data={poolData} />,
-            },
-          ]}
-        />
-      </Details> */}
+        <Details>
+          <TabsLight
+            tabs={[
+              {
+                name: "Statistic",
+                child: (
+                  <FundStatisticsCard
+                    data={poolData}
+                    leverage={leverageInfo}
+                    info={poolInfoData}
+                  />
+                ),
+              },
+              {
+                name: "Details",
+                child: (
+                  <FundDetailsCard poolInfo={poolInfoData} data={poolData} />
+                ),
+              },
+            ]}
+          />
+        </Details>
       </Container>
     </>
   )
 }
 
-export default Trader
+const TraderWithProvider = () => {
+  return (
+    <GraphProvider value={poolsClient}>
+      <Trader />
+    </GraphProvider>
+  )
+}
+
+export default TraderWithProvider

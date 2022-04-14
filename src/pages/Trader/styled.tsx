@@ -9,6 +9,7 @@ export const Container = styled(Flex)`
   max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+  height: calc(100vh - 94px);
 `
 
 export const Details = styled.div`

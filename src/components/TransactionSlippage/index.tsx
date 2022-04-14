@@ -49,21 +49,20 @@ const getSlippageValidity = (slippage: string): string => {
   return "3"
 }
 
-const useSlippage = (): [string, string, Dispatch<SetStateAction<string>>] => {
-  const [slippage, setSlippage] = useState("")
-
-  const slippageValidity = getSlippageValidity(slippage)
-
-  return [slippage, slippageValidity, setSlippage]
-}
-
 interface Props {
   toggle: (state: boolean) => void
   isOpen: boolean
+  slippage: string
+  onChange: (slippage: string) => void
 }
 
-const TransactionSlippage: React.FC<Props> = ({ isOpen, toggle }) => {
-  const [slippage, slippageValidity, setSlippage] = useSlippage()
+const TransactionSlippage: React.FC<Props> = ({
+  isOpen,
+  toggle,
+  slippage,
+  onChange,
+}) => {
+  const slippageValidity = getSlippageValidity(slippage)
 
   return isOpen ? (
     <>
@@ -74,8 +73,11 @@ const TransactionSlippage: React.FC<Props> = ({ isOpen, toggle }) => {
           than this percentage
         </TextGray>
         <ControlsGroup>
-          <Input value={slippage} onChange={setSlippage} />
-          <Button active={slippage === ""} onClick={() => setSlippage("")}>
+          <Input value={slippage} onChange={onChange} />
+          <Button
+            active={slippage === "0.1" || slippage === "0.10"}
+            onClick={() => onChange("0.10")}
+          >
             Auto
           </Button>
         </ControlsGroup>

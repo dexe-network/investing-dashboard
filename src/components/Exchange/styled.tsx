@@ -84,7 +84,7 @@ export const Input = styled.input`
   width: 100%;
 
   &::placeholder {
-    color: #ffffff7e;
+    color: #e4f2ff;
     font-size: 20px;
     line-height: 20px;
   }
@@ -96,6 +96,7 @@ export const ActiveSymbol = styled(GradientBorder)`
   display: flex;
   align-items: center;
   padding: 5px 9px 5px 5px;
+  min-height: 37px;
   background: linear-gradient(
     85.11deg,
     rgba(255, 255, 255, 0.005) 0.73%,
@@ -117,6 +118,11 @@ export const SymbolLabel = styled.span`
   margin-right: 7px;
   white-space: nowrap;
   margin-top: 4px;
+`
+
+export const SelectToken = styled(SymbolLabel)`
+  margin-left: 8px;
+  transform: translateY(-2px);
 `
 
 export const Unlock = styled.div`

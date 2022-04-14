@@ -5,9 +5,9 @@ import { motion } from "framer-motion"
 export const Container = styled(GradientBorder)`
   width: 100%;
   justify-content: space-between;
-  padding: 0 20px 0 14px;
+  padding: 17px 20px 17px 14px;
   align-items: center;
-  height: 46px;
+  height: fit-content;
   border-radius: 15px;
 `
 

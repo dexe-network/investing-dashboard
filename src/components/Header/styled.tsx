@@ -1,5 +1,24 @@
-import { Flex, BaseButton } from "theme"
+import { Flex, BaseButton, device } from "theme"
 import styled from "styled-components"
+import { motion } from "framer-motion"
+
+export const Container = styled(motion.div)`
+  touch-action: none;
+  user-select: none;
+  width: 100%;
+  // background: #1e212a;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+
+  @media only screen and (${device.sm}) {
+    justify-content: space-between;
+    padding: 0 10px;
+  }
+`
+
+export const Bar = styled(Flex)`
+  width: 100%;
+  height: 45px;
+`
 
 export const ClickableArea = styled(BaseButton)`
   padding: 10px;

@@ -44,7 +44,7 @@ import more from "assets/icons/more-menu.svg"
 import swap from "assets/icons/swap-path.svg"
 import { shortenAddress } from "utils"
 import bsc from "assets/wallets/bsc.svg"
-import { Redirect, useHistory } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 
 const transactions = [
   {
@@ -70,14 +70,14 @@ const transactions = [
 
 export default function Wallet() {
   const { account, deactivate } = useWeb3React()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     deactivate()
     localStorage.removeItem("dexe.network/investing/web3-auth-method")
   }
 
-  if (!account) return <Redirect to="/welcome" />
+  if (!account) return <Navigate to="/welcome" />
 
   return (
     <>
@@ -168,7 +168,7 @@ export default function Wallet() {
               Minimize your investment risks <br /> with DeXe Insurance
             </InsuranceDescription>
           </InsuranceInfo>
-          <Button onClick={() => history.push("/insurance")}>Open</Button>
+          <Button onClick={() => navigate("/insurance")}>Open</Button>
         </InsuranceCard>
       </Container>
     </>

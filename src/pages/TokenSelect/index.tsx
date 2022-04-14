@@ -17,11 +17,11 @@ import {
   CardList,
   TokenItem,
 } from "./styled"
-import { useHistory, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Header, { EHeaderTitles } from "components/Header"
 
 const TokenSelect: React.FC = () => {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { type, poolAddress } = useParams()
   const [q, setQuery] = useState("")
   const whitelisted = useSelector(selectWhitelist)
@@ -29,12 +29,12 @@ const TokenSelect: React.FC = () => {
   const onSelect = (tokenAddress) => {
     const rootPath = `/pool/swap/${type}`
 
-    history.push(`${rootPath}/${poolAddress}/${tokenAddress}`)
+    navigate(`${rootPath}/${poolAddress}/${tokenAddress}`)
   }
 
   return (
     <>
-      <Header title={EHeaderTitles.myTraiderProfile} />
+      <Header title={EHeaderTitles.myTraderProfile} />
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

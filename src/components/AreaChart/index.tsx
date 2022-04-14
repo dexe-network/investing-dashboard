@@ -173,8 +173,6 @@ const Chart: React.FC<{
   tooltipSize?: "sm" | "lg"
   multiple?: boolean
 }> = (props) => {
-  const [isPro] = useUserProMode()
-
   return (
     <>
       {(props.title || props.period) && (

@@ -1,12 +1,25 @@
 import styled from "styled-components"
-import { BaseButton, device, Text } from "theme"
+import { BaseButton, device, GradientBorder, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
-const buttonSizes = {
+const buttonPaddings = {
   large: "17px 25px 17px",
   big: "14px 25px 14px",
   normal: "12px 15px 13px",
   small: "9px 39px 9px",
+}
+
+const buttonColors = {
+  disabled: "",
+  primary: "linear-gradient(64.44deg, #63B49B 12.29%, #A4EBD4 76.64%)",
+  warn: "linear-gradient(202.28deg, #E77171 4.69%, #B63636 88.18%)",
+}
+
+const buttonFontSizes = {
+  large: "16px",
+  big: "16px",
+  normal: "16px",
+  small: "14px",
 }
 
 const borderedButtonSizes = {
@@ -20,6 +33,43 @@ const secondarySizes = {
   small: "10px 10px 11px 10px",
 }
 
+const secondaryColors = {
+  disabled: "#616D8B",
+  primary: "#e4f2ff",
+  warn: "#e4f2ff",
+}
+
+export const GradientBorderButton = styled(GradientBorder)<{
+  size?: string
+  m?: string
+  p?: string
+  fz?: number
+  full?: boolean
+  color: ButtonThemeType
+}>`
+  position: relative;
+  padding: ${(props) =>
+    props.size ? buttonPaddings[props.size] : buttonPaddings.normal};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  width: ${(props) => (props.full ? "100%" : "fit-content")};
+  margin: ${(props) => props.m || "0 auto"};
+  min-width: fit-content;
+
+  ${Text} {
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    color: ${(props) => secondaryColors[props.color]};
+    font-size: ${(props) =>
+      props.size ? buttonFontSizes[props.size] : buttonFontSizes.normal};
+  }
+`
+
 export const GradientButton = styled(BaseButton)<{
   size?: string
   m?: string
@@ -30,12 +80,12 @@ export const GradientButton = styled(BaseButton)<{
 }>`
   position: relative;
   padding: ${(props) =>
-    props.size ? buttonSizes[props.size] : buttonSizes.normal};
+    props.size ? buttonPaddings[props.size] : buttonPaddings.normal};
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   width: ${(props) => (props.full ? "100%" : "fit-content")};
@@ -44,14 +94,15 @@ export const GradientButton = styled(BaseButton)<{
   animation: changeButton 3s ease infinite;
   z-index: 20;
   overflow: hidden;
-  background: linear-gradient(64.44deg, #63b49b 12.29%, #a4ebd4 76.64%);
+  background: ${(props) => buttonColors[props.color || "primary"]};
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.05);
 
   ${Text} {
     font-family: Gilroy;
     font-style: normal;
     font-weight: 700;
-    font-size: 16px;
+    font-size: ${(props) =>
+      props.size ? buttonFontSizes[props.size] : buttonFontSizes.normal};
     line-height: 22px;
     letter-spacing: 0.1px;
 

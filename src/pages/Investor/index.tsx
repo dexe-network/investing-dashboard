@@ -1,11 +1,10 @@
 import { Flex, To } from "theme"
 import { useSwipeable } from "react-swipeable"
 import { useWeb3React } from "@web3-react/core"
-import { Redirect, useHistory } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
-import Button, { BorderedButton } from "components/Button"
+import Button, { SecondaryButton } from "components/Button"
 import InvestorMobile from "components/InvestorMobile"
-import investingHistory from "assets/template-buttons/investing-history-big.svg"
 
 import AreaChart from "components/AreaChart"
 import BarChart from "./Bar"
@@ -24,6 +23,7 @@ import {
 } from "./styled"
 import { IDetailedChart } from "constants/interfaces"
 import Header, { EHeaderTitles } from "components/Header"
+import { useEffect } from "react"
 
 interface Props {}
 
@@ -129,11 +129,16 @@ const pnl: IDetailedChart[] = [
 function Investor(props: Props) {
   const {} = props
 
-  const history = useHistory()
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
   const { account } = useWeb3React()
 
+  useEffect(() => {
+    localStorage.setItem("last-visited-profile", pathname)
+  }, [pathname])
+
   const redirectToTrader = () => {
-    history.push("/me/trader/0x...")
+    navigate("/me/trader/0x...")
   }
 
   const handlers = useSwipeable({
@@ -151,12 +156,14 @@ function Investor(props: Props) {
       >
         <InvestorMobile account={account}>
           <Buttons>
-            <Flex p="0 20px 0 15px">
-              <img src={investingHistory} />
+            <Flex p="0 0 0 12px">
+              <To to="/">
+                <SecondaryButton>New investment</SecondaryButton>
+              </To>
             </Flex>
             <Flex p="0 12px 0 0">
               <To to="/">
-                <Button>New investment</Button>
+                <Button>My investments</Button>
               </To>
             </Flex>
           </Buttons>

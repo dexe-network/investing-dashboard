@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react"
-import { IBasicPoolQuery } from "constants/interfaces_v2"
+import {
+  IPoolQuery,
+  PoolType,
+  LeverageInfo,
+  PoolInfo,
+  UsersInfo,
+  IPriceHistoryQuery,
+  IPriceHistory,
+} from "constants/interfaces_v2"
 import { poolTypes } from "constants/index"
 import { Contract } from "@ethersproject/contracts"
 import { useDispatch, useSelector } from "react-redux"
@@ -7,19 +15,8 @@ import { AppDispatch, AppState } from "state"
 import { TraderPoolRegistry, TraderPool } from "abi"
 import useContract from "hooks/useContract"
 import { useQuery } from "urql"
-import {
-  BasicPoolQuery,
-  BasicPoolsQuery,
-  BasicPoolsQueryByName,
-  BasicPoolsQueryByTicker,
-  InvestPoolsQuery,
-} from "queries"
-import {
-  addBasicPools,
-  addInvestPools,
-  setFilter,
-  setPagination,
-} from "state/pools/actions"
+import { PoolQuery, PoolsQuery, PriceHistoryQuery } from "queries"
+import { addPools, setFilter, setPagination } from "state/pools/actions"
 import { selectPoolsFilters } from "./selectors"
 import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
 
@@ -35,17 +32,23 @@ export function usePoolsFilters(): [
   return [filters, handleChange]
 }
 
-export function useBasicPool(
+export function usePool(
   address: string | undefined
-): [Contract | null, IBasicPoolQuery | undefined, any | null, any | null] {
+): [
+  Contract | null,
+  IPoolQuery | undefined,
+  LeverageInfo | null,
+  PoolInfo | null
+] {
   const traderPool = useContract(address, TraderPool)
-  const [leverageInfo, setLeverageInfo] = useState(null)
-  const [poolInfo, setPoolInfo] = useState(null)
+  const [leverageInfo, setLeverageInfo] = useState<LeverageInfo | null>(null)
+  const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
+  const [usersInfo, setUsersInfo] = useState<UsersInfo[] | null>(null)
 
-  const [basicPool] = useQuery<{
-    basicPool: IBasicPoolQuery
+  const [pool] = useQuery<{
+    traderPool: IPoolQuery
   }>({
-    query: BasicPoolQuery,
+    query: PoolQuery,
     variables: { address },
   })
 
@@ -54,136 +57,116 @@ export function useBasicPool(
     ;(async () => {
       const leverage = await traderPool?.getLeverageInfo()
       const poolInfo = await traderPool?.getPoolInfo()
+      const usersInfo = await traderPool?.getUsersInfo(0, 1)
       setPoolInfo(poolInfo)
       setLeverageInfo(leverage)
+      setUsersInfo(usersInfo)
     })()
   }, [traderPool])
 
-  return [traderPool, basicPool.data?.basicPool, leverageInfo, poolInfo]
+  return [traderPool, pool.data?.traderPool, leverageInfo, poolInfo]
 }
 
-// TODO: move loading to redux state
+export function usePriceHistory(
+  address: string | undefined
+): IPriceHistory[] | undefined {
+  const [history, setHistory] = useState<IPriceHistory[] | undefined>(undefined)
+  const [pool] = useQuery<{
+    traderPool: IPriceHistoryQuery
+  }>({
+    query: PriceHistoryQuery,
+    variables: { address },
+  })
+
+  useEffect(() => {
+    if (
+      !pool ||
+      !pool.data ||
+      !pool.data.traderPool ||
+      !pool.data.traderPool.priceHistory
+    )
+      return
+
+    setHistory(pool.data.traderPool.priceHistory)
+  }, [pool])
+
+  return history
+}
+
+// Hook that handles fetching and storing pools
+// @param poolType - type of pool to fetch (all, basic, invest)
 // @return loading indicator of pools
 // @return loadMore function to start fetching new batch of pools
-export function useBasicPools(): [boolean, () => void] {
+export function usePools(poolType: PoolType): [boolean, () => void] {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch<AppDispatch>()
 
-  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
   const filters = useSelector(selectPoolsFilters)
 
+  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
   const traderPoolRegistry = useContract(
     traderPoolRegistryAddress,
     TraderPoolRegistry
   )
 
-  const [basicPoolsQueryData, executeQuery] = useQuery<{
-    basicPools: IBasicPoolQuery[]
+  const [response, executeQuery] = useQuery<{
+    traderPools: IPoolQuery[]
   }>({
-    query: filters.query.length ? BasicPoolsQueryByTicker : BasicPoolsQuery,
+    query: PoolsQuery,
     variables: { q: filters.query },
   })
 
+  // update data on search change
   useEffect(() => {
     executeQuery()
   }, [filters.query, executeQuery])
 
+  // Fetch total number of pools
+  useEffect(() => {
+    if (!traderPoolRegistry || !dispatch) return
+    ;(async () => {
+      const basicPoolsLength = await traderPoolRegistry.countPools(
+        poolTypes.basic
+      )
+      dispatch(
+        setPagination({
+          name: "total",
+          type: "basic",
+          value: Number(basicPoolsLength.toString()),
+        })
+      )
+      const investPoolsLength = await traderPoolRegistry.countPools(
+        poolTypes.invest
+      )
+      dispatch(
+        setPagination({
+          name: "total",
+          type: "invest",
+          value: Number(investPoolsLength.toString()),
+        })
+      )
+    })()
+  }, [traderPoolRegistry, dispatch])
+
+  // Store pools to redux
   useEffect(() => {
     if (
-      !traderPoolRegistry ||
-      !basicPoolsQueryData ||
-      !basicPoolsQueryData.data ||
-      !basicPoolsQueryData.data.basicPools.length ||
-      basicPoolsQueryData.fetching ||
+      !response ||
+      !response.data ||
+      !response.data.traderPools.length ||
+      response.fetching ||
       !dispatch
     )
       return
-    ;(async () => {
-      try {
-        const basicPoolsLength = await traderPoolRegistry.countPools(
-          poolTypes.basic
-        )
 
-        dispatch(
-          setPagination({
-            name: "total",
-            type: "basic",
-            value: basicPoolsLength.toString(),
-          })
-        )
-
-        dispatch(addBasicPools(basicPoolsQueryData.data?.basicPools))
-        setLoading(false)
-      } catch (e) {
-        // TODO: show error
-        console.log(e)
-      }
-    })()
-  }, [traderPoolRegistry, basicPoolsQueryData, dispatch])
-
-  const handleMore = () => {
-    if (loading) return
-    setLoading(true)
-    setTimeout(() => {
-      // TODO: handle more for current list
-      setLoading(false)
-    }, 1300)
-  }
-
-  return [loading, handleMore]
-}
-
-// TODO: move loading to redux state
-// @return list of loaded pools
-// @return loading indicator of pools
-// @return loadMore function to start fetching new batch of pools
-export function useInvestPools(): [boolean, () => void] {
-  const [loading, setLoading] = useState(true)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const [investPoolsQueryData] = useQuery<{
-    investPools: IBasicPoolQuery[]
-  }>({
-    query: InvestPoolsQuery,
-  })
-
-  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
-  const traderPoolRegistry = useContract(
-    traderPoolRegistryAddress,
-    TraderPoolRegistry
-  )
-
-  useEffect(() => {
-    if (
-      !traderPoolRegistry ||
-      !investPoolsQueryData ||
-      !investPoolsQueryData.data?.investPools ||
-      investPoolsQueryData.fetching ||
-      !dispatch
+    dispatch(
+      addPools({
+        data: response.data?.traderPools,
+        type: poolType,
+      })
     )
-      return
-    ;(async () => {
-      try {
-        const investPoolsLength = await traderPoolRegistry.countPools(
-          poolTypes.invest
-        )
-
-        dispatch(
-          setPagination({
-            name: "total",
-            type: "invest",
-            value: investPoolsLength.toString(),
-          })
-        )
-
-        dispatch(addInvestPools(investPoolsQueryData.data?.investPools))
-        setLoading(false)
-      } catch (e) {
-        // TODO: show error
-        console.log(e)
-      }
-    })()
-  }, [traderPoolRegistry, investPoolsQueryData, dispatch])
+    setLoading(false)
+  }, [response, dispatch, poolType])
 
   const handleMore = () => {
     if (loading) return

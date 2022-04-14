@@ -1,15 +1,15 @@
-import { Route, Switch, useLocation } from "react-router-dom"
+import { Route, Routes as Switch, Outlet } from "react-router-dom"
 import { lazy, Suspense } from "react"
 import { AnimatePresence } from "framer-motion"
 
-import ProfileHeader from "components/ProfileHeader"
+import RequireAuth from "pages/RequireAuth"
 import CreateFundContext from "context/CreateFundContext"
 
-import { Content, RestrictedContainer } from "theme/GlobalStyle"
+import { Content } from "theme/GlobalStyle"
 
+const Welcome = lazy(() => import("pages/Welcome"))
 const TopMembers = lazy(() => import("pages/TopMembers"))
-const NewFund = lazy(() => import("pages/NewFund"))
-const Invest = lazy(() => import("pages/Invest")) // TODO
+// const Invest = lazy(() => import("pages/Invest")) // TODO
 const Profile = lazy(() => import("pages/Profile")) // TODO
 const CreateFund = lazy(() => import("pages/CreateFund"))
 const Investor = lazy(() => import("pages/Investor"))
@@ -17,80 +17,74 @@ const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades")) // TODO: page is needed
 const Wallet = lazy(() => import("pages/Wallet"))
-const Success = lazy(() => import("pages/NewFund/Success"))
 const Notifications = lazy(() => import("pages/Notifications"))
 const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO: my trader profile
-const Insurance = lazy(() => import("pages/Insurance"))
+// const Insurance = lazy(() => import("pages/Insurance"))
+
+function Layout() {
+  return <Outlet />
+}
 
 export default function Routes() {
-  const location = useLocation()
-
   return (
     <Content>
       <Suspense fallback={null}>
         <CreateFundContext>
           <AnimatePresence exitBeforeEnter initial>
-            <Switch location={location} key={location.pathname}>
-              <Route path="/me">
-                <RestrictedContainer>
-                  <Route path="/me/investor">
-                    <Investor />
-                  </Route>
+            <Switch>
+              <Route element={<Layout />}>
+                <Route path="welcome" element={<Welcome />} />
 
-                  <Route path="/me/trader/profile/:poolType/:poolAddress">
-                    <Trader />
-                  </Route>
-                </RestrictedContainer>
-              </Route>
+                <Route element={<RequireAuth />}>
+                  <Route path="me/investor" element={<Investor />} />
 
-              <Route path="/notifications">
-                <Notifications />
-              </Route>
+                  <Route
+                    path="me/trader/profile/:poolType/:poolAddress"
+                    element={<Trader />}
+                  />
 
-              <Route path="/wallet">
-                <Wallet />
-              </Route>
+                  <Route path="notifications" element={<Notifications />} />
 
-              <Route path="/investor/history/:type/:account">
-                <Trades />
-              </Route>
+                  <Route path="wallet" element={<Wallet />} />
 
-              <Route path="/pool/history/:type/:address">
-                <Trades />
-              </Route>
+                  <Route
+                    path="investor/history/:type/:account"
+                    element={<Trades />}
+                  />
 
-              <Route path="/insurance">
-                <Insurance />
-              </Route>
+                  <Route
+                    path="pool/history/:type/:address"
+                    element={<Trades />}
+                  />
 
-              <Route path="/select-token/:type/:poolAddress">
-                <TokenSelect />
-              </Route>
+                  {/* <Route path="insurance" element={<Insurance />} /> */}
 
-              <Route path="/pool/swap/whitelist/:poolAddress/:outputTokenAddress">
-                <Swap />
-              </Route>
-              <Route path="/pool/invest/:poolType/:poolAddress">
-                <Invest />
-              </Route>
-              <Route path="/new-fund/success/:ticker/:address">
-                <Success />
-              </Route>
-              <Route path="/pool/profile/:poolType/:poolAddress">
-                <Profile />
-              </Route>
+                  <Route
+                    path="select-token/:type/:poolAddress"
+                    element={<TokenSelect />}
+                  />
 
-              {/* REDESIGN */}
-              <Route path="/create-fund">
-                <CreateFund />
-              </Route>
+                  <Route
+                    path="pool/swap/whitelist/:poolAddress/:outputTokenAddress"
+                    element={<Swap />}
+                  />
 
-              <Route path="/new-fund">
-                <NewFund />
-              </Route>
+                  {/* <Route
+                    path="pool/invest/:poolType/:poolAddress"
+                    element={<Invest />}
+                  /> */}
+                  <Route
+                    path="pool/profile/:poolType/:poolAddress"
+                    element={<Profile />}
+                  />
 
-              <Route path="/">
-                <TopMembers />
+                  {/* REDESIGN */}
+                  <Route path="create-fund" element={<CreateFund />} />
+
+                  <Route path="/*" element={<TopMembers />} />
+                </Route>
+
+                <Route path="*" element={<p>Not found</p>} />
               </Route>
             </Switch>
           </AnimatePresence>

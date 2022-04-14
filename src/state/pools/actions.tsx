@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit"
-import { IBasicPoolQuery } from "constants/interfaces_v2"
+import { IPoolQuery, PoolType } from "constants/interfaces_v2"
 
 export const setFilter = createAction<{ name: string; value: any }>(
   "pools/set-filter"
@@ -7,13 +7,11 @@ export const setFilter = createAction<{ name: string; value: any }>(
 
 export const setPagination = createAction<{
   name: string
-  type: "basic" | "invest"
+  type: PoolType
   value: any
 }>("pools/set-pagination")
 
-export const addBasicPools = createAction<IBasicPoolQuery[] | undefined>(
-  "pools/add-basic-pools"
-)
-export const addInvestPools = createAction<IBasicPoolQuery[] | undefined>(
-  "pools/add-invest-pools"
-)
+export const addPools = createAction<{
+  data: IPoolQuery[] | undefined
+  type: PoolType
+}>("pools/add-pools")

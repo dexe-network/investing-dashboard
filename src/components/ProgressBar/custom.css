@@ -18,15 +18,17 @@
   
   .CircularProgressbar .CircularProgressbar-path {
     stroke: #9AE2CB;
+    stroke-width: 3px;
     stroke-linecap: round;
     -webkit-transition: stroke-dashoffset 0.5s ease 0s;
     transition: stroke-dashoffset 0.5s ease 0s;
   }
   
   .CircularProgressbar .CircularProgressbar-trail {
-    stroke: rgba(32, 37, 47, 0.7);
+    stroke: #131A27;
     /* Used when trail is not full diameter, i.e. when props.circleRatio is set */
     stroke-linecap: round;
+    stroke-width: 3px;
   }
   
   .CircularProgressbar .CircularProgressbar-text {

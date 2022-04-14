@@ -2,8 +2,6 @@
  * Renders Header
  */
 import {
-  StyledBar,
-  TitleMenu,
   FilterContainer,
   FiltersBody,
   FilterSelectableItem,
@@ -12,7 +10,7 @@ import {
   SearchOverlay,
 } from "components/TopMembersBar/styled"
 import { usePoolsFilters } from "state/pools/hooks"
-import { Title, titleVariants, Icons } from "./styled"
+import { Container, Bar, Title, titleVariants, Icons } from "./styled"
 import { useState } from "react"
 import NavTabs from "components/NavTabs"
 import Popover from "components/Popover"
@@ -61,7 +59,7 @@ export enum EHeaderTitles {
   fundPositionsInvestor = "Fund Positions Investor", // used to create different tabs with the same header
   insurance = "Insurance",
   myInvestorProfile = "My Investor Profile",
-  myTraiderProfile = "My traider profile",
+  myTraderProfile = "My trader profile",
   myWallet = "My Wallet",
   myInvestment = "My Investment",
   myFund = "My fund",
@@ -83,7 +81,7 @@ const getHeaderFileds = (title: EHeaderTitles) => {
       return [EFields.goBack]
     case EHeaderTitles.myInvestorProfile:
       return [EFields.profiles]
-    case EHeaderTitles.myTraiderProfile:
+    case EHeaderTitles.myTraderProfile:
       return [EFields.profiles, EFields.portraits]
     case EHeaderTitles.wallet:
       return [EFields.goBack, EFields.link]
@@ -174,19 +172,19 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
   return (
     <>
       {/* Header */}
-      <StyledBar
+      <Container
         initial={{ y: -102 }}
         animate={{ y: 0 }}
         exit={{ y: -102 }}
         transition={{ duration: 0.4, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        <TitleMenu>
+        <Bar>
           <Left />
           <Middle />
           <Right />
-        </TitleMenu>
+        </Bar>
         {isTabSectionVisible && <HeaderTabs title={title} />}
-      </StyledBar>
+      </Container>
       <SearchOverlay
         initial="hidden"
         animate={!isSearchActive ? "hidden" : "visible"}

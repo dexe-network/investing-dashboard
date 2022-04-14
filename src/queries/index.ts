@@ -1,7 +1,45 @@
-const BasicPool = `
+//-----------------------------------------------------------------------------
+// # PRICE HISTORY
+//-----------------------------------------------------------------------------
+
+const PRICE_HISTORY = `
+  usdTVL
+  baseTVL
+  supply
+  absPNL
+  percPNL
+  seconds
+`
+
+const PRICE_HISTORY_LAST = `
+  priceHistory(first: 1, orderBy: seconds, orderDirection: desc, where: { isLast: true }) {
+    ${PRICE_HISTORY}
+  }
+`
+
+const PRICE_HISTORY_FULL = `
+  priceHistory(first: 1000, orderBy: seconds, orderDirection: desc) {
+    ${PRICE_HISTORY}
+  }
+`
+
+const PriceHistoryQuery = `
+  query ($address: String!) {
+    traderPool(id: $address) {
+      ${PRICE_HISTORY_FULL}
+    }
+  }
+`
+
+//-----------------------------------------------------------------------------
+// # POOL
+//-----------------------------------------------------------------------------
+
+const POOL = `
   id
   baseToken
   name
+  type
   ticker
   creationTime
   descriptionURL
@@ -10,63 +48,24 @@ const BasicPool = `
   totalClosedPositions
   averageTrades
   averagePositionTime
-  priceHistory(orderBy: seconds, orderDirection: desc) {
-    usdTVL
-    baseTVL
-    supply
-    absPNL
-    percPNL
-    seconds
-  }
-  investors {
-    id
-  }
+  investorsCount
+  ${PRICE_HISTORY_LAST}
 `
 
-const BasicPoolQuery = `
+const PoolQuery = `
   query ($address: String!) {
-    basicPool(id: $address) {
-      ${BasicPool}
+    traderPool(id: $address) {
+      ${POOL}
     }
   }
 `
 
-const BasicPoolsQuery = `
-  query {
-    basicPools(first: 100 orderBy: creationTime) {
-      ${BasicPool}
-    }
-  }
-`
-
-const BasicPoolsQueryByName = `
+const PoolsQuery = `
   query ($q: String!) {
-    basicPools(where: {name: $q} first: 100 orderBy: creationTime) {
-      ${BasicPool}
+    traderPools(where: { ticker_contains: $q } first: 100 orderBy: creationTime) {
+      ${POOL}
     }
   }
 `
 
-const BasicPoolsQueryByTicker = `
-  query ($q: String!) {
-    basicPools(where: { ticker_contains: $q } first: 100 orderBy: creationTime) {
-      ${BasicPool}
-    }
-  }
-`
-
-const InvestPoolsQuery = `
-  query InvestPool{
-    investPools(first: 100 orderBy: creationTime) {
-      ${BasicPool}
-    }
-  }
-`
-
-export {
-  BasicPoolQuery,
-  BasicPoolsQuery,
-  BasicPoolsQueryByName,
-  BasicPoolsQueryByTicker,
-  InvestPoolsQuery,
-}
+export { PoolQuery, PoolsQuery, PriceHistoryQuery }

@@ -40,7 +40,7 @@ const HeaderTabs = ({ title }: IHeaderTabsProps) => {
           return (
             <Tab
               key={tab.title}
-              active={filters.listType === tab.source}
+              active={false}
               onClick={() => dispatchFilter("listType", tab.source)}
             >
               {tab.title}

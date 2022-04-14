@@ -15,7 +15,7 @@ import { shortenAddress } from "utils"
 export const TapBar = () => {
   const [isFullScreen, setFullScreen] = useState<null | boolean>(null)
   const { account } = useWeb3React()
-  const { toggleConnectWallet } = useConnectWalletContext()
+  const lastVisitedProfile = localStorage.getItem("last-visited-profile")
 
   const isBarHidden = !account ? "hidden" : "normal"
 
@@ -29,7 +29,7 @@ export const TapBar = () => {
 
   return (
     <MobileMenu
-      initial="hidden"
+      initial={isBarHidden}
       animate={isFullScreen ? "fullscreen" : isBarHidden}
       variants={{
         fullscreen: {
@@ -41,20 +41,12 @@ export const TapBar = () => {
         hidden: { height: "0", padding: "15px 14px 12px 14px", opacity: 0 },
       }}
     >
-      {!!account ? (
-        <NavItem
-          path="/wallet"
-          Icon={Wallet}
-          text={shortenAddress(account, 3)}
-        />
-      ) : (
-        <NavItem
-          onClick={() => toggleConnectWallet(true)}
-          Icon={Wallet}
-          text="My wallet"
-        />
-      )}
-      <NavItem path="/me/investor" Icon={Profile} text="My profile" />
+      <NavItem path="/wallet" Icon={Wallet} text={shortenAddress(account, 3)} />
+      <NavItem
+        path={lastVisitedProfile || "/me/investor"}
+        Icon={Profile}
+        text="My profile"
+      />
       <NavItem path="/" Icon={TopTraders} text="Traders" />
       <NavItem
         path="/notifications"

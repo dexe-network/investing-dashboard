@@ -1,5 +1,4 @@
 import RadioButton from "components/RadioButton"
-import { FundTypes } from "constants/interfaces"
 import React from "react"
 import styled from "styled-components"
 

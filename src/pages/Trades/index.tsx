@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { useHistory, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import swipeLeft from "assets/icons/swipe-arrow-left.svg"
 import filter from "assets/icons/filter.svg"
 import calendar from "assets/icons/calendar.svg"
@@ -152,13 +152,13 @@ const positions: IPoolPosition[] = [
 export default function Trades() {
   const { poolAddress } = useParams<{ poolAddress: string }>()
   const [openPosition, setOpen] = useState<null | string>(null)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   console.log(poolAddress)
 
   const goBack = () => {
     try {
-      history.goBack()
+      navigate(-1)
     } catch {
       alert("Something went wrong")
     }

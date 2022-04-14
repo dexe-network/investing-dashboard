@@ -5,6 +5,9 @@ import { Dispatch, SetStateAction } from "react"
 import { ITopMembersFilters } from "constants/interfaces"
 import IconSearch from "components/IconSearch"
 
+import { getRedirectedPoolAddress } from "utils"
+import { selectLoadingState, selectOwnedPools } from "state/user/selectors"
+
 import { ClickableArea, IconButton, PortraitsPlus } from "./styled"
 
 import filtersIcon from "assets/icons/filters.svg"
@@ -12,6 +15,8 @@ import link from "assets/icons/link.svg"
 import goBack from "assets/icons/pagination-prev.svg"
 import people from "assets/icons/people.svg"
 import more from "assets/icons/more-menu.svg"
+import { useLocation, useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
 
 interface IFiltersProps {
   onClick: () => void
@@ -26,8 +31,20 @@ export const Filters = ({ onClick }: IFiltersProps) => {
 
 interface IProfilesProps {}
 export const Profiles = ({}: IProfilesProps) => {
+  // const navigate = useNavigate()
+  // const { pathname } = useLocation()
+  // const ownedPools = useSelector(selectOwnedPools)
+  // const redirectPath = getRedirectedPoolAddress(ownedPools)
+
+  // const TRADER_PATH = `/me/trader/profile/${redirectPath[0]}/${redirectPath[1]}`
+
+  // const PATH =
+  //   redirectPath && pathname !== "/me/investor"
+  //     ? `/me/trader/profile/${redirectPath[0]}/${redirectPath[1]}`
+  //     : "/me/investor"
+
   return (
-    <ClickableArea onClick={() => {}}>
+    <ClickableArea>
       <IconButton src={people} />
     </ClickableArea>
   )

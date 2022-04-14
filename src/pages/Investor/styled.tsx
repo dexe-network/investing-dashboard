@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Flex, device } from "theme"
+import { Flex, device, GradientBorder } from "theme"
 
 export const Container = styled(Flex)`
   width: 100%;
@@ -62,13 +62,12 @@ export const Tab = styled(Flex)<{ active?: boolean }>`
   }
 `
 
-export const TabCard = styled(Flex)`
+export const TabCard = styled(GradientBorder)`
   margin-bottom: 16px;
   margin-top: 24px;
   padding: 0 0 6px;
   position: relative;
-  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
-  border-radius: 6px;
+  border-radius: 16px;
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;

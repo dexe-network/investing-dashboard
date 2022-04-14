@@ -7,41 +7,54 @@ import chartIcon from "assets/icons/bar-chart-icon.svg"
 import unlim from "assets/icons/unlimited-emmission.svg"
 import { Flex } from "theme"
 import { Label, InfoRow, Container, Icon, Emission, LabelIcon } from "./styled"
-import { Pool } from "constants/interfaces_v2"
+import { IPoolQuery, LeverageInfo, PoolInfo } from "constants/interfaces_v2"
 import { BigNumber, ethers } from "ethers"
 import { formatBigNumber, formatNumber } from "utils"
-import useContract from "hooks/useContract"
+import useContract, { useERC20 } from "hooks/useContract"
 import { TraderPool } from "abi"
 
-const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
+const FundStatisticsCard: React.FC<{
+  data: IPoolQuery
+  leverage: LeverageInfo | null
+  info: PoolInfo | null
+}> = ({ data, leverage, info }) => {
   const [traderLp, setTraderLp] = useState<BigNumber>(BigNumber.from("0"))
   const [accountLp, setAccountLp] = useState<BigNumber>(BigNumber.from("0"))
+  const [, baseData] = useERC20(data.baseToken)
+  const traderPool = useContract(data.id, TraderPool)
   const { account } = useWeb3React()
-  // const totalEmission = ethers.utils.formatEther(
-  //   data.parameters.totalLPEmission
-  // )
-  // const traderPool = useContract(data.address, TraderPool)
-  // const circulatingSupply = formatBigNumber(data.lpEmission, 18, 6)
 
-  // useEffect(() => {
-  //   if (!traderPool || !account || !data.parameters.trader) return
-  //   ;(async () => {
-  //     const userLpBalance = await traderPool.balanceOf(account)
-  //     const traderLpBalance = await traderPool.balanceOf(data.parameters.trader)
-  //     setTraderLp(traderLpBalance)
-  //     setAccountLp(userLpBalance)
-  //   })()
-  // }, [traderPool, account, data.parameters.trader])
+  // UI variables
+  const openPositionsPercent = info?.openPositions.length || 0 * 4
+  const openPositions = info?.openPositions.length || 0
+  const totalEmission =
+    info && ethers.utils.formatEther(info.parameters.totalLPEmission)
+
+  const circulatingSupply = info && formatBigNumber(info.lpSupply, 18, 6)
+
+  useEffect(() => {
+    if (!traderPool || !account || !info || !info.parameters.trader) return
+    ;(async () => {
+      const userLpBalance = await traderPool.balanceOf(account)
+      const traderLpBalance = await traderPool.balanceOf(info.parameters.trader)
+      setTraderLp(traderLpBalance)
+      setAccountLp(userLpBalance)
+    })()
+  }, [traderPool, account, info])
 
   return (
     <Container>
       <Flex p="40px 25px 0" full>
         <ProgressBar
-          percent={Number(data.totalInvestors) / 10}
-          label={`${data.totalInvestors}/1000`}
+          percent={Number(data.investorsCount) / 10}
+          label={`${data.investorsCount}/1000`}
           value="Investors"
         />
-        <ProgressBar percent={0} label="0/25" value="Open trades" />
+        <ProgressBar
+          percent={openPositionsPercent}
+          label={`${openPositions}/25`}
+          value="Open trades"
+        />
       </Flex>
       <Flex p="40px 0 0 0" full jc="flex-start">
         <Icon src={chartIcon} />
@@ -50,23 +63,19 @@ const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
 
       <Flex full>
         <Flex full p="0 75px 0 0">
-          <InfoRow label={"DEXE"} value={`${data.lpPnl}%`} />
+          <InfoRow label={baseData?.symbol} value={`${0}%`} />
         </Flex>
         <Flex full p="0 0 0 75px">
-          <InfoRow label={"USD"} value={`${data.lpPnl}%`} />
+          <InfoRow label={"USD"} value={`${0}%`} />
         </Flex>
       </Flex>
       <Flex full>
         <Flex full p="0 75px 0 0">
-          <InfoRow label={"ETH"} value={`${data.lpPnl}%`} />
+          <InfoRow label={"ETH"} value={`${0}%`} />
         </Flex>
         <Flex full p="0 0 0 75px">
-          <InfoRow label={"BTC"} value={`${data.lpPnl}%`} />
+          <InfoRow label={"BTC"} value={`${0}%`} />
         </Flex>
-      </Flex>
-      <Flex p="40px 0 0 0" full jc="flex-start">
-        <Icon src={chartIcon} />
-        <Label>Funds</Label>
       </Flex>
       {/* <Flex full p="14px 0 0">
         <Emission
@@ -81,24 +90,6 @@ const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
           current={`${circulatingSupply} ${data.ticker}`}
         />
       </Flex> */}
-      <InfoRow
-        label={"Traders LP"}
-        value={`${ethers.utils.formatEther(traderLp).toString()} ${
-          data.ticker
-        }`}
-      />
-      <InfoRow
-        label={"Invested LP"}
-        value={`${formatBigNumber(accountLp, 18, 6)} ${data.ticker}`}
-      />
-      <InfoRow
-        label={"Investors LP"}
-        value={`${formatBigNumber(
-          BigNumber.from(data.lpEmission).sub(traderLp),
-          18,
-          6
-        )} ${data.ticker}`}
-      />
 
       <Flex p="40px 0 0 0" full jc="flex-start">
         <Icon src={chartIcon} />
@@ -107,7 +98,7 @@ const FundStatisticsCard: React.FC<{ data: Pool }> = ({ data }) => {
 
       <Flex full>
         <Flex full p="0 25px 0 0">
-          <InfoRow label={"Trades per Day"} value={"0"} />
+          <InfoRow label={"Trades per Day"} value={data.averageTrades} />
         </Flex>
         <Flex full p="0 0 0 25px">
           <InfoRow label={"Order Size"} value={"0%"} />
