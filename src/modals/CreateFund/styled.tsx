@@ -1046,13 +1046,13 @@ export const AllocateSlider: React.FC<{
     <Flex full p="0 0 10px">
       <Flex full p="24px 0" ai="center">
         {min !== 0 && <SliderLine />}
-        <InputSlider
+        {/* <InputSlider
           marks={customMarks}
           min={min}
           max={max}
           value={debounce ? v : initial}
           onChange={handleChange}
-        />
+        /> */}
         {max !== 100 && <SliderLine />}
       </Flex>
       {!hideInput && (
