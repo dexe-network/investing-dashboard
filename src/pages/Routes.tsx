@@ -17,6 +17,7 @@ const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades")) // TODO: page is needed
 const Wallet = lazy(() => import("pages/Wallet"))
+const Success = lazy(() => import("pages/Success"))
 const Notifications = lazy(() => import("pages/Notifications"))
 const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO: my trader profile
 // const Insurance = lazy(() => import("pages/Insurance"))
@@ -78,11 +79,11 @@ export default function Routes() {
                     element={<Profile />}
                   />
 
-                  {/* REDESIGN */}
-                  <Route path="create-fund" element={<CreateFund />} />
-
                   <Route path="/*" element={<TopMembers />} />
                 </Route>
+                {/* REDESIGN */}
+                <Route path="create-fund" element={<CreateFund />} />
+                <Route path="success" element={<Success />} />
 
                 <Route path="*" element={<p>Not found</p>} />
               </Route>
