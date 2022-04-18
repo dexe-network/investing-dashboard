@@ -1,7 +1,12 @@
 import { addDays, addMonths, addYears } from "date-fns"
 import { createStaticRanges } from "react-date-range"
 
-export const poolTypes = {
+export const poolTypes: {
+  all: "ALL_POOL"
+  basic: "BASIC_POOL"
+  invest: "INVEST_POOL"
+} = {
+  all: "ALL_POOL",
   basic: "BASIC_POOL",
   invest: "INVEST_POOL",
 }

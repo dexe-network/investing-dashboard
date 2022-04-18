@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Flex, ease, device, rotateVariants } from "theme"
+import { Flex, ease, device, rotateVariants, GradientBorder } from "theme"
 import { motion } from "framer-motion"
 
 export const Container = styled(motion.div)`
@@ -7,7 +7,7 @@ export const Container = styled(motion.div)`
   height: -webkit-fill-available;
   overflow-y: auto;
   overflow-x: hidden;
-  height: 100%;
+  height: calc(100vh - 94px);
 `
 
 export const ButtonContainer = styled(Flex)`
@@ -16,10 +16,12 @@ export const ButtonContainer = styled(Flex)`
   width: 100%;
 `
 
-export const Details = styled.div`
+export const Details = styled(GradientBorder)`
   padding: 0 16px 16px;
-  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
-  border-radius: 10px;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
+  border-radius: 16px;
   margin-top: 27px;
 `
 

@@ -2,7 +2,7 @@ import React from "react"
 import { useWeb3React } from "@web3-react/core"
 import {
   Container,
-  Header,
+  // Header,
   Info,
   FloatingButtons,
   TextGray,
@@ -39,11 +39,12 @@ import NavTabs from "components/NavTabs"
 import Button from "components/Button"
 import TokenIcon from "components/TokenIcon"
 import Confirm from "components/Confirm"
+import Header, { EHeaderTitles } from "components/Header"
 import more from "assets/icons/more-menu.svg"
 import swap from "assets/icons/swap-path.svg"
 import { shortenAddress } from "utils"
 import bsc from "assets/wallets/bsc.svg"
-import { Redirect, useHistory } from "react-router-dom"
+import { Navigate, useNavigate } from "react-router-dom"
 
 const transactions = [
   {
@@ -69,23 +70,24 @@ const transactions = [
 
 export default function Wallet() {
   const { account, deactivate } = useWeb3React()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
     deactivate()
     localStorage.removeItem("dexe.network/investing/web3-auth-method")
   }
 
-  if (!account) return <Redirect to="/welcome" />
+  if (!account) return <Navigate to="/welcome" />
 
   return (
-    <Container
-      initial={{ opacity: 0, y: -15 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -15 }}
-      transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
-    >
-      <Header>
+    <>
+      <Header title={EHeaderTitles.myWallet} />
+      <Container
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
+      >
         <Info>
           <AvatarWrapper>
             <Avatar size={50} />
@@ -98,77 +100,77 @@ export default function Wallet() {
         <FloatingButtons>
           <FloatingButton icon={more} />
         </FloatingButtons>
-      </Header>
 
-      <Card>
-        <Network>
-          BSC <NetworkIcon src={bsc} />
-        </Network>
-        <TextGray>Current account</TextGray>
-        <Address>{shortenAddress(account, 8)}</Address>
-        <CardButtons>
-          <TextButton color="#9AE2CB">Change</TextButton>
-          <TextButton>Copy</TextButton>
-          <TextButton onClick={handleLogout}>Disconnect</TextButton>
-        </CardButtons>
-      </Card>
+        <Card>
+          <Network>
+            BSC <NetworkIcon src={bsc} />
+          </Network>
+          <TextGray>Current account</TextGray>
+          <Address>{shortenAddress(account, 8)}</Address>
+          <CardButtons>
+            <TextButton color="#9AE2CB">Change</TextButton>
+            <TextButton>Copy</TextButton>
+            <TextButton onClick={handleLogout}>Disconnect</TextButton>
+          </CardButtons>
+        </Card>
 
-      <Heading>Transactions History</Heading>
+        <Heading>Transactions History</Heading>
 
-      <NavTabs
-        tabs={[
-          { name: "All" },
-          { name: "Swaps" },
-          { name: "Pool" },
-          { name: "Governance" },
-          { name: "Rewards" },
-        ]}
-      />
-      {transactions.length ? (
-        <TransactionsList>
-          {transactions.map(({ date, transactions }) => (
-            <React.Fragment key={date}>
-              <TransactionsGroup>
-                {transactions.map(
-                  ({ type, address, timestamp, amountIn, amountOut }) => (
-                    <Transaction key={timestamp}>
-                      <TransactionType>{type}</TransactionType>
-                      <TransactionDetails>
-                        <TransactionHash>
-                          {shortenAddress(address)}
-                        </TransactionHash>
-                        <TransactionText>
-                          <TokenIcon size={18} />
-                          {amountIn}
-                        </TransactionText>
-                        <PathArrow src={swap} />
-                        <TransactionText>
-                          <TokenIcon size={18} />
-                          {amountOut}
-                        </TransactionText>
-                        <Time>{timestamp}</Time>
-                      </TransactionDetails>
-                    </Transaction>
-                  )
-                )}
-              </TransactionsGroup>
-            </React.Fragment>
-          ))}
-        </TransactionsList>
-      ) : (
-        <TransactionsPlaceholder>
-          Your transactions will appear here....
-        </TransactionsPlaceholder>
-      )}
-      <InsuranceCard>
-        <InsuranceInfo>
-          <InsuranceTitle>Funds Insurance</InsuranceTitle>
-          <InsuranceDescription>
-            Minimize your investment risks <br /> with DeXe Insurance
-          </InsuranceDescription>
-        </InsuranceInfo>
-        <Button onClick={() => history.push("/insurance")}>Open</Button>
-      </InsuranceCard>
-    </Container>
+        <NavTabs
+          tabs={[
+            { name: "All" },
+            { name: "Swaps" },
+            { name: "Pool" },
+            { name: "Governance" },
+            { name: "Rewards" },
+          ]}
+        />
+        {transactions.length ? (
+          <TransactionsList>
+            {transactions.map(({ date, transactions }) => (
+              <React.Fragment key={date}>
+                <TransactionsGroup>
+                  {transactions.map(
+                    ({ type, address, timestamp, amountIn, amountOut }) => (
+                      <Transaction key={timestamp}>
+                        <TransactionType>{type}</TransactionType>
+                        <TransactionDetails>
+                          <TransactionHash>
+                            {shortenAddress(address)}
+                          </TransactionHash>
+                          <TransactionText>
+                            <TokenIcon size={18} />
+                            {amountIn}
+                          </TransactionText>
+                          <PathArrow src={swap} />
+                          <TransactionText>
+                            <TokenIcon size={18} />
+                            {amountOut}
+                          </TransactionText>
+                          <Time>{timestamp}</Time>
+                        </TransactionDetails>
+                      </Transaction>
+                    )
+                  )}
+                </TransactionsGroup>
+              </React.Fragment>
+            ))}
+          </TransactionsList>
+        ) : (
+          <TransactionsPlaceholder>
+            Your transactions will appear here....
+          </TransactionsPlaceholder>
+        )}
+        <InsuranceCard>
+          <InsuranceInfo>
+            <InsuranceTitle>Funds Insurance</InsuranceTitle>
+            <InsuranceDescription>
+              Minimize your investment risks <br /> with DeXe Insurance
+            </InsuranceDescription>
+          </InsuranceInfo>
+          <Button onClick={() => navigate("/insurance")}>Open</Button>
+        </InsuranceCard>
+      </Container>
+    </>
   )
 }

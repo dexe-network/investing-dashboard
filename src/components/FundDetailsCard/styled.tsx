@@ -3,6 +3,7 @@ import { Flex, Text } from "theme"
 
 export const Container = styled.div`
   padding: 30px 0 0;
+  width: 100%;
 `
 
 export const Label = styled.div`
@@ -40,6 +41,18 @@ export const DescriptionText = styled.div`
   line-height: 130%;
   color: #c5d1dc;
   padding: 8px 0 38px;
+  opacity: 0.9;
+`
+
+export const EmptyDescription = styled.div`
+  min-height: 80px;
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0.03em;
+  color: #616d8b;
   opacity: 0.9;
 `
 

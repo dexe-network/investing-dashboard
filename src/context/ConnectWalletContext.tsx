@@ -1,7 +1,5 @@
 import React from "react"
 
-import ConnectWallet from "modals/ConnectWallet"
-
 interface IContext {
   isWalletOpen: boolean
   toggleConnectWallet: (v?: boolean) => void
@@ -41,10 +39,6 @@ class ConnectWalletContext extends React.Component<{
         }}
       >
         {children}
-        <ConnectWallet
-          isOpen={isWalletOpen}
-          onRequestClose={() => this.toggleModal(false)}
-        />
       </WalletContext.Provider>
     )
   }

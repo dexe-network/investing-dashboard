@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react"
 import { Flex } from "theme"
 import { ethers } from "ethers"
 import { useSelector } from "react-redux"
-import { useParams, useHistory } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 
@@ -11,7 +11,7 @@ import IconButton from "components/IconButton"
 import ExchangeTo from "components/Exchange/To"
 import ExchangeFrom from "components/Exchange/From"
 import ExchangeDivider from "components/Exchange/Divider"
-import Button, { BorderedButton } from "components/Button"
+import Button, { SecondaryButton } from "components/Button"
 import CircularProgress from "components/CircularProgress"
 import TransactionSlippage from "components/TransactionSlippage"
 
@@ -20,23 +20,24 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
 import { getDividedBalance } from "utils/formulas"
-import { formatBigNumber } from "utils"
+import { calcSlippage, isAddress } from "utils"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
 
 import { Container, Card, CardHeader, Title, IconsGroup } from "./styled"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
-import { useBasicPool } from "state/pools/hooks"
+import { usePool } from "state/pools/hooks"
 
-const basicPoolsClient = createClient({
-  url: "https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/dexe-chapel-basic-pool",
+const poolsClient = createClient({
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
 export const useSwap = (): [
   {
-    fromAmount: number | string
-    toAmount: number | string
+    fromAmount: string
+    toAmount: string
+    slippage: string
     fromAddress: string
     toAddress: string
     toSelectorOpened: boolean
@@ -45,20 +46,22 @@ export const useSwap = (): [
     direction: "deposit" | "withdraw"
   },
   {
-    setFromAmount: (amount: number | string) => void
-    setToAmount: (amount: number | string) => void
+    setFromAmount: (amount: string) => void
+    setToAmount: (amount: string) => void
     setToAddress: (address: string) => void
     setFromAddress: (address: string) => void
     setDirection: () => void
     setPercentage: (v: number) => void
     setToSelector: (state: boolean) => void
     setFromSelector: (state: boolean) => void
+    setSlippage: (slippage: string) => void
   }
 ] => {
   const { library } = useWeb3React()
 
-  const [fromAmount, setFromAmount] = useState(0.0)
-  const [toAmount, setToAmount] = useState(0.0)
+  const [fromAmount, setFromAmount] = useState("0")
+  const [toAmount, setToAmount] = useState("0")
+  const [slippage, setSlippage] = useState("0.10")
   const [hash, setHash] = useState("")
   const [pending, setPending] = useState(false)
   const [toSelectorOpened, setToSelector] = useState(false)
@@ -83,14 +86,17 @@ export const useSwap = (): [
   }, [hash, library])
 
   const setFromAmountCallback = useCallback(
-    (amount: number | string): void =>
-      setFromAmount(parseFloat(amount.toString()) || 0.0),
+    (amount: string): void => setFromAmount(amount),
     []
   )
 
   const setToAmountCallback = useCallback(
-    (amount: number | string): void =>
-      setToAmount(parseFloat(amount.toString()) || 0.0),
+    (amount: string): void => setToAmount(amount),
+    []
+  )
+
+  const setSlippageCallback = useCallback(
+    (slippage: string): void => setSlippage(slippage),
     []
   )
 
@@ -137,6 +143,7 @@ export const useSwap = (): [
       fromSelectorOpened,
       direction,
       pending,
+      slippage,
     },
     {
       setFromAmount: setFromAmountCallback,
@@ -147,27 +154,30 @@ export const useSwap = (): [
       setPercentage: handlePercentageChange,
       setToSelector: setToSelectorCallback,
       setFromSelector: setFromSelectorCallback,
+      setSlippage: setSlippageCallback,
     },
   ]
 }
 
 function Swap() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const [
-    { fromAmount, toAmount, direction },
-    { setFromAmount, setToAmount, setDirection },
+    { fromAmount, toAmount, direction, slippage },
+    { setFromAmount, setToAmount, setDirection, setSlippage },
   ] = useSwap()
 
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
   const [fromBalance, setFromBalance] = useState(BigNumber.from("0"))
   const [inPrice, setInPrice] = useState(BigNumber.from("0"))
   const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
+  const [oneTokenCost, setTokenCost] = useState(BigNumber.from("0"))
+  const [oneUSDCost, setUSDCost] = useState(BigNumber.from("0"))
 
   const [isSlippageOpen, setSlippageOpen] = useState(false)
 
   const { poolAddress, outputTokenAddress } = useParams()
 
-  const [traderPool, poolData, , poolInfoData] = useBasicPool(poolAddress)
+  const [traderPool, poolData, , poolInfoData] = usePool(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
@@ -175,6 +185,8 @@ function Swap() {
 
   const [, fromData] = useERC20(poolData?.baseToken)
   const [, toData] = useERC20(outputTokenAddress)
+
+  const isToAddressTokenValid = isAddress(outputTokenAddress || "")
 
   // read and update balances
   useEffect(() => {
@@ -184,18 +196,58 @@ function Swap() {
       !poolInfoData.baseAndPositionBalances.length ||
       !poolInfoData.openPositions ||
       !poolInfoData.openPositions.length ||
-      !outputTokenAddress
+      !outputTokenAddress ||
+      !isToAddressTokenValid
     )
       return
 
     const positionIndex = poolInfoData.openPositions
       .map((address) => address.toLocaleLowerCase())
       .indexOf(outputTokenAddress.toLocaleLowerCase())
+
     setFromBalance(poolInfoData.baseAndPositionBalances[0])
+
     if (positionIndex !== -1) {
       setToBalance(poolInfoData.baseAndPositionBalances[positionIndex + 1])
     }
-  }, [poolInfoData, outputTokenAddress])
+  }, [poolInfoData, outputTokenAddress, isToAddressTokenValid])
+
+  // read and update prices
+  useEffect(() => {
+    if (
+      !traderPool ||
+      !priceFeed ||
+      !poolData?.baseToken ||
+      !outputTokenAddress ||
+      !isToAddressTokenValid
+    )
+      return
+    const from = poolData?.baseToken
+    const to = outputTokenAddress
+    const amount = ethers.utils.parseUnits("1", 18)
+
+    ;(async () => {
+      const tokensCost: BigNumber = await traderPool?.getExchangeToExactAmount(
+        from,
+        to,
+        amount.toHexString(),
+        []
+      )
+      const usdCost: BigNumber = await priceFeed?.getNormalizedPriceOutUSD(
+        to,
+        amount.toHexString(),
+        []
+      )
+      setTokenCost(tokensCost)
+      setUSDCost(usdCost)
+    })()
+  }, [
+    traderPool,
+    priceFeed,
+    outputTokenAddress,
+    poolData,
+    isToAddressTokenValid,
+  ])
 
   const handleSubmit = async () => {
     if (direction === "deposit") {
@@ -203,19 +255,24 @@ function Swap() {
         try {
           const from = poolData?.baseToken
           const to = outputTokenAddress
-          const amount = ethers.utils.parseUnits(fromAmount.toString(), 18)
+          const amount = BigNumber.from(fromAmount)
 
-          const exchange = await traderPool?.getExchangeFromExactAmount(
-            from,
-            to,
-            amount,
-            []
-          )
+          const exchange: BigNumber =
+            await traderPool?.getExchangeFromExactAmount(
+              from,
+              to,
+              amount.toHexString(),
+              []
+            )
+
+          const sl = 1 - parseFloat(slippage) / 100
+          const exchangeWithSlippage = calcSlippage(exchange, 18, sl)
+
           const receipt = await traderPool?.exchangeFromExact(
             from,
             to,
-            amount,
-            exchange,
+            amount.toHexString(),
+            exchangeWithSlippage.toHexString(),
             []
           )
           console.log(receipt)
@@ -226,18 +283,37 @@ function Swap() {
     } else {
       ;(async () => {
         try {
-          // const amountOutBn = ethers.utils.parseUnits(toAmount.toString(), 18)
-          // console.log(amountOutBn)
-          // const divest = await traderPool?.getDivestAmountsAndCommissions(
-          //   account,
-          //   amountOutBn.toHexString()
-          // )
-          // const divestResult = await traderPool?.divest(
-          //   amountOutBn.toHexString(),
-          //   divest.receptions.receivedAmounts,
-          //   divest.commissions.dexeDexeCommission
-          // )
-          // console.log("withdraw: ", divestResult)
+          const from = poolData?.baseToken
+          const to = outputTokenAddress
+          const amount = BigNumber.from(fromAmount)
+
+          const exchange: BigNumber =
+            await traderPool?.getExchangeToExactAmount(
+              from,
+              to,
+              amount.toHexString(),
+              []
+            )
+
+          const sl = 1 + parseFloat(slippage) / 100
+          const exchangeWithSlippage = calcSlippage(exchange, 18, sl)
+
+          console.log({
+            from,
+            to,
+            amount: amount.toString(),
+            exchange: exchange.toString(),
+            exchangeWithSlippage: exchangeWithSlippage.toString(),
+          })
+
+          const receipt = await traderPool?.exchangeToExact(
+            from,
+            to,
+            amount.toHexString(),
+            exchangeWithSlippage.toHexString(),
+            []
+          )
+          console.log(receipt)
         } catch (e) {
           console.log(e)
         }
@@ -255,57 +331,53 @@ function Swap() {
     }
   }
 
-  const handleFromChange = (v) => {
+  const handleFromChange = (v: string) => {
     setFromAmount(v)
 
     const fetchAndUpdateTo = async () => {
       const from = poolData?.baseToken
       const to = outputTokenAddress
-      const amount = ethers.utils.parseUnits(v.toString(), 18)
+      const amount = BigNumber.from(v)
 
-      const exchange = await traderPool?.getExchangeFromExactAmount(
+      const exchange: BigNumber = await traderPool?.getExchangeFromExactAmount(
         from,
         to,
-        amount,
+        amount.toHexString(),
         []
       )
-      const outAmount = formatBigNumber(exchange, 18, 8)
-
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         from,
-        amount,
+        amount.toHexString(),
         []
       )
       const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
         to,
-        exchange,
+        exchange.toHexString(),
         []
       )
-      setToAmount(outAmount)
+      setToAmount(exchange.toString())
       setInPrice(fromPrice)
       setOutPrice(toPrice)
-      console.log(fromPrice)
-      console.log(toPrice)
     }
+
+    if (!isToAddressTokenValid) return
 
     fetchAndUpdateTo().catch(console.error)
   }
 
-  const handleToChange = (v) => {
+  const handleToChange = (v: string) => {
     setToAmount(v)
     const fetchAndUpdateFrom = async () => {
       const from = poolData?.baseToken
       const to = outputTokenAddress
-      const amount = ethers.utils.parseUnits(v.toString(), 18)
+      const amount = BigNumber.from(v)
 
       const exchange = await traderPool?.getExchangeToExactAmount(
         from,
         to,
-        amount,
+        amount.toHexString(),
         []
       )
-
-      const outAmount = formatBigNumber(exchange, 18, 8)
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         to,
@@ -317,23 +389,34 @@ function Swap() {
         exchange,
         []
       )
-      setFromAmount(outAmount)
+      setFromAmount(exchange.toString())
       setInPrice(fromPrice)
       setOutPrice(toPrice)
     }
 
+    if (!isToAddressTokenValid) return
     fetchAndUpdateFrom().catch(console.error)
   }
 
   const getButton = () => {
-    const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
-    const amountOut = ethers.utils.parseUnits(toAmount.toString(), 18)
+    // const amountIn = ethers.utils.parseUnits(fromAmount.toString(), 18)
+    // const amountOut = ethers.utils.parseUnits(toAmount.toString(), 18)
 
-    const isAmountInValid = direction === "deposit" && amountIn.gt(fromBalance)
-    const isAmountOutValid = direction === "withdraw" && amountOut.gt(toBalance)
+    // const isAmountInValid = direction === "deposit" && amountIn.gt(fromBalance)
+    // const isAmountOutValid = direction === "withdraw" && amountOut.gt(toBalance)
 
-    if (isAmountInValid || isAmountOutValid) {
-      return <BorderedButton size="big">Inufficient funds</BorderedButton>
+    if (fromAmount === "0" || toAmount === "0") {
+      return (
+        <SecondaryButton
+          theme="disabled"
+          size="large"
+          onClick={handleSubmit}
+          fz={22}
+          full
+        >
+          Enter amount to swap
+        </SecondaryButton>
+      )
     }
 
     return (
@@ -367,16 +450,28 @@ function Swap() {
         </IconsGroup>
       </CardHeader>
 
-      <ExchangeFrom
-        price={inPrice}
-        amount={fromAmount}
-        balance={fromBalance}
-        address={poolData?.baseToken}
-        symbol={fromData?.symbol}
-        decimal={fromData?.decimals}
-        onChange={handleFromChange}
-        isStable
-      />
+      {direction === "deposit" ? (
+        <ExchangeFrom
+          price={inPrice}
+          amount={fromAmount}
+          balance={fromBalance}
+          address={poolData?.baseToken}
+          symbol={fromData?.symbol}
+          decimal={fromData?.decimals}
+          onChange={handleFromChange}
+        />
+      ) : (
+        <ExchangeFrom
+          price={outPrice}
+          amount={toAmount}
+          balance={toBalance}
+          address={outputTokenAddress}
+          symbol={toData?.symbol}
+          decimal={toData?.decimals}
+          onSelect={() => navigate(`/select-token/whitelist/${poolAddress}`)}
+          onChange={handleToChange}
+        />
+      )}
 
       <ExchangeDivider
         direction={direction}
@@ -384,26 +479,45 @@ function Swap() {
         changeDirection={setDirection}
       />
 
-      <ExchangeTo
-        price={outPrice}
-        priceChange24H={0}
-        amount={toAmount}
-        balance={BigNumber.from(toBalance)}
-        address={outputTokenAddress}
-        symbol={toData?.symbol}
-        decimal={toData?.decimals}
-        isPool
-        onSelect={() => history.push(`/select-token/whitelist/${poolAddress}`)}
-        onChange={handleToChange}
-      />
+      {direction === "deposit" ? (
+        <ExchangeTo
+          price={outPrice}
+          priceChange24H={0}
+          amount={toAmount}
+          balance={BigNumber.from(toBalance)}
+          address={outputTokenAddress}
+          symbol={toData?.symbol}
+          decimal={toData?.decimals}
+          onSelect={() => navigate(`/select-token/whitelist/${poolAddress}`)}
+          onChange={handleToChange}
+        />
+      ) : (
+        <ExchangeTo
+          price={inPrice}
+          priceChange24H={0}
+          amount={fromAmount}
+          balance={BigNumber.from(fromBalance)}
+          address={poolData?.baseToken}
+          symbol={fromData?.symbol}
+          decimal={fromData?.decimals}
+          onChange={handleFromChange}
+        />
+      )}
 
       <Flex p="16px 0" full>
-        <SwapPrice />
+        <SwapPrice
+          fromSymbol={fromData?.symbol}
+          toSymbol={toData?.symbol}
+          tokensCost={oneTokenCost}
+          usdCost={oneUSDCost}
+        />
       </Flex>
 
       {button}
 
       <TransactionSlippage
+        slippage={slippage}
+        onChange={setSlippage}
         isOpen={isSlippageOpen}
         toggle={(v) => setSlippageOpen(v)}
       />
@@ -424,7 +538,7 @@ function Swap() {
 
 export default function SwapWithProvider() {
   return (
-    <GraphProvider value={basicPoolsClient}>
+    <GraphProvider value={poolsClient}>
       <Swap />
     </GraphProvider>
   )

@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react"
 import { Flex } from "theme"
+import { BigNumber } from "@ethersproject/bignumber"
+
+import { ethers } from "ethers"
+import { formatNumber } from "utils"
 
 import angle from "assets/icons/angle-down.svg"
 import gas from "assets/icons/gas-price.svg"
@@ -14,12 +18,29 @@ import {
   AngleIcon,
 } from "./styled"
 
-const SwapPrice: React.FC = () => {
+interface Props {
+  fromSymbol: string | undefined
+  toSymbol: string | undefined
+  tokensCost: BigNumber
+  usdCost: BigNumber
+}
+
+const SwapPrice: React.FC<Props> = ({
+  fromSymbol,
+  toSymbol,
+  tokensCost,
+  usdCost,
+}) => {
   const [loading, setLoading] = useState(true)
+  const [full, setFull] = useState(false)
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 3000)
-  }, [])
+    if (!fromSymbol || !toSymbol || !tokensCost || !usdCost) {
+      setLoading(true)
+      return
+    }
+    setLoading(false)
+  }, [fromSymbol, toSymbol, tokensCost, usdCost])
 
   const variants = {
     visible: {
@@ -51,8 +72,13 @@ const SwapPrice: React.FC = () => {
   const mainContent = (
     <>
       <Flex ai="center">
-        <TokenPrice>1 TRX = 2.22 USDT</TokenPrice>
-        <UsdPrice>($2.13)</UsdPrice>
+        <TokenPrice>
+          1 {toSymbol} = {formatNumber(ethers.utils.formatUnits(tokensCost), 6)}{" "}
+          {fromSymbol}
+        </TokenPrice>
+        <UsdPrice>
+          (${formatNumber(ethers.utils.formatUnits(usdCost), 2)})
+        </UsdPrice>
       </Flex>
       <Flex ai="center">
         <GasIcon src={gas} />

@@ -1,7 +1,7 @@
 import { device, To } from "theme"
 import styled from "styled-components"
 import { motion } from "framer-motion"
-import { useRouteMatch } from "react-router-dom"
+import { useMatch } from "react-router-dom"
 
 export const MobileMenu = styled(motion.div)`
   position: fixed;
@@ -74,7 +74,7 @@ const Wrapper = styled.div`
 
 interface Props {
   text: string
-  path?: string
+  path: string
   onClick?: () => void
   Icon: any
 }
@@ -84,9 +84,9 @@ export const NavItem: React.FC<Props> = ({
   Icon,
   onClick = () => {},
 }) => {
-  const match = useRouteMatch({
+  const match = useMatch({
     path,
-    exact: true,
+    end: true,
   })
 
   if (!path) {

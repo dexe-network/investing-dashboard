@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber"
+import { PoolType } from "./interfaces_v2"
 
 export interface IPost {
   description: string
@@ -26,7 +27,6 @@ export interface ITopMembersFilters {
   period: string[]
   query: string
   currency: string
-  listType: "basic" | "invest" | "all" | "risk"
 }
 
 export interface PaginationType {
@@ -36,6 +36,7 @@ export interface PaginationType {
 }
 
 export interface ITopMembersPagination {
+  all: PaginationType
   basic: PaginationType
   invest: PaginationType
 }
@@ -46,8 +47,6 @@ export interface Token {
   symbol: string
   decimals: number
 }
-
-export type FundTypes = "basic" | "investment"
 
 export interface ITokenBase {
   address: string
@@ -219,3 +218,9 @@ export interface IPoolPosition {
 }
 
 // END of POOL
+
+export interface ITab {
+  title: string
+  source: string
+  amount: number
+}

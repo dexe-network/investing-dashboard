@@ -32,7 +32,7 @@ import {
   Checked,
 } from "./styled"
 
-export default function ConnectWallet({ isOpen, onRequestClose }) {
+export default function ConnectWallet({ isOpen, onRequestClose, onConnect }) {
   const [isActivating, setActivating] = useState("")
   const { activate, connector } = useWeb3React()
   const active = useActiveWallet()
@@ -61,6 +61,7 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
           .then(() => {
             setActivating("")
             onRequestClose()
+            onConnect()
           })
           .catch((e) => {
             if (e) {
@@ -69,6 +70,7 @@ export default function ConnectWallet({ isOpen, onRequestClose }) {
                 activate(provider)
                 setActivating("")
                 onRequestClose()
+                onConnect()
               }, 500)
             }
           })

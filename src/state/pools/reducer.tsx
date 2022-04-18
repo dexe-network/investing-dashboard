@@ -1,21 +1,17 @@
 import { createReducer } from "@reduxjs/toolkit"
-import {
-  addBasicPools,
-  addInvestPools,
-  setFilter,
-  setPagination,
-} from "./actions"
-import { sortItemsList, currencies } from "constants/index"
+import { addPools, setFilter, setPagination } from "./actions"
+import { sortItemsList, currencies, poolTypes } from "constants/index"
 import { ITopMembersFilters, ITopMembersPagination } from "constants/interfaces"
-import { IBasicPoolQuery, Pool } from "constants/interfaces_v2"
+import { IPoolQuery } from "constants/interfaces_v2"
 import { addDays } from "date-fns"
 import { calendarStaticRanges } from "constants/index"
 
 export interface poolsState {
   filters: ITopMembersFilters
   pagination: ITopMembersPagination
-  basicList: IBasicPoolQuery[]
-  investList: IBasicPoolQuery[]
+  ALL_POOL: IPoolQuery[]
+  BASIC_POOL: IPoolQuery[]
+  INVEST_POOL: IPoolQuery[]
 }
 
 const allPeriodRange = calendarStaticRanges[0].range()
@@ -31,9 +27,13 @@ export const initialState: poolsState = {
     period: initialRange,
     query: "",
     currency: currencies[0],
-    listType: "basic",
   },
   pagination: {
+    all: {
+      total: 0,
+      offset: 0,
+      limit: 100,
+    },
     basic: {
       total: 0,
       offset: 0,
@@ -45,8 +45,9 @@ export const initialState: poolsState = {
       limit: 100,
     },
   },
-  basicList: [],
-  investList: [],
+  [poolTypes.all]: [],
+  [poolTypes.basic]: [],
+  [poolTypes.invest]: [],
 }
 
 export default createReducer(initialState, (builder) =>
@@ -58,14 +59,10 @@ export default createReducer(initialState, (builder) =>
       state.pagination[action.payload.type][action.payload.name] =
         action.payload.value
     })
-    .addCase(addBasicPools, (state, action) => {
-      state.basicList = (action.payload || []).map((v) => ({
-        ...v,
-        id: v.id.toLocaleLowerCase(),
-      }))
-    })
-    .addCase(addInvestPools, (state, action) => {
-      state.investList = (action.payload || []).map((v) => ({
+    .addCase(addPools, (state, action) => {
+      const type = poolTypes[action.payload.type]
+
+      state[type] = (action.payload.data || []).map((v) => ({
         ...v,
         id: v.id.toLocaleLowerCase(),
       }))

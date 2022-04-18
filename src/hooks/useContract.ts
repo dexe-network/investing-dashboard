@@ -11,6 +11,7 @@ import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ITokenBase } from "constants/interfaces"
+import { isAddress } from "utils"
 
 export default function useContract(
   address: string | undefined,
@@ -20,7 +21,7 @@ export default function useContract(
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !library) return null
+    if (!address || !ABI || !library || !isAddress(address)) return null
     try {
       return getContract(
         address,

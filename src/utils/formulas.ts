@@ -5,7 +5,7 @@ export const getPNL = (SP: string) => {
   let CP = 1
   const SP_PARSED = parseFloat(SP)
 
-  if (SP_PARSED === 0) return 0
+  if (SP_PARSED === 0) return "0.00"
 
   // calculate profit
   if (SP_PARSED > CP) {
@@ -26,9 +26,9 @@ export const getPNL = (SP: string) => {
   // price not changed
   if (SP_PARSED === CP) {
     CP = 1
-    return 0
+    return "0.00"
   }
-  return 0
+  return "0.00"
 }
 
 export const getPriceLP = (history): string => {
@@ -63,7 +63,7 @@ export const getPriceStable = (stable: string, emission: string): string => {
 }
 
 export const getUSDPrice = (value) => {
-  return formatNumber(ethers.utils.formatUnits(value, 18).toString(), 2)
+  return formatNumber(ethers.utils.formatUnits(value, 18).toString(), 0)
 }
 
 export const getLastInArray = (array) =>
@@ -73,8 +73,32 @@ export const getDividedBalance = (
   balance: BigNumber,
   decimals: number | undefined = 18,
   percent: string
-): number => {
-  return parseFloat(
+): string => {
+  const balanceDivided = parseFloat(
     ethers.utils.formatUnits(balance.mul(percent), decimals + 18).toString()
   )
+  return ethers.utils.parseUnits(balanceDivided.toString(), decimals).toString()
+}
+
+export const getLP = (baseTVL: string, supply: string): string => {
+  if (supply === "0") {
+    return "1.00"
+  }
+
+  return (Number(baseTVL) / Number(supply)).toFixed(2)
+}
+
+export const formateChartData = (data) => {
+  if (!data) return undefined
+
+  return data.reverse().map((v) => {
+    const price = getLP(v.baseTVL, v.supply)
+    const pnl = getPNL(price)
+
+    return {
+      ...v,
+      price,
+      pnl,
+    }
+  })
 }

@@ -64,7 +64,7 @@ const IconSearch: React.FC<Props> = ({
       variants={wrapperVariants}
       transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
     >
-      <DebounceInput
+      {/* <DebounceInput
         initial="hidden"
         animate={active ? "visible" : "hidden"}
         transition={{ duration: 0.2, ease: [0.29, 0.98, 0.29, 1] }}
@@ -76,7 +76,7 @@ const IconSearch: React.FC<Props> = ({
         debounceTimeout={300}
         onChange={change}
         value={q}
-      />
+      /> */}
       <Divider />
       {active ? (
         <Icon onClick={clear} src={remove} />

@@ -19,7 +19,7 @@ import {
   Statistic,
   PNL,
 } from "./styled"
-import { IBasicPoolQuery } from "constants/interfaces_v2"
+import { IPoolQuery } from "constants/interfaces_v2"
 import { useERC20 } from "hooks/useContract"
 import { formatNumber } from "utils"
 import { parsePoolData } from "utils/ipfs"
@@ -29,7 +29,7 @@ import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
 // @param data - pool data
 // @param index - indicating index in all list of pools
 const MemberMobile: React.FC<{
-  data: IBasicPoolQuery
+  data: IPoolQuery
   index?: number
 }> = ({ data, index = 0, children }) => {
   const [baseContract, baseData] = useERC20(data.baseToken)
@@ -50,17 +50,17 @@ const MemberMobile: React.FC<{
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <IpfsIcon size={42} hash={data.descriptionURL} />
+          <IpfsIcon size={38} hash={data.descriptionURL} />
           <div>
             <Title>{data.ticker}</Title>
             <Description>{data.name}</Description>
           </div>
         </PoolInfo>
         <BaseInfo>
-          <TokenIcon address={data.baseToken} size={42} />
+          <TokenIcon address={data.baseToken} size={38} />
           <div>
             <Title>
-              {formatNumber(priceLP, 4)}
+              {formatNumber(priceLP, 2)}
               <PNL>{pnl}%</PNL>
             </Title>
             <Description>{baseData?.symbol}</Description>
@@ -77,7 +77,7 @@ const MemberMobile: React.FC<{
         />
         <Statistic label="APY" value="0%" />
         <Statistic label="P&L" value={`0%`} />
-        <Statistic label="Depositors" value={<>{data.investors.length}</>} />
+        <Statistic label="Depositors" value={<>{data.investorsCount}</>} />
       </PoolStatisticContainer>
       {children}
     </Card>

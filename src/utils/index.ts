@@ -1,10 +1,11 @@
 import { getAddress } from "@ethersproject/address"
 import { Contract } from "@ethersproject/contracts"
 import { BigNumber } from "@ethersproject/bignumber"
-import { stableCoins } from "constants/index"
+import { poolTypes, stableCoins } from "constants/index"
 import { ethers } from "ethers"
 import { ERC20 } from "abi"
 import { useEffect, useState } from "react"
+import { OwnedPools } from "constants/interfaces_v2"
 
 export const useUpdate = (ms: number) => {
   const [updator, setUpdate] = useState(0)
@@ -100,6 +101,33 @@ const parseDecimals = (float: string, decimals) => {
   return floatPart
 }
 
+const humanizeBigNumber = (amount: string | number): string => {
+  const numArr = `${amount}`.split(".")
+
+  // no decimal places
+  if (!numArr[1]) {
+    return numArr[0]
+  }
+
+  // passes without formating
+  if (numArr[1].length < 6) {
+    return `${numArr[0]}.${numArr[1]}`
+  }
+
+  const firstMatch = numArr[1].match("[1-9]")
+
+  if (
+    !!firstMatch &&
+    !!firstMatch.length &&
+    !!firstMatch.index &&
+    firstMatch.index > 6
+  ) {
+    return Number(amount).toFixed(firstMatch.index + 2)
+  }
+
+  return Number(amount).toFixed(6)
+}
+
 export const formatNumber = (amount: string, decimals = 2) => {
   if (!amount) return "0.00"
 
@@ -109,6 +137,10 @@ export const formatNumber = (amount: string, decimals = 2) => {
 
   if (Number(numArr[0]) > 1000) {
     return `${(Number(numArr[0]) / 1000).toFixed(2).split(".00")[0]}k`
+  }
+
+  if (decimals === 0) {
+    return numArr[0].split(/(?=(?:\d{3})+(?!\d))/).join(",")
   }
 
   return (
@@ -153,6 +185,12 @@ export const formatBigNumber = (value: BigNumber, decimals = 18, fix = 6) => {
   return formatNumber(amount, fix)
 }
 
+export const normalizeBigNumber = (value: BigNumber, decimals = 18) => {
+  const amount = ethers.utils.formatUnits(value, decimals).toString()
+
+  return humanizeBigNumber(amount)
+}
+
 export const isStable = (address: string) =>
   stableCoins.eth.indexOf(address.toLowerCase()) !== -1
 
@@ -185,3 +223,43 @@ export function getAllowance(address, tokenAddress, contractAddress, lib) {
 }
 
 export const focusText = (event) => event.target.select()
+
+export const getRedirectedPoolAddress = (pools: OwnedPools) => {
+  if (!!pools && pools.basic.length) {
+    return [poolTypes.basic, pools.basic[0]]
+  }
+
+  return null
+}
+
+export const fixFractionalDecimals = (
+  amount: string,
+  decimals: number
+): string => {
+  const numArr = amount.split(".")
+  if (numArr.length === 2 && numArr[1].length > decimals) {
+    return `${numArr[0]}.${numArr[1].substring(0, decimals)}`
+  }
+  return amount
+}
+
+export const calcSlippage = (
+  amount: BigNumber,
+  decimals: number,
+  slippage: number
+) => {
+  try {
+    const normalizedAmount = ethers.utils.formatUnits(amount, decimals)
+    const normalizedWithSlippage = parseFloat(normalizedAmount) * slippage
+
+    const result = ethers.utils.parseUnits(
+      fixFractionalDecimals(normalizedWithSlippage.toString(), decimals),
+      decimals
+    )
+
+    return result
+  } catch (e) {
+    console.log(e)
+    return amount
+  }
+}

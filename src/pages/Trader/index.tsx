@@ -1,11 +1,11 @@
 import { Flex, Center, To } from "theme"
 import { useSwipeable } from "react-swipeable"
-import { useHistory, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import FundsList from "components/FundsList"
 import { useSelector } from "react-redux"
 import MemberMobile from "components/MemberMobile"
-import Button, { BorderedButton } from "components/Button"
-import { useState } from "react"
+import Button, { SecondaryButton } from "components/Button"
+import { useState, useEffect } from "react"
 import { GuardSpinner } from "react-spinners-kit"
 import { formatNumber } from "utils"
 import { ethers } from "ethers"
@@ -23,10 +23,9 @@ import {
 } from "pages/Investor/styled"
 
 import AreaChart from "components/AreaChart"
+import Header, { EHeaderTitles } from "components/Header"
 import BarChart from "pages/Investor/Bar"
 
-import newTradeButton from "assets/template-buttons/new-trade.svg"
-import fundPositions from "assets/template-buttons/fund-positions.svg"
 import { IDetailedChart } from "constants/interfaces"
 
 const pnlNew: IDetailedChart[] = [
@@ -182,25 +181,35 @@ import {
   FundsUsed,
 } from "./styled"
 import TabsLight from "components/TabsLight"
-import { useBasicPools, useInvestPools } from "state/pools/hooks"
+import { usePool } from "state/pools/hooks"
+import { createClient, Provider as GraphProvider } from "urql"
+import ProfitLossChart from "components/ProfitLossChart"
+
+const poolsClient = createClient({
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+})
 
 function Trader(props: Props) {
   const {} = props
 
-  const { poolAddress } = useParams<{ poolAddress: string }>()
+  const { pathname } = useLocation()
+  const { poolAddress, poolType } = useParams<{
+    poolAddress: string
+    poolType: string
+  }>()
 
-  // const [basic] = useBasicPools()
-  // const [invest] = useInvestPools()
-  const poolData = useSelector((state: AppState) =>
-    selectBasicPoolByAddress(state, poolAddress)
-  )
-  const history = useHistory()
+  useEffect(() => {
+    localStorage.setItem("last-visited-profile", pathname)
+  }, [pathname])
+
+  const [, poolData, leverageInfo, poolInfoData] = usePool(poolAddress)
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
   const [data, setData] = useState(null)
 
   const redirectToInvestor = () => {
-    history.push("/me/investor")
+    navigate("/me/investor")
   }
 
   if (!poolData) {
@@ -212,119 +221,136 @@ function Trader(props: Props) {
   }
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      <MemberMobile data={poolData}>
-        <ButtonContainer>
-          <Flex p="0 24px 0 15px">
-            <img src={fundPositions} />
-          </Flex>
-          <Flex full p="0 10px 0 0">
-            <Button
-              onClick={() =>
-                history.push(
-                  `/pool/swap/whitelist/${poolData.id}/0x78867bbeef44f2326bf8ddd1941a4439382ef2a7`
-                )
-              }
-              full
-            >
-              New trade
-            </Button>
-          </Flex>
-        </ButtonContainer>
-      </MemberMobile>
+    <>
+      <Header title={EHeaderTitles.myTraderProfile} />
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <MemberMobile data={poolData}>
+          <ButtonContainer>
+            <Flex p="0 24px 0 15px">
+              <SecondaryButton full>Positions</SecondaryButton>
+            </Flex>
+            <Flex full p="0 10px 0 0">
+              <Button
+                onClick={() =>
+                  navigate(`/pool/swap/whitelist/${poolData.id}/0x`)
+                }
+                full
+              >
+                New trade
+              </Button>
+            </Flex>
+          </ButtonContainer>
+        </MemberMobile>
 
-      <TabCard>
-        <TabsLight
-          tabs={[
-            {
-              name: "Profit & Loss",
-              child: (
-                <>
-                  <AreaChart tooltipSize="sm" height={120} data={pnlNew} />
-                  <ChartPeriods>
-                    <Period active>D</Period>
-                    <Period>W</Period>
-                    <Period>M</Period>
-                    <Period>3M</Period>
-                    <Period>6M</Period>
-                    <Period>1Y</Period>
-                    <Period>ALL</Period>
-                  </ChartPeriods>
-                  <BarChart />
-                  <Row>
-                    <TextGrey>P&L LP - $ETH</TextGrey>
-                    <MainValue>0% (0 ETH)</MainValue>
-                  </Row>
-                  <Row>
-                    <TextGrey>P&L LP - USD% - USD</TextGrey>
-                    <MainValue>0% - 0 USD </MainValue>
-                  </Row>
-                </>
-              ),
-            },
-            {
-              name: "Locked funds",
-              child: (
-                <>
-                  <AreaChart
-                    multiple
-                    tooltipSize="sm"
-                    height={163}
-                    data={pnlNew}
-                  />
-                  <ChartPeriods>
-                    <Period active>D</Period>
-                    <Period>W</Period>
-                    <Period>M</Period>
-                    <Period>3M</Period>
-                    <Period>6M</Period>
-                    <Period>1Y</Period>
-                    <Period>ALL</Period>
-                  </ChartPeriods>
-                  <Flex full p="15px 0 0">
+        <TabCard>
+          <TabsLight
+            tabs={[
+              {
+                name: "Profit & Loss",
+                child: (
+                  <>
+                    <ProfitLossChart address={poolAddress} />
+                    <ChartPeriods>
+                      <Period active>D</Period>
+                      <Period>W</Period>
+                      <Period>M</Period>
+                      <Period>3M</Period>
+                      <Period>6M</Period>
+                      <Period>1Y</Period>
+                      <Period>ALL</Period>
+                    </ChartPeriods>
+                    <BarChart />
                     <Row>
-                      <MainText>Locked out of investor funds</MainText>
-                      <MainValue>$32.12k</MainValue>
+                      <TextGrey>P&L LP - $ETH</TextGrey>
+                      <MainValue>0% (0 ETH)</MainValue>
                     </Row>
-                  </Flex>
-                  <Row>
-                    <MainText>Your funds locked</MainText>
-                    <TextWhiteBig>$32.12k</TextWhiteBig>
-                  </Row>
-                  <Row>
-                    <FundsUsed
-                      current={"$61.15k / $101.92k"}
-                      total={"Fund used (60%)"}
+                    <Row>
+                      <TextGrey>P&L LP - USD% - USD</TextGrey>
+                      <MainValue>0% - 0 USD </MainValue>
+                    </Row>
+                  </>
+                ),
+              },
+              {
+                name: "Locked funds",
+                child: (
+                  <>
+                    <AreaChart
+                      multiple
+                      tooltipSize="sm"
+                      height={163}
+                      data={pnlNew}
                     />
-                  </Row>
-                </>
-              ),
-            },
-          ]}
-        />
-      </TabCard>
+                    <ChartPeriods>
+                      <Period active>D</Period>
+                      <Period>W</Period>
+                      <Period>M</Period>
+                      <Period>3M</Period>
+                      <Period>6M</Period>
+                      <Period>1Y</Period>
+                      <Period>ALL</Period>
+                    </ChartPeriods>
+                    <Flex full p="15px 0 0">
+                      <Row>
+                        <MainText>Locked out of investor funds</MainText>
+                        <MainValue>$32.12k</MainValue>
+                      </Row>
+                    </Flex>
+                    <Row>
+                      <MainText>Your funds locked</MainText>
+                      <TextWhiteBig>$32.12k</TextWhiteBig>
+                    </Row>
+                    <Row>
+                      <FundsUsed
+                        current={"$61.15k / $101.92k"}
+                        total={"Fund used (60%)"}
+                      />
+                    </Row>
+                  </>
+                ),
+              },
+            ]}
+          />
+        </TabCard>
 
-      {/* <Details>
-        <TabsLight
-          tabs={[
-            {
-              name: "Statistic",
-              child: <FundStatisticsCard data={poolData} />,
-            },
-            {
-              name: "Details",
-              child: <FundDetailsCard data={poolData} />,
-            },
-          ]}
-        />
-      </Details> */}
-    </Container>
+        <Details>
+          <TabsLight
+            tabs={[
+              {
+                name: "Statistic",
+                child: (
+                  <FundStatisticsCard
+                    data={poolData}
+                    leverage={leverageInfo}
+                    info={poolInfoData}
+                  />
+                ),
+              },
+              {
+                name: "Details",
+                child: (
+                  <FundDetailsCard poolInfo={poolInfoData} data={poolData} />
+                ),
+              },
+            ]}
+          />
+        </Details>
+      </Container>
+    </>
   )
 }
 
-export default Trader
+const TraderWithProvider = () => {
+  return (
+    <GraphProvider value={poolsClient}>
+      <Trader />
+    </GraphProvider>
+  )
+}
+
+export default TraderWithProvider

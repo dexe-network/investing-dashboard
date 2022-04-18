@@ -4,7 +4,7 @@ import { ethers } from "ethers"
 import { BigNumber } from "@ethersproject/bignumber"
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
-import { DebounceInput } from "react-debounce-input"
+import { BigNumberInput } from "big-number-input"
 import angleIcon from "assets/icons/angle-down.svg"
 import locker from "assets/icons/locker.svg"
 import {
@@ -14,6 +14,7 @@ import {
   Max,
   Input,
   ActiveSymbol,
+  SelectToken,
   SymbolLabel,
   Tokens,
   Icon,
@@ -22,14 +23,12 @@ import { formatBigNumber, calcPrice } from "utils"
 
 interface IFromProps {
   price: BigNumber
-  amount: number | string
+  amount: string
   balance: BigNumber
   address?: string
   symbol?: string
   decimal?: number
-  isPool?: boolean
-  isStable?: boolean
-  onChange: (amount: number | string) => void
+  onChange: (amount: string) => void
   onSelect?: () => void
 }
 
@@ -40,33 +39,22 @@ const ExchangeFrom: React.FC<IFromProps> = ({
   address,
   symbol,
   decimal,
-  isPool = false,
-  isStable = false,
   onChange,
   onSelect,
 }) => {
+  const noData = !decimal || !symbol
+
   const select = onSelect ? onSelect : () => {}
 
   const setMaxAmount = () => {
-    console.log(
-      ethers.utils.formatUnits(balance, decimal),
-      parseFloat(ethers.utils.formatUnits(balance, decimal))
-    )
-    onChange(parseFloat(ethers.utils.formatUnits(balance, decimal)))
+    onChange(balance.toString())
   }
 
-  const handleInputChange = (e) => {
-    const { value } = e.target
-    const rgx = /^[0-9]*\.?[0-9]*$/
-
-    if (value.match(rgx)) {
-      onChange(value)
-    } else {
-      onChange(parseFloat(value.replace(/[^0-9.]/g, "")) || 0.0)
-    }
+  const handleInputChange = (value) => {
+    onChange(value || "000000000000000000")
   }
 
-  if (!decimal || !symbol) {
+  if (!onSelect && noData) {
     return (
       <FromContainer dir="column" full>
         <Flex p="0 0 5px" full>
@@ -96,16 +84,19 @@ const ExchangeFrom: React.FC<IFromProps> = ({
           </Balance>
         </Flex>
         <Flex full ai="center">
-          <DebounceInput
-            element={Input}
-            minLength={0}
-            debounceTimeout={500}
+          <BigNumberInput
+            decimals={18}
             onChange={handleInputChange}
             value={amount}
+            renderInput={(props: any) => <Input {...props} />}
           />
           <ActiveSymbol onClick={select}>
-            <TokenIcon size={26} address={address} />
-            <SymbolLabel>{symbol}</SymbolLabel>
+            {!noData && <TokenIcon address={address} size={27} />}
+            {noData ? (
+              <SelectToken>Select Token</SelectToken>
+            ) : (
+              <SymbolLabel>{symbol}</SymbolLabel>
+            )}
             <Icon src={onSelect ? angleIcon : locker} />
           </ActiveSymbol>
         </Flex>

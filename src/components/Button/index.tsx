@@ -8,6 +8,7 @@ import {
   BuyButtonContainer,
   BuyArrow,
   BorderedContainer,
+  GradientBorderButton,
 } from "./styled"
 
 // MAIN, DEFAULT BUTTON
@@ -37,14 +38,33 @@ const Button: React.FC<MainButtonProps> = ({
 
 export default Button
 
-export const SecondaryButton: React.FC<{
-  size?: string
-  onClick?: () => void
-}> = ({ size = "normal", children, onClick = () => {} }) => {
+export const SecondaryButton: React.FC<MainButtonProps> = ({
+  size = "normal",
+  m,
+  fz,
+  full,
+  theme = "primary",
+  children,
+  onClick,
+}) => {
+  const handleClick = () => {
+    if (theme === "disabled") {
+      return
+    }
+
+    onClick && onClick()
+  }
   return (
-    <SecondaryContainer onClick={onClick} size={size}>
-      {children}
-    </SecondaryContainer>
+    <GradientBorderButton
+      size={size}
+      m={m}
+      onClick={handleClick}
+      fz={fz}
+      full={full}
+      color={theme}
+    >
+      <GradientButtonText>{children}</GradientButtonText>
+    </GradientBorderButton>
   )
 }
 

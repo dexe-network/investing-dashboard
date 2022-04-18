@@ -7,7 +7,7 @@ import { PriceFeed } from "abi"
 import { AppDispatch, AppState } from "state"
 import { useDispatch, useSelector } from "react-redux"
 import { ContractsState } from "state/contracts/reducer"
-import whitelist from "pages/NewFund/whitelisted"
+import whitelist from "constants/whitelisted"
 import {
   DEFAULT_ACTIVE_LIST_URLS,
   DEFAULT_LIST_OF_LISTS,

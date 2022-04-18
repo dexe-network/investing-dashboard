@@ -4,7 +4,6 @@ import BarChart from "components/BarChart"
 import Avatar from "components/Avatar"
 import TokenIcon from "components/TokenIcon"
 
-import { Pool } from "constants/interfaces_v2"
 import {
   MemberCard,
   MemberBase,
@@ -28,7 +27,7 @@ import {
 } from "./styled"
 
 interface Props {
-  data: Pool
+  data: any
 }
 
 const Member: React.FC<Props> = ({ data }) => {

@@ -1,42 +1,53 @@
 import { createSelector } from "@reduxjs/toolkit"
+import { poolTypes } from "constants/index"
 import { AppState } from "state"
 
-const selectPools = (state: AppState) => state.pools
+const selectPoolsState = (state: AppState) => state.pools
 
 export const selectPoolsFilters = createSelector(
-  [selectPools],
+  [selectPoolsState],
   (pools) => pools.filters
 )
 
+export const selectPools = createSelector(
+  [selectPoolsState],
+  (pools) => pools[poolTypes.all] || []
+)
+
 export const selectBasicPools = createSelector(
-  [selectPools],
-  (pools) => pools.basicList || []
+  [selectPoolsState],
+  (pools) => pools[poolTypes.basic] || []
 )
 
 export const selectInvestPools = createSelector(
-  [selectPools],
-  (pools) => pools.investList || []
+  [selectPoolsState],
+  (pools) => pools[poolTypes.invest] || []
 )
 
 export const selectBasicPoolByAddress = createSelector(
   [selectPools, (state, address: string | undefined) => address],
-  (pools, address) => pools.basicList.filter((value) => value.id === address)[0]
+  (pools, address) =>
+    pools[poolTypes.basic].filter((value) => value.id === address)[0]
 )
 
 export const selectInvestPoolByAddress = createSelector(
   [selectPools, (state, address: string | undefined) => address],
   (pools, address) =>
-    pools.investList.filter((value) => value.id === address)[0]
+    pools[poolTypes.invest].filter((value) => value.id === address)[0]
 )
 
 export const selectBasicPoolsBatch = createSelector(
   [selectPools, (state, poolsAddresses: string[]) => poolsAddresses],
   (pools, poolsAddresses) =>
-    pools.basicList.filter((value) => poolsAddresses.indexOf(value.id) !== -1)
+    pools[poolTypes.basic].filter(
+      (value) => poolsAddresses.indexOf(value.id) !== -1
+    )
 )
 
 export const selectInvestPoolsBatch = createSelector(
   [selectPools, (state, poolsAddresses: string[]) => poolsAddresses],
   (pools, poolsAddresses) =>
-    pools.investList.filter((value) => poolsAddresses.indexOf(value.id) !== -1)
+    pools[poolTypes.invest].filter(
+      (value) => poolsAddresses.indexOf(value.id) !== -1
+    )
 )

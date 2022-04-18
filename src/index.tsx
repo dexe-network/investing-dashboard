@@ -3,10 +3,10 @@ import ReactDOM from "react-dom"
 import { createWeb3ReactRoot, Web3ReactProvider } from "@web3-react/core"
 import { Normalize } from "styled-normalize"
 import { createTheme } from "react-data-table-component"
-import { BrowserRouter as Router } from "react-router-dom"
 
 import { Provider } from "react-redux"
 import { ModalProvider } from "styled-react-modal"
+import { BrowserRouter } from "react-router-dom"
 import store from "state"
 
 import App from "pages/App"
@@ -16,7 +16,7 @@ import GlobalStyle from "theme/GlobalStyle"
 import getLibrary from "utils/getLibrary"
 
 import { ContractsRegistryUpdater } from "state/contracts/updater"
-import { PriceFeedUpdater, TokensListUpdater } from "state/pricefeed/updater"
+import { PriceFeedUpdater } from "state/pricefeed/updater"
 import { UserPoolsUpdater } from "state/user/updater"
 import "react-virtualized/styles.css"
 
@@ -44,7 +44,6 @@ const GlobalComponents = () => (
     <ContractsRegistryUpdater />
     <UserPoolsUpdater />
     <PriceFeedUpdater />
-    {/* <TokensListUpdater /> */}
     <Normalize />
     <GlobalStyle />
   </>
@@ -52,20 +51,20 @@ const GlobalComponents = () => (
 
 ReactDOM.render(
   <React.StrictMode>
-    <ModalProvider>
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <Web3ProviderNetwork getLibrary={getLibrary}>
-          <Provider store={store}>
-            <Router>
+    <BrowserRouter>
+      <ModalProvider>
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <Web3ProviderNetwork getLibrary={getLibrary}>
+            <Provider store={store}>
               <>
                 <GlobalComponents />
                 <App />
               </>
-            </Router>
-          </Provider>
-        </Web3ProviderNetwork>
-      </Web3ReactProvider>
-    </ModalProvider>
+            </Provider>
+          </Web3ProviderNetwork>
+        </Web3ReactProvider>
+      </ModalProvider>
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 )

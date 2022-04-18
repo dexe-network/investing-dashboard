@@ -2,19 +2,6 @@ import { motion } from "framer-motion"
 import { device, Flex, BaseButton } from "theme"
 import styled from "styled-components"
 
-export const StyledBar = styled(motion.div)`
-  touch-action: none;
-  user-select: none;
-  width: 100%;
-  background: #1e212a;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
-
-  @media only screen and (${device.sm}) {
-    justify-content: space-between;
-    padding: 0 10px;
-  }
-`
-
 export const SearchOverlay = styled(Flex)`
   position: absolute;
   top: 79px;
@@ -45,11 +32,6 @@ export const ClickableArea = styled(BaseButton)`
   align-items: center;
   min-height: 24px;
   min-width: 24px;
-`
-
-export const TitleMenu = styled(Flex)`
-  width: 100%;
-  height: 45px;
 `
 
 export const TabsMenu = styled(Flex)`

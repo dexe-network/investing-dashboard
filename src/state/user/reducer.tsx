@@ -6,6 +6,7 @@ import { addOwnedPools, updateUserProMode } from "./actions"
 
 export interface userState {
   userProMode: boolean
+  loading: boolean
   ownedPools: OwnedPools
   data: IUserData | null | false
 }
@@ -14,6 +15,7 @@ export const initialState: userState = {
   data: null,
 
   userProMode: false,
+  loading: true,
   ownedPools: {
     basic: [],
     invest: [],
@@ -32,5 +34,6 @@ export default createReducer(initialState, (builder) =>
       state.ownedPools.invest = action.payload.invest.map((v) =>
         v.toLocaleLowerCase()
       )
+      state.loading = false
     })
 )

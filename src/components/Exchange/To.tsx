@@ -1,6 +1,16 @@
 import { ethers } from "ethers"
-
 import { Flex } from "theme"
+import { BigNumber } from "@ethersproject/bignumber"
+import { BigNumberInput } from "big-number-input"
+
+import TokenIcon from "components/TokenIcon"
+import Ripple from "components/Ripple"
+
+import angleIcon from "assets/icons/angle-down.svg"
+import locker from "assets/icons/locker.svg"
+
+import { formatBigNumber } from "utils"
+
 import {
   ToContainer,
   Price,
@@ -9,32 +19,24 @@ import {
   Tokens,
   Symbol,
   ActiveSymbol,
+  SelectToken,
   SymbolLabel,
   Icon,
 } from "./styled"
-import TokenIcon from "components/TokenIcon"
-import Ripple from "components/Ripple"
-import { BigNumber } from "@ethersproject/bignumber"
-import angleIcon from "assets/icons/angle-down.svg"
-import { DebounceInput } from "react-debounce-input"
-import { calcPrice, formatBigNumber } from "utils"
 
 interface IToProps {
-  customIcon?: any
   price: BigNumber
   priceChange24H: number
-  amount: number | string
+  amount: string
   balance: BigNumber
   address?: string
   symbol?: string
   decimal?: number
-  isPool?: boolean
-  onChange: (amount: number | string) => void
+  onChange: (amount: string) => void
   onSelect?: () => void
 }
 
 const ExchangeTo: React.FC<IToProps> = ({
-  customIcon,
   price,
   priceChange24H,
   amount,
@@ -42,26 +44,20 @@ const ExchangeTo: React.FC<IToProps> = ({
   address,
   symbol,
   decimal,
-  isPool = false,
   onChange,
   onSelect,
 }) => {
+  const noData = !decimal || !symbol
+
   const setMaxAmount = () => {
-    onChange(parseFloat(ethers.utils.formatUnits(balance, decimal)))
+    onChange(balance.toString())
   }
 
-  const handleInputChange = (e) => {
-    const { value } = e.target
-    const rgx = /^[0-9]*\.?[0-9]*$/
-
-    if (value.match(rgx)) {
-      onChange(value)
-    } else {
-      onChange(parseFloat(value.replace(/[^0-9.]/g, "")) || 0.0)
-    }
+  const handleInputChange = (value) => {
+    onChange(value || "000000000000000000")
   }
 
-  if (!decimal || !symbol) {
+  if (!onSelect && noData) {
     return (
       <ToContainer dir="column" full>
         <Flex p="0 0 5px" full>
@@ -92,18 +88,21 @@ const ExchangeTo: React.FC<IToProps> = ({
         </Balance>
       </Flex>
       <Flex full ai="center">
-        <DebounceInput
-          element={Input}
-          minLength={0}
-          debounceTimeout={500}
+        <BigNumberInput
+          decimals={18}
           onChange={handleInputChange}
           value={amount}
+          renderInput={(props: any) => <Input {...props} />}
         />
         <ActiveSymbol onClick={onSelect}>
           {/* // TODO: create FundIcon component */}
-          {customIcon ? customIcon : <TokenIcon address={address} size={27} />}
-          <SymbolLabel>{symbol}</SymbolLabel>
-          {onSelect && <Icon src={angleIcon} />}
+          {!noData && <TokenIcon address={address} size={27} />}
+          {noData ? (
+            <SelectToken>Select Token</SelectToken>
+          ) : (
+            <SymbolLabel>{symbol}</SymbolLabel>
+          )}
+          <Icon src={onSelect ? angleIcon : locker} />
         </ActiveSymbol>
       </Flex>
     </ToContainer>
