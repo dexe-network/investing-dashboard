@@ -4,7 +4,8 @@ export const Container = styled.div`
   margin: 0 auto;
   bacground-color: #040a0f;
   width: fill-available;
-  height: fill-available;
+  height: calc(100vh - 59px);
+  overflow-y: auto;
 `
 
 export const Header = styled.div`

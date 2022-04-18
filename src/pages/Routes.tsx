@@ -17,7 +17,7 @@ const Trader = lazy(() => import("pages/Trader"))
 const Swap = lazy(() => import("pages/Swap"))
 const Trades = lazy(() => import("pages/Trades"))
 const Wallet = lazy(() => import("pages/Wallet"))
-const Success = lazy(() => import("pages/NewFund/Success"))
+const Success = lazy(() => import("pages/Success"))
 const Notifications = lazy(() => import("pages/Notifications"))
 const TokenSelect = lazy(() => import("pages/TokenSelect"))
 const Insurance = lazy(() => import("pages/Insurance"))
@@ -75,14 +75,14 @@ export default function Routes() {
               <Route path="/pool/invest/:poolType/:poolAddress">
                 <Invest />
               </Route>
-              <Route path="/new-fund/success/:ticker/:address">
-                <Success />
-              </Route>
               <Route path="/pool/profile/:poolType/:poolAddress">
                 <Profile />
               </Route>
 
               {/* REDESIGN */}
+              <Route path="/success">
+                <Success />
+              </Route>
               <Route path="/create-fund">
                 <CreateFund />
               </Route>
