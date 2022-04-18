@@ -11,7 +11,7 @@ import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ITokenBase } from "constants/interfaces"
-import { isAddress } from "utils"
+import { isAddress } from "ethers/lib/utils"
 
 export default function useContract(
   address: string | undefined,
@@ -65,27 +65,16 @@ export function useERC20(
   BigNumber,
   () => void
 ] {
+  const { account, library } = useActiveWeb3React()
+
+  const [storedAddress, setAddress] = useState("")
   const [tokenData, setTokenData] = useState<ITokenBase | null>(null)
   const [balance, setBalance] = useState<BigNumber>(BigNumber.from(0))
-  const contract = useContract(address, ERC20)
-  const { account, library } = useActiveWeb3React()
-  const isETH =
-    !!address &&
-    address.toLocaleLowerCase() === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+
+  const contract = useContract(storedAddress, ERC20)
 
   const init = useCallback(() => {
-    // GET token info that doesn't need user address
-    if (isETH) {
-      setTokenData({
-        address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-        symbol: "ETH",
-        name: "Ethereum Token",
-        decimals: 18,
-      })
-      return
-    }
-
-    if (!contract || !library || !address) return
+    if (!contract || !library || !storedAddress) return
     ;(async () => {
       try {
         const symbol = await contract.symbol()
@@ -93,7 +82,7 @@ export function useERC20(
         const name = await contract.name()
 
         setTokenData({
-          address,
+          address: storedAddress,
           name,
           symbol,
           decimals,
@@ -107,19 +96,41 @@ export function useERC20(
     if (typeof account !== "string" || account.length !== 42) return
     ;(async () => {
       try {
-        const balance = await (isETH
+        const isMainAsset =
+          storedAddress.toLocaleLowerCase() ===
+          "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+
+        const balance = await (isMainAsset
           ? library.getBalance(account)
           : contract.balanceOf(account))
+
         setBalance(balance)
       } catch (e) {
         // console.log(e, e.message)
       }
     })()
-  }, [account, address, contract, isETH, library])
+  }, [account, storedAddress, contract, library])
+
+  // check address and save
+  useEffect(() => {
+    if (!address) return
+
+    if (address === storedAddress) return
+
+    try {
+      isAddress(address)
+      setAddress(address)
+    } catch (e) {
+      setAddress("")
+    }
+
+    setTokenData(null)
+    setBalance(BigNumber.from(0))
+  }, [address, storedAddress])
 
   useEffect(() => {
     init()
-  }, [contract, account, address, library, init])
+  }, [contract, account, storedAddress, library, init])
 
   // useEffect(() => {
   //   if (withUpdate) {

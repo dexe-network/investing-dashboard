@@ -5,8 +5,11 @@ import { useLocation, useNavigate } from "react-router-dom"
 
 import Button, { SecondaryButton } from "components/Button"
 import InvestorMobile from "components/InvestorMobile"
+import { useSelector } from "react-redux"
 
 import AreaChart from "components/AreaChart"
+
+import { selectOwnedPools } from "state/user/selectors"
 import BarChart from "./Bar"
 import {
   Container,
@@ -22,7 +25,9 @@ import {
   ChartPeriods,
 } from "./styled"
 import { IDetailedChart } from "constants/interfaces"
-import Header, { EHeaderTitles } from "components/Header"
+import Header from "components/Header/Layout"
+import { Profiles } from "components/Header/Components"
+import { getRedirectedPoolAddress } from "utils"
 import { useEffect } from "react"
 
 interface Props {}
@@ -133,21 +138,27 @@ function Investor(props: Props) {
   const { pathname } = useLocation()
   const { account } = useWeb3React()
 
+  const ownedPools = useSelector(selectOwnedPools)
+
   useEffect(() => {
     localStorage.setItem("last-visited-profile", pathname)
   }, [pathname])
 
   const redirectToTrader = () => {
-    navigate("/me/trader/0x...")
-  }
+    const redirectPath = getRedirectedPoolAddress(ownedPools)
 
-  const handlers = useSwipeable({
-    onSwipedLeft: () => redirectToTrader(),
-  })
+    if (!!redirectPath) {
+      const TRADER_PATH = `/me/trader/profile/${redirectPath[0]}/${redirectPath[1]}`
+
+      navigate(TRADER_PATH)
+    }
+  }
 
   return (
     <>
-      <Header title={EHeaderTitles.myInvestorProfile} />
+      <Header left={<Profiles onClick={redirectToTrader} />}>
+        My investor profile
+      </Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

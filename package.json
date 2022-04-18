@@ -113,6 +113,8 @@
   },
   "resolutions": {
     "styled-components": "^5",
-    "react-error-overlay": "6.0.9"
+    "react-error-overlay": "6.0.9",
+    "@types/react": "17.0.1",
+    "@types/react-dom": "17.0.1"
   }
 }

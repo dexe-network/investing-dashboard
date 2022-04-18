@@ -23,8 +23,9 @@ import {
 } from "pages/Investor/styled"
 
 import AreaChart from "components/AreaChart"
-import Header, { EHeaderTitles } from "components/Header"
 import BarChart from "pages/Investor/Bar"
+import Header from "components/Header/Layout"
+import { Profiles, Portaits } from "components/Header/Components"
 
 import { IDetailedChart } from "constants/interfaces"
 
@@ -222,7 +223,10 @@ function Trader(props: Props) {
 
   return (
     <>
-      <Header title={EHeaderTitles.myTraderProfile} />
+      <Header left={<Profiles onClick={redirectToInvestor} />}>
+        My trader profile
+        <Portaits />
+      </Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

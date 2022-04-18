@@ -26,24 +26,24 @@ import {
 
 interface IToProps {
   price: BigNumber
-  priceChange24H: number
   amount: string
   balance: BigNumber
   address?: string
   symbol?: string
   decimal?: number
+  priceImpact?: string
   onChange: (amount: string) => void
   onSelect?: () => void
 }
 
 const ExchangeTo: React.FC<IToProps> = ({
   price,
-  priceChange24H,
   amount,
   balance,
   address,
   symbol,
   decimal,
+  priceImpact,
   onChange,
   onSelect,
 }) => {
@@ -80,7 +80,7 @@ const ExchangeTo: React.FC<IToProps> = ({
     <ToContainer dir="column" full>
       <Flex p="0 0 2px" full>
         <Price>
-          ≈${formatBigNumber(price, 18, 2)} ({priceChange24H.toFixed(2)}%)
+          ≈${formatBigNumber(price, 18, 2)} ({priceImpact}%)
         </Price>
         <Balance onClick={setMaxAmount}>
           <Tokens>{formatBigNumber(balance, decimal, 8)}</Tokens>

@@ -8,7 +8,13 @@ import IconSearch from "components/IconSearch"
 import { getRedirectedPoolAddress } from "utils"
 import { selectLoadingState, selectOwnedPools } from "state/user/selectors"
 
-import { ClickableArea, IconButton, PortraitsPlus } from "./styled"
+import {
+  ClickableArea,
+  IconButton,
+  PortraitsPlus,
+  Funds,
+  FundWrapper,
+} from "./styled"
 
 import filtersIcon from "assets/icons/filters.svg"
 import link from "assets/icons/link.svg"
@@ -17,6 +23,7 @@ import people from "assets/icons/people.svg"
 import more from "assets/icons/more-menu.svg"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
+import IpfsIcon from "components/IpfsIcon"
 
 interface IFiltersProps {
   onClick: () => void
@@ -29,31 +36,23 @@ export const Filters = ({ onClick }: IFiltersProps) => {
   )
 }
 
-interface IProfilesProps {}
-export const Profiles = ({}: IProfilesProps) => {
-  // const navigate = useNavigate()
-  // const { pathname } = useLocation()
-  // const ownedPools = useSelector(selectOwnedPools)
-  // const redirectPath = getRedirectedPoolAddress(ownedPools)
-
-  // const TRADER_PATH = `/me/trader/profile/${redirectPath[0]}/${redirectPath[1]}`
-
-  // const PATH =
-  //   redirectPath && pathname !== "/me/investor"
-  //     ? `/me/trader/profile/${redirectPath[0]}/${redirectPath[1]}`
-  //     : "/me/investor"
-
+interface IProfilesProps {
+  onClick?: () => void
+}
+export const Profiles = ({ onClick }: IProfilesProps) => {
   return (
-    <ClickableArea>
+    <ClickableArea onClick={onClick}>
       <IconButton src={people} />
     </ClickableArea>
   )
 }
 
-interface IGoBackProps {}
-export const GoBack = ({}: IGoBackProps) => {
+interface IGoBackProps {
+  onClick?: () => void
+}
+export const GoBack = ({ onClick }: IGoBackProps) => {
   return (
-    <ClickableArea onClick={() => {}}>
+    <ClickableArea onClick={onClick}>
       <IconButton src={goBack} />
     </ClickableArea>
   )
@@ -61,6 +60,19 @@ export const GoBack = ({}: IGoBackProps) => {
 
 interface IPortaitsProps {}
 export const Portaits = ({}: IPortaitsProps) => {
+  // const ownedPools = useSelector(selectOwnedPools)
+  // console.log(ownedPools)
+  // if (ownedPools.basic.length && ownedPools.invest.length) {
+  //   return (
+  //     <Funds>
+  //       {basicPools.slice(0, 2).map((pool) => (
+  //         <FundWrapper key={pool.id}>
+  //           <IpfsIcon size={24} address={pool.baseToken} />
+  //         </FundWrapper>
+  //       ))}
+  //     </Funds>
+  //   )
+  // }
   return <PortraitsPlus>+</PortraitsPlus>
 }
 

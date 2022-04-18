@@ -102,3 +102,7 @@ export const formateChartData = (data) => {
     }
   })
 }
+
+export const getPriceImpact = (a: number, b: number) => {
+  return b / a - 1
+}

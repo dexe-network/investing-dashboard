@@ -44,9 +44,9 @@ const Tooltip: React.FC<Props> = ({ id, children, size = "normal" }) => {
         {size === "normal" ? <TooltipIcon /> : <TooltipSmall />}
       </TooltipArea>
 
-      {/* <ReactTooltip className="dark-tooltip" id={id}>
+      <ReactTooltip className="dark-tooltip" id={id}>
         <TooltipContent>{children}</TooltipContent>
-      </ReactTooltip> */}
+      </ReactTooltip>
     </>
   )
 }

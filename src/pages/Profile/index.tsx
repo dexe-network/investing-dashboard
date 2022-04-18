@@ -37,11 +37,12 @@ import AreaChart from "components/AreaChart"
 import ProfitLossChart from "components/ProfitLossChart"
 import BarChart from "pages/Investor/Bar"
 import TabsLight from "components/TabsLight"
-import { Profiles } from "components/Header/Components"
+import { GoBack } from "components/Header/Components"
 import Header from "components/Header/Layout"
 import { PoolType } from "constants/interfaces_v2"
 import { usePool } from "state/pools/hooks"
 import { formateChartData } from "utils/formulas"
+import { shortenAddress } from "utils"
 
 const pnl: IDetailedChart[] = [
   {
@@ -161,6 +162,8 @@ const Profile: React.FC<Props> = () => {
     navigate(`/pool/invest/${poolType}/${poolData?.id}`)
   }
 
+  const back = () => navigate(-1)
+
   if (!poolData) {
     return (
       <Center>
@@ -171,7 +174,9 @@ const Profile: React.FC<Props> = () => {
 
   return (
     <>
-      <Header left={<Profiles />}>Top funds</Header>
+      <Header left={<GoBack onClick={back} />}>
+        {shortenAddress(poolAddress)}
+      </Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -163,6 +163,26 @@ export const PortraitsPlus = styled(Flex)`
   height: 26px;
 `
 
+export const FundWrapper = styled.div`
+  width: 26px;
+  height: 26px;
+  border-radius: 50px;
+  border: px solid #363f4e80;
+  position: absolute;
+`
+
+export const Funds = styled(Flex)`
+  padding: 0 45px 0 0px;
+  position: relative;
+
+  & > ${FundWrapper}:nth-child(1) {
+    right: 0;
+  }
+  & > ${FundWrapper}:nth-child(2) {
+    right: 10px;
+  }
+`
+
 export const IconButton = styled.img`
   margin: 0 3px;
 `
