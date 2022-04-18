@@ -22,6 +22,8 @@ const Notifications = lazy(() => import("pages/Notifications"))
 const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO: my trader profile
 // const Insurance = lazy(() => import("pages/Insurance"))
 
+const PrivacyPolicy = lazy(() => import("pages/PrivacyPolicy"))
+
 function Layout() {
   return <Outlet />
 }
@@ -84,6 +86,8 @@ export default function Routes() {
                 {/* REDESIGN */}
                 <Route path="create-fund" element={<CreateFund />} />
                 <Route path="success" element={<Success />} />
+
+                <Route path="privacy-policy" element={<PrivacyPolicy />} />
 
                 <Route path="*" element={<p>Not found</p>} />
               </Route>
