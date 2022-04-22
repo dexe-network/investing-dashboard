@@ -1,57 +1,54 @@
 import styled from "styled-components"
+import { Flex, Text } from "theme"
+
+import { opacityVariants } from "motion/variants"
+import Switch from "components/Switch"
 
 export const Container = styled.div`
   margin: 0 auto;
   bacground-color: #040a0f;
   width: fill-available;
-  height: calc(100vh - 59px);
+  height: calc(100vh - 104px);
   overflow-y: auto;
+
+  @media all and (display-mode: standalone) {
+    height: calc(100vh - 125px);
+  }
 `
 
-export const Header = styled.div`
-  box-sizing: border-box;
-  padding: 0 17px;
-`
-
-export const HeaderContent = styled.div`
-  box-sizing: border-box;
-  padding: 15px 0;
-  display: flex;
+export const AvatarWrapper = styled(Flex)`
+  position: absolute;
+  top: -35px;
+  width: 100%;
   justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  height: 117px;
 `
 
-export const MainTitle = styled.div`
+export const LinkButton = styled.button`
+  background: none;
+  appereance: none;
+  border: none;
+  outline: none;
+  color: #2680eb;
+  padding: 0;
+  margin: 0;
   font-family: "Gilroy";
   font-style: normal;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 20px;
-  text-align: center;
-  color: #c5d1dc;
-`
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 12px;
 
-export const Line = styled.div`
-  width: fill-available;
-  height: 1px;
-  background: radial-gradient(
-      54.8% 53% at 50% 50%,
-      #587eb7 0%,
-      rgba(88, 126, 183, 0) 100%
-    ),
-    radial-gradient(
-      60% 51.57% at 50% 50%,
-      #6d99db 0%,
-      rgba(109, 153, 219, 0) 100%
-    ),
-    radial-gradient(
-      69.43% 69.43% at 50% 50%,
-      rgba(5, 5, 5, 0.5) 0%,
-      rgba(82, 82, 82, 0) 100%
-    );
-  opacity: 0.1;
+  text-align: center;
+  margin: 8px auto;
+  display: block;
+  letter-spacing: 0.03em;
 `
 
 export const Body = styled.div`
+  position: relative;
+  padding-top: 117px;
   margin-top: 67px;
   width: fill-available;
   background: #08121a;
@@ -59,18 +56,105 @@ export const Body = styled.div`
   border-radius: 26px 26px 0px 0px;
 `
 
-export const Steps = styled.div`
-  padding: 0 17px 0 6px;
+export const Steps = styled.div``
+
+export const Step = styled.div``
+
+export const StepBody = styled.div<{ isLast?: boolean }>`
+  padding: ${(props) =>
+    props.isLast ? "24px 17px 24px 44px" : "24px 17px 48px 44px"};
 `
 
-export const Step = styled.div`
-  margin-bottom: 81px;
-`
-export const FundTypeCards = styled.div`
-  margin-bottom: 81px;
-  padding: 41px 1px 0 38px;
+export const FundTypeCards = styled.div``
+
+export const FeeCards = styled.div``
+
+//-------
+// # SWITCH
+//-------
+
+interface SwitchRowProps {
+  icon: React.ReactNode
+  title: string
+  isOn: boolean
+  name: string
+  onChange: (state: boolean) => void
+}
+
+const RowContainer = styled(Flex)`
+  position: relative;
+  width: 100%;
+  align-items: center;
+  padding: 24px 0;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 32px;
+    right: 0;
+    margin: auto;
+    height: 1px;
+    background: linear-gradient(
+        89.66deg,
+        rgba(254, 254, 255, 0.02) 0.07%,
+        rgba(239, 247, 255, 0.06) 98.45%
+      ),
+      #232731;
+    opacity: 0.4;
+  }
 `
 
-export const FeeCards = styled.div`
-  padding: 0 1px 0 37px;
+export const InputText = styled(Text)`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: right;
+  color: #616d8b;
 `
+
+const FormLabel = styled(Text)`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+  color: #616d8b;
+
+  margin-bottom: -2px;
+  margin-left: 8px;
+`
+
+export const SwtichRow: React.FC<SwitchRowProps> = ({
+  icon,
+  title,
+  isOn,
+  name,
+  children,
+  onChange,
+}) => {
+  return (
+    <>
+      <RowContainer>
+        <Flex ai="center">
+          {icon}
+          <FormLabel>{title}</FormLabel>
+        </Flex>
+        <Switch isOn={isOn} name={name} onChange={(n, s) => onChange(s)} />
+      </RowContainer>
+      <Flex
+        p="15px 0 15px"
+        initial={isOn ? "visible" : "hidden"}
+        variants={opacityVariants}
+        transition={{ duration: 0.4 }}
+        animate={isOn ? "visible" : "hidden"}
+        full
+        dir="column"
+      >
+        {children}
+      </Flex>
+    </>
+  )
+}

@@ -10,7 +10,7 @@ export const Container = styled(GradientBorder)<{ height: string }>`
   background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
   border-radius: 32px;
   padding: 0 20px 0 14px;
-  width: 100%;
+  width: fill-available;
   height: ${(props) => props.height || "30px"};
   box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.07);
   align-items: center;

@@ -1,4 +1,4 @@
-import { Flex, BaseButton, Text } from "theme"
+import { Flex, BaseButton, Text, GradientBorder } from "theme"
 import styled from "styled-components"
 
 export const Label = styled.div`
@@ -20,7 +20,7 @@ export const Icon = styled.img`
   height: 32px;
 `
 
-export const Container = styled(Flex)<{
+export const Container = styled(GradientBorder)<{
   customBg?: string
   readonly?: boolean
   isDefault?: boolean
@@ -28,36 +28,21 @@ export const Container = styled(Flex)<{
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  min-height: 54px;
   width: 100%;
-  background: ${(props) => (props.customBg ? props.customBg : "#20242d")};
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.01);
   border-radius: 6px;
   position: relative;
-  box-shadow: ${(props) =>
-    props.readonly ? "0px 4px 4px rgba(0, 0, 0, 0.08)" : "none"};
+  padding: 12px 16px;
 
-  &::before {
-    content: "";
-    opacity: ${(props) => (props.readonly ? 1 : 0)};
-    position: absolute;
-    width: 3px;
-    top: 0;
-    bottom: 0;
-    left: 0px;
-    background: ${(props) =>
-      props.isDefault
-        ? "rgb(92, 97, 102)"
-        : "linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%)"};
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
-    border-radius: 10px 0 0 10px;
+  &:after {
+    background: #08121a;
   }
 `
 
 export const ChipsWrapper = styled(Flex)`
   flex-wrap: wrap;
   min-height: 24px;
-  padding: 7px 9px 0;
+  width: 100%;
+  justify-content: flex-start;
 `
 
 export const LimitIndicator = styled.div`
@@ -78,38 +63,35 @@ export const LimitIndicator = styled.div`
 export const TagItem = styled.div`
   display: inline-flex;
   align-items: center;
-  margin: 0 0.3rem 0.3rem 0;
-  background: linear-gradient(64.44deg, #282b31 32.35%, #373d47 100%);
+  background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
-  font-family: Gilroy;
+  font-family: "Gilroy";
   font-style: normal;
-  font-family: Gilroy;
   font-weight: 400;
   font-size: 12px;
-  line-height: 14px;
-  color: #7fffd4;
-  padding: 4px 7px 0px 5px;
+  line-height: 12px;
+  color: #e4f2ff;
+  margin: 0 10px 14px 0;
+  padding: 6px 6px 6px 8px;
+
+  &:nth-child(3n) {
+    margin: 0 0 14px 0;
+  }
 `
 
 export const TagButton = styled(BaseButton)`
   background-color: transparent;
-  width: 20px;
-  height: 20px;
+  width: 12px;
+  height: 12px;
   border: none;
   cursor: pointer;
-  font: inherit;
-  margin-left: 6px;
-  font-family: Gilroy;
-  font-weight: 700;
+  margin-left: 2px;
   padding: 0;
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  & > img {
-    fill: linear-gradient(244.44deg, #63b49b 0%, #a4ebd4 67.65%);
-  }
 `
 
 export const ErrorText = styled(Text)`
@@ -121,7 +103,6 @@ export const ErrorText = styled(Text)`
 `
 
 export const Input = styled.input`
-  padding: 0 15px;
   width: 100%;
   outline: none;
   appereance: none;
@@ -132,9 +113,9 @@ export const Input = styled.input`
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 40px;
-
-  color: #5a6071;
+  line-height: 28px;
+  padding: 0;
+  color: #e4f2ff;
 
   &::placeholder {
     font-family: Gilroy;
@@ -144,6 +125,6 @@ export const Input = styled.input`
     font-size: 12px;
     line-height: 14px;
     letter-spacing: 0.5px;
-    color: #5a6071;
+    color: #616d8b;
   }
 `

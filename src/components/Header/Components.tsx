@@ -1,7 +1,7 @@
 /**
  * Components which are used in Header
  */
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { ITopMembersFilters } from "constants/interfaces"
 import IconSearch from "components/IconSearch"
 
@@ -24,6 +24,9 @@ import more from "assets/icons/more-menu.svg"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
 import IpfsIcon from "components/IpfsIcon"
+import useContract from "hooks/useContract"
+import { TraderPoolRegistry, TraderPool } from "abi"
+import { PoolInfo } from "constants/interfaces_v2"
 
 interface IFiltersProps {
   onClick: () => void
@@ -60,20 +63,63 @@ export const GoBack = ({ onClick }: IGoBackProps) => {
 
 interface IPortaitsProps {}
 export const Portaits = ({}: IPortaitsProps) => {
-  // const ownedPools = useSelector(selectOwnedPools)
-  // console.log(ownedPools)
-  // if (ownedPools.basic.length && ownedPools.invest.length) {
-  //   return (
-  //     <Funds>
-  //       {basicPools.slice(0, 2).map((pool) => (
-  //         <FundWrapper key={pool.id}>
-  //           <IpfsIcon size={24} address={pool.baseToken} />
-  //         </FundWrapper>
-  //       ))}
-  //     </Funds>
-  //   )
-  // }
-  return <PortraitsPlus>+</PortraitsPlus>
+  const navigate = useNavigate()
+  const ownedPools = useSelector(selectOwnedPools)
+
+  const [basicPoolInfo, setBasicInfo] = useState<PoolInfo | null>(null)
+  const [investPoolInfo, setInvestInfo] = useState<PoolInfo | null>(null)
+
+  const traderPoolBasic = useContract(ownedPools.basic[0] || "", TraderPool)
+  const traderPoolInvest = useContract(ownedPools.invest[0] || "", TraderPool)
+
+  const noPools = !ownedPools.basic.length && !ownedPools.invest.length
+
+  useEffect(() => {
+    if (!traderPoolBasic) return
+    ;(async () => {
+      const poolInfo = await traderPoolBasic?.getPoolInfo()
+      setBasicInfo(poolInfo)
+    })()
+  }, [traderPoolBasic])
+
+  useEffect(() => {
+    if (!traderPoolInvest) return
+    ;(async () => {
+      const poolInfo = await traderPoolInvest?.getPoolInfo()
+      setInvestInfo(poolInfo)
+    })()
+  }, [traderPoolInvest])
+
+  const onClick = () => {
+    if (noPools) {
+      navigate("/create-fund")
+    }
+  }
+
+  if (!noPools) {
+    return (
+      <Funds>
+        {!!basicPoolInfo && (
+          <FundWrapper>
+            <IpfsIcon
+              size={24}
+              hash={basicPoolInfo?.parameters.descriptionURL}
+            />
+          </FundWrapper>
+        )}
+        {!!investPoolInfo && (
+          <FundWrapper>
+            <IpfsIcon
+              size={24}
+              hash={investPoolInfo?.parameters.descriptionURL}
+            />
+          </FundWrapper>
+        )}
+      </Funds>
+    )
+  }
+
+  return <PortraitsPlus onClick={onClick}>+</PortraitsPlus>
 }
 
 interface ILinkProps {}

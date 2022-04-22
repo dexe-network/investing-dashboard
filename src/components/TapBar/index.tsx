@@ -13,32 +13,18 @@ import { MobileMenu, NavItem } from "./styled"
 import { shortenAddress } from "utils"
 
 export const TapBar = () => {
-  const [isFullScreen, setFullScreen] = useState<null | boolean>(null)
   const { account } = useWeb3React()
   const lastVisitedProfile = localStorage.getItem("last-visited-profile")
 
-  const isBarHidden = !account ? "hidden" : "normal"
-
-  useEffect(() => {
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setFullScreen(true)
-    } else {
-      setFullScreen(false)
-    }
-  }, [])
+  const isBarHidden = !account ? "hidden" : "visible"
 
   return (
     <MobileMenu
       initial={isBarHidden}
-      animate={isFullScreen ? "fullscreen" : isBarHidden}
+      animate={isBarHidden}
       variants={{
-        fullscreen: {
-          height: "80px",
-          padding: "15px 14px 25px 14px",
-          opacity: 1,
-        },
-        normal: { height: "59px", padding: "15px 14px 12px 14px", opacity: 1 },
-        hidden: { height: "0", padding: "15px 14px 12px 14px", opacity: 0 },
+        visible: { opacity: 1 },
+        hidden: { opacity: 0 },
       }}
     >
       <NavItem path="/wallet" Icon={Wallet} text={shortenAddress(account, 3)} />

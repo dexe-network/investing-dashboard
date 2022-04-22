@@ -1,5 +1,4 @@
 import { Flex, To } from "theme"
-import { useSwipeable } from "react-swipeable"
 import { useWeb3React } from "@web3-react/core"
 import { useLocation, useNavigate } from "react-router-dom"
 
@@ -26,7 +25,7 @@ import {
 } from "./styled"
 import { IDetailedChart } from "constants/interfaces"
 import Header from "components/Header/Layout"
-import { Profiles } from "components/Header/Components"
+import { Portaits, Profiles } from "components/Header/Components"
 import { getRedirectedPoolAddress } from "utils"
 import { useEffect } from "react"
 
@@ -139,6 +138,7 @@ function Investor(props: Props) {
   const { account } = useWeb3React()
 
   const ownedPools = useSelector(selectOwnedPools)
+  const noPools = !ownedPools.basic.length && !ownedPools.invest.length
 
   useEffect(() => {
     localStorage.setItem("last-visited-profile", pathname)
@@ -154,11 +154,15 @@ function Investor(props: Props) {
     }
   }
 
+  const leftIcon = noPools ? (
+    <Portaits />
+  ) : (
+    <Profiles onClick={redirectToTrader} />
+  )
+
   return (
     <>
-      <Header left={<Profiles onClick={redirectToTrader} />}>
-        My investor profile
-      </Header>
+      <Header left={leftIcon}>My investor profile</Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

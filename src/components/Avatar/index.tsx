@@ -6,16 +6,8 @@ import picture from "assets/icons/picture.svg"
 import { device } from "theme"
 import { blobToBase64 } from "utils/ipfs"
 
-interface Props {
-  url?: string
-  size?: number
-  m?: string
-  showUploader?: boolean
-  onCrop?: any
-  top?: string
-}
-
 const Img = styled.img<{ size: number }>`
+  display: block;
   width: ${(props) => `${props.size}px`};
   height: ${(props) => `${props.size}px`};
   min-width: ${(props) => `${props.size}px`};
@@ -31,18 +23,10 @@ const HoverCamera = styled.div`
   left: 0;
   right: 0;
   top: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.2) 70%,
-    rgba(0, 0, 0, 0.3) 100%
-  );
   height: fill-available;
   width: 100%;
   border-radius: 150px;
   transition: all 0.4s ease-in-out;
-  background: rgba(40, 43, 49, 0.8);
-  backdrop-filter: blur(3px);
 
   @media only screen and (${device.xs}) {
     opacity: 1;
@@ -52,7 +36,6 @@ const HoverCamera = styled.div`
 const FileUpload = styled.input`
   position: absolute;
   top: 0;
-  bottom: 0;
   left: 0;
   bottom: 0;
   -webkit-appearance: none;
@@ -79,15 +62,12 @@ const CameraIcon = styled.img`
   }
 `
 
-const Container = styled.div<{ size: number; margin: string; top?: string }>`
+const Container = styled.div<{ margin: string }>`
   position: relative;
   border-radius: 150px;
-  width: ${(props) => `${props.size}px`};
-  height: ${(props) => `${props.size}px`};
-  min-width: ${(props) => `${props.size}px`};
-  min-height: ${(props) => `${props.size}px`};
+  width: fit-content;
+  height: fit-content;
   margin: ${(props) => props.margin};
-  top: ${(props) => `${props.top || 0}`};
   /* overflow: hidden; */
 
   &:hover {
@@ -100,13 +80,21 @@ const Container = styled.div<{ size: number; margin: string; top?: string }>`
   }
 `
 
+interface Props {
+  url?: string
+  size?: number
+  m?: string
+  showUploader?: boolean
+  onCrop?: any
+}
+
 const Avatar: React.FC<Props> = ({
   url,
   size = 28,
   m = "0",
   showUploader = false,
   onCrop,
-  top,
+  children,
 }) => {
   const [upImg, setUpImg] = useState<string | ArrayBuffer | null>()
   const [croppedImg, setCroppedImg] = useState<Blob | null>(null)
@@ -134,23 +122,19 @@ const Avatar: React.FC<Props> = ({
     url = `${url}`
   }
 
-  // console.log(url)
   return (
-    <Container top={top} size={size} margin={m}>
+    <Container margin={m}>
       <Img
         src={croppedImg ? URL.createObjectURL(croppedImg) : url}
         size={size}
       />
       {showUploader && (
         <>
-          <HoverCamera>
-            <FileUpload
-              type="file"
-              accept="image/*"
-              onChange={handleSelectFile}
-            />
-            <CameraIcon src={picture} alt="upload avatar" />
-          </HoverCamera>
+          <FileUpload
+            type="file"
+            accept="image/*"
+            onChange={handleSelectFile}
+          />
           <ImageCropper
             submit={setCroppedImg}
             img={upImg}
@@ -158,6 +142,7 @@ const Avatar: React.FC<Props> = ({
           />
         </>
       )}
+      {children}
     </Container>
   )
 }

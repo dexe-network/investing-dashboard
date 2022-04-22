@@ -103,13 +103,8 @@ export const SpecialModalBackground = styled.div`
   width: 100vw;
   height: 100vh;
   z-index: 10;
-  background: linear-gradient(
-    197.82deg,
-    #1c2028 34.02%,
-    #0f1115 63.79%,
-    #101217 98.24%
-  );
-  backdrop-filter: blur(3px);
+  background: rgba(13, 18, 28, 0.3);
+  backdrop-filter: blur(1px);
   -webkit-align-items: center;
   -webkit-box-align: center;
   -ms-flex-align: center;
@@ -160,14 +155,13 @@ export const Content = styled.div`
   z-index: 5;
   grid-area: content;
   touch-action: none;
-  overflow-y: hidden;
   overscroll-behavior: none;
   transition: 0.2s all;
   overflow-x: hidden;
   overflow-y: hidden;
   touch-action: none;
   overscroll-behavior: none;
-  min-height: -webkit-fill-available;
+  // min-height: -webkit-fill-available;
 `
 
 export const RestrictedContainer = styled(motion.div)`

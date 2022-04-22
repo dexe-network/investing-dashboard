@@ -9,6 +9,7 @@ interface HeaderProps {
 const MainContainer = styled.div`
   display: flex;
   align-items: center;
+  padding-left: 6px;
 `
 
 const Container = styled.div``

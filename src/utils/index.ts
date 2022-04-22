@@ -101,7 +101,7 @@ const parseDecimals = (float: string, decimals) => {
   return floatPart
 }
 
-const humanizeBigNumber = (amount: string | number): string => {
+const humanizeBigNumber = (amount: string | number, limit = 6): string => {
   const numArr = `${amount}`.split(".")
 
   // no decimal places
@@ -110,7 +110,7 @@ const humanizeBigNumber = (amount: string | number): string => {
   }
 
   // passes without formating
-  if (numArr[1].length < 6) {
+  if (numArr[1].length < limit) {
     return `${numArr[0]}.${numArr[1]}`
   }
 
@@ -120,12 +120,12 @@ const humanizeBigNumber = (amount: string | number): string => {
     !!firstMatch &&
     !!firstMatch.length &&
     !!firstMatch.index &&
-    firstMatch.index > 6
+    firstMatch.index > limit
   ) {
     return Number(amount).toFixed(firstMatch.index + 2)
   }
 
-  return Number(amount).toFixed(6)
+  return Number(amount).toFixed(limit)
 }
 
 export const formatNumber = (amount: string, decimals = 2) => {
@@ -185,10 +185,14 @@ export const formatBigNumber = (value: BigNumber, decimals = 18, fix = 6) => {
   return formatNumber(amount, fix)
 }
 
-export const normalizeBigNumber = (value: BigNumber, decimals = 18) => {
+export const normalizeBigNumber = (
+  value: BigNumber,
+  decimals = 18,
+  fix?: number
+) => {
   const amount = ethers.utils.formatUnits(value, decimals).toString()
 
-  return humanizeBigNumber(amount)
+  return humanizeBigNumber(amount, fix)
 }
 
 export const isStable = (address: string) =>
@@ -227,6 +231,10 @@ export const focusText = (event) => event.target.select()
 export const getRedirectedPoolAddress = (pools: OwnedPools) => {
   if (!!pools && pools.basic.length) {
     return [poolTypes.basic, pools.basic[0]]
+  }
+
+  if (!!pools && pools.invest.length) {
+    return [poolTypes.invest, pools.invest[0]]
   }
 
   return null

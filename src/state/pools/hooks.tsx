@@ -150,14 +150,7 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
 
   // Store pools to redux
   useEffect(() => {
-    if (
-      !response ||
-      !response.data ||
-      !response.data.traderPools.length ||
-      response.fetching ||
-      !dispatch
-    )
-      return
+    if (!response || !response.data || response.fetching || !dispatch) return
 
     dispatch(
       addPools({
@@ -169,12 +162,7 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
   }, [response, dispatch, poolType])
 
   const handleMore = () => {
-    if (loading) return
-    setLoading(true)
-    setTimeout(() => {
-      // TODO: handle more for current list
-      setLoading(false)
-    }, 1300)
+    // TODO: handle more for current list
   }
 
   return [loading, handleMore]

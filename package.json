@@ -61,6 +61,7 @@
     "recharts": "^2.0.8",
     "redux-localstorage-simple": "^2.3.1",
     "source-map-explorer": "^2.5.2",
+    "spinners-react": "^1.0.7",
     "styled-components": "^5.2.1",
     "styled-normalize": "^8.0.7",
     "styled-react-modal": "^2.0.1",

@@ -1,22 +1,14 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useSelector } from "react-redux"
 
-import Search from "components/Search"
 import IconButton from "components/IconButton"
+import TokensList from "components/TokensList"
 
 import { selectWhitelist } from "state/pricefeed/selectors"
 
 import back from "assets/icons/angle-left.svg"
 
-import {
-  Container,
-  Card,
-  CardHeader,
-  Title,
-  TitleContainer,
-  CardList,
-  TokenItem,
-} from "./styled"
+import { Title } from "./styled"
 import { useNavigate, useParams } from "react-router-dom"
 import Header, { EHeaderTitles } from "components/Header"
 
@@ -35,7 +27,17 @@ const TokenSelect: React.FC = () => {
   return (
     <>
       <Header title={EHeaderTitles.myTraderProfile} />
-      <Container
+      <TokensList
+        handleChange={setQuery}
+        tokens={whitelisted}
+        onSelect={onSelect}
+        query={q}
+      >
+        <IconButton media={back} onClick={() => {}} />
+        <Title>Select token</Title>
+      </TokensList>
+
+      {/* <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -64,7 +66,7 @@ const TokenSelect: React.FC = () => {
             ))}
           </CardList>
         </Card>
-      </Container>
+      </Container> */}
     </>
   )
 }

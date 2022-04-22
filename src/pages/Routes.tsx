@@ -79,11 +79,12 @@ export default function Routes() {
                     element={<Profile />}
                   />
 
+                  {/* REDESIGN */}
+                  <Route path="create-fund" element={<CreateFund />} />
+                  <Route path="success" element={<Success />} />
+
                   <Route path="/*" element={<TopMembers />} />
                 </Route>
-                {/* REDESIGN */}
-                <Route path="create-fund" element={<CreateFund />} />
-                <Route path="success" element={<Success />} />
 
                 <Route path="*" element={<p>Not found</p>} />
               </Route>

@@ -3,7 +3,7 @@ import { isAddress } from "utils"
 
 import { shortenAddress } from "utils"
 
-import close from "assets/icons/close.svg"
+import close from "assets/icons/chips-close.svg"
 import pencil from "assets/icons/pencil-edit.svg"
 import {
   LimitIndicator,
@@ -135,10 +135,10 @@ export default class AddressChips extends React.Component<
       >
         {readonly && label && <Label>{label}</Label>}
         {!!items.length && (
-          <ChipsWrapper full p="15px 0 0" jc="flex-start">
+          <ChipsWrapper>
             {items.map((item) => (
               <TagItem key={item}>
-                {shortenAddress(item)}
+                {shortenAddress(item, 3)}
                 <TagButton onClick={() => this.handleDelete(item)}>
                   <img src={close} />
                 </TagButton>
@@ -156,10 +156,10 @@ export default class AddressChips extends React.Component<
           />
         )}
 
-        {limit !== undefined && (
+        {/* {limit !== undefined && (
           <LimitIndicator>{limit - items.length} left</LimitIndicator>
-        )}
-        <ErrorText>{error}</ErrorText>
+        )} */}
+        {!!error && <ErrorText>{error}</ErrorText>}
         {readonly && <Icon src={pencil} alt="pencil" />}
       </Container>
     )

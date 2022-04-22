@@ -147,13 +147,8 @@ export const Icons = styled(Flex)`
 `
 
 export const PortraitsPlus = styled(Flex)`
-  background: linear-gradient(
-    266deg,
-    rgba(169, 221, 251, 0) 2.35%,
-    rgba(193, 218, 255, 0.04) 96.05%
-  );
-  filter: drop-shadow(0px 3.5px 5.5px rgba(0, 0, 0, 0.02));
-  border-radius: 9px;
+  background: #181e2c;
+  border-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -161,6 +156,12 @@ export const PortraitsPlus = styled(Flex)`
   text-align: center;
   width: 26px;
   height: 26px;
+
+  color: #616d8b;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: "Gilroy";
+  line-height: 18px;
 `
 
 export const FundWrapper = styled.div`
@@ -172,8 +173,8 @@ export const FundWrapper = styled.div`
 `
 
 export const Funds = styled(Flex)`
-  padding: 0 45px 0 0px;
   position: relative;
+  width: 32px;
 
   & > ${FundWrapper}:nth-child(1) {
     right: 0;

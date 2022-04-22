@@ -1,23 +1,56 @@
-import React from "react"
+import { FC, MouseEventHandler, useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { Flex } from "theme"
+import { useWeb3React } from "@web3-react/core"
+import { useSelector } from "react-redux"
+
+import Button from "components/Button"
+import Avatar from "components/Avatar"
+import { GoBack } from "components/Header/Components"
+import Header from "components/Header/Layout"
+import AddressChips from "components/AddressChips"
+import Input from "components/Input"
+import IconButton from "components/IconButton"
+import TextArea from "components/TextArea"
+import Payload from "components/Payload"
+import TokenIcon from "components/TokenIcon"
+
+import TokenSelect from "modals/TokenSelect"
+
+import { useCreateFundContext } from "context/CreateFundContext"
+import { selectTraderPoolFactoryAddress } from "state/contracts/selectors"
+import { Token } from "constants/interfaces"
+import useContract from "hooks/useContract"
+import { TraderPool, TraderPoolFactory } from "abi"
+
+import { addFileMetadata } from "utils/ipfs"
+import { bigify, delay } from "utils"
+
+import ManagersIcon from "assets/icons/Managers"
+import InvestorsIcon from "assets/icons/Investors"
+import EmissionIcon from "assets/icons/Emission"
+import MinInvestIcon from "assets/icons/MinInvestAmount"
+import link from "assets/icons/link-grey.svg"
+import plus from "assets/icons/button-plus.svg"
+
+import HeaderStep from "./Header"
+import FundTypeCard from "./FundTypeCard"
+import FeeCard from "./FeeCard"
+import Slider from "./Slider"
+
 import {
   Container,
   Body,
-  Header,
-  HeaderContent,
-  MainTitle,
-  Line,
   Steps,
   Step,
+  StepBody,
+  InputText,
   FundTypeCards,
   FeeCards,
+  SwtichRow,
+  LinkButton,
+  AvatarWrapper,
 } from "./styled"
-import Avatar from "components/Avatar"
-import HeaderStep from "./Header"
-import { useCreateFundContext } from "context/CreateFundContext"
-import Close from "assets/icons/close-gray.svg"
-import Menu from "assets/icons/menu-dots.svg"
-import FundTypeCard from "./FundTypeCard"
-import FeeCard from "./FeeCard"
 
 const performanceFees = [
   {
@@ -40,99 +73,376 @@ const performanceFees = [
   },
 ]
 
-const CreateFund: React.FC = () => {
-  const { handleChange, fundType, commissionPeriod } = useCreateFundContext()
+const deployMethodByType = {
+  basic: "deployInvestPool",
+  investment: "deployInvestPool",
+}
+
+const CreateFund: FC = () => {
+  const {
+    handleChange,
+    baseToken,
+    description,
+    strategy,
+    fundName,
+    fundSymbol,
+    fundType,
+    commissionPeriod,
+    commissionPercentage,
+    managers,
+    investors,
+    totalLPEmission,
+    minimalInvestment,
+    avatarBlobString,
+  } = useCreateFundContext()
+
+  const navigate = useNavigate()
+  const { library, account } = useWeb3React()
+
+  const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
+  const [isMinimalInvest, setMinimalInvest] = useState(minimalInvestment !== "")
+  const [isManagersAdded, setManagers] = useState(!!managers.length)
+  const [isInvestorsAdded, setInvestors] = useState(!!investors.length)
+
+  const [isOpen, setModalState] = useState(false)
+  const [isCreating, setCreating] = useState(false)
+  const [contractAddress, setCreactedAddress] = useState("")
+
+  const poolFactoryAddress = useSelector(selectTraderPoolFactoryAddress)
+  const traderPoolFactory = useContract(poolFactoryAddress, TraderPoolFactory)
+  const traderPool = useContract(contractAddress, TraderPool)
+
+  const back = () => navigate(-1)
+
+  const hideModal = () => setModalState(false)
+
+  const handleTokenSelectOpen = () => {
+    setModalState(true)
+  }
+
+  const handleTokenSelect = (token: Token) => {
+    handleChange("baseToken", token)
+    setModalState(false)
+  }
+
+  const handleTokenRedirect = (address: string) =>
+    window.open(`https://bscscan.com/address/${address}`, "_blank")
+
+  const handleTokenLinkClick: MouseEventHandler = (e) => {
+    e.stopPropagation()
+    handleTokenRedirect(baseToken.address)
+  }
+
+  const handleSubmit = async () => {
+    if (!traderPoolFactory) return
+    setCreating(true)
+
+    try {
+      const ipfsReceipt = await addFileMetadata(
+        avatarBlobString,
+        description,
+        strategy,
+        account
+      )
+
+      const poolParameters = {
+        descriptionURL: ipfsReceipt.path,
+        trader: account,
+        privatePool: isInvestorsAdded,
+        totalLPEmission: 0,
+        baseToken: baseToken.address,
+        baseTokenDecimals: baseToken.decimals,
+        minimalInvestment: 0,
+        commissionPeriod,
+        commissionPercentage: bigify(
+          commissionPercentage.toString(),
+          25
+        ).toString(),
+      }
+
+      const typeName = deployMethodByType[fundType]
+
+      const createReceipt = await traderPoolFactory[typeName](
+        fundName,
+        fundSymbol,
+        poolParameters
+      )
+
+      const data: any = await getReceipt(createReceipt.hash)
+
+      setCreating(false)
+
+      if (
+        !!data &&
+        ((data.logs.length && data.logs[0].address) || data.address)
+      ) {
+        const createdAddress = data.address
+          ? data.address
+          : data.logs[0].address
+        setCreactedAddress(createdAddress)
+      }
+    } catch (e) {
+      // TODO: handle error
+    }
+  }
+
+  function getReceipt(hash, requestCount = 0): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      if (requestCount < 30) {
+        try {
+          const receipt = await library.getTransactionReceipt(hash)
+
+          if (!receipt || !receipt.logs || !receipt.logs.length) {
+            await delay(2000)
+            const newReceipt = await getReceipt(hash, requestCount + 1)
+            resolve(newReceipt)
+          } else {
+            resolve(receipt)
+          }
+        } catch (e) {}
+      } else {
+        reject("Request limits overload")
+      }
+    })
+  }
+
+  // watch for contract creation
+  useEffect(() => {
+    if (!contractAddress.length || !traderPool) return
+
+    navigate(`/new-fund/success/${contractAddress}`)
+  }, [contractAddress, traderPool, navigate])
+
+  const baseTokenAvatar = !!baseToken.address && (
+    <TokenIcon size={24} address={baseToken.address} />
+  )
+
+  const baseTokenLink = !baseToken.address ? (
+    <IconButton onClick={handleTokenSelectOpen} media={plus} />
+  ) : (
+    <IconButton onClick={handleTokenLinkClick} media={link} />
+  )
+
   return (
-    <Container>
-      <Header>
-        <HeaderContent>
-          <img src={Close} alt="close" />
-          <MainTitle>Create Fund</MainTitle>
-          <img src={Menu} alt="menu-dots" />
-        </HeaderContent>
-        <Line></Line>
-      </Header>
-      <Body>
-        <Avatar
-          top="-35px"
-          m="0 auto"
-          onCrop={handleChange}
-          showUploader
-          size={85}
-        />
-        <Steps>
-          <Step>
-            <HeaderStep
-              title="Basic settings"
-              description="This settings can not be changed afrer creation"
-              index="1"
-            />
-            <FeeCards>
-              {performanceFees.map((fee) => (
-                <FeeCard
-                  key={fee.id}
-                  name={fee.id}
-                  label={fee.title}
-                  description={fee.description}
-                  selected={commissionPeriod}
-                  handleSelect={(value: any) =>
-                    handleChange("commissionPeriod", value)
-                  }
+    <>
+      <Payload isOpen={isCreating} toggle={() => setCreating(false)} />
+      <TokenSelect
+        onSelect={handleTokenSelect}
+        isOpen={isOpen}
+        onClose={hideModal}
+      />
+      <Header left={<GoBack onClick={back} />}>Create fund</Header>
+      <Container>
+        <Body>
+          <AvatarWrapper>
+            <Avatar m="0 auto" onCrop={handleChange} showUploader size={100}>
+              <LinkButton>Add fund photo</LinkButton>
+            </Avatar>
+          </AvatarWrapper>
+          <Steps>
+            <Step>
+              <HeaderStep
+                title="Basic settings"
+                description="This settings can not be changed afrer creation"
+                index="1"
+              />
+              <StepBody>
+                <Flex full p="12px 0">
+                  <Input
+                    placeholder="---"
+                    onClick={handleTokenSelectOpen}
+                    disabled
+                    leftIcon={baseTokenAvatar}
+                    label="Base token"
+                    value={baseToken.symbol}
+                    rightIcon={baseTokenLink}
+                  />
+                </Flex>
+                <Flex full p="12px 0">
+                  <Input
+                    label="Fund name"
+                    limit={15}
+                    value={fundName}
+                    onChange={(value) => handleChange("fundName", value)}
+                  />
+                </Flex>
+                <Flex full p="12px 0">
+                  <Input
+                    limit={5}
+                    label="Ticker symbol"
+                    value={fundSymbol}
+                    onChange={(value) => handleChange("fundSymbol", value)}
+                  />
+                </Flex>
+              </StepBody>
+            </Step>
+            <Step>
+              <HeaderStep
+                title="Type of fund"
+                description="This settings can not be changed afrer creation"
+                index="2"
+              />
+              <StepBody>
+                <FundTypeCards>
+                  <FundTypeCard
+                    name="basic"
+                    selected={fundType}
+                    label="Standard - Low risk"
+                    description="Trading on assets from the white list
+                  + non-whitelisted assets through the proposals..."
+                    link="Read More"
+                    handleSelect={(value: any) =>
+                      handleChange("fundType", value)
+                    }
+                  />
+                  <FundTypeCard
+                    name="investment"
+                    selected={fundType}
+                    label="Investment - High risk "
+                    description="Manage the assets on your own..
+                  Manage the assets on your own..."
+                    link="Read More"
+                    handleSelect={(value: any) =>
+                      handleChange("fundType", value)
+                    }
+                  />
+                </FundTypeCards>
+              </StepBody>
+            </Step>
+            <Step>
+              <HeaderStep
+                title="Investment"
+                description="This settings can be changed in account ater"
+                index="3"
+              />
+              <StepBody>
+                <SwtichRow
+                  icon={<EmissionIcon active={isEmissionLimited} />}
+                  title="Limited Emission"
+                  isOn={isEmissionLimited}
+                  name="_emissionLimited"
+                  onChange={setEmission}
+                >
+                  <Flex full p="12px 0">
+                    <Input
+                      label="LP tokens emission"
+                      value={totalLPEmission}
+                      onChange={(value) =>
+                        handleChange("totalLPEmission", value)
+                      }
+                      rightIcon={<InputText>LP</InputText>}
+                    />
+                  </Flex>
+                </SwtichRow>
+                <SwtichRow
+                  icon={<ManagersIcon active={isManagersAdded} />}
+                  title="New fund managers"
+                  isOn={isManagersAdded}
+                  name="_managersRestricted"
+                  onChange={setManagers}
+                >
+                  <AddressChips
+                    items={managers}
+                    onChange={(v) => handleChange("managers", v)}
+                    limit={100}
+                    label="0x..."
+                  />
+                </SwtichRow>
+                <SwtichRow
+                  icon={<InvestorsIcon active={isInvestorsAdded} />}
+                  title="Invited investors"
+                  isOn={isInvestorsAdded}
+                  name="_investorsRestricted"
+                  onChange={setInvestors}
+                >
+                  <AddressChips
+                    items={investors}
+                    onChange={(v) => handleChange("investors", v)}
+                    limit={100}
+                    label="0x..."
+                  />
+                </SwtichRow>
+                <SwtichRow
+                  icon={<MinInvestIcon active={isMinimalInvest} />}
+                  title="Minimum investment amount"
+                  isOn={isMinimalInvest}
+                  name="_minInvestRestricted"
+                  onChange={setMinimalInvest}
+                >
+                  <Input
+                    placeholder="---"
+                    onChange={(v) => handleChange("minimalInvestment", v)}
+                    label="Minimum investment amount"
+                    value={minimalInvestment}
+                    rightIcon={<InputText>{baseToken.symbol}</InputText>}
+                  />
+                </SwtichRow>
+              </StepBody>
+            </Step>
+            <Step>
+              <HeaderStep
+                title="Fund Details"
+                description="This settings can be changed in account ater"
+                index="4"
+              />
+              <StepBody>
+                <Flex full p="12px 0">
+                  <TextArea
+                    defaultValue={description}
+                    name="description"
+                    placeholder="Fund description"
+                    onChange={handleChange}
+                  />
+                </Flex>
+                <Flex full p="12px 0">
+                  <TextArea
+                    defaultValue={strategy}
+                    name="strategy"
+                    placeholder="Fund strategy"
+                    onChange={handleChange}
+                  />
+                </Flex>
+              </StepBody>
+            </Step>
+            <Step>
+              <HeaderStep
+                title="Management Fee"
+                description="This settings can not be changed afrer creation"
+                index="5"
+              />
+              <StepBody isLast>
+                <FeeCards>
+                  {performanceFees.map((fee) => (
+                    <FeeCard
+                      key={fee.id}
+                      name={fee.id}
+                      label={fee.title}
+                      description={fee.description}
+                      selected={commissionPeriod}
+                      handleSelect={(value: any) =>
+                        handleChange("commissionPeriod", value)
+                      }
+                    />
+                  ))}
+                </FeeCards>
+
+                <Slider
+                  commissionPeriod={commissionPeriod}
+                  name="commissionPercentage"
+                  initial={commissionPercentage}
+                  onChange={handleChange}
                 />
-              ))}
-            </FeeCards>
-          </Step>
-          <Step>
-            <HeaderStep
-              title="Type of fund"
-              description="This settings can not be changed afrer creation"
-              index="2"
-            />
-            <FundTypeCards>
-              <FundTypeCard
-                name="basic"
-                selected={fundType}
-                label="Standard - Low risk"
-                description="Trading on assets from the white list
-                + non-whitelisted assets through the proposals..."
-                link="Read More"
-                handleSelect={(value: any) => handleChange("fundType", value)}
-              />
-              <FundTypeCard
-                name="investment"
-                selected={fundType}
-                label="Investment - High risk "
-                description="Manage the assets on your own..
-                Manage the assets on your own..."
-                link="Read More"
-                handleSelect={(value: any) => handleChange("fundType", value)}
-              />
-            </FundTypeCards>
-          </Step>
-          <Step>
-            <HeaderStep
-              title="Investment"
-              description="This settings can be changed in account ater"
-              index="3"
-            />
-          </Step>
-          <Step>
-            <HeaderStep
-              title="Fund Details"
-              description="This settings can be changed in account ater"
-              index="4"
-            />
-          </Step>
-          <Step>
-            <HeaderStep
-              title="Management Fee"
-              description="This settings can not be changed afrer creation"
-              index="5"
-            />
-          </Step>
-        </Steps>
-      </Body>
-    </Container>
+              </StepBody>
+            </Step>
+          </Steps>
+          <Flex full p="0 16px 42px">
+            <Button full size="large" onClick={handleSubmit}>
+              Create fund
+            </Button>
+          </Flex>
+        </Body>
+      </Container>
+    </>
   )
 }
 

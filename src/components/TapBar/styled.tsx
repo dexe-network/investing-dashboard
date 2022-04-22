@@ -18,7 +18,14 @@ export const MobileMenu = styled(motion.div)`
   height: 70px;
   z-index: 100;
   background: #1d222a;
-  box-shadow: 0px -3px 6px rgba(0, 0, 0, 0.2);
+
+  height: 59px;
+  padding: 15px 14px 12px 14px;
+
+  @media all and (display-mode: standalone) {
+    height: 80px;
+    padding: 15px 14px 25px 14px;
+  }
 `
 
 const MobileItem = styled(motion.div)`

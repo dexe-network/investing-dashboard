@@ -1,8 +1,9 @@
+import { MouseEventHandler } from "react"
 import { Container, Icon } from "./styled"
 
 interface Props {
   media: string
-  onClick: () => void
+  onClick: MouseEventHandler
 }
 
 const IconButton: React.FC<Props> = ({ media, onClick }) => {
