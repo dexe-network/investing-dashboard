@@ -27,6 +27,7 @@ import IpfsIcon from "components/IpfsIcon"
 import useContract from "hooks/useContract"
 import { TraderPoolRegistry, TraderPool } from "abi"
 import { PoolInfo } from "constants/interfaces_v2"
+import { useSideBarContext } from "context/SideBarContext"
 
 interface IFiltersProps {
   onClick: () => void
@@ -158,8 +159,9 @@ export const Search = ({
 
 interface IMoreProps {}
 export const More = ({}: IMoreProps) => {
+  const { toggleSideBar } = useSideBarContext()
   return (
-    <ClickableArea onClick={() => {}}>
+    <ClickableArea onClick={toggleSideBar}>
       <IconButton src={more} />
     </ClickableArea>
   )

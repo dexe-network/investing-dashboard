@@ -11,7 +11,7 @@ import { PriceFeed } from "abi"
 
 import Token from "./Token"
 
-import { Card, CardHeader, TitleContainer, CardList } from "./styled"
+import { Card, CardHeader, CardList } from "./styled"
 
 interface Props {
   tokens: IToken[]
@@ -21,7 +21,6 @@ interface Props {
 }
 
 const TokensList: React.FC<Props> = ({
-  children,
   tokens,
   query,
   onSelect,
@@ -33,7 +32,6 @@ const TokensList: React.FC<Props> = ({
   return (
     <Card>
       <CardHeader>
-        <TitleContainer>{children}</TitleContainer>
         <Search
           placeholder="Name, ticker, address"
           value={query}

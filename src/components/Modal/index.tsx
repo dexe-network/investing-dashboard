@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect, Children } from "react"
+import { FC } from "react"
 import { createPortal } from "react-dom"
-import closeIcon from "assets/icons/modal-close.svg"
+import closeIcon from "assets/icons/close-gray.svg"
 import { Container, Overlay, Head, Title, Close } from "./styled"
 
 const modalRoot = document.getElementById("modal")
 
-const Modal: React.FC<{
+interface Props {
   isOpen: boolean
   toggle: () => void
   title: string
-}> = ({ children, isOpen, toggle, title }) => {
+}
+
+const Modal: FC<Props> = ({ children, isOpen, toggle, title }) => {
   if (!modalRoot) return null
   return createPortal(
     <>

@@ -89,7 +89,7 @@ export const Card = styled(Flex)`
 export const CardHeader = styled(Flex)`
   flex-direction: column;
   width: fill-available;
-  padding: 24px 16px;
+  padding: 0 16px 24px;
   justify-content: flex-start;
   position: relative;
 
@@ -124,15 +124,9 @@ export const CardHeader = styled(Flex)`
   }
 `
 
-export const TitleContainer = styled(Flex)`
-  width: 100%;
-  justify-content: flex-start;
-  padding-bottom: 24px;
-`
-
 export const CardList = styled.div`
   width: 100%;
-  max-height: 300px;
+  height: calc(100vh - 400px);
   overflow-y: auto;
   padding: 10px 0 0;
 `

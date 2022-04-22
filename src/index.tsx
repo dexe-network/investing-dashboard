@@ -10,6 +10,9 @@ import { BrowserRouter } from "react-router-dom"
 import store from "state"
 
 import App from "pages/App"
+import SideBar from "components/Sidebar"
+
+import SideBarContext from "context/SideBarContext"
 
 import GlobalStyle from "theme/GlobalStyle"
 
@@ -46,6 +49,7 @@ const GlobalComponents = () => (
     <PriceFeedUpdater />
     <Normalize />
     <GlobalStyle />
+    <SideBar />
   </>
 )
 
@@ -53,16 +57,18 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <ModalProvider>
-        <Web3ReactProvider getLibrary={getLibrary}>
-          <Web3ProviderNetwork getLibrary={getLibrary}>
-            <Provider store={store}>
-              <>
-                <GlobalComponents />
-                <App />
-              </>
-            </Provider>
-          </Web3ProviderNetwork>
-        </Web3ReactProvider>
+        <SideBarContext>
+          <Web3ReactProvider getLibrary={getLibrary}>
+            <Web3ProviderNetwork getLibrary={getLibrary}>
+              <Provider store={store}>
+                <>
+                  <GlobalComponents />
+                  <App />
+                </>
+              </Provider>
+            </Web3ProviderNetwork>
+          </Web3ReactProvider>
+        </SideBarContext>
       </ModalProvider>
     </BrowserRouter>
   </React.StrictMode>,

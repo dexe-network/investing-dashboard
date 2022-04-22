@@ -1,23 +1,57 @@
 import { Text, Flex } from "theme"
 import styled from "styled-components"
+import { motion } from "framer-motion"
 
-export const Title = styled(Text)`
-  font-size: 24px;
-  font-family: Gilroy;
-  font-weight: 700;
-  color: #f5f5f5;
+export const Container = styled(motion.div)`
+  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
+  border-radius: 26px;
+  position: absolute;
+  top: 210px;
+  left: 8px;
+  right: 8px;
+  z-index: 100;
+  padding: 31px 26px;
 `
+
+export const Overlay = styled(motion.div)`
+  background: rgba(27, 27, 27, 0.6);
+  backdrop-filter: blur(6px);
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 80;
+  height: 100%;
+  width: 100%;
+`
+
+export const Head = styled(Flex)`
+  width: 100%;
+  jutsify-content: space-between;
+`
+
+export const Title = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 28px;
+  /* identical to box height, or 127% */
+
+  letter-spacing: 0.35px;
+
+  /* Text / main */
+
+  color: #c5d1dc;
+`
+
+export const Close = styled.img``
 
 export const WalletIcon = styled.img`
   height: 33px;
   transition: transform 0.2s;
   position: relative;
-`
-
-export const Checked = styled.img`
-  position: absolute;
-  right: 20px;
-  bottom: 25px;
 `
 
 export const Wallet = styled(Flex)`
@@ -45,12 +79,6 @@ export const Body = styled.div`
   margin-top: 24px;
   padding: 0;
   transition: opacity 0.4s;
-`
-
-export const Header = styled(Flex)``
-
-export const ChooseWallet = styled(Flex)`
-  color: #cad8fc;
 `
 
 export const Wallets = styled(Flex)`
