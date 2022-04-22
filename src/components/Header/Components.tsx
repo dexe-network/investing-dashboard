@@ -24,6 +24,7 @@ import more from "assets/icons/more-menu.svg"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useSelector } from "react-redux"
 import IpfsIcon from "components/IpfsIcon"
+import { useSideBarContext } from "context/SideBarContext"
 
 interface IFiltersProps {
   onClick: () => void
@@ -112,8 +113,9 @@ export const Search = ({
 
 interface IMoreProps {}
 export const More = ({}: IMoreProps) => {
+  const { toggleSideBar } = useSideBarContext()
   return (
-    <ClickableArea onClick={() => {}}>
+    <ClickableArea onClick={toggleSideBar}>
       <IconButton src={more} />
     </ClickableArea>
   )
