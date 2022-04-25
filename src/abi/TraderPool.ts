@@ -149,6 +149,25 @@ export default [
     inputs: [
       {
         indexed: false,
+        internalType: "address[]",
+        name: "admins",
+        type: "address[]",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "add",
+        type: "bool",
+      },
+    ],
+    name: "ModifiedAdmins",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
         internalType: "address",
         name: "position",
         type: "address",
@@ -547,6 +566,11 @@ export default [
             type: "uint256",
           },
           {
+            internalType: "uint256",
+            name: "lpAmount",
+            type: "uint256",
+          },
+          {
             internalType: "address[]",
             name: "positions",
             type: "address[]",
@@ -622,6 +646,11 @@ export default [
         name: "minAmountOut",
         type: "uint256",
       },
+      {
+        internalType: "address[]",
+        name: "path",
+        type: "address[]",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -656,6 +685,11 @@ export default [
         name: "maxAmountIn",
         type: "uint256",
       },
+      {
+        internalType: "address[]",
+        name: "path",
+        type: "address[]",
+      },
     ],
     stateMutability: "view",
     type: "function",
@@ -688,6 +722,11 @@ export default [
           {
             internalType: "uint256",
             name: "baseAmount",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lpAmount",
             type: "uint256",
           },
           {
@@ -744,6 +783,19 @@ export default [
         internalType: "struct ITraderPool.LeverageInfo",
         name: "leverageInfo",
         type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getNextCommissionEpoch",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -1172,7 +1224,7 @@ export default [
   {
     inputs: [
       {
-        internalType: "contract IContractsRegistry",
+        internalType: "address",
         name: "contractsRegistry",
         type: "address",
       },
@@ -1264,7 +1316,7 @@ export default [
     inputs: [
       {
         internalType: "address",
-        name: "recipient",
+        name: "to",
         type: "address",
       },
       {
@@ -1288,12 +1340,12 @@ export default [
     inputs: [
       {
         internalType: "address",
-        name: "sender",
+        name: "from",
         type: "address",
       },
       {
         internalType: "address",
-        name: "recipient",
+        name: "to",
         type: "address",
       },
       {
