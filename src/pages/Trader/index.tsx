@@ -25,7 +25,8 @@ import {
 import AreaChart from "components/AreaChart"
 import BarChart from "pages/Investor/Bar"
 import Header from "components/Header/Layout"
-import { Profiles, Portaits } from "components/Header/Components"
+import { Profiles } from "components/Header/Components"
+import Pools from "components/Header/Pools"
 
 import { IDetailedChart } from "constants/interfaces"
 
@@ -67,105 +68,6 @@ const pnlNew: IDetailedChart[] = [
     y: 0,
     lpBasic: "0",
     lpBasicPercent: 0,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-]
-
-const pnl: IDetailedChart[] = [
-  {
-    x: "1",
-    y: 1,
-    lpBasic: "0",
-    lpBasicPercent: 1,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "2",
-    y: 1.23,
-    lpBasic: "0",
-    lpBasicPercent: 1,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "3",
-    y: 1.12,
-    lpBasic: "0",
-    lpBasicPercent: 1,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "4",
-    y: 1.34,
-    lpBasic: "0",
-    lpBasicPercent: 1,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "5",
-    y: 1,
-    lpBasic: "0",
-    lpBasicPercent: 3,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "6",
-    y: 1.76,
-    lpBasic: "0",
-    lpBasicPercent: 3.5,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "7",
-    y: 2.34,
-    lpBasic: "0",
-    lpBasicPercent: 7,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "8",
-    y: 1.92,
-    lpBasic: "0",
-    lpBasicPercent: 7,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "9",
-    y: 2.3,
-    lpBasic: "0",
-    lpBasicPercent: 7,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "10",
-    y: 2.3,
-    lpBasic: "0",
-    lpBasicPercent: 6.1,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "11",
-    y: 2.3,
-    lpBasic: "0",
-    lpBasicPercent: 15,
-    lpUsd: "0",
-    lpUsdPercent: 0,
-  },
-  {
-    x: "12",
-    y: 2.63,
-    lpBasic: "0",
-    lpBasicPercent: 20,
     lpUsd: "0",
     lpUsdPercent: 0,
   },
@@ -225,7 +127,7 @@ function Trader(props: Props) {
     <>
       <Header left={<Profiles onClick={redirectToInvestor} />}>
         My trader profile
-        <Portaits />
+        <Pools />
       </Header>
       <Container
         initial={{ opacity: 0 }}

@@ -25,7 +25,8 @@ import {
 } from "./styled"
 import { IDetailedChart } from "constants/interfaces"
 import Header from "components/Header/Layout"
-import { Portaits, Profiles } from "components/Header/Components"
+import { Profiles } from "components/Header/Components"
+import Pools from "components/Header/Pools"
 import { getRedirectedPoolAddress } from "utils"
 import { useEffect } from "react"
 
@@ -154,11 +155,7 @@ function Investor(props: Props) {
     }
   }
 
-  const leftIcon = noPools ? (
-    <Portaits />
-  ) : (
-    <Profiles onClick={redirectToTrader} />
-  )
+  const leftIcon = noPools ? <Pools /> : <Profiles onClick={redirectToTrader} />
 
   return (
     <>

@@ -121,6 +121,7 @@ export const Title = styled(Flex)`
   line-height: 32px;
   text-align: center;
   letter-spacing: -0.02em;
+  align-items: center;
   color: #e4f2ff;
 `
 
@@ -174,7 +175,7 @@ export const FundWrapper = styled.div`
 
 export const Funds = styled(Flex)`
   position: relative;
-  width: 32px;
+  width: 44px;
 
   & > ${FundWrapper}:nth-child(1) {
     right: 0;

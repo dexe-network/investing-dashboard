@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { useWeb3React } from "@web3-react/core"
-import plus from "assets/icons/create-fund.svg"
-import question from "assets/icons/question-action.svg"
-import Popover from "components/Popover"
-import { OwnedPools } from "constants/interfaces_v2"
-import { useSelector } from "react-redux"
-import { AppState } from "state"
+import { FC, useState, useEffect, useRef } from "react"
+import { Flex } from "theme"
 import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
+
+import Popover from "components/Popover"
+
+import { IPoolQuery } from "constants/interfaces_v2"
+
+import AddFund from "assets/icons/AddFund"
+import dexe from "assets/icons/dexe-dark.svg"
+
 import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
 
 import {
@@ -18,30 +19,23 @@ import {
   SecondaryLabel,
   Token,
   EmptyText,
-  PlusIcon,
+  PlaceholderIcon,
 } from "./styled"
-import {
-  selectBasicPoolsBatch,
-  selectInvestPoolsBatch,
-} from "state/pools/selectors"
+import { useNavigate } from "react-router-dom"
 
 interface Props {
   isOpen: boolean
   toggle: () => void
-  pools: OwnedPools
+  pools: IPoolQuery[]
 }
 
-const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
+const OwnedPoolsList: FC<Props> = ({ isOpen, toggle, pools }) => {
   const [isDragAlloved, setDragAllowed] = useState(true)
-  const scrollRef = React.useRef<any>(null)
-  const { account } = useWeb3React()
+  const navigate = useNavigate()
+  const scrollRef = useRef<any>(null)
 
-  const basicPools = useSelector((state: AppState) =>
-    selectBasicPoolsBatch(state, pools.basic)
-  )
-  const investPools = useSelector((state: AppState) =>
-    selectInvestPoolsBatch(state, pools.invest)
-  )
+  const basicPools = pools.filter(({ type }) => type === "BASIC_POOL")
+  const investPools = pools.filter(({ type }) => type === "INVEST_POOL")
 
   useEffect(() => {
     if (!scrollRef.current || !isOpen) return () => clearAllBodyScrollLocks()
@@ -50,6 +44,10 @@ const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
     return () => clearAllBodyScrollLocks()
   }, [scrollRef, isOpen])
 
+  const createFund = () => {
+    navigate("/create-fund")
+  }
+
   const basicPoolsList = basicPools.map((pool) => {
     const priceLP = getPriceLP(pool.priceHistory)
     const pnl = getPNL(priceLP)
@@ -57,8 +55,9 @@ const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
 
     return (
       <Token
+        descriptionURL={pool.descriptionURL}
         baseAddress={pool.baseToken}
-        poolType="basic"
+        poolType="BASIC_POOL"
         name={pool.name}
         symbol={pool.ticker}
         pnl={`${pnl}%`}
@@ -76,8 +75,9 @@ const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
 
     return (
       <Token
+        descriptionURL={pool.descriptionURL}
         baseAddress={pool.baseToken}
-        poolType="invest"
+        poolType="INVEST_POOL"
         name={pool.name}
         symbol={pool.ticker}
         pnl={`${pnl}%`}
@@ -93,8 +93,12 @@ const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
       noDrag={!isDragAlloved}
       isOpen={isOpen}
       toggle={toggle}
-      title="All my funds"
-      contentHeight={800}
+      title={
+        <Flex ai="center">
+          All my funds <AddFund onClick={createFund} />
+        </Flex>
+      }
+      contentHeight={window.innerHeight - 100}
     >
       <Container
         ref={scrollRef}
@@ -107,50 +111,30 @@ const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
         }}
       >
         <Header>
-          <PrimaryLabel>
-            My whitelist funds
-            {!!basicPools.length && (
-              <Link to="/new-fund">
-                <PlusIcon src={plus} />
-              </Link>
-            )}
-          </PrimaryLabel>
+          <PrimaryLabel>My whitelist funds</PrimaryLabel>
           <SecondaryLabel>TVL</SecondaryLabel>
           <SecondaryLabel>P&L</SecondaryLabel>
-          <SecondaryLabel>Info</SecondaryLabel>
         </Header>
         <List>
           {!basicPools.length ? (
             <EmptyText>
+              <PlaceholderIcon src={dexe} />
               You do not have open basic funds yet
-              <Link to="/new-fund">
-                <PlusIcon src={plus} />
-              </Link>
             </EmptyText>
           ) : (
             basicPoolsList
           )}
         </List>
         <Header>
-          <PrimaryLabel>
-            My investment funds
-            {!!investPools.length && (
-              <Link to="/new-fund">
-                <PlusIcon src={plus} />
-              </Link>
-            )}
-          </PrimaryLabel>
+          <PrimaryLabel>My investment funds</PrimaryLabel>
           <SecondaryLabel>TVL</SecondaryLabel>
           <SecondaryLabel>P&L</SecondaryLabel>
-          <SecondaryLabel>Info</SecondaryLabel>
         </Header>
         <List>
           {!investPools.length ? (
             <EmptyText>
+              <PlaceholderIcon src={dexe} />
               You do not have open investment funds yet
-              <Link to="/new-fund">
-                <PlusIcon src={plus} />
-              </Link>
             </EmptyText>
           ) : (
             investPoolsList
@@ -161,12 +145,11 @@ const OwnedPoolsList: React.FC<Props> = ({ isOpen, toggle, pools }) => {
           <PrimaryLabel>Management funds</PrimaryLabel>
           <SecondaryLabel>TVL</SecondaryLabel>
           <SecondaryLabel>P&L</SecondaryLabel>
-          <SecondaryLabel>Info</SecondaryLabel>
         </Header>
         <List>
           <EmptyText>
+            <PlaceholderIcon src={dexe} />
             You do not have open risk funds yet
-            <img src={question} />
           </EmptyText>
         </List>
       </Container>

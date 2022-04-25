@@ -5,8 +5,11 @@ import { TabsMenu } from "components/TopMembersBar/styled"
 import { ITab } from "constants/interfaces"
 import { useState } from "react"
 import { useSelector } from "react-redux"
-import { AppState } from "state"
 import { usePoolsFilters } from "state/pools/hooks"
+import {
+  selectTotalBasicPools,
+  selectTotalInvestPools,
+} from "state/pools/selectors"
 import { EHeaderTitles } from "."
 import { Tabs, Tab, TabAmount } from "./styled"
 
@@ -22,14 +25,8 @@ const HeaderTabs = ({ title }: IHeaderTabsProps) => {
         however we can't use hooks inside functions
       */
   }
-  const totalBasicPools = useSelector<
-    AppState,
-    AppState["pools"]["pagination"]["basic"]["total"]
-  >((state) => state.pools.pagination.basic.total)
-  const totalInvestPools = useSelector<
-    AppState,
-    AppState["pools"]["pagination"]["invest"]["total"]
-  >((state) => state.pools.pagination.invest.total)
+  const totalBasicPools = useSelector(selectTotalBasicPools)
+  const totalInvestPools = useSelector(selectTotalInvestPools)
   const [tabs] = useState(
     getHeaderTabs(title, totalBasicPools, totalInvestPools)
   )

@@ -9,6 +9,16 @@ export const selectPoolsFilters = createSelector(
   (pools) => pools.filters
 )
 
+export const selectTotalBasicPools = createSelector(
+  [selectPoolsState],
+  (pools) => pools.pagination.BASIC_POOL.total
+)
+
+export const selectTotalInvestPools = createSelector(
+  [selectPoolsState],
+  (pools) => pools.pagination.INVEST_POOL.total
+)
+
 export const selectPools = createSelector(
   [selectPoolsState],
   (pools) => pools[poolTypes.all] || []
@@ -34,20 +44,4 @@ export const selectInvestPoolByAddress = createSelector(
   [selectPools, (state, address: string | undefined) => address],
   (pools, address) =>
     pools[poolTypes.invest].filter((value) => value.id === address)[0]
-)
-
-export const selectBasicPoolsBatch = createSelector(
-  [selectPools, (state, poolsAddresses: string[]) => poolsAddresses],
-  (pools, poolsAddresses) =>
-    pools[poolTypes.basic].filter(
-      (value) => poolsAddresses.indexOf(value.id) !== -1
-    )
-)
-
-export const selectInvestPoolsBatch = createSelector(
-  [selectPools, (state, poolsAddresses: string[]) => poolsAddresses],
-  (pools, poolsAddresses) =>
-    pools[poolTypes.invest].filter(
-      (value) => poolsAddresses.indexOf(value.id) !== -1
-    )
 )

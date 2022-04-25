@@ -1,23 +1,38 @@
 import React, { useState, useEffect } from "react"
-import styled from "styled-components"
-import defaultAvatar from "assets/icons/default-avatar.svg"
-import unknown from "assets/icons/Unknown.svg"
 import { useWeb3React } from "@web3-react/core"
-// import { motion } from "framer-motion"
+import { RingSpinner } from "react-spinners-kit"
+import styled from "styled-components"
 
-export const Icon = styled.img<{ size?: number }>`
+import unknown from "assets/icons/Unknown.svg"
+
+export const Icon = styled.img<{ size?: number; m: string }>`
   height: ${(props) => (props.size ? props.size : 28)}px;
   width: ${(props) => (props.size ? props.size : 28)}px;
   min-height: ${(props) => (props.size ? props.size : 28)}px;
   min-width: ${(props) => (props.size ? props.size : 28)}px;
   border-radius: 50px;
-  margin-right: 8px;
+  margin: ${(props) => props.m};
   border: 2px solid #171b1f;
+`
+
+export const Loader = styled.div<{ size?: number; m: string }>`
+  height: ${(props) => (props.size ? props.size : 28)}px;
+  width: ${(props) => (props.size ? props.size : 28)}px;
+  min-height: ${(props) => (props.size ? props.size : 28)}px;
+  min-width: ${(props) => (props.size ? props.size : 28)}px;
+  margin: ${(props) => props.m};
+  border-radius: 50px;
+  border: 2px solid #171b1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
 `
 
 interface IProps {
   size?: number
   address?: string
+  m?: string
 }
 
 const getIconsPathByChain = (id, address) => {
@@ -30,25 +45,27 @@ const getIconsPathByChain = (id, address) => {
   return `https://pancake.kiemtienonline360.com/images/coins/${a}.png`
 }
 
-const TokenIcon: React.FC<IProps> = ({ size, address }) => {
+const TokenIcon: React.FC<IProps> = ({ size, address, m }) => {
   const [srcImg, setImg] = useState(unknown)
-  const [error, setError] = useState(false)
-  const [loaded, setLoaded] = useState(false)
+  const [isLoading, setLoadingState] = useState(true)
   const { chainId } = useWeb3React()
 
   const src = getIconsPathByChain(chainId, address)
 
   useEffect(() => {
+    if (!src) return
+
     const token = new Image()
-    token.src = src || unknown
+    token.src = src
 
     const imageLoad: any = token.addEventListener("load", () => {
-      setImg(src || unknown)
-      setLoaded(true)
+      setImg(src)
+      setLoadingState(false)
     })
 
     const imageError: any = token.addEventListener("error", () => {
-      setError(true)
+      setImg(unknown)
+      setLoadingState(false)
     })
 
     return () => {
@@ -56,12 +73,15 @@ const TokenIcon: React.FC<IProps> = ({ size, address }) => {
     }
   }, [src])
 
-  if (src === unknown || !src) {
-    // change icon if token dexe
-    return <Icon src={defaultAvatar} size={size} />
+  if (isLoading) {
+    return (
+      <Loader m={m || "0 8px 0 0"} size={size}>
+        <RingSpinner color="#A4EBD4" size={20} />
+      </Loader>
+    )
   }
 
-  return <Icon src={srcImg} size={size} />
+  return <Icon m={m || "0 8px 0 0"} src={srcImg} size={size} />
 }
 
 export default TokenIcon

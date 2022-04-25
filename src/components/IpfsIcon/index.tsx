@@ -2,52 +2,74 @@ import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import defaultAvatar from "assets/icons/default-avatar.svg"
 import unknown from "assets/icons/Unknown.svg"
-import { useWeb3React } from "@web3-react/core"
 import { parsePoolData } from "utils/ipfs"
-// import { motion } from "framer-motion"
+import { RingSpinner } from "react-spinners-kit"
 
-export const Icon = styled.img<{ size?: number }>`
+export const Icon = styled.img<{ size?: number; m: string }>`
   height: ${(props) => (props.size ? props.size : 28)}px;
   width: ${(props) => (props.size ? props.size : 28)}px;
   min-height: ${(props) => (props.size ? props.size : 28)}px;
   min-width: ${(props) => (props.size ? props.size : 28)}px;
   border-radius: 50px;
-  margin-right: 8px;
+  margin: ${(props) => props.m};
   border: 2px solid #171b1f;
+`
+
+export const Loader = styled.div<{ size?: number; m: string }>`
+  height: ${(props) => (props.size ? props.size : 28)}px;
+  width: ${(props) => (props.size ? props.size : 28)}px;
+  min-height: ${(props) => (props.size ? props.size : 28)}px;
+  min-width: ${(props) => (props.size ? props.size : 28)}px;
+  margin: ${(props) => props.m};
+  border-radius: 50px;
+  border: 2px solid #171b1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
 `
 
 interface IProps {
   size?: number
   hash?: string
+  m?: string
 }
 
-const IpfsIcon: React.FC<IProps> = ({ size, hash }) => {
+const IpfsIcon: React.FC<IProps> = ({ size, hash, m }) => {
   const [src, setSrc] = useState("")
   const [srcImg, setImg] = useState(unknown)
-  const [error, setError] = useState(false)
-  const [loaded, setLoaded] = useState(false)
-  const { chainId } = useWeb3React()
+  const [isLoading, setLoadingState] = useState(true)
 
   useEffect(() => {
     ;(async () => {
       const data = await parsePoolData(hash)
-      if (data && data.assets && data.assets.length) {
+      if (
+        data &&
+        data.assets &&
+        data.assets.length &&
+        data.assets[data.assets.length - 1] !== ""
+      ) {
         setSrc(data.assets[data.assets.length - 1])
+      } else {
+        setSrc(defaultAvatar)
       }
     })()
   }, [hash])
 
   useEffect(() => {
+    if (!src) return
+
     const token = new Image()
-    token.src = src || unknown
+    token.src = src
 
     const imageLoad: any = token.addEventListener("load", () => {
-      setImg(src || unknown)
-      setLoaded(true)
+      setImg(src)
+      setLoadingState(false)
     })
 
     const imageError: any = token.addEventListener("error", () => {
-      setError(true)
+      setImg(defaultAvatar)
+      setLoadingState(false)
     })
 
     return () => {
@@ -55,12 +77,15 @@ const IpfsIcon: React.FC<IProps> = ({ size, hash }) => {
     }
   }, [src])
 
-  if (src === unknown || !src) {
-    // change icon if token dexe
-    return <Icon src={defaultAvatar} size={size} />
+  if (isLoading) {
+    return (
+      <Loader m={m || "0 8px 0 0"} size={size}>
+        <RingSpinner color="#A4EBD4" size={20} />
+      </Loader>
+    )
   }
 
-  return <Icon src={srcImg} size={size} />
+  return <Icon m={m || "0 8px 0 0"} src={srcImg} size={size} />
 }
 
 export default IpfsIcon

@@ -9,7 +9,7 @@ export interface User {
   updated_at: number
 }
 
-export type PoolType = "all" | "basic" | "invest"
+export type PoolType = "ALL_POOL" | "INVEST_POOL" | "BASIC_POOL"
 
 export interface IPriceHistory {
   usdTVL: number

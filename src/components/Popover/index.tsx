@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import React, { useState, useRef, ReactNode } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { Flex } from "theme"
 import {
@@ -22,7 +22,7 @@ import { shortenAddress } from "utils"
 // TODO: if content height > greater than window height, then use scroll of that content
 
 const Popover: React.FC<{
-  title: string
+  title: string | ReactNode
   isOpen: boolean
   toggle: (state: boolean) => void
   contentHeight: number

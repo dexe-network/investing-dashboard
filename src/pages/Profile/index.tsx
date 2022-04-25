@@ -10,10 +10,6 @@ import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
 import NavTabs from "components/NavTabs"
 import {
-  selectBasicPoolByAddress,
-  selectInvestPoolByAddress,
-} from "state/pools/selectors"
-import {
   Container,
   ButtonContainer,
   Details,

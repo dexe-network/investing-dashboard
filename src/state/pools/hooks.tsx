@@ -15,11 +15,19 @@ import { AppDispatch, AppState } from "state"
 import { TraderPoolRegistry, TraderPool } from "abi"
 import useContract from "hooks/useContract"
 import { useQuery } from "urql"
-import { PoolQuery, PoolsQuery, PriceHistoryQuery } from "queries"
+import {
+  OwnedPoolsQuery,
+  PoolQuery,
+  PoolsQuery,
+  PriceHistoryQuery,
+} from "queries"
 import { addPools, setFilter, setPagination } from "state/pools/actions"
 import { selectPoolsFilters } from "./selectors"
 import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
 
+/**
+ * Returns top members filter state variables and setter
+ */
 export function usePoolsFilters(): [
   AppState["pools"]["filters"],
   (name: string, value: string) => void
@@ -32,6 +40,31 @@ export function usePoolsFilters(): [
   return [filters, handleChange]
 }
 
+/**
+ * Returns owned pools data
+ */
+export function useOwnedPools(
+  address: string | null | undefined
+): [IPoolQuery[], boolean] {
+  const [pools, setPools] = useState<IPoolQuery[]>([])
+  const [pool] = useQuery<{
+    traderPools: IPoolQuery[]
+  }>({
+    query: OwnedPoolsQuery,
+    variables: { address },
+  })
+
+  useEffect(() => {
+    if (pool.fetching || pool.error || !pool.data) return
+    setPools(pool.data.traderPools)
+  }, [pool])
+
+  return [pools, pool.fetching]
+}
+
+/**
+ * Returns contract info about the pool
+ */
 export function usePool(
   address: string | undefined
 ): [
@@ -67,6 +100,9 @@ export function usePool(
   return [traderPool, pool.data?.traderPool, leverageInfo, poolInfo]
 }
 
+/**
+ * Returns map of pool price history
+ */
 export function usePriceHistory(
   address: string | undefined
 ): IPriceHistory[] | undefined {
@@ -131,7 +167,7 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
       dispatch(
         setPagination({
           name: "total",
-          type: "basic",
+          type: "BASIC_POOL",
           value: Number(basicPoolsLength.toString()),
         })
       )
@@ -141,7 +177,7 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
       dispatch(
         setPagination({
           name: "total",
-          type: "invest",
+          type: "INVEST_POOL",
           value: Number(investPoolsLength.toString()),
         })
       )
