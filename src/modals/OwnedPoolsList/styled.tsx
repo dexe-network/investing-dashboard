@@ -3,6 +3,8 @@ import TokenIcon from "components/TokenIcon"
 import { motion } from "framer-motion"
 import { Flex, To } from "theme"
 import actionIcon from "assets/icons/stats-action.svg"
+import { PoolType } from "constants/interfaces_v2"
+import IpfsIcon from "components/IpfsIcon"
 
 export const Container = styled.div`
   padding: 16px 0 60px;
@@ -18,29 +20,30 @@ export const Header = styled(Flex)`
 
 export const PrimaryLabel = styled(Flex)`
   justify-content: flex-start;
-  font-family: Gilroy;
+  font-family: "Gilroy";
   font-style: normal;
   font-weight: 600;
-  font-size: 14px;
-  line-height: 15px;
-  letter-spacing: 0.5px;
-  color: #c5d1dc;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 0.03em;
+  color: #e4f2ff;
   width: 200px;
 `
 
-export const PlusIcon = styled.img`
-  margin: 0 5px;
+export const PlaceholderIcon = styled.img`
+  height: 40px;
+  width: 40px;
+  margin-right: 9px;
 `
 
 export const SecondaryLabel = styled(Flex)`
-  font-family: Gilroy;
+  font-family: "Gilroy";
   font-style: normal;
-  font-weight: normal;
-  font-size: 14px;
-  line-height: 14px;
-  text-align: left;
-  letter-spacing: 1px;
-  color: #5a6071;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 0.03em;
+  color: #616d8b;
   flex: 1;
   justify-content: flex-start;
 
@@ -83,35 +86,33 @@ const TokenData = styled(Flex)`
 `
 
 const Symbol = styled.div`
-  font-family: Gilroy;
+  font-family: "Gilroy";
   font-style: normal;
-  font-weight: normal;
+  font-weight: 600;
   font-size: 16px;
-  line-height: 150%;
-  letter-spacing: 0.02em;
-  font-feature-settings: "tnum" on, "lnum" on;
-  color: #c5d1dc;
+  line-height: 20px;
+  letter-spacing: 1px;
+  color: #e4f2ff;
 `
 
 const Name = styled.div`
-  font-family: Gilroy;
+  font-family: "Gilroy";
   font-style: normal;
-  font-weight: normal;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
-  letter-spacing: 0.005em;
-  color: #5a6071;
+  letter-spacing: 0.03em;
+  color: #616d8b;
 `
 
 const Value = styled(Flex)`
   justify-content: flex-start;
-  font-family: Gilroy;
+  font-family: "Gilroy";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   line-height: 100%;
-  letter-spacing: 0.5px;
-  color: #c5d1dc;
+  color: #e4f2ff;
   flex: 1;
   &:nth-child(3) {
     justify-content: center;
@@ -121,11 +122,22 @@ const Value = styled(Flex)`
   }
 `
 
-const ActionButton = styled.div``
+const Avatar = styled.div`
+  width: 40px;
+  height: 40px;
+  position: relative;
+  margin-right: 9px;
+`
 
-const Action = styled.img``
+const BaseWrapper = styled.div`
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: -5px;
+  bottom: 0;
+`
 
-export const EmptyText = styled(Flex)`
+export const EmptyText = styled(Row)`
   font-family: Gilroy;
   font-style: normal;
   font-weight: normal;
@@ -133,8 +145,8 @@ export const EmptyText = styled(Flex)`
   line-height: 130%;
   color: #5a6071;
   height: 60px;
-  padding: 10px 0 0;
   align-items: space-between;
+  justify-content: flex-start;
   width: 100%;
 `
 
@@ -145,26 +157,36 @@ export const Token: React.FC<{
   tvl: string
   pnl: string
   address: string
-  poolType: "basic" | "invest"
-}> = ({ symbol, name, tvl, pnl, address, baseAddress, poolType }) => {
+  descriptionURL: string
+  poolType: PoolType
+}> = ({
+  symbol,
+  name,
+  tvl,
+  pnl,
+  address,
+  baseAddress,
+  poolType,
+  descriptionURL,
+}) => {
   return (
-    <Row>
-      <Info>
-        <TokenIcon size={40} address={baseAddress} />
-        <TokenData>
-          <Symbol>{symbol}</Symbol>
-          <Name>{name}</Name>
-        </TokenData>
-      </Info>
-      <Value>{tvl}</Value>
-      <Value>{pnl}</Value>
-      <Value>
-        <To to={`/me/trader/profile/${poolType}/${address}`}>
-          <ActionButton>
-            <Action src={actionIcon} />
-          </ActionButton>
-        </To>
-      </Value>
-    </Row>
+    <To to={`/me/trader/profile/${poolType}/${address}`}>
+      <Row>
+        <Info>
+          <Avatar>
+            <IpfsIcon size={40} hash={descriptionURL} />
+            <BaseWrapper>
+              <TokenIcon size={20} address={baseAddress} />
+            </BaseWrapper>
+          </Avatar>
+          <TokenData>
+            <Symbol>{symbol}</Symbol>
+            <Name>{name}</Name>
+          </TokenData>
+        </Info>
+        <Value>{tvl}</Value>
+        <Value>{pnl}</Value>
+      </Row>
+    </To>
   )
 }

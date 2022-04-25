@@ -51,7 +51,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
   }
 
   const handleInputChange = (value) => {
-    onChange(value || "000000000000000000")
+    onChange(value || "0")
   }
 
   if (!onSelect && noData) {

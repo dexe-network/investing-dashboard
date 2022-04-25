@@ -80,9 +80,12 @@ function TopMembers() {
       <TopMembersBar />
       <GraphProvider value={AllPoolsClient}>
         <Routes>
-          <Route path="/" element={<List poolType="all" />}></Route>
-          <Route path="basic" element={<List poolType="basic" />}></Route>
-          <Route path="invest" element={<List poolType="invest" />}></Route>
+          <Route path="/" element={<List poolType="ALL_POOL" />}></Route>
+          <Route path="basic" element={<List poolType="BASIC_POOL" />}></Route>
+          <Route
+            path="invest"
+            element={<List poolType="INVEST_POOL" />}
+          ></Route>
         </Routes>
       </GraphProvider>
     </StyledTopMembers>

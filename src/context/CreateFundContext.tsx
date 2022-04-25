@@ -1,4 +1,3 @@
-// import { PoolTypes } from "constants/types"
 import { Token } from "constants/interfaces"
 import React from "react"
 

@@ -60,6 +60,14 @@ const PoolQuery = `
   }
 `
 
+const OwnedPoolsQuery = `
+  query ($address: String!) {
+    traderPools(orderBy: creationTime, first: 100, where: { trader: $address }) {
+      ${POOL}
+    }
+  }
+`
+
 const PoolsQuery = `
   query ($q: String!) {
     traderPools(where: { ticker_contains: $q } first: 100 orderBy: creationTime) {
@@ -68,4 +76,4 @@ const PoolsQuery = `
   }
 `
 
-export { PoolQuery, PoolsQuery, PriceHistoryQuery }
+export { PoolQuery, PoolsQuery, PriceHistoryQuery, OwnedPoolsQuery }

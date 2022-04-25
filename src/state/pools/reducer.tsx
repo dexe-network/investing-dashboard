@@ -29,17 +29,17 @@ export const initialState: poolsState = {
     currency: currencies[0],
   },
   pagination: {
-    all: {
+    ALL_POOL: {
       total: 0,
       offset: 0,
       limit: 100,
     },
-    basic: {
+    BASIC_POOL: {
       total: 0,
       offset: 0,
       limit: 100,
     },
-    invest: {
+    INVEST_POOL: {
       total: 0,
       offset: 0,
       limit: 100,
@@ -60,9 +60,7 @@ export default createReducer(initialState, (builder) =>
         action.payload.value
     })
     .addCase(addPools, (state, action) => {
-      const type = poolTypes[action.payload.type]
-
-      state[type] = (action.payload.data || []).map((v) => ({
+      state[action.payload.type] = (action.payload.data || []).map((v) => ({
         ...v,
         id: v.id.toLocaleLowerCase(),
       }))

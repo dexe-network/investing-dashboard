@@ -9,8 +9,8 @@ import { Content } from "theme/GlobalStyle"
 
 const Welcome = lazy(() => import("pages/Welcome"))
 const TopMembers = lazy(() => import("pages/TopMembers"))
-// const Invest = lazy(() => import("pages/Invest")) // TODO
-const Profile = lazy(() => import("pages/Profile")) // TODO
+const Invest = lazy(() => import("pages/Invest"))
+const Profile = lazy(() => import("pages/Profile"))
 const CreateFund = lazy(() => import("pages/CreateFund"))
 const Investor = lazy(() => import("pages/Investor"))
 const Trader = lazy(() => import("pages/Trader"))
@@ -72,10 +72,10 @@ export default function Routes() {
                     element={<Swap />}
                   />
 
-                  {/* <Route
+                  <Route
                     path="pool/invest/:poolType/:poolAddress"
                     element={<Invest />}
-                  /> */}
+                  />
                   <Route
                     path="pool/profile/:poolType/:poolAddress"
                     element={<Profile />}

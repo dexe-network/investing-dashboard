@@ -13,17 +13,17 @@ export const FloatingContainer = styled(motion.div)`
 `
 
 export const Container = styled.div`
-  background: linear-gradient(64.44deg, #24272f 32.35%, #2c313c 100%);
-  box-shadow: 0px -4px 17px -1px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
+  box-shadow: 0px 0.5px 0px rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(20px);
-  border-radius: 30px 30px 0 0;
+  border-radius: 10px;
   height: 100%;
   width: 100%;
 `
 
 export const Handle = styled.div<{ active: boolean }>`
   position: relative;
-  height: 15px;
+  height: 21px;
   &:after {
     content: "";
     position: absolute;
@@ -35,25 +35,22 @@ export const Handle = styled.div<{ active: boolean }>`
     border-radius: 6px;
     width: 38px;
     height: 5px;
-    top: 9px;
+    top: 16px;
   }
 `
 
 export const Header = styled(Flex)`
-  // height: 42px;
-  padding-top: 20px;
-  padding-bottom: 19px;
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 24px;
-  letter-spacing: 1px;
-  color: #c5d1dc;
-  line-height: 20px;
-  text-align: center;
-  color: #ffffff;
+  padding-top: 24px;
+  padding-bottom: 16px;
   width: 100%;
   justify-content: center;
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 20px;
+  text-align: center;
+  color: #e4f2ff;
 `
 
 export const Overlay = styled(motion.div)`

@@ -1,5 +1,4 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { PoolType } from "./interfaces_v2"
 
 export interface IPost {
   description: string
@@ -36,9 +35,9 @@ export interface PaginationType {
 }
 
 export interface ITopMembersPagination {
-  all: PaginationType
-  basic: PaginationType
-  invest: PaginationType
+  ALL_POOL: PaginationType
+  BASIC_POOL: PaginationType
+  INVEST_POOL: PaginationType
 }
 
 export interface Token {

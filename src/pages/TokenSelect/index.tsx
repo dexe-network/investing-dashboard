@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from "react"
 import { useSelector } from "react-redux"
+import { useNavigate, useParams } from "react-router-dom"
 
 import IconButton from "components/IconButton"
 import TokensList from "components/TokensList"
+import Header, { EHeaderTitles } from "components/Header"
 
 import { selectWhitelist } from "state/pricefeed/selectors"
+import { Token } from "constants/interfaces"
 
 import back from "assets/icons/angle-left.svg"
 
 import { Title } from "./styled"
-import { useNavigate, useParams } from "react-router-dom"
-import Header, { EHeaderTitles } from "components/Header"
 
 const TokenSelect: React.FC = () => {
   const navigate = useNavigate()
@@ -18,10 +19,10 @@ const TokenSelect: React.FC = () => {
   const [q, setQuery] = useState("")
   const whitelisted = useSelector(selectWhitelist)
 
-  const onSelect = (tokenAddress) => {
+  const onSelect = (token: Token) => {
     const rootPath = `/pool/swap/${type}`
 
-    navigate(`${rootPath}/${poolAddress}/${tokenAddress}`)
+    navigate(`${rootPath}/${poolAddress}/${token.address}`)
   }
 
   return (

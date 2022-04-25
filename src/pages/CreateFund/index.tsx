@@ -74,7 +74,7 @@ const performanceFees = [
 ]
 
 const deployMethodByType = {
-  basic: "deployInvestPool",
+  basic: "deployBasicPool",
   investment: "deployInvestPool",
 }
 

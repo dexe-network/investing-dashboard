@@ -16,15 +16,7 @@ import NavTabs from "components/NavTabs"
 import Popover from "components/Popover"
 import RadioButton from "components/RadioButton"
 import HeaderTabs from "./Tabs"
-import {
-  Filters,
-  Profiles,
-  Portaits,
-  GoBack,
-  Link,
-  Search,
-  More,
-} from "./Components"
+import { Filters, Profiles, GoBack, Link, Search, More } from "./Components"
 
 const sortFilter = [
   "Rating",
@@ -146,7 +138,6 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
       transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
     >
       {getTitle(title)}
-      {fields.includes(EFields.portraits) && <Portaits />}
       {fields.includes(EFields.link) && <Link />}
     </Title>
   )
