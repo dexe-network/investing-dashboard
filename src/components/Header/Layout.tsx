@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react"
 import { Container, Bar, Icons, Title } from "./styled"
-import { More } from "./Components"
+import { More, GoBack } from "./Components"
 
 interface Props {
   left?: ReactNode
@@ -17,7 +17,7 @@ const Layout: FC<Props> = ({ children, left, right }) => {
         transition={{ duration: 0.4, ease: [0.29, 0.98, 0.29, 1] }}
       >
         <Bar>
-          <Icons>{left}</Icons>
+          <Icons>{left || <GoBack />}</Icons>
           <Title>{children}</Title>
           <Icons>
             {right}

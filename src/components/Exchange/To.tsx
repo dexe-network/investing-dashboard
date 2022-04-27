@@ -17,12 +17,13 @@ import {
   Balance,
   Input,
   Tokens,
-  Symbol,
+  Max,
   ActiveSymbol,
   SelectToken,
   SymbolLabel,
   Icon,
 } from "./styled"
+import { ReactNode } from "react"
 
 interface IToProps {
   price: BigNumber
@@ -32,6 +33,7 @@ interface IToProps {
   symbol?: string
   decimal?: number
   priceImpact?: string
+  customIcon?: ReactNode
   onChange: (amount: string) => void
   onSelect?: () => void
 }
@@ -44,6 +46,7 @@ const ExchangeTo: React.FC<IToProps> = ({
   symbol,
   decimal,
   priceImpact,
+  customIcon,
   onChange,
   onSelect,
 }) => {
@@ -76,6 +79,12 @@ const ExchangeTo: React.FC<IToProps> = ({
     )
   }
 
+  const icon = customIcon ? (
+    customIcon
+  ) : (
+    <TokenIcon address={address} size={27} />
+  )
+
   return (
     <ToContainer dir="column" full>
       <Flex p="0 0 2px" full>
@@ -84,7 +93,7 @@ const ExchangeTo: React.FC<IToProps> = ({
         </Price>
         <Balance onClick={setMaxAmount}>
           <Tokens>{formatBigNumber(balance, decimal, 8)}</Tokens>
-          <Symbol>{symbol}</Symbol>
+          <Max>Max</Max>
         </Balance>
       </Flex>
       <Flex full ai="center">
@@ -96,7 +105,7 @@ const ExchangeTo: React.FC<IToProps> = ({
         />
         <ActiveSymbol onClick={onSelect}>
           {/* // TODO: create FundIcon component */}
-          {!noData && <TokenIcon address={address} size={27} />}
+          {!noData && icon}
           {noData ? (
             <SelectToken>Select Token</SelectToken>
           ) : (

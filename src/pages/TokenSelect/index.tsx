@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
+import { TraderPool } from "abi"
 
 import IconButton from "components/IconButton"
 import TokensList from "components/TokensList"
@@ -8,16 +9,19 @@ import Header, { EHeaderTitles } from "components/Header"
 
 import { selectWhitelist } from "state/pricefeed/selectors"
 import { Token } from "constants/interfaces"
+import useContract from "hooks/useContract"
 
 import back from "assets/icons/angle-left.svg"
 
-import { Title } from "./styled"
+import { Title, Container, TitleContainer, CardHeader, Card } from "./styled"
 
 const TokenSelect: React.FC = () => {
   const navigate = useNavigate()
   const { type, poolAddress } = useParams()
   const [q, setQuery] = useState("")
+  const [balances, setBalances] = useState({})
   const whitelisted = useSelector(selectWhitelist)
+  const traderPool = useContract(poolAddress, TraderPool)
 
   const onSelect = (token: Token) => {
     const rootPath = `/pool/swap/${type}`
@@ -25,20 +29,29 @@ const TokenSelect: React.FC = () => {
     navigate(`${rootPath}/${poolAddress}/${token.address}`)
   }
 
+  useEffect(() => {
+    if (!traderPool) return
+
+    const fetchBalances = async () => {
+      const info = await traderPool?.getPoolInfo()
+      const balance = {}
+
+      info.openPositions.map((address: string, index) => {
+        balance[address.toLocaleLowerCase()] =
+          info.baseAndPositionBalances[index + 1]
+      })
+
+      setBalances(balance)
+    }
+
+    fetchBalances().catch(console.error)
+  }, [traderPool])
+
   return (
     <>
       <Header title={EHeaderTitles.myTraderProfile} />
-      <TokensList
-        handleChange={setQuery}
-        tokens={whitelisted}
-        onSelect={onSelect}
-        query={q}
-      >
-        <IconButton media={back} onClick={() => {}} />
-        <Title>Select token</Title>
-      </TokensList>
 
-      {/* <Container
+      <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -47,27 +60,19 @@ const TokenSelect: React.FC = () => {
         <Card>
           <CardHeader>
             <TitleContainer>
-              <IconButton media={back} onClick={() => {}} />
+              <IconButton media={back} onClick={() => navigate(-1)} />
               <Title>Select token</Title>
             </TitleContainer>
-            <Search
-              placeholder="Name, ticker, address"
-              value={q}
-              handleChange={setQuery}
-              height="38px"
-            />
           </CardHeader>
-          <CardList>
-            {whitelisted.map((token) => (
-              <TokenItem
-                onClick={onSelect}
-                key={token.address}
-                tokenData={token}
-              />
-            ))}
-          </CardList>
+          <TokensList
+            balances={balances}
+            handleChange={setQuery}
+            tokens={whitelisted}
+            onSelect={onSelect}
+            query={q}
+          />
         </Card>
-      </Container> */}
+      </Container>
     </>
   )
 }

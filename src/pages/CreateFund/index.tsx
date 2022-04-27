@@ -6,7 +6,6 @@ import { useSelector } from "react-redux"
 
 import Button from "components/Button"
 import Avatar from "components/Avatar"
-import { GoBack } from "components/Header/Components"
 import Header from "components/Header/Layout"
 import AddressChips from "components/AddressChips"
 import Input from "components/Input"
@@ -111,8 +110,6 @@ const CreateFund: FC = () => {
   const poolFactoryAddress = useSelector(selectTraderPoolFactoryAddress)
   const traderPoolFactory = useContract(poolFactoryAddress, TraderPoolFactory)
   const traderPool = useContract(contractAddress, TraderPool)
-
-  const back = () => navigate(-1)
 
   const hideModal = () => setModalState(false)
 
@@ -231,7 +228,7 @@ const CreateFund: FC = () => {
         isOpen={isOpen}
         onClose={hideModal}
       />
-      <Header left={<GoBack onClick={back} />}>Create fund</Header>
+      <Header>Create fund</Header>
       <Container>
         <Body>
           <AvatarWrapper>

@@ -57,7 +57,7 @@ const Confirm: FC<Props> = ({ isOpen, title, children, toggle }) => {
         <Header>
           <Title>{title}</Title>
           <ButtonWrapper>
-            <IconButton media={close} onClick={() => {}} />
+            <IconButton media={close} onClick={toggle} />
           </ButtonWrapper>
         </Header>
         <Content>{children}</Content>

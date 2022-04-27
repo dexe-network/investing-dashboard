@@ -1,15 +1,11 @@
 import React from "react"
 import { Container, Paragraph, Body } from "./styled"
-import { GoBack } from "components/Header/Components"
 import Header from "components/Header/Layout"
-import { useNavigate } from "react-router-dom"
 
 const PrivacyPolicy = () => {
-  const navigate = useNavigate()
-  const back = () => navigate(-1)
   return (
     <Container>
-      <Header left={<GoBack onClick={back} />}>Privacy Policy</Header>
+      <Header>Privacy Policy</Header>
       <Body>
         <Paragraph>
           We reserve the exclusive right to make changes to this Privacy Policy

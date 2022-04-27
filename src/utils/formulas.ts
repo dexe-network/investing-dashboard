@@ -104,5 +104,8 @@ export const formateChartData = (data) => {
 }
 
 export const getPriceImpact = (a: number, b: number) => {
-  return b / a - 1
+  const result = b / a - 1
+
+  if (isNaN(result)) return 0
+  return result
 }

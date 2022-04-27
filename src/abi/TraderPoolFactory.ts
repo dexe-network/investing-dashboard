@@ -4,14 +4,20 @@ export default [
     inputs: [
       {
         indexed: false,
-        internalType: "address",
-        name: "user",
-        type: "address",
+        internalType: "string",
+        name: "poolType",
+        type: "string",
       },
       {
         indexed: false,
         internalType: "string",
-        name: "poolName",
+        name: "symbol",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "name",
         type: "string",
       },
       {
@@ -22,27 +28,21 @@ export default [
       },
       {
         indexed: false,
-        internalType: "string",
-        name: "symbol",
-        type: "string",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "basicToken",
-        type: "address",
-      },
-      {
-        indexed: false,
         internalType: "address",
         name: "proposalContract",
         type: "address",
       },
       {
         indexed: false,
-        internalType: "string",
-        name: "name",
-        type: "string",
+        internalType: "address",
+        name: "trader",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "basicToken",
+        type: "address",
       },
       {
         indexed: false,
@@ -246,7 +246,7 @@ export default [
   {
     inputs: [
       {
-        internalType: "contract IContractsRegistry",
+        internalType: "address",
         name: "contractsRegistry",
         type: "address",
       },

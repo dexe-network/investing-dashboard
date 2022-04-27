@@ -14,6 +14,7 @@ import ExchangeDivider from "components/Exchange/Divider"
 import Button, { SecondaryButton } from "components/Button"
 import CircularProgress from "components/CircularProgress"
 import TransactionSlippage from "components/TransactionSlippage"
+import Header from "components/Header/Layout"
 
 import useContract, { useERC20 } from "hooks/useContract"
 
@@ -25,9 +26,15 @@ import { calcSlippage, isAddress } from "utils"
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
 
-import { Container, Card, CardHeader, Title, IconsGroup } from "./styled"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { usePool } from "state/pools/hooks"
+import {
+  Container,
+  Card,
+  CardHeader,
+  Title,
+  IconsGroup,
+} from "components/Exchange/styled"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -201,43 +208,57 @@ function Swap() {
     }
 
     if (direction === "withdraw") {
-      setFromAddress(outputTokenAddress)
       setToAddress(poolData.baseToken)
+      setFromAddress(outputTokenAddress)
     }
 
     handleFromChange(toAmount)
   }, [direction, outputTokenAddress, poolData])
 
-  // read and update balances
+  // read and update pool base tokens balance
   useEffect(() => {
     if (
       !poolInfoData ||
       !poolInfoData.baseAndPositionBalances ||
-      !poolInfoData.baseAndPositionBalances.length ||
+      !poolInfoData.baseAndPositionBalances.length
+    )
+      return
+
+    const baseTokenBalance = poolInfoData.baseAndPositionBalances[0]
+
+    if (direction === "deposit") {
+      setFromBalance(baseTokenBalance)
+    }
+
+    if (direction === "withdraw") {
+      setToBalance(baseTokenBalance)
+    }
+  }, [poolInfoData, outputTokenAddress, direction])
+
+  // read and update position balance
+  useEffect(() => {
+    if (
+      !poolInfoData ||
       !poolInfoData.openPositions ||
-      !poolInfoData.openPositions.length ||
-      !outputTokenAddress
+      !poolInfoData.openPositions.length
     )
       return
 
     // find position index
     const positionIndex = poolInfoData.openPositions
       .map((address) => address.toLocaleLowerCase())
-      .indexOf(outputTokenAddress.toLocaleLowerCase())
+      .indexOf((outputTokenAddress || "").toLocaleLowerCase())
 
-    const baseTokenBalance = poolInfoData.baseAndPositionBalances[0]
     const positionTokenBalance =
       positionIndex !== -1
         ? poolInfoData.baseAndPositionBalances[positionIndex + 1]
         : BigNumber.from("0")
 
     if (direction === "deposit") {
-      setFromBalance(baseTokenBalance)
       setToBalance(positionTokenBalance)
     }
 
     if (direction === "withdraw") {
-      setToBalance(baseTokenBalance)
       setFromBalance(positionTokenBalance)
     }
   }, [poolInfoData, outputTokenAddress, direction])
@@ -249,19 +270,18 @@ function Swap() {
     const amount = ethers.utils.parseUnits("1", 18)
 
     const fetchAndUpdatePrices = async () => {
-      const tokensCost: BigNumber = await traderPool?.getExchangeToExactAmount(
+      const tokensCost = await traderPool?.getExchangeToExactAmount(
         fromAddress,
         toAddress,
         amount.toHexString(),
         []
       )
-      const usdCost: BigNumber = await priceFeed?.getNormalizedPriceOutUSD(
+      const usdCost = await priceFeed?.getNormalizedPriceOutUSD(
         toAddress,
-        amount.toHexString(),
-        []
+        amount.toHexString()
       )
-      setTokenCost(tokensCost)
-      setUSDCost(usdCost)
+      setTokenCost(tokensCost.maxAmountIn)
+      setUSDCost(usdCost.amountOut)
     }
 
     fetchAndUpdatePrices().catch(console.error)
@@ -276,16 +296,19 @@ function Swap() {
           const to = outputTokenAddress
           const amount = BigNumber.from(fromAmount)
 
-          const exchange: BigNumber =
-            await traderPool?.getExchangeFromExactAmount(
-              from,
-              to,
-              amount.toHexString(),
-              []
-            )
+          const exchange = await traderPool?.getExchangeFromExactAmount(
+            from,
+            to,
+            amount.toHexString(),
+            []
+          )
 
           const sl = 1 - parseFloat(slippage) / 100
-          const exchangeWithSlippage = calcSlippage(exchange, 18, sl)
+          const exchangeWithSlippage = calcSlippage(
+            exchange.minAmountOut,
+            18,
+            sl
+          )
 
           const receipt = await traderPool?.exchangeFromExact(
             from,
@@ -302,30 +325,25 @@ function Swap() {
     } else {
       ;(async () => {
         try {
-          const from = poolData?.baseToken
-          const to = outputTokenAddress
+          const from = outputTokenAddress
+          const to = poolData?.baseToken
           const amount = BigNumber.from(fromAmount)
 
-          const exchange: BigNumber =
-            await traderPool?.getExchangeToExactAmount(
-              from,
-              to,
-              amount.toHexString(),
-              []
-            )
-
-          const sl = 1 + parseFloat(slippage) / 100
-          const exchangeWithSlippage = calcSlippage(exchange, 18, sl)
-
-          console.log({
+          const exchange = await traderPool?.getExchangeFromExactAmount(
             from,
             to,
-            amount: amount.toString(),
-            exchange: exchange.toString(),
-            exchangeWithSlippage: exchangeWithSlippage.toString(),
-          })
+            amount.toHexString(),
+            []
+          )
 
-          const receipt = await traderPool?.exchangeToExact(
+          const sl = 1 - parseFloat(slippage) / 100
+          const exchangeWithSlippage = calcSlippage(
+            exchange.minAmountOut,
+            18,
+            sl
+          )
+
+          const receipt = await traderPool?.exchangeFromExact(
             from,
             to,
             amount.toHexString(),
@@ -359,27 +377,25 @@ function Swap() {
     const fetchAndUpdateTo = async () => {
       const amount = BigNumber.from(v)
 
-      const exchange: BigNumber = await traderPool?.getExchangeFromExactAmount(
+      const exchange = await traderPool?.getExchangeFromExactAmount(
         fromAddress,
         toAddress,
         amount.toHexString(),
         []
       )
-      const fromPrice: BigNumber = await priceFeed?.getNormalizedPriceOutUSD(
+      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         fromAddress,
-        amount.toHexString(),
-        []
+        amount.toHexString()
       )
-      const toPrice: BigNumber = await priceFeed?.getNormalizedPriceOutUSD(
+      const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
         toAddress,
-        exchange.toHexString(),
-        []
+        exchange.minAmountOut.toHexString()
       )
-      setToAmount(exchange.toString())
-      setInPrice(fromPrice)
-      setOutPrice(toPrice)
+      setToAmount(exchange.minAmountOut.toString())
+      setInPrice(fromPrice.amountOut)
+      setOutPrice(toPrice.amountOut)
 
-      updatePriceImpact(fromPrice, toPrice)
+      updatePriceImpact(fromPrice.amountOut, toPrice.amountOut)
     }
 
     if (!isToAddressTokenValid) return
@@ -402,19 +418,17 @@ function Swap() {
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         toAddress,
-        amount,
-        []
+        amount
       )
       const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
         fromAddress,
-        exchange,
-        []
+        exchange.maxAmountIn
       )
-      setFromAmount(exchange.toString())
-      setInPrice(fromPrice)
-      setOutPrice(toPrice)
+      setFromAmount(exchange.maxAmountIn.toString())
+      setInPrice(fromPrice.amountOut)
+      setOutPrice(toPrice.amountOut)
 
-      updatePriceImpact(fromPrice, toPrice)
+      updatePriceImpact(fromPrice.amountOut, toPrice.amountOut)
     }
 
     if (!isToAddressTokenValid) return
@@ -446,7 +460,7 @@ function Swap() {
       >
         {direction === "deposit"
           ? `Buy ${toData?.symbol}`
-          : `Sell ${toData?.symbol}`}
+          : `Sell ${fromData?.symbol}`}
       </Button>
     )
   }
@@ -525,14 +539,17 @@ function Swap() {
   )
 
   return (
-    <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-    >
-      {form}
-    </Container>
+    <>
+      <Header>{poolData?.name}</Header>
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {form}
+      </Container>
+    </>
   )
 }
 

@@ -4,7 +4,7 @@ import { EXCHANGE_DEFAULT_PERCENTS } from "constants/index"
 
 import icon from "assets/icons/swap-arrow.svg"
 
-import { Container, PercentButton, SwapButton, Icon } from "./styled"
+import { DividerContainer, PercentButton, SwapButton, Icon } from "./styled"
 
 interface IDividerProps {
   changeAmount: (v: string) => void
@@ -22,7 +22,7 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
   const buttonsList = points || EXCHANGE_DEFAULT_PERCENTS
 
   return (
-    <Container full>
+    <DividerContainer full>
       {buttonsList.map((point, index) => (
         <>
           <PercentButton
@@ -44,7 +44,7 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
           )}
         </>
       ))}
-    </Container>
+    </DividerContainer>
   )
 }
 

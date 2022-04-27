@@ -21,9 +21,16 @@ export const useUpdate = (ms: number) => {
 
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
-export function isAddress(value: any): string | false {
+export function isAddress(value: any): boolean {
+  if (value === "" || value === "0x") {
+    return false
+  }
+
   try {
-    return getAddress(value).toLowerCase()
+    const address = getAddress(value).toLowerCase()
+    if (address.length !== 42) return false
+
+    return true
   } catch {
     return false
   }
@@ -37,11 +44,7 @@ export function shortenAddress(
     return ""
   }
 
-  const parsed = isAddress(address)
-  if (!parsed) {
-    throw Error(`Invalid 'address' parameter '${address}'.`)
-  }
-  return `${parsed.substring(0, chars + 2)}...${parsed.substring(42 - chars)}`
+  return `${address.substring(0, chars + 2)}...${address.substring(42 - chars)}`
 }
 
 export function fromBig(
@@ -270,4 +273,13 @@ export const calcSlippage = (
     console.log(e)
     return amount
   }
+}
+
+export const parseTransactionError = (str: string) => {
+  const position = str.search(`"message":`)
+
+  const cutString = str.substring(position + 10)
+
+  const matches = cutString.match(/"(.*?)"/)
+  return matches ? matches[1] : ""
 }

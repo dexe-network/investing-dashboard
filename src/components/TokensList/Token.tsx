@@ -15,18 +15,18 @@ import {
   TokenBalance,
   TokenPrice,
 } from "./styled"
-import { getUSDPrice } from "utils/formulas"
 
 const Token: FC<{
   priceFeed: Contract | null
   tokenData: IToken
+  balance?: BigNumber
   onClick: (token: IToken) => void
-}> = ({ tokenData, priceFeed, onClick }) => {
+}> = ({ tokenData, priceFeed, balance, onClick }) => {
   const { symbol, name, address } = tokenData
 
   const [price, setPrice] = useState(BigNumber.from("0"))
-  const [, data, balance] = useERC20(address)
-  const balanceFormated = formatBigNumber(balance, data?.decimals)
+
+  const balanceFormated = formatBigNumber(balance || BigNumber.from("0"), 18)
 
   useEffect(() => {
     if (!priceFeed || !address) return
@@ -34,10 +34,9 @@ const Token: FC<{
     const getPrice = async () => {
       const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
         address,
-        ethers.utils.parseUnits("1", 18).toHexString(),
-        []
+        ethers.utils.parseUnits("1", 18).toHexString()
       )
-      setPrice(baseTokenPrice)
+      setPrice(baseTokenPrice.amountOut)
     }
 
     getPrice()

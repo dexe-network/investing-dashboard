@@ -24,6 +24,7 @@ import {
 import { addPools, setFilter, setPagination } from "state/pools/actions"
 import { selectPoolsFilters } from "./selectors"
 import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
+import { isAddress } from "utils"
 
 /**
  * Returns top members filter state variables and setter
@@ -47,9 +48,11 @@ export function useOwnedPools(
   address: string | null | undefined
 ): [IPoolQuery[], boolean] {
   const [pools, setPools] = useState<IPoolQuery[]>([])
+
   const [pool] = useQuery<{
     traderPools: IPoolQuery[]
   }>({
+    pause: !isAddress(address),
     query: OwnedPoolsQuery,
     variables: { address },
   })
@@ -76,11 +79,11 @@ export function usePool(
   const traderPool = useContract(address, TraderPool)
   const [leverageInfo, setLeverageInfo] = useState<LeverageInfo | null>(null)
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
-  const [usersInfo, setUsersInfo] = useState<UsersInfo[] | null>(null)
 
   const [pool] = useQuery<{
     traderPool: IPoolQuery
   }>({
+    pause: !isAddress(address),
     query: PoolQuery,
     variables: { address },
   })
@@ -90,10 +93,8 @@ export function usePool(
     ;(async () => {
       const leverage = await traderPool?.getLeverageInfo()
       const poolInfo = await traderPool?.getPoolInfo()
-      const usersInfo = await traderPool?.getUsersInfo(0, 1)
       setPoolInfo(poolInfo)
       setLeverageInfo(leverage)
-      setUsersInfo(usersInfo)
     })()
   }, [traderPool])
 

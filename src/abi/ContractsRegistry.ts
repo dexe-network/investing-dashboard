@@ -225,19 +225,6 @@ export default [
         type: "string",
       },
     ],
-    name: "deleteContract",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-    ],
     name: "getContract",
     outputs: [
       {
@@ -501,6 +488,19 @@ export default [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+    ],
+    name: "removeContract",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "renounceOwnership",
     outputs: [],
@@ -551,9 +551,9 @@ export default [
         type: "address",
       },
       {
-        internalType: "string",
-        name: "functionSignature",
-        type: "string",
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
       },
     ],
     name: "upgradeContractAndCall",

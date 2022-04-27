@@ -79,8 +79,8 @@ const ExchangeFrom: React.FC<IFromProps> = ({
         <Flex full>
           <Price>≈${formatBigNumber(price, 18, 2)}</Price>
           <Balance onClick={setMaxAmount}>
-            <Tokens>Balance: {formatBigNumber(balance, decimal, 6)}</Tokens>
-            <Max onClick={setMaxAmount}>Max</Max>
+            <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
+            <Max>Max</Max>
           </Balance>
         </Flex>
         <Flex full ai="center">

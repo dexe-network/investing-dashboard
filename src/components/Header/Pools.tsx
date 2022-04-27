@@ -24,7 +24,6 @@ const Pools = ({}: IPortaitsProps) => {
 
   const [isModalOpen, setModal] = useState(false)
   const [pools, isPoolsLoading] = useOwnedPools(account?.toLocaleLowerCase())
-  console.log(account, pools)
 
   const createFund = () => {
     navigate("/create-fund")

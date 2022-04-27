@@ -520,7 +520,7 @@ export default [
   {
     inputs: [
       {
-        internalType: "contract IContractsRegistry",
+        internalType: "address",
         name: "contractsRegistry",
         type: "address",
       },

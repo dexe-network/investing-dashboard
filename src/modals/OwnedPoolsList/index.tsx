@@ -55,6 +55,7 @@ const OwnedPoolsList: FC<Props> = ({ isOpen, toggle, pools }) => {
 
     return (
       <Token
+        onClick={toggle}
         descriptionURL={pool.descriptionURL}
         baseAddress={pool.baseToken}
         poolType="BASIC_POOL"
@@ -75,6 +76,7 @@ const OwnedPoolsList: FC<Props> = ({ isOpen, toggle, pools }) => {
 
     return (
       <Token
+        onClick={toggle}
         descriptionURL={pool.descriptionURL}
         baseAddress={pool.baseToken}
         poolType="INVEST_POOL"

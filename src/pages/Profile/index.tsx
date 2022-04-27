@@ -33,7 +33,6 @@ import AreaChart from "components/AreaChart"
 import ProfitLossChart from "components/ProfitLossChart"
 import BarChart from "pages/Investor/Bar"
 import TabsLight from "components/TabsLight"
-import { GoBack } from "components/Header/Components"
 import Header from "components/Header/Layout"
 import { PoolType } from "constants/interfaces_v2"
 import { usePool } from "state/pools/hooks"
@@ -170,9 +169,7 @@ const Profile: React.FC<Props> = () => {
 
   return (
     <>
-      <Header left={<GoBack onClick={back} />}>
-        {shortenAddress(poolAddress)}
-      </Header>
+      <Header>{shortenAddress(poolAddress)}</Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

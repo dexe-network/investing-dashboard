@@ -159,6 +159,7 @@ export const Token: React.FC<{
   address: string
   descriptionURL: string
   poolType: PoolType
+  onClick: () => void
 }> = ({
   symbol,
   name,
@@ -168,9 +169,10 @@ export const Token: React.FC<{
   baseAddress,
   poolType,
   descriptionURL,
+  onClick,
 }) => {
   return (
-    <To to={`/me/trader/profile/${poolType}/${address}`}>
+    <To onClick={onClick} to={`/me/trader/profile/${poolType}/${address}`}>
       <Row>
         <Info>
           <Avatar>

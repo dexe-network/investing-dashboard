@@ -13,6 +13,7 @@ import goBack from "assets/icons/pagination-prev.svg"
 import people from "assets/icons/people.svg"
 import more from "assets/icons/more-menu.svg"
 import { useSideBarContext } from "context/SideBarContext"
+import { useNavigate } from "react-router-dom"
 
 interface IFiltersProps {
   onClick: () => void
@@ -36,12 +37,12 @@ export const Profiles = ({ onClick }: IProfilesProps) => {
   )
 }
 
-interface IGoBackProps {
-  onClick?: () => void
-}
-export const GoBack = ({ onClick }: IGoBackProps) => {
+interface IGoBackProps {}
+export const GoBack = ({}: IGoBackProps) => {
+  const navigate = useNavigate()
+
   return (
-    <ClickableArea onClick={onClick}>
+    <ClickableArea onClick={() => navigate(-1)}>
       <IconButton src={goBack} />
     </ClickableArea>
   )

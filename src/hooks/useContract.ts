@@ -11,7 +11,7 @@ import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ITokenBase } from "constants/interfaces"
-import { isAddress } from "ethers/lib/utils"
+import { isAddress } from "utils"
 
 export default function useContract(
   address: string | undefined,
@@ -120,9 +120,7 @@ export function useERC20(
     try {
       isAddress(address)
       setAddress(address)
-    } catch (e) {
-      setAddress("")
-    }
+    } catch (e) {}
 
     setTokenData(null)
     setBalance(BigNumber.from(0))
@@ -131,26 +129,6 @@ export function useERC20(
   useEffect(() => {
     init()
   }, [contract, account, storedAddress, library, init])
-
-  // useEffect(() => {
-  //   if (withUpdate) {
-  //     const interval = setInterval(() => {
-  //       ;(async () => {
-  //         console.log("update erc20 balance")
-  //         try {
-  //           const balance = await (isETH
-  //             ? library.getBalance(account)
-  //             : contract?.balanceOf(account))
-  //           setBalance(balance)
-  //         } catch (e) {
-  //           // console.log(e, e.message)
-  //         }
-  //       })()
-  //     }, 5000)
-  //     return () => clearInterval(interval)
-  //   }
-  //   return () => {}
-  // }, [])
 
   return [contract, tokenData, balance, init]
 }

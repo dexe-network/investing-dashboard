@@ -24,15 +24,6 @@ export const ApproveButton = styled(BaseButton)`
   border-radius: 10px;
 `
 
-export const Container = styled(Flex)`
-  width: 100%;
-  height: 100%;
-  padding: 16px 16px 40px;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-`
-
 export const PriceContainer = styled(Flex)`
   width: 100%;
   height: 56px;
