@@ -39,6 +39,7 @@ export const Header = styled(Flex)`
 `
 
 export const Content = styled(Flex)`
+  width: fill-available;
   box-sizing: border-box;
   flex-direction: column;
   justify-content: center;
