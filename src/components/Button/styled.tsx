@@ -2,11 +2,11 @@ import styled from "styled-components"
 import { BaseButton, device, GradientBorder, Text } from "theme"
 import { ButtonThemeType } from "./types"
 
-const buttonPaddings = {
-  large: "17px 25px 17px",
-  big: "14px 25px 14px",
-  normal: "12px 15px 13px",
-  small: "9px 39px 9px",
+const buttonHeights = {
+  large: "56px",
+  big: "48px",
+  normal: "40px",
+  small: "31px",
 }
 
 const buttonColors = {
@@ -48,8 +48,9 @@ export const GradientBorderButton = styled(GradientBorder)<{
   color: ButtonThemeType
 }>`
   position: relative;
-  padding: ${(props) =>
-    props.size ? buttonPaddings[props.size] : buttonPaddings.normal};
+  height: ${(props) =>
+    props.size ? buttonHeights[props.size] : buttonHeights.normal};
+  padding: 0 27px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -79,8 +80,9 @@ export const GradientButton = styled(BaseButton)<{
   color: ButtonThemeType
 }>`
   position: relative;
-  padding: ${(props) =>
-    props.size ? buttonPaddings[props.size] : buttonPaddings.normal};
+  padding: 0 27px;
+  height: ${(props) =>
+    props.size ? buttonHeights[props.size] : buttonHeights.normal};
   display: flex;
   align-items: center;
   justify-content: center;
