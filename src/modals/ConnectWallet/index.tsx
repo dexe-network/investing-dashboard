@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { useActiveWallet } from "hooks/useActiveWallet"
 import { connectorsByName } from "constants/connectors"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { RotateSpinner } from "react-spinners-kit"
@@ -31,7 +30,6 @@ const modalRoot = document.getElementById("modal")
 export default function ConnectWallet({ isOpen, onRequestClose, onConnect }) {
   const [isActivating, setActivating] = useState("")
   const { activate, connector } = useWeb3React()
-  const active = useActiveWallet()
 
   const activateProvider = (name) => {
     setActivating(name)
@@ -127,8 +125,8 @@ export default function ConnectWallet({ isOpen, onRequestClose, onConnect }) {
               )}
               <WalletTitle>Wallet Connect</WalletTitle>
             </Wallet>
-            <Wallet onClick={() => activateProvider("metamask")}>
-              {isActivating === "metamask" ? (
+            <Wallet onClick={() => activateProvider("injected")}>
+              {isActivating === "injected" ? (
                 <RotateSpinner size={33} loading />
               ) : (
                 <WalletIcon src={metamask} alt="metamask" />

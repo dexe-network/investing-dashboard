@@ -6,7 +6,6 @@ import { shortenAddress } from "utils"
 import useTokensList from "hooks/useTokensList"
 import TokenIcon from "components/TokenIcon"
 import { useWeb3React } from "@web3-react/core"
-import { useActiveWallet } from "hooks/useActiveWallet"
 
 const Card = styled.div`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);

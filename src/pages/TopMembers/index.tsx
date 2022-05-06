@@ -7,7 +7,7 @@ import { Flex, Center, To } from "theme"
 import { createClient, Provider as GraphProvider } from "urql"
 import { usePools } from "state/pools/hooks"
 import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
-import { Routes, Outlet, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 
 // THE GRAPH CLIENT
 const AllPoolsClient = createClient({
@@ -23,7 +23,11 @@ import {
 
 import "./pagination.css"
 import { useSelector } from "react-redux"
-import { selectPools } from "state/pools/selectors"
+import {
+  selectBasicPools,
+  selectInvestPools,
+  selectPools,
+} from "state/pools/selectors"
 import { PoolType } from "constants/interfaces_v2"
 
 interface Props {
@@ -32,8 +36,16 @@ interface Props {
 
 const List: React.FC<Props> = ({ poolType }) => {
   const investScrollRef = React.useRef<any>(null)
-  const pools = useSelector(selectPools)
+  const ALL_POOL = useSelector(selectPools)
+  const BASIC_POOL = useSelector(selectBasicPools)
+  const INVEST_POOL = useSelector(selectInvestPools)
   const [isLoading, loadMore] = usePools(poolType)
+
+  const pools = {
+    ALL_POOL,
+    BASIC_POOL,
+    INVEST_POOL,
+  }
 
   // manually disable scrolling *refresh this effect when ref container dissapeared from DOM
   useEffect(() => {
@@ -43,7 +55,7 @@ const List: React.FC<Props> = ({ poolType }) => {
     return () => clearAllBodyScrollLocks()
   }, [investScrollRef, isLoading])
 
-  return isLoading && !pools.length ? (
+  return isLoading && !pools[poolType].length ? (
     <Center>
       <CubeSpinner size={40} loading />
       <Flex p="10px 0">
@@ -56,7 +68,7 @@ const List: React.FC<Props> = ({ poolType }) => {
         ref={investScrollRef}
         style={{ height: window.innerHeight - 117 }}
       >
-        {pools.map((pool, index) => (
+        {pools[poolType].map((pool, index) => (
           <To key={pool.id} to={`/pool/profile/${pool.type}/${pool.id}`}>
             <Flex p="16px 0 0" full>
               <MemberMobile data={pool} index={index} />
@@ -65,7 +77,7 @@ const List: React.FC<Props> = ({ poolType }) => {
         ))}
         {/* // TODO: make loading indicator stick to bottom of the list */}
         <LoadMore
-          isLoading={isLoading && !!pools.length}
+          isLoading={isLoading && !!pools[poolType].length}
           handleMore={loadMore}
           r={investScrollRef}
         />
@@ -80,7 +92,7 @@ function TopMembers() {
       <TopMembersBar />
       <GraphProvider value={AllPoolsClient}>
         <Routes>
-          <Route path="/" element={<List poolType="ALL_POOL" />}></Route>
+          <Route path="" element={<List poolType="ALL_POOL" />}></Route>
           <Route path="basic" element={<List poolType="BASIC_POOL" />}></Route>
           <Route
             path="invest"

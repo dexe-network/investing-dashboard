@@ -19,6 +19,7 @@ import {
   OwnedPoolsQuery,
   PoolQuery,
   PoolsQuery,
+  PoolsQueryByType,
   PriceHistoryQuery,
 } from "queries"
 import { addPools, setFilter, setPagination } from "state/pools/actions"
@@ -74,19 +75,26 @@ export function usePool(
   Contract | null,
   IPoolQuery | undefined,
   LeverageInfo | null,
-  PoolInfo | null
+  PoolInfo | null,
+  () => void
 ] {
   const traderPool = useContract(address, TraderPool)
+  const [update, setUpdate] = useState(false)
   const [leverageInfo, setLeverageInfo] = useState<LeverageInfo | null>(null)
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
 
-  const [pool] = useQuery<{
+  const [pool, executeQuery] = useQuery<{
     traderPool: IPoolQuery
   }>({
     pause: !isAddress(address),
     query: PoolQuery,
     variables: { address },
   })
+
+  const fetchUpdate = () => {
+    setUpdate(!update)
+    executeQuery()
+  }
 
   useEffect(() => {
     if (!traderPool) return
@@ -96,9 +104,15 @@ export function usePool(
       setPoolInfo(poolInfo)
       setLeverageInfo(leverage)
     })()
-  }, [traderPool])
+  }, [traderPool, update])
 
-  return [traderPool, pool.data?.traderPool, leverageInfo, poolInfo]
+  return [
+    traderPool,
+    pool.data?.traderPool,
+    leverageInfo,
+    poolInfo,
+    fetchUpdate,
+  ]
 }
 
 /**
@@ -138,6 +152,8 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch<AppDispatch>()
 
+  const isAll = poolType === "ALL_POOL"
+
   const filters = useSelector(selectPoolsFilters)
 
   const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
@@ -149,8 +165,10 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
   const [response, executeQuery] = useQuery<{
     traderPools: IPoolQuery[]
   }>({
-    query: PoolsQuery,
-    variables: { q: filters.query },
+    query: isAll ? PoolsQuery : PoolsQueryByType,
+    variables: isAll
+      ? { q: filters.query }
+      : { q: filters.query, type: poolType },
   })
 
   // update data on search change

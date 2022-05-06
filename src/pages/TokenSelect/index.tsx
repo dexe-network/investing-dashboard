@@ -24,6 +24,14 @@ const TokenSelect: React.FC = () => {
   const traderPool = useContract(poolAddress, TraderPool)
 
   const onSelect = (token: Token) => {
+    // if (
+    //   type === "BASIC_POOL" &&
+    //   token.address === "0x8babbb98678facc7342735486c851abd7a0d17ca"
+    // ) {
+    //   navigate(`/create-risky-proposal/${poolAddress}/${token.address}/1`)
+    //   return
+    // }
+
     const rootPath = `/pool/swap/${type}`
 
     navigate(`${rootPath}/${poolAddress}/${token.address}`)

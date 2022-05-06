@@ -11,10 +11,12 @@ export const Container = styled.label`
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  padding-left: 16px;
 `
 
 export const Checkmark = styled.span`
   position: absolute;
+  left: 0;
   height: 16px;
   width: 16px;
   background-color: transparent;
@@ -43,6 +45,7 @@ export const Checkmark = styled.span`
 
 export const Input = styled.input`
   position: absolute;
+  left: 0;
   opacity: 0;
   cursor: pointer;
   height: 0;
@@ -51,17 +54,4 @@ export const Input = styled.input`
   &:checked ~ ${Checkmark}:after {
     display: block;
   }
-`
-
-export const Label = styled.span`
-  font-family: Gilroy;
-  font-size: 14px;
-  line-height: 14px;
-  letter-spacing: 0.4px;
-  color: #fff;
-  margin-left: 15px;
-  display: flex;
-  align-items: center;
-  font-family: Gilroy;
-  font-weight: 400;
 `

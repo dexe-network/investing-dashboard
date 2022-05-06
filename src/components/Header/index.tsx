@@ -1,33 +1,11 @@
 /**
  * Renders Header
  */
-import {
-  FilterContainer,
-  FiltersBody,
-  FilterSelectableItem,
-  FormLabel,
-  overlayVariants,
-  SearchOverlay,
-} from "components/TopMembersBar/styled"
 import { usePoolsFilters } from "state/pools/hooks"
-import { Container, Bar, Title, titleVariants, Icons } from "./styled"
+import { Container, Bar, Title, Icons } from "./styled"
 import { useState } from "react"
-import NavTabs from "components/NavTabs"
-import Popover from "components/Popover"
-import RadioButton from "components/RadioButton"
-import HeaderTabs from "./Tabs"
+import HeaderTabs, { getHeaderTabs } from "./Tabs"
 import { Filters, Profiles, GoBack, Link, Search, More } from "./Components"
-
-const sortFilter = [
-  "Rating",
-  "P&L in %",
-  "P&L in currency",
-  "Invested",
-  "Trades",
-  "Avg.trades per day",
-  "Avg. position time",
-  "Max Loss",
-]
 
 /**
  * Possible components which can be in the header
@@ -94,11 +72,11 @@ interface Props {
 const Header = ({ title, isTabSectionVisible = true }: Props) => {
   const fundName = "ISDX"
   const [fields] = useState<EFields[]>(getHeaderFileds(title))
+  const [tabs] = useState(getHeaderTabs(title))
 
   const [filters, dispatchFilter] = usePoolsFilters()
   const [isFiltersActive, setFiltersActive] = useState(false)
   const [isSearchActive, setSearchActive] = useState(false)
-  const [selectedFilter, setFilterState] = useState("")
 
   const handleFiltersClick = () => !isFiltersActive && setFiltersActive(true)
   const handleSearchClick = () => !isSearchActive && setSearchActive(true)
@@ -131,12 +109,7 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
    * Middle part of the header
    */
   const Middle = () => (
-    <Title
-      initial="visible"
-      animate={isSearchActive ? "hidden" : "visible"}
-      variants={titleVariants}
-      transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
-    >
+    <Title>
       {getTitle(title)}
       {fields.includes(EFields.link) && <Link />}
     </Title>
@@ -174,52 +147,8 @@ const Header = ({ title, isTabSectionVisible = true }: Props) => {
           <Middle />
           <Right />
         </Bar>
-        {isTabSectionVisible && <HeaderTabs title={title} />}
+        {isTabSectionVisible && <HeaderTabs tabs={tabs} />}
       </Container>
-      <SearchOverlay
-        initial="hidden"
-        animate={!isSearchActive ? "hidden" : "visible"}
-        variants={overlayVariants}
-      />
-
-      {/* Helpers */}
-      <Popover
-        contentHeight={650}
-        title="Filters"
-        isOpen={isFiltersActive}
-        toggle={setFiltersActive}
-      >
-        <FiltersBody>
-          <FormLabel>Sort by period</FormLabel>
-          <NavTabs
-            tabs={[
-              { name: "All" },
-              { name: "Day" },
-              { name: "Week" },
-              { name: "Month" },
-              { name: "3 Month" },
-              { name: "1 Year" },
-            ]}
-          />
-          <FormLabel>Sort by traders</FormLabel>
-          <FilterContainer>
-            {sortFilter.map((item) => (
-              <FilterSelectableItem
-                active={item === selectedFilter}
-                key={item}
-                onClick={() => setFilterState(item)}
-              >
-                {item}
-                <RadioButton
-                  value={item}
-                  selected={selectedFilter}
-                  onChange={() => {}}
-                />
-              </FilterSelectableItem>
-            ))}
-          </FilterContainer>
-        </FiltersBody>
-      </Popover>
     </>
   )
 }

@@ -43,6 +43,7 @@ const Chart = ({ data }) => {
         </defs>
         <Tooltip />
         <Area
+          legendType="triangle"
           isAnimationActive
           baseLine={2}
           type="linear"

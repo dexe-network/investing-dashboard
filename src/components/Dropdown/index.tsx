@@ -5,19 +5,6 @@ import { motion } from "framer-motion"
 import styled from "styled-components"
 import { device, Flex } from "theme"
 
-interface Props {
-  name: string
-  icon?: string
-  label?: React.ReactElement | string
-  placeholder?: string
-  data?: string[]
-  children?: React.ReactElement
-  position?: "right" | "left"
-  value?: string
-  onChange?: (name: string, value: string) => void
-  noClickAway?: boolean
-}
-
 export const floatingBodyVariants = {
   visible: {
     height: "fit-content",
@@ -112,6 +99,19 @@ const Item = styled(motion.div)<{ active?: boolean }>`
   border-radius: 7px;
   background: ${(props) => (props.active ? "#000000" : "transparent")};
 `
+
+interface Props {
+  name: string
+  icon?: string
+  label?: React.ReactElement | string
+  placeholder?: string
+  data?: string[]
+  children?: React.ReactElement
+  position?: "right" | "left"
+  value?: string
+  onChange?: (name: string, value: string) => void
+  noClickAway?: boolean
+}
 
 const Dropdown: React.FC<Props> = (props) => {
   const ref = useRef(null)

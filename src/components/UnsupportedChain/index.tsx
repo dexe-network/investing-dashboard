@@ -1,71 +1,72 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+
+import { useEffect, useCallback } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
-import Popover from "components/Popover"
-import Button, { BorderedButton } from "components/Button"
-import styled from "styled-components"
-import { Text, Flex } from "theme"
+import IconButton from "components/IconButton"
+import { BigNumber, ethers } from "ethers"
 
-export const Unsupported = styled.div`
-  background: rgb(252, 14, 14);
-  color: #fff;
-  padding: 5px;
-  text-align: center;
-  z-index: 30;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-`
+import { connectorsByName, injected, RPC_URLS } from "constants/connectors"
 
-export const PopoverText = styled(Text)`
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 12px;
-  line-height: 144%;
-  text-align: center;
-  letter-spacing: 0.5px;
-  color: #c5d1dc;
-  white-space: normal;
-`
+import warn from "assets/icons/warning.svg"
+
+import { Container, TextContainer, Button } from "./styled"
 
 const UnsupportedChain: React.FC = () => {
-  const { error, deactivate } = useWeb3React()
+  const { error, library } = useWeb3React()
   const isUnsupportedChainIdError = error instanceof UnsupportedChainIdError
 
-  const changeNetwork = () => {}
+  const changeNetwork = useCallback(async () => {
+    const activeProviderName = localStorage.getItem(
+      "dexe.network/investing/web3-auth-method"
+    )
+    if (!activeProviderName || !(activeProviderName in connectorsByName)) return
 
-  const disconnect = () => deactivate()
+    const provider = await connectorsByName[activeProviderName].getProvider()
 
-  return (
-    <Popover
-      contentHeight={230}
-      title="Unsupported Chain"
-      toggle={() => {}}
-      isOpen={isUnsupportedChainIdError}
-    >
-      <Flex dir="column" full p="0 37px">
-        <PopoverText>
-          App network (BSC Mainnet) doesn&apos;t match to network selected in
-          wallet. Learn how to change network in wallet
-        </PopoverText>
-      </Flex>
-      <Flex p="25px 37px 0" full>
-        <Flex p="0 24px 0 0">
-          <BorderedButton onClick={disconnect}>Disconnect</BorderedButton>
-        </Flex>
-        <Flex>
-          <Button
-            onClick={() =>
-              alert("This feature is not supported by your wallet")
-            }
-          >
-            Change network
-          </Button>
-        </Flex>
-      </Flex>
-    </Popover>
-  )
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: BigNumber.from(97).toHexString() }],
+      })
+    } catch (e) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      try {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: BigNumber.from(97).toHexString(),
+              chainName: "Binance smart chain",
+              rpcUrls: [RPC_URLS["97"]],
+              nativeCurrency: {
+                name: "Binance Coin",
+                symbol: "BNB",
+                decimals: 18,
+              },
+            },
+          ],
+        })
+      } catch (addError) {
+        // handle "add" error
+        console.log(addError)
+      }
+      // handle other "switch" errors
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isUnsupportedChainIdError) return
+
+    changeNetwork().catch(console.error)
+  }, [library, isUnsupportedChainIdError, changeNetwork])
+
+  return isUnsupportedChainIdError ? (
+    <Container>
+      <IconButton media={warn} />
+      <TextContainer>Please select BSC network.</TextContainer>
+      <Button onClick={changeNetwork}>Change network to BSC</Button>
+    </Container>
+  ) : null
 }
 
 export default UnsupportedChain

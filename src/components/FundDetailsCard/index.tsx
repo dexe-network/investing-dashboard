@@ -12,6 +12,12 @@ import { parsePoolData } from "utils/ipfs"
 import { useERC20 } from "hooks/useContract"
 import { ethers } from "ethers"
 import { IPoolQuery, PoolInfo } from "constants/interfaces_v2"
+import { formatBigNumber } from "utils"
+
+const fundTypes = {
+  BASIC_POOL: "Basic",
+  INVEST_POOL: "Invest",
+}
 
 interface Props {
   data: IPoolQuery
@@ -57,14 +63,16 @@ const FundDetailsCard: React.FC<Props> = ({ data, poolInfo }) => {
         label={"Min. investment amount"}
         value={`0 ${baseData?.symbol}`}
       />
-      <InfoRow label={"Type of fund"} value={"Standart"} />
+      <InfoRow label={"Type of fund"} value={fundTypes[data.type]} />
       <InfoRow label={"Whitelist"} value={"0 adresess"} />
       <InfoRow label={"Fund manager"} value={"0 managers"} />
       <InfoRow
         label={"Performance Fee"}
-        value={`${ethers.utils
-          .formatUnits(poolInfo?.parameters.comissionPercentage || 0, 25)
-          .toString()}%`}
+        value={`${formatBigNumber(
+          poolInfo?.parameters.commissionPercentage,
+          25,
+          0
+        )}%`}
       />
     </Container>
   )

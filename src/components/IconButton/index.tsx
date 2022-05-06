@@ -3,13 +3,20 @@ import { Container, Icon } from "./styled"
 
 interface Props {
   media: string
-  onClick: MouseEventHandler
+  filled?: boolean
+  size?: number
+  onClick?: MouseEventHandler
 }
 
-const IconButton: React.FC<Props> = ({ media, onClick }) => {
+const IconButton: React.FC<Props> = ({
+  media,
+  filled = false,
+  size = 14,
+  onClick,
+}) => {
   return (
-    <Container onClick={onClick}>
-      <Icon src={media} />
+    <Container withBackground={filled} onClick={onClick}>
+      <Icon size={size} src={media} />
     </Container>
   )
 }

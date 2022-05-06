@@ -1,4 +1,4 @@
-import { Flex, BaseButton, device } from "theme"
+import { Flex, device, BaseButton } from "theme"
 import styled from "styled-components"
 import { motion } from "framer-motion"
 
@@ -6,7 +6,7 @@ export const Container = styled(motion.div)`
   touch-action: none;
   user-select: none;
   width: 100%;
-  // background: #1e212a;
+  background: #0e121b;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
 
   @media only screen and (${device.sm}) {
@@ -124,17 +124,6 @@ export const Title = styled(Flex)`
   align-items: center;
   color: #e4f2ff;
 `
-
-export const titleVariants = {
-  visible: {
-    opacity: 1,
-    display: "flex",
-  },
-  hidden: {
-    display: "none",
-    opacity: 0,
-  },
-}
 
 export const Icons = styled(Flex)`
   width: 70px;

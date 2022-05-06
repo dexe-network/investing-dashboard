@@ -1,18 +1,25 @@
-import { Flex, Center, To } from "theme"
-import { useSwipeable } from "react-swipeable"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
-import FundsList from "components/FundsList"
-import { useSelector } from "react-redux"
-import MemberMobile from "components/MemberMobile"
-import Button, { SecondaryButton } from "components/Button"
 import { useState, useEffect } from "react"
+import { Flex, Center } from "theme"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { GuardSpinner } from "react-spinners-kit"
-import { formatNumber } from "utils"
-import { ethers } from "ethers"
+import { useWeb3React } from "@web3-react/core"
+import { createClient, Provider as GraphProvider } from "urql"
+
+import Button, { SecondaryButton } from "components/Button"
+import MemberMobile from "components/MemberMobile"
 import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
-import { selectBasicPoolByAddress } from "state/pools/selectors"
-import { AppState } from "state"
+import TabsLight from "components/TabsLight"
+import ProfitLossChart from "components/ProfitLossChart"
+import Header from "components/Header/Layout"
+import { Profiles } from "components/Header/Components"
+import Pools from "components/Header/Pools"
+import AreaChart from "components/AreaChart"
+import BarChart from "pages/Investor/Bar"
+
+import { usePool } from "state/pools/hooks"
+import { IDetailedChart } from "constants/interfaces"
+
 import {
   TabCard,
   Row,
@@ -22,13 +29,14 @@ import {
   ChartPeriods,
 } from "pages/Investor/styled"
 
-import AreaChart from "components/AreaChart"
-import BarChart from "pages/Investor/Bar"
-import Header from "components/Header/Layout"
-import { Profiles } from "components/Header/Components"
-import Pools from "components/Header/Pools"
-
-import { IDetailedChart } from "constants/interfaces"
+import {
+  Container,
+  ButtonContainer,
+  Details,
+  TextWhiteBig,
+  TextGrey,
+  FundsUsed,
+} from "./styled"
 
 const pnlNew: IDetailedChart[] = [
   {
@@ -73,28 +81,16 @@ const pnlNew: IDetailedChart[] = [
   },
 ]
 
-interface Props {}
-
-import {
-  Container,
-  ButtonContainer,
-  Details,
-  TextWhiteBig,
-  TextGrey,
-  FundsUsed,
-} from "./styled"
-import TabsLight from "components/TabsLight"
-import { usePool } from "state/pools/hooks"
-import { createClient, Provider as GraphProvider } from "urql"
-import ProfitLossChart from "components/ProfitLossChart"
-
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
+interface Props {}
+
 function Trader(props: Props) {
   const {} = props
 
+  const { account } = useWeb3React()
   const { pathname } = useLocation()
   const { poolAddress, poolType } = useParams<{
     poolAddress: string
@@ -105,15 +101,20 @@ function Trader(props: Props) {
     localStorage.setItem("last-visited-profile", pathname)
   }, [pathname])
 
-  const [, poolData, leverageInfo, poolInfoData] = usePool(poolAddress)
+  const [traderPool, poolData, leverageInfo, poolInfoData] =
+    usePool(poolAddress)
   const navigate = useNavigate()
-
-  const [loading, setLoading] = useState(false)
-  const [data, setData] = useState(null)
 
   const redirectToInvestor = () => {
     navigate("/me/investor")
   }
+
+  useEffect(() => {
+    if (!traderPool || !account) return
+    ;(async () => {
+      const isAdmin = await traderPool?.isTraderAdmin(account)
+    })()
+  }, [traderPool, account])
 
   if (!poolData) {
     return (
@@ -143,7 +144,7 @@ function Trader(props: Props) {
             <Flex full p="0 10px 0 0">
               <Button
                 onClick={() =>
-                  navigate(`/pool/swap/whitelist/${poolData.id}/0x`)
+                  navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)
                 }
                 full
               >

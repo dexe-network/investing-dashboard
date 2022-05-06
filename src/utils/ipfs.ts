@@ -56,7 +56,7 @@ export const parsePoolData = async (hash) => {
   }
 }
 
-export const addFileMetadata = (
+export const addFundMetadata = (
   b64,
   description,
   strategy,
@@ -68,6 +68,18 @@ export const addFileMetadata = (
     description,
     strategy,
     assets: [b64],
+  }
+  const dataString = stringify(data)
+
+  return client.add(dataString)
+}
+
+export const addInvestProposalMetadata = (ticker, description, account) => {
+  const data = {
+    timestamp: new Date().getTime() / 1000,
+    account,
+    description,
+    ticker,
   }
   const dataString = stringify(data)
 

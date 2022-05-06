@@ -74,7 +74,7 @@ interface PoolParameters {
   baseToken: string
   trader: string
   baseTokenDecimals: BigNumber
-  comissionPercentage: BigNumber
+  commissionPercentage: BigNumber
   comissionPeriod: number
   descriptionURL: string
   minimalInvestment: BigNumber

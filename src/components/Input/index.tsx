@@ -30,18 +30,21 @@ const inputVariants = {
 }
 
 interface Props {
-  label: string
+  type?: string
+  label?: string
   placeholder?: string
   disabled?: boolean
   value: string | null | undefined
   leftIcon?: ReactNode
   rightIcon?: ReactNode
   limit?: number
+  theme?: "grey" | "black"
   onClick?: () => void
   onChange?: (value: string) => void
 }
 
 const Input: FC<Props> = ({
+  type = "text",
   label,
   placeholder,
   value,
@@ -49,12 +52,13 @@ const Input: FC<Props> = ({
   leftIcon,
   rightIcon,
   limit,
+  theme = "black",
   onClick,
   onChange,
 }) => {
   const fieldRef = useRef<HTMLInputElement | null>(null)
 
-  const [isLabelActive, setLabelActive] = useState(!!value)
+  const [isLabelActive, setLabelActive] = useState(!label || !!value)
   const [valueLength, setValueLength] = useState(value ? value.length : 0)
 
   const handleClick = () => {
@@ -67,7 +71,7 @@ const Input: FC<Props> = ({
   }
 
   const onBlur = () => {
-    if (!fieldRef?.current?.value) {
+    if (!fieldRef?.current?.value && !!label) {
       setLabelActive(false)
     }
   }
@@ -83,19 +87,22 @@ const Input: FC<Props> = ({
   }
 
   return (
-    <Container onClick={handleClick}>
-      <Label
-        onClick={handleClick}
-        initial={isLabelActive ? "active" : "default"}
-        animate={isLabelActive ? "active" : "default"}
-        variants={labelVariants}
-      >
-        {label}
-      </Label>
+    <Container theme={theme} onClick={handleClick}>
+      {!!label && (
+        <Label
+          onClick={handleClick}
+          initial={isLabelActive ? "active" : "default"}
+          animate={isLabelActive ? "active" : "default"}
+          variants={labelVariants}
+        >
+          {label}
+        </Label>
+      )}
 
       {leftIcon}
 
       <InputField
+        type={type}
         disabled={disabled}
         defaultValue={value || ""}
         onChange={handleChange}

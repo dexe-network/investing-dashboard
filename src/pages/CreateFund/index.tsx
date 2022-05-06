@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler, useState, useEffect } from "react"
+import { FC, MouseEventHandler, useState, useEffect, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
@@ -13,6 +13,7 @@ import IconButton from "components/IconButton"
 import TextArea from "components/TextArea"
 import Payload from "components/Payload"
 import TokenIcon from "components/TokenIcon"
+import Slider from "components/Slider"
 
 import TokenSelect from "modals/TokenSelect"
 
@@ -22,8 +23,9 @@ import { Token } from "constants/interfaces"
 import useContract from "hooks/useContract"
 import { TraderPool, TraderPoolFactory } from "abi"
 
-import { addFileMetadata } from "utils/ipfs"
-import { bigify, delay } from "utils"
+import { addFundMetadata } from "utils/ipfs"
+import { bigify } from "utils"
+import getReceipt from "utils/getReceipt"
 
 import ManagersIcon from "assets/icons/Managers"
 import InvestorsIcon from "assets/icons/Investors"
@@ -35,7 +37,6 @@ import plus from "assets/icons/button-plus.svg"
 import HeaderStep from "./Header"
 import FundTypeCard from "./FundTypeCard"
 import FeeCard from "./FeeCard"
-import Slider from "./Slider"
 
 import {
   Container,
@@ -50,6 +51,7 @@ import {
   LinkButton,
   AvatarWrapper,
 } from "./styled"
+import { ethers } from "ethers"
 
 const performanceFees = [
   {
@@ -71,6 +73,21 @@ const performanceFees = [
     monthes: 12,
   },
 ]
+
+const sliderPropsByPeriodType = {
+  "0": {
+    min: 20,
+    max: 30,
+  },
+  "1": {
+    min: 20,
+    max: 50,
+  },
+  "2": {
+    min: 20,
+    max: 70,
+  },
+}
 
 const deployMethodByType = {
   basic: "deployBasicPool",
@@ -130,12 +147,16 @@ const CreateFund: FC = () => {
     handleTokenRedirect(baseToken.address)
   }
 
+  const handleManagersAdd = useCallback(async () => {
+    return await traderPool?.modifyAdmins(managers, true)
+  }, [managers, traderPool])
+
   const handleSubmit = async () => {
     if (!traderPoolFactory) return
     setCreating(true)
 
     try {
-      const ipfsReceipt = await addFileMetadata(
+      const ipfsReceipt = await addFundMetadata(
         avatarBlobString,
         description,
         strategy,
@@ -146,7 +167,9 @@ const CreateFund: FC = () => {
         descriptionURL: ipfsReceipt.path,
         trader: account,
         privatePool: isInvestorsAdded,
-        totalLPEmission: 0,
+        totalLPEmission: ethers.utils
+          .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
+          .toHexString(),
         baseToken: baseToken.address,
         baseTokenDecimals: baseToken.decimals,
         minimalInvestment: 0,
@@ -165,7 +188,7 @@ const CreateFund: FC = () => {
         poolParameters
       )
 
-      const data: any = await getReceipt(createReceipt.hash)
+      const data: any = await getReceipt(library, createReceipt.hash)
 
       setCreating(false)
 
@@ -179,36 +202,32 @@ const CreateFund: FC = () => {
         setCreactedAddress(createdAddress)
       }
     } catch (e) {
+      console.log(e)
       // TODO: handle error
     }
-  }
-
-  function getReceipt(hash, requestCount = 0): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      if (requestCount < 30) {
-        try {
-          const receipt = await library.getTransactionReceipt(hash)
-
-          if (!receipt || !receipt.logs || !receipt.logs.length) {
-            await delay(2000)
-            const newReceipt = await getReceipt(hash, requestCount + 1)
-            resolve(newReceipt)
-          } else {
-            resolve(receipt)
-          }
-        } catch (e) {}
-      } else {
-        reject("Request limits overload")
-      }
-    })
   }
 
   // watch for contract creation
   useEffect(() => {
     if (!contractAddress.length || !traderPool) return
+    ;(async () => {
+      if (!!managers.length) {
+        const managersReceipt = await handleManagersAdd()
+        console.log(managersReceipt)
+        const receipt = await getReceipt(library, managersReceipt.hash)
+        console.log(receipt)
+      }
 
-    navigate(`/new-fund/success/${contractAddress}`)
-  }, [contractAddress, traderPool, navigate])
+      navigate(`/success/${contractAddress}`)
+    })()
+  }, [
+    contractAddress,
+    traderPool,
+    navigate,
+    handleManagersAdd,
+    managers,
+    library,
+  ])
 
   const baseTokenAvatar = !!baseToken.address && (
     <TokenIcon size={24} address={baseToken.address} />
@@ -424,7 +443,7 @@ const CreateFund: FC = () => {
                 </FeeCards>
 
                 <Slider
-                  commissionPeriod={commissionPeriod}
+                  limits={sliderPropsByPeriodType[commissionPeriod]}
                   name="commissionPercentage"
                   initial={commissionPercentage}
                   onChange={handleChange}

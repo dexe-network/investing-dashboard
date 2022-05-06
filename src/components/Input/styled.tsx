@@ -2,7 +2,12 @@ import { motion } from "framer-motion"
 import styled from "styled-components"
 import { GradientBorder, Flex } from "theme"
 
-export const Container = styled(GradientBorder)`
+const background = {
+  black: "#08121a",
+  grey: "#191F2C",
+}
+
+export const Container = styled(GradientBorder)<{ theme: "grey" | "black" }>`
   position: relative;
   border-radius: 10px;
   width: 100%;
@@ -10,7 +15,7 @@ export const Container = styled(GradientBorder)`
   min-height: 50px;
 
   &:after {
-    background: #08121a;
+    background: ${({ theme }) => background[theme]};
   }
 `
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
 
+import { Web3Provider } from "@ethersproject/providers"
 import { injected, connectorsByName } from "constants/connectors"
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { FC, useRef, useState } from "react"
 import { Container, Area, Label, MaxLength } from "./styled"
 
 const labelVariants = {
@@ -28,19 +28,34 @@ const areaVariants = {
   },
 }
 
-const TextArea = ({ name, onChange, placeholder, defaultValue }) => {
-  const [description, setDescription] = useState("")
-  const [isLabelActive, setLabelActive] = useState(!!defaultValue)
+interface Props {
+  name: string
+  limit?: number
+  theme?: "grey" | "black"
+  placeholder?: string
+  defaultValue: string
+  onChange: (name: string, value: string) => void
+}
+
+const TextArea: FC<Props> = ({
+  name,
+  limit,
+  placeholder,
+  defaultValue,
+  theme = "black",
+  onChange,
+}) => {
+  const [isLabelActive, setLabelActive] = useState(
+    !placeholder || !!defaultValue
+  )
 
   const areaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const handleChange = ({ target }) => {
-    setDescription(target.value)
+    onChange(name, target.value)
   }
 
   const handleBlur = ({ target }) => {
-    onChange(name, target.value)
-
     if (target.value === "") {
       setLabelActive(false)
     }
@@ -53,9 +68,9 @@ const TextArea = ({ name, onChange, placeholder, defaultValue }) => {
     }
   }
 
-  const left = 1000 - description.length
+  const left = (limit || 1000) - defaultValue.length
   return (
-    <Container>
+    <Container theme={theme}>
       <Area
         ref={areaRef}
         variants={areaVariants}
@@ -69,17 +84,21 @@ const TextArea = ({ name, onChange, placeholder, defaultValue }) => {
         onChange={handleChange}
         onBlur={handleBlur}
       />
-      <Label
-        onClick={onClick}
-        initial={isLabelActive ? "active" : "default"}
-        animate={isLabelActive ? "active" : "default"}
-        variants={labelVariants}
-      >
-        {placeholder}
-      </Label>
-      <MaxLength color={left >= 0 ? "#5A6071" : "#D73231"} fz={16}>
-        {left} left
-      </MaxLength>
+      {!!placeholder && (
+        <Label
+          onClick={onClick}
+          initial={isLabelActive ? "active" : "default"}
+          animate={isLabelActive ? "active" : "default"}
+          variants={labelVariants}
+        >
+          {placeholder}
+        </Label>
+      )}
+      {!!limit && (
+        <MaxLength color={left >= 0 ? "#5A6071" : "#D73231"} fz={16}>
+          {left} left
+        </MaxLength>
+      )}
     </Container>
   )
 }

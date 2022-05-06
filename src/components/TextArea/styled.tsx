@@ -2,13 +2,21 @@ import { motion } from "framer-motion"
 import styled from "styled-components"
 import { Flex, GradientBorder, Text } from "theme"
 
-export const Container = styled(GradientBorder)<{ width?: string }>`
+const background = {
+  black: "#08121a",
+  grey: "#191F2C",
+}
+
+export const Container = styled(GradientBorder)<{
+  width?: string
+  theme: "grey" | "black"
+}>`
   position: relative;
   border-radius: 10px;
   width: 100%;
 
   &:after {
-    background: #08121a;
+    background: ${({ theme }) => background[theme]};
   }
 `
 

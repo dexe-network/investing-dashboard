@@ -221,5 +221,5 @@ export interface IPoolPosition {
 export interface ITab {
   title: string
   source: string
-  amount: number
+  amount?: number
 }

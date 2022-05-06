@@ -3,47 +3,27 @@
  */
 import { TabsMenu } from "components/TopMembersBar/styled"
 import { ITab } from "constants/interfaces"
-import { useState } from "react"
-import { useSelector } from "react-redux"
-import { usePoolsFilters } from "state/pools/hooks"
-import {
-  selectTotalBasicPools,
-  selectTotalInvestPools,
-} from "state/pools/selectors"
+import { useLocation } from "react-router-dom"
+import { To } from "theme"
 import { EHeaderTitles } from "."
 import { Tabs, Tab, TabAmount } from "./styled"
 
 interface IHeaderTabsProps {
-  title: EHeaderTitles
+  tabs: ITab[]
 }
-const HeaderTabs = ({ title }: IHeaderTabsProps) => {
-  const [filters, dispatchFilter] = usePoolsFilters()
-  {
-    /**
-        TODO: rework next 10 lines (till useState with tabs). 
-        They are not OK I think. We need to get totalBasicPools and totalInvestPools only if it's "investing" header, 
-        however we can't use hooks inside functions
-      */
-  }
-  const totalBasicPools = useSelector(selectTotalBasicPools)
-  const totalInvestPools = useSelector(selectTotalInvestPools)
-  const [tabs] = useState(
-    getHeaderTabs(title, totalBasicPools, totalInvestPools)
-  )
+const HeaderTabs = ({ tabs }: IHeaderTabsProps) => {
+  const { pathname } = useLocation()
+
   return tabs.length > 0 ? (
     <TabsMenu>
       <Tabs>
         {tabs.map((tab: ITab) => {
           return (
-            <Tab
-              key={tab.title}
-              active={false}
-              onClick={() => dispatchFilter("listType", tab.source)}
-            >
-              {tab.title}
+            <To key={tab.title} to={tab.source}>
+              <Tab active={pathname === tab.source}>{tab.title}</Tab>
 
-              {tab.amount > 0 && <TabAmount>{tab.amount}</TabAmount>}
-            </Tab>
+              {(tab?.amount || 0) > 0 && <TabAmount>{tab.amount}</TabAmount>}
+            </To>
           )
         })}
       </Tabs>
@@ -54,28 +34,21 @@ const HeaderTabs = ({ title }: IHeaderTabsProps) => {
 /**
  * Get Tabs depending on the title
  */
-const getHeaderTabs = (
-  title: EHeaderTitles,
-  firstPool?: number,
-  secondPool?: number
-) => {
+export const getHeaderTabs = (title: EHeaderTitles) => {
   switch (title) {
     case EHeaderTitles.investing:
       return [
         {
-          title: `All funds (1201)`,
-          source: "invest",
-          amount: 2,
+          title: `All funds`,
+          source: "all",
         },
         {
-          title: `Basic ${firstPool ? `(${firstPool})` : ""}`,
+          title: `Basic`,
           source: "basic",
-          amount: 0,
         },
         {
-          title: `Investment ${secondPool ? `(${secondPool})` : ""}`,
+          title: `Investment`,
           source: "invest",
-          amount: 2,
         },
       ]
     case EHeaderTitles.myInvestment:

@@ -22,6 +22,7 @@ export default function useContract(
 
   return useMemo(() => {
     if (!address || !ABI || !library || !isAddress(address)) return null
+
     try {
       return getContract(
         address,

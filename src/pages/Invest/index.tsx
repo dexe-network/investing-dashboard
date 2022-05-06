@@ -25,13 +25,8 @@ import { PoolType } from "constants/interfaces_v2"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { createClient, Provider as GraphProvider } from "urql"
-import {
-  calcSlippage,
-  formatDecimalsNumber,
-  getAllowance,
-  parseTransactionError,
-} from "utils"
-import { getDividedBalance, getPriceImpact, getPriceLP } from "utils/formulas"
+import { calcSlippage, getAllowance, parseTransactionError } from "utils"
+import { getDividedBalance, getPriceImpact } from "utils/formulas"
 import getReceipt from "utils/getReceipt"
 
 import settings from "assets/icons/settings.svg"
@@ -222,7 +217,9 @@ function Invest() {
 
   const traderPool = useContract(poolData?.id, TraderPool)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
-  const [fromToken, fromData, fromBalance] = useERC20(poolData?.baseToken)
+  const [fromToken, fromData, fromBalance, updateFromBalance] = useERC20(
+    poolData?.baseToken
+  )
 
   const updatePriceImpact = (from: BigNumber, to: BigNumber) => {
     const f = ethers.utils.formatUnits(from, 18)
@@ -230,6 +227,11 @@ function Invest() {
 
     const result = getPriceImpact(parseFloat(f), parseFloat(t))
     setPriceImpact(result.toFixed(4))
+  }
+
+  const updateToBalance = async () => {
+    const balance: BigNumber = await traderPool?.balanceOf(account)
+    setToBalance(balance)
   }
 
   const fetchAndUpdateAllowance = async () => {
@@ -261,12 +263,14 @@ function Invest() {
         )
 
         setSubmiting(false)
-        // const receipt = await getReceipt(library, depositResponse.hash)
+        await getReceipt(library, depositResponse.hash)
+
+        updateFromBalance()
+        await updateToBalance()
       }
 
       deposit().catch((error) => {
         setSubmiting(false)
-        console.log(error)
 
         if (!!error && !!error.data && !!error.data.message) {
           setError(error.data.message)
@@ -410,12 +414,7 @@ function Invest() {
   useEffect(() => {
     if (!traderPool || !fromData) return
 
-    const getUsersInfo = async () => {
-      const balance: BigNumber = await traderPool?.balanceOf(account)
-      setToBalance(balance)
-    }
-
-    getUsersInfo().catch(console.error)
+    updateToBalance().catch(console.error)
   }, [traderPool, fromData, account])
 
   const getButton = () => {

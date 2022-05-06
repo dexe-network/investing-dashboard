@@ -20,6 +20,8 @@ const Wallet = lazy(() => import("pages/Wallet"))
 const Success = lazy(() => import("pages/Success"))
 const Notifications = lazy(() => import("pages/Notifications"))
 const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO: my trader profile
+const CreateRiskyProposal = lazy(() => import("pages/CreateRiskyProposal"))
+const CreateInvestProposal = lazy(() => import("pages/CreateInvestProposal"))
 // const Insurance = lazy(() => import("pages/Insurance"))
 
 const PrivacyPolicy = lazy(() => import("pages/PrivacyPolicy"))
@@ -68,7 +70,7 @@ export default function Routes() {
                   />
 
                   <Route
-                    path="pool/swap/whitelist/:poolAddress/:outputTokenAddress"
+                    path="pool/swap/:poolType/:poolAddress/:outputTokenAddress"
                     element={<Swap />}
                   />
 
@@ -81,9 +83,16 @@ export default function Routes() {
                     element={<Profile />}
                   />
 
-                  {/* REDESIGN */}
+                  <Route
+                    path="create-risky-proposal/:poolAddress/:tokenAddress/*"
+                    element={<CreateRiskyProposal />}
+                  />
+                  <Route
+                    path="create-invest-proposal/:poolAddress"
+                    element={<CreateInvestProposal />}
+                  />
                   <Route path="create-fund" element={<CreateFund />} />
-                  <Route path="success" element={<Success />} />
+                  <Route path="success/:poolAddress" element={<Success />} />
 
                   <Route path="/*" element={<TopMembers />} />
                 </Route>

@@ -8,6 +8,9 @@ import PancakeFactory from "./PancakeFactory"
 import TraderPoolFactory from "./TraderPoolFactory"
 import TraderPoolRegistry from "./TraderPoolRegistry"
 import TraderPool from "./TraderPool"
+import TraderPoolRiskyProposal from "./TraderPoolRiskyProposal"
+import BasicTraderPool from "./BasicTraderPool"
+import InvestTraderPool from "./InvestTraderPool"
 
 export {
   PancakeExchangeTool,
@@ -19,5 +22,8 @@ export {
   PancakeFactory,
   TraderPoolFactory,
   TraderPoolRegistry,
+  TraderPoolRiskyProposal,
   TraderPool,
+  BasicTraderPool,
+  InvestTraderPool,
 }

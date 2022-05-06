@@ -16,7 +16,7 @@ const BSC_TESTNET_URL =
 const SUPPORTED_CHAINS = [97]
 
 const POLLING_INTERVAL = 12000
-const RPC_URLS = {
+export const RPC_URLS = {
   56: BSC_NETWORK_URL,
   97: BSC_TESTNET_URL,
 }
@@ -44,14 +44,14 @@ export const bsc = new BscConnector({
 })
 
 export const connectorsByName = {
-  metamask: injected,
+  injected,
   walletconnect,
   bsc,
   network,
 }
 
 export const connectorsIcons = {
-  metamask: metamaskIcon,
+  injected: metamaskIcon,
   walletconnect: walletconnectIcon,
   bsc: bscIcon,
 }

@@ -15,16 +15,18 @@ import Button, { SecondaryButton } from "components/Button"
 import CircularProgress from "components/CircularProgress"
 import TransactionSlippage from "components/TransactionSlippage"
 import Header from "components/Header/Layout"
+import TransactionError from "modals/TransactionError"
 
 import useContract, { useERC20 } from "hooks/useContract"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
-import { calcSlippage, isAddress } from "utils"
+import { calcSlippage, isAddress, parseTransactionError } from "utils"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
+import plus from "assets/icons/plus.svg"
 
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { usePool } from "state/pools/hooks"
@@ -35,6 +37,7 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
+import getReceipt from "utils/getReceipt"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -168,11 +171,13 @@ export const useSwap = (): [
 
 function Swap() {
   const navigate = useNavigate()
+  const { library } = useWeb3React()
   const [
     { fromAmount, toAmount, direction, slippage },
     { setFromAmount, setToAmount, setDirection, setSlippage },
   ] = useSwap()
 
+  const [error, setError] = useState("")
   const [fromAddress, setFromAddress] = useState("")
   const [toAddress, setToAddress] = useState("")
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
@@ -185,9 +190,10 @@ function Swap() {
   const [priceImpact, setPriceImpact] = useState("0")
   const [isSlippageOpen, setSlippageOpen] = useState(false)
 
-  const { poolAddress, outputTokenAddress } = useParams()
+  const { poolType, poolAddress, outputTokenAddress } = useParams()
 
-  const [traderPool, poolData, , poolInfoData] = usePool(poolAddress)
+  const [traderPool, poolData, , poolInfoData, updatePoolData] =
+    usePool(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
@@ -287,6 +293,14 @@ function Swap() {
     fetchAndUpdatePrices().catch(console.error)
   }, [traderPool, priceFeed, fromAddress, toAddress])
 
+  const handleProposalRedirect = () => {
+    if (poolType === "INVEST_POOL") {
+      navigate(`/create-invest-proposal/${poolAddress}`)
+    } else {
+      navigate(`/create-risky-proposal/${poolAddress}/0x/1`)
+    }
+  }
+
   // TODO: check last changed input (from || to)
   const handleSubmit = async () => {
     if (direction === "deposit") {
@@ -310,16 +324,22 @@ function Swap() {
             sl
           )
 
-          const receipt = await traderPool?.exchangeFromExact(
+          const transactionResponse = await traderPool?.exchangeFromExact(
             from,
             to,
             amount.toHexString(),
             exchangeWithSlippage.toHexString(),
             []
           )
-          console.log(receipt)
-        } catch (e) {
-          console.log(e)
+          await getReceipt(library, transactionResponse.hash)
+          updatePoolData()
+        } catch (error: any) {
+          if (!!error && !!error.data && !!error.data.message) {
+            setError(error.data.message)
+          } else {
+            const errorMessage = parseTransactionError(error.toString())
+            !!errorMessage && setError(errorMessage)
+          }
         }
       })()
     } else {
@@ -343,16 +363,22 @@ function Swap() {
             sl
           )
 
-          const receipt = await traderPool?.exchangeFromExact(
+          const transactionResponse = await traderPool?.exchangeFromExact(
             from,
             to,
             amount.toHexString(),
             exchangeWithSlippage.toHexString(),
             []
           )
-          console.log(receipt)
-        } catch (e) {
-          console.log(e)
+          await getReceipt(library, transactionResponse.hash)
+          updatePoolData()
+        } catch (error: any) {
+          if (!!error && !!error.data && !!error.data.message) {
+            setError(error.data.message)
+          } else {
+            const errorMessage = parseTransactionError(error.toString())
+            !!errorMessage && setError(errorMessage)
+          }
         }
       })()
     }
@@ -470,14 +496,24 @@ function Swap() {
   const form = (
     <Card>
       <CardHeader>
-        <Title>Open new trade</Title>
+        <Flex>
+          <Title>Swap</Title>
+        </Flex>
         <IconsGroup>
+          <IconButton
+            size={9}
+            filled
+            media={plus}
+            onClick={handleProposalRedirect}
+          />
           <CircularProgress />
           <IconButton
+            size={12}
+            filled
             media={settings}
             onClick={() => setSlippageOpen(!isSlippageOpen)}
           />
-          <IconButton media={close} onClick={() => {}} />
+          <IconButton size={10} filled media={close} onClick={() => {}} />
         </IconsGroup>
       </CardHeader>
 
@@ -490,7 +526,7 @@ function Swap() {
         decimal={fromData?.decimals}
         onSelect={
           direction === "withdraw"
-            ? () => navigate(`/select-token/whitelist/${poolAddress}`)
+            ? () => navigate(`/select-token/${poolType}/${poolAddress}`)
             : undefined
         }
         onChange={handleFromChange}
@@ -512,7 +548,7 @@ function Swap() {
         decimal={toData?.decimals}
         onSelect={
           direction === "deposit"
-            ? () => navigate(`/select-token/whitelist/${poolAddress}`)
+            ? () => navigate(`/select-token/${poolType}/${poolAddress}`)
             : undefined
         }
         onChange={handleToChange}
@@ -549,6 +585,9 @@ function Swap() {
       >
         {form}
       </Container>
+      <TransactionError isOpen={!!error.length} toggle={() => setError("")}>
+        {error}
+      </TransactionError>
     </>
   )
 }

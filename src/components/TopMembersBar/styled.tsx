@@ -3,7 +3,7 @@ import { device, Flex, BaseButton } from "theme"
 import styled from "styled-components"
 
 export const SearchOverlay = styled(Flex)`
-  position: absolute;
+  position: fixed;
   top: 79px;
   right: 0;
   left: 0;
@@ -140,8 +140,11 @@ export const overlayVariants = {
     display: "flex",
   },
   hidden: {
-    display: "none",
     opacity: 0,
+    transition: { delay: 0.2 },
+    transitionEnd: {
+      display: "none",
+    },
   },
 }
 

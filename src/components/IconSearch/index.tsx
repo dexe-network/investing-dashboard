@@ -1,8 +1,6 @@
 import { ChangeEventHandler, useEffect, useRef, useState } from "react"
 
 import { useClickAway } from "react-use"
-import { CircleSpinner } from "react-spinners-kit"
-import { useDebounce } from "react-use"
 import { DebounceInput } from "react-debounce-input"
 
 import search from "assets/icons/search-white.svg"
@@ -33,15 +31,10 @@ const IconSearch: React.FC<Props> = ({
   onChange,
 }) => {
   const inputElement = useRef<HTMLInputElement>(null)
-  useClickAway(inputElement, () => {
+  useClickAway(inputElement, (event) => {
+    event.stopPropagation()
     toggle(false)
   })
-
-  useEffect(() => {
-    if (active) {
-      inputElement.current?.focus()
-    }
-  }, [active, inputElement])
 
   const change: ChangeEventHandler<HTMLInputElement> = (e) => {
     onChange(e.target.value)
@@ -65,12 +58,12 @@ const IconSearch: React.FC<Props> = ({
       transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
     >
       <DebounceInput
+        autoFocus
         initial="hidden"
         animate={active ? "visible" : "hidden"}
         transition={{ duration: 0.2, ease: [0.29, 0.98, 0.29, 1] }}
         variants={inputVariants}
         element={Input}
-        autoFocus
         minLength={0}
         placeholder="Name, Ticker, Address"
         debounceTimeout={300}

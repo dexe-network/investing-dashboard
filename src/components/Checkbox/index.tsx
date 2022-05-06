@@ -3,7 +3,7 @@
 // import { motion } from "framer-motion"
 
 import { ReactElement } from "react"
-import { Container, Input, Checkmark, Label } from "./styled"
+import { Container, Input, Checkmark } from "./styled"
 
 interface IProps {
   name: string
@@ -23,7 +23,7 @@ const Checkbox: React.FC<IProps> = ({ name, label, checked, onChange }) => {
         onChange={() => onChange(!checked)}
       />
       <Checkmark />
-      <Label>{label}</Label>
+      {!!label && label}
     </Container>
   )
 }

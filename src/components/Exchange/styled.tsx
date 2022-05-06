@@ -249,8 +249,12 @@ export const Title = styled.div`
   font-size: 16px;
   line-height: 16px;
   color: #e4f2ff;
+
+  &:nth-child(2) {
+    margin-left: 19px;
+  }
 `
 
 export const IconsGroup = styled(Flex)`
-  width: 120px;
+  width: 152px;
 `

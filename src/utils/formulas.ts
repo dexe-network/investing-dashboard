@@ -97,7 +97,7 @@ export const formateChartData = (data) => {
 
     return {
       ...v,
-      price,
+      price: price,
       pnl,
     }
   })

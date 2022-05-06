@@ -1,0 +1,99 @@
+.react-calendar {}
+
+.react-calendar__navigation {
+    position: relative;
+    height: 37px;
+    padding-bottom: 17px;
+    border-bottom: 0.8px solid #616d8b5a;
+}
+
+.react-calendar__navigation__prev2-button,
+.react-calendar__navigation__next2-button {
+    display: none;
+}
+
+.react-calendar__navigation__prev-button,
+.react-calendar__navigation__next-button {
+    color: #E4F2FF;
+    font-size: 22px;
+    outline: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    position: absolute;
+}
+
+.react-calendar__navigation__next-button {
+    right: 4px;
+    top: -1px;
+}
+
+.react-calendar__navigation__prev-button {
+    right: 39px;
+    top: -1px;
+}
+
+.react-calendar__navigation__label {
+    outline: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    font-family: 'Gilroy';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 20px;
+    color: #E4F2FF;
+}
+
+.react-calendar__month-view__weekdays__weekday abbr {
+    text-decoration: none;
+}
+.react-calendar__month-view__weekdays__weekday {
+    padding: 20px 0;
+    font-family: 'Gilroy';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 12px;
+    text-align: center;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+
+    color: #616D8B;
+}
+
+.react-calendar__tile {
+    outline: none;
+    appearance: none;
+    border: none;
+    background: transparent;
+    font-family: 'Gilroy';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-transform: uppercase;
+    height: 24px;
+    width: 24px;
+    color: #E4F2FF;
+}
+
+.react-calendar__tile--active abbr {
+    background: linear-gradient(266.2deg, rgba(169, 221, 251, 0) 2.35%, rgba(193, 218, 255, 0.04) 96.05%);
+    border-radius: 50px;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #406089;
+}
+
+.react-calendar__tile--now abbr {
+    color: #2680eb;
+}

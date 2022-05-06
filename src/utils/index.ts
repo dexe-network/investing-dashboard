@@ -6,6 +6,7 @@ import { ethers } from "ethers"
 import { ERC20 } from "abi"
 import { useEffect, useState } from "react"
 import { OwnedPools } from "constants/interfaces_v2"
+import { getTime, setHours, setMinutes } from "date-fns"
 
 export const useUpdate = (ms: number) => {
   const [updator, setUpdate] = useState(0)
@@ -22,7 +23,7 @@ export const useUpdate = (ms: number) => {
 export const delay = (ms) => new Promise((res) => setTimeout(res, ms))
 
 export function isAddress(value: any): boolean {
-  if (value === "" || value === "0x") {
+  if (!value || value.length !== 42 || value === "" || value === "0x") {
     return false
   }
 
@@ -31,7 +32,8 @@ export function isAddress(value: any): boolean {
     if (address.length !== 42) return false
 
     return true
-  } catch {
+  } catch (error) {
+    console.log(error)
     return false
   }
 }
@@ -182,7 +184,9 @@ export const calcPrice = (price, amount) => {
   }
 }
 
-export const formatBigNumber = (value: BigNumber, decimals = 18, fix = 6) => {
+export const formatBigNumber = (value?: BigNumber, decimals = 18, fix = 6) => {
+  if (!value) return formatNumber("0", fix)
+
   const amount = ethers.utils.formatUnits(value, decimals).toString()
 
   return formatNumber(amount, fix)
@@ -282,4 +286,19 @@ export const parseTransactionError = (str: string) => {
 
   const matches = cutString.match(/"(.*?)"/)
   return matches ? matches[1] : ""
+}
+
+export const shortTimestamp = (timestamp: number): number => {
+  return Number((timestamp / 1000).toFixed(0))
+}
+
+export const expandTimestamp = (timestamp: number): number => {
+  return Number(`${timestamp}000`)
+}
+
+export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
+  const hours = setHours(timestamp, h)
+  const minutes = setMinutes(hours, m)
+
+  return shortTimestamp(getTime(minutes))
 }

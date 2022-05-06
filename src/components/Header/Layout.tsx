@@ -1,13 +1,18 @@
 import { FC, ReactNode } from "react"
-import { Container, Bar, Icons, Title } from "./styled"
+
+import Tabs from "components/Header/Tabs"
 import { More, GoBack } from "./Components"
+
+import { Container, Bar, Icons, Title } from "./styled"
+import { ITab } from "constants/interfaces"
 
 interface Props {
   left?: ReactNode
   right?: ReactNode
+  tabs?: ITab[]
 }
 
-const Layout: FC<Props> = ({ children, left, right }) => {
+const Layout: FC<Props> = ({ children, left, right, tabs }) => {
   return (
     <>
       <Container
@@ -24,6 +29,7 @@ const Layout: FC<Props> = ({ children, left, right }) => {
             <More />
           </Icons>
         </Bar>
+        {tabs !== undefined && !!tabs.length && <Tabs tabs={tabs} />}
       </Container>
     </>
   )

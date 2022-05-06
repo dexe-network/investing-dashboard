@@ -4,10 +4,15 @@ import styled, { createGlobalStyle } from "styled-components"
 import TooltipSmall from "assets/icons/TooltipSmall"
 
 const TooltipStyles = createGlobalStyle`
+  button {
+    padding: 0;
+  }
+
   .dark-tooltip {
-    background: #1D2127!important;
+    background: #181E2C!important;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08)!important;
     border-radius: 10px!important;
+    border: 1px solid #223047!important;
     padding: 22px 18px 17px 13px!important;
     display: block!important;
     min-width: 300px;
