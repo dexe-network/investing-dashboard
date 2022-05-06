@@ -25,6 +25,7 @@ const CreateInvestProposal = lazy(() => import("pages/CreateInvestProposal"))
 // const Insurance = lazy(() => import("pages/Insurance"))
 
 const PrivacyPolicy = lazy(() => import("pages/PrivacyPolicy"))
+const Insurance = lazy(() => import("pages/Insurance"))
 
 function Layout() {
   return <Outlet />
@@ -96,6 +97,7 @@ export default function Routes() {
 
                   <Route path="/*" element={<TopMembers />} />
                 </Route>
+                <Route path="insurance" element={<Insurance />} />
 
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
 
