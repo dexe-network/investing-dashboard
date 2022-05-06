@@ -1,4 +1,4 @@
-import React from "react"
+import React, { FC } from "react"
 import Confirm from "components/Confirm"
 import Wow from "assets/transaction-sent-icons/wow.svg"
 import LinkIcon from "assets/transaction-sent-icons/link-icon.svg"
@@ -14,26 +14,40 @@ import {
 } from "./styled"
 import Button, { SecondaryButton } from "components/Button"
 
-const TransactionSent = () => {
+interface TransactionSentProps {
+  title: string
+  description: string
+  isOpen: boolean
+  toggle: () => void
+}
+
+const TransactionSent: FC<TransactionSentProps> = ({
+  title,
+  description,
+  isOpen,
+  children,
+  toggle,
+}) => {
   return (
-    <Confirm title="Transaction sent" isOpen toggle={() => {}}>
+    <Confirm title={title} isOpen={isOpen} toggle={toggle}>
       <Body>
         <WowImg>
           <img src={Wow} alt="wow-img" />
         </WowImg>
-        <Text>Success swap of DEXE to PZM</Text>
+        <Text>{description}</Text>
         <ButtonsContainer>
-          <SecondaryButton size="big">
+          {children}
+          {/* <SecondaryButton size="big">
             <SecondaryButtonText>Close</SecondaryButtonText>
-          </SecondaryButton>
-          <Button size="big">
+          </SecondaryButton> */}
+          {/* <Button size="big">
             <ButtonContentContainer>
               <ButtonText>BscScan</ButtonText>
               <ButtonImg>
                 <img src={LinkIcon} alt="link-icon" />
               </ButtonImg>
             </ButtonContentContainer>
-          </Button>
+          </Button> */}
         </ButtonsContainer>
       </Body>
     </Confirm>
