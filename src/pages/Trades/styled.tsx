@@ -11,7 +11,7 @@ export const Container = styled(Flex)`
   height: -moz-available;
   height: -webkit-fill-available;
   height: fill-available;
-  height: calc(100% - 64px);
+  height: calc(100% - 94px);
 `
 
 export const Header = styled(Flex)`
