@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import InsuranceCard from "components/InsuranceCard"
 import {
-  VotingContainer,
   Body,
   ConfirmationText,
   VoicePoverContainer,
@@ -51,11 +50,14 @@ const Voting = () => {
 
   return (
     <>
-      <VotingContainer>
-        <Body>
-          <InsuranceCard startvoting={setVotingState} />
-        </Body>
-      </VotingContainer>
+      <Body>
+        <InsuranceCard startvoting={setVotingState} />
+        <InsuranceCard startvoting={setVotingState} />
+        <InsuranceCard startvoting={setVotingState} />
+        <InsuranceCard startvoting={setVotingState} />
+        <InsuranceCard startvoting={setVotingState} />
+        <InsuranceCard startvoting={setVotingState} />
+      </Body>
 
       <Payload isOpen={pendingState} toggle={() => setPendingState(false)} />
 

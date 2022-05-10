@@ -58,3 +58,8 @@ export const selectUniswapRouterAddress = createSelector(
   [selectContracts],
   (contracts) => contracts.UniswapV2Router || ""
 )
+
+export const selectUserRegistryAddress = createSelector(
+  [selectContracts],
+  (contracts) => contracts.UserRegistry || ""
+)

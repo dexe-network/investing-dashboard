@@ -6,7 +6,7 @@ export const InsuranceCardContainer = styled(GradientBorder)`
   flex-direction: column;
   margin: 0 auto;
   border-radius: 16px;
-  margin: 16px 16px 0;
+  margin: 0 0 16px;
 
   &:after {
     background: #181e2c;

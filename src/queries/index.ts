@@ -84,10 +84,35 @@ const PoolsQueryByType = `
   }
 `
 
+const BasicPositionsQuery = `
+  query ($address: String!, $closed: Boolean!) {
+    basicPool(id: $address) {
+      baseToken
+      descriptionURL
+      ticker
+      positions(first: 100, where: { closed: $closed }) {
+        id
+        positionToken
+        closed
+        exchanges {
+          fromToken
+          toToken
+          fromVolume
+          toVolume
+          day {
+            day
+          }
+        }
+      }
+    }
+  }
+`
+
 export {
   PoolQuery,
   PoolsQuery,
   PoolsQueryByType,
   PriceHistoryQuery,
   OwnedPoolsQuery,
+  BasicPositionsQuery,
 }

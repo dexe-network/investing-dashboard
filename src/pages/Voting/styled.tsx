@@ -1,16 +1,9 @@
 import styled from "styled-components"
 
-export const VotingContainer = styled.div`
-  margin: 0 auto;
-  width: fill-available;
-  height: calc(100vh - 158px);
-  overflow-y: auto;
-`
-
 export const Body = styled.div`
   margin: 0 auto;
   width: fill-available;
-  paddind: 16px 16px 0;
+  padding: 16px 16px 24px;
   box-sizing: border-box;
 `
 

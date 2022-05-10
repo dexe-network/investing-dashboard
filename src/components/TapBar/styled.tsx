@@ -15,22 +15,22 @@ export const MobileMenu = styled(motion.div)`
   justify-content: space-around;
   padding: 15px 14px 23px 14px;
   width: 100%;
-  height: 70px;
   z-index: 100;
-  background: #1d222a;
+  background: #0e121b;
+  border-radius: 8px 8px 0 0;
 
-  height: 59px;
+  height: 49px;
   padding: 15px 14px 12px 14px;
 
   @media all and (display-mode: standalone) {
-    height: 80px;
-    padding: 15px 14px 25px 14px;
+    height: 70px;
+    padding: 5px 14px 25px 14px;
   }
 `
 
 const MobileItem = styled(motion.div)`
   width: 55px;
-  height: 55px;
+  height: 49px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,8 +46,7 @@ const MobileIcon = styled.div`
 `
 
 const MobileLabel = styled.div<{ active: boolean }>`
-  margin-top: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 3px;
 
   font-family: Gilroy;
   font-style: normal;
@@ -58,23 +57,13 @@ const MobileLabel = styled.div<{ active: boolean }>`
   text-align: center;
   letter-spacing: 0.16px;
 
-  color: ${(props) => (props.active ? "#77DDC2" : "#f5f5f5")};
+  color: ${(props) => (props.active ? "#9AE2CB" : "#616D8B")};
 `
 
 const Wrapper = styled.div`
-  &:nth-child(1) {
-    ${MobileIcon} {
-      transform: translateY(5px);
-    }
-  }
-  &:nth-child(3) {
-    ${MobileIcon} {
-      transform: translateY(5px);
-    }
-  }
   &:nth-child(4) {
     ${MobileIcon} {
-      transform: translateY(7px);
+      transform: translateY(2px);
     }
   }
 `

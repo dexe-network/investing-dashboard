@@ -98,7 +98,7 @@ const ExchangeTo: React.FC<IToProps> = ({
       </Flex>
       <Flex full ai="center">
         <BigNumberInput
-          decimals={18}
+          decimals={decimal || 18}
           onChange={handleInputChange}
           value={amount}
           renderInput={(props: any) => <Input {...props} />}

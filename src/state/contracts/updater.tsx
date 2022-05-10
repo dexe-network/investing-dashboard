@@ -18,6 +18,7 @@ const contractAddressGetters = [
   "getTreasuryContract",
   "getDividendsContract",
   "getCorePropertiesContract",
+  "getUserRegistryContract",
 ]
 
 export const ContractsRegistryUpdater: React.FC = () => {

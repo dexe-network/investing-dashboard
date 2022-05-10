@@ -213,9 +213,7 @@ const CreateFund: FC = () => {
     ;(async () => {
       if (!!managers.length) {
         const managersReceipt = await handleManagersAdd()
-        console.log(managersReceipt)
         const receipt = await getReceipt(library, managersReceipt.hash)
-        console.log(receipt)
       }
 
       navigate(`/success/${contractAddress}`)

@@ -56,6 +56,21 @@ export const parsePoolData = async (hash) => {
   }
 }
 
+export const parseUserData = async (hash) => {
+  try {
+    if (hash.length === 46) {
+      const res = await axios.post(
+        `https://ipfs.infura.io:5001/api/v0/cat?arg=${hash}`
+      )
+      return res.data
+    }
+    return false
+  } catch (e) {
+    console.log(e)
+    return false
+  }
+}
+
 export const addFundMetadata = (
   b64,
   description,
@@ -80,6 +95,18 @@ export const addInvestProposalMetadata = (ticker, description, account) => {
     account,
     description,
     ticker,
+  }
+  const dataString = stringify(data)
+
+  return client.add(dataString)
+}
+
+export const addUserMetadata = (name, assets, account) => {
+  const data = {
+    timestamp: new Date().getTime() / 1000,
+    account,
+    name,
+    assets,
   }
   const dataString = stringify(data)
 

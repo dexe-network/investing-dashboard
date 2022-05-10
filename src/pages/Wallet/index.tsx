@@ -1,12 +1,38 @@
-import React from "react"
+import { useEffect, useState } from "react"
+import { Navigate, useNavigate } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
+import { useSelector } from "react-redux"
+import { UserRegistry } from "abi"
+
+import { PulseSpinner } from "react-spinners-kit"
+import Avatar from "components/Avatar"
+import Header, { EHeaderTitles } from "components/Header"
+import IconButton from "components/IconButton"
+
+import { selectUserRegistryAddress } from "state/contracts/selectors"
+import useContract from "hooks/useContract"
+
+import { addUserMetadata, parseUserData } from "utils/ipfs"
+import { shortenAddress } from "utils"
+
+import pen from "assets/icons/pencil-edit.svg"
+import bsc from "assets/wallets/bsc.svg"
+import add from "assets/icons/add-green.svg"
+import Invest from "assets/icons/Invest"
+import Withdraw from "assets/icons/Withdraw"
+import Swap from "assets/icons/Swap"
+import Expand from "assets/icons/Expand"
+import plus from "assets/icons/plus.svg"
+
 import {
   Container,
-  // Header,
+  Cards,
+  List,
   Info,
   FloatingButtons,
   TextGray,
   Name,
+  User,
   UserInfo,
   AvatarWrapper,
   Card,
@@ -14,63 +40,107 @@ import {
   CardButtons,
   TextButton,
   Heading,
-  Transaction,
   TransactionsList,
-  Sticky,
-  TransactionType,
-  TransactionDetails,
-  TransactionHash,
-  TransactionText,
-  TransactionsGroup,
   TransactionsPlaceholder,
-  PathArrow,
-  NameLabel,
-  Time,
   InsuranceCard,
   InsuranceInfo,
   InsuranceTitle,
-  InsuranceDescription,
+  InsuranceButton,
+  InsuranceIcon,
   Network,
   NetworkIcon,
+  Tabs,
+  NavButton,
 } from "./styled"
-import FloatingButton from "components/FloatingButton"
-import Avatar from "components/Avatar"
-import NavTabs from "components/NavTabs"
-import Button from "components/Button"
-import TokenIcon from "components/TokenIcon"
-import Confirm from "components/Confirm"
-import Header, { EHeaderTitles } from "components/Header"
-import more from "assets/icons/more-menu.svg"
-import swap from "assets/icons/swap-path.svg"
-import { shortenAddress } from "utils"
-import bsc from "assets/wallets/bsc.svg"
-import { Navigate, useNavigate } from "react-router-dom"
 
-const transactions = [
+const transactions = []
+
+const useUserSettings = (): [
   {
-    date: "Decemeber 21",
-    transactions: [
-      {
-        type: "Create fund",
-        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        timestamp: "14:13 AM",
-        amountIn: "0.001023 BNB",
-        amountOut: "349.5 LUCRO",
-      },
-      {
-        type: "Invest",
-        address: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        timestamp: "11:09 AM",
-        amountIn: "112 USDT",
-        amountOut: "113.4 CATA",
-      },
-    ],
+    isUserEditing: boolean
+    isLoading: boolean
+    userName: string
+    userAvatar: string
   },
-]
+  {
+    setUserEditing: (state: boolean) => void
+    setUserName: (name: string) => void
+    setUserAvatar: (avatar: string) => void
+    handleUserSubmit: () => void
+  }
+] => {
+  const { account } = useWeb3React()
+
+  const [isLoading, setLoading] = useState(true)
+  const [isUserEditing, setUserEditing] = useState(false)
+  const [userName, setUserName] = useState("")
+  const [userAvatar, setUserAvatar] = useState("")
+  const [assets, setAssets] = useState<string[]>([])
+  const userRegistryAddress = useSelector(selectUserRegistryAddress)
+  const userRegistry = useContract(userRegistryAddress, UserRegistry)
+
+  const handleUserSubmit = async () => {
+    setLoading(true)
+    const ipfsReceipt = await addUserMetadata(
+      userName,
+      [...assets, userAvatar],
+      account
+    )
+    await userRegistry?.changeProfile(ipfsReceipt.path)
+    setLoading(false)
+    setUserEditing(false)
+  }
+
+  useEffect(() => {
+    if (!userRegistry) return
+
+    const getUserInfo = async () => {
+      setLoading(true)
+      const userData = await userRegistry.userInfos(account)
+      const user = await parseUserData(userData.profileURL)
+
+      if ("name" in user) {
+        setUserName(user.name)
+      }
+
+      if ("assets" in user && user.assets.length) {
+        setUserAvatar(user.assets[user.assets.length - 1])
+        setAssets(user.assets)
+      }
+
+      setLoading(false)
+    }
+
+    getUserInfo().catch((error) => {
+      console.error(error)
+      setLoading(false)
+    })
+  }, [userRegistry, account])
+
+  return [
+    {
+      isUserEditing,
+      userName,
+      userAvatar,
+      isLoading,
+    },
+    {
+      setUserEditing,
+      setUserName,
+      setUserAvatar,
+      handleUserSubmit,
+    },
+  ]
+}
 
 export default function Wallet() {
   const { account, deactivate } = useWeb3React()
   const navigate = useNavigate()
+
+  const [
+    { isUserEditing, userName, userAvatar, isLoading },
+    { setUserEditing, setUserName, setUserAvatar, handleUserSubmit },
+  ] = useUserSettings()
 
   const handleLogout = () => {
     deactivate()
@@ -78,6 +148,17 @@ export default function Wallet() {
   }
 
   if (!account) return <Navigate to="/welcome" />
+
+  const userIcon = isUserEditing ? (
+    <IconButton size={12} filled media={plus} onClick={handleUserSubmit} />
+  ) : (
+    <IconButton
+      size={24}
+      filled
+      media={pen}
+      onClick={() => setUserEditing(true)}
+    />
+  )
 
   return (
     <>
@@ -88,88 +169,83 @@ export default function Wallet() {
         exit={{ opacity: 0, y: -15 }}
         transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        <Info>
-          <AvatarWrapper>
-            <Avatar size={50} />
-          </AvatarWrapper>
-          <UserInfo>
-            <TextGray>Welcome!</TextGray>
-            <NameLabel>User Name</NameLabel>
-          </UserInfo>
-        </Info>
-        <FloatingButtons>
-          <FloatingButton icon={more} />
-        </FloatingButtons>
+        <Cards>
+          <User>
+            <Info>
+              <AvatarWrapper>
+                <Avatar
+                  url={userAvatar}
+                  onCrop={(_, value) => setUserAvatar(value)}
+                  showUploader={isUserEditing}
+                  size={44}
+                />
+              </AvatarWrapper>
+              <UserInfo>
+                <TextGray>Welcome!</TextGray>
+                <Name
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  disabled={!isUserEditing}
+                  placeholder="User Name"
+                />
+              </UserInfo>
+            </Info>
+            {isLoading ? (
+              <PulseSpinner size={20} loading />
+            ) : (
+              <FloatingButtons>{userIcon}</FloatingButtons>
+            )}
+          </User>
 
-        <Card>
-          <Network>
-            BSC <NetworkIcon src={bsc} />
-          </Network>
-          <TextGray>Current account</TextGray>
-          <Address>{shortenAddress(account, 8)}</Address>
-          <CardButtons>
-            <TextButton color="#9AE2CB">Change</TextButton>
-            <TextButton>Copy</TextButton>
-            <TextButton onClick={handleLogout}>Disconnect</TextButton>
-          </CardButtons>
-        </Card>
+          <InsuranceCard>
+            <InsuranceInfo>
+              <InsuranceTitle>Total Amount Insured: 0.00 DEXE</InsuranceTitle>
+            </InsuranceInfo>
+            <InsuranceButton>
+              <InsuranceIcon src={add} alt="add" /> Add insurance
+            </InsuranceButton>
+          </InsuranceCard>
 
-        <Heading>Transactions History</Heading>
+          <Card>
+            <Network>
+              BSC <NetworkIcon src={bsc} />
+            </Network>
+            <TextGray>Current account</TextGray>
+            <Address>{shortenAddress(account, 8)}</Address>
+            <CardButtons>
+              <TextButton color="#9AE2CB">Change</TextButton>
+              <TextButton>Copy</TextButton>
+              <TextButton onClick={handleLogout}>Disconnect</TextButton>
+            </CardButtons>
+          </Card>
+        </Cards>
 
-        <NavTabs
-          tabs={[
-            { name: "All" },
-            { name: "Swaps" },
-            { name: "Pool" },
-            { name: "Governance" },
-            { name: "Rewards" },
-          ]}
-        />
-        {transactions.length ? (
-          <TransactionsList>
-            {transactions.map(({ date, transactions }) => (
-              <React.Fragment key={date}>
-                <TransactionsGroup>
-                  {transactions.map(
-                    ({ type, address, timestamp, amountIn, amountOut }) => (
-                      <Transaction key={timestamp}>
-                        <TransactionType>{type}</TransactionType>
-                        <TransactionDetails>
-                          <TransactionHash>
-                            {shortenAddress(address)}
-                          </TransactionHash>
-                          <TransactionText>
-                            <TokenIcon size={18} />
-                            {amountIn}
-                          </TransactionText>
-                          <PathArrow src={swap} />
-                          <TransactionText>
-                            <TokenIcon size={18} />
-                            {amountOut}
-                          </TransactionText>
-                          <Time>{timestamp}</Time>
-                        </TransactionDetails>
-                      </Transaction>
-                    )
-                  )}
-                </TransactionsGroup>
-              </React.Fragment>
-            ))}
-          </TransactionsList>
-        ) : (
-          <TransactionsPlaceholder>
-            Your transactions will appear here....
-          </TransactionsPlaceholder>
-        )}
-        <InsuranceCard>
-          <InsuranceInfo>
-            <InsuranceTitle>Funds Insurance</InsuranceTitle>
-            <InsuranceDescription>
-              Minimize your investment risks <br /> with DeXe Insurance
-            </InsuranceDescription>
-          </InsuranceInfo>
-          <Button onClick={() => navigate("/insurance")}>Open</Button>
-        </InsuranceCard>
+        <List>
+          <Heading>Transactions History</Heading>
+
+          <Tabs>
+            <NavButton>
+              Investing <Invest />
+            </NavButton>
+            <NavButton>
+              Swap <Swap />
+            </NavButton>
+            <NavButton>
+              Withdraw <Withdraw />
+            </NavButton>
+            <NavButton>
+              <Expand />
+            </NavButton>
+          </Tabs>
+
+          {transactions.length ? (
+            <TransactionsList></TransactionsList>
+          ) : (
+            <TransactionsPlaceholder>
+              Your transactions will appear here....
+            </TransactionsPlaceholder>
+          )}
+        </List>
       </Container>
     </>
   )

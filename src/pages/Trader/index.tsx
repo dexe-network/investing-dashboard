@@ -138,19 +138,20 @@ function Trader(props: Props) {
       >
         <MemberMobile data={poolData}>
           <ButtonContainer>
-            <Flex p="0 24px 0 15px">
-              <SecondaryButton full>Positions</SecondaryButton>
-            </Flex>
-            <Flex full p="0 10px 0 0">
-              <Button
-                onClick={() =>
-                  navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)
-                }
-                full
-              >
-                New trade
-              </Button>
-            </Flex>
+            <SecondaryButton
+              full
+              onClick={() =>
+                navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)
+              }
+            >
+              Open new trade
+            </SecondaryButton>
+            <Button
+              onClick={() => navigate(`/fund-positions/${poolData.id}/open`)}
+              full
+            >
+              Positions
+            </Button>
           </ButtonContainer>
         </MemberMobile>
 

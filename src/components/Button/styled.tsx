@@ -50,7 +50,7 @@ export const GradientBorderButton = styled(GradientBorder)<{
   position: relative;
   height: ${(props) =>
     props.size ? buttonHeights[props.size] : buttonHeights.normal};
-  padding: 0 27px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,7 +63,7 @@ export const GradientBorderButton = styled(GradientBorder)<{
   ${Text} {
     font-family: "Gilroy";
     font-style: normal;
-    font-weight: 600;
+    font-weight: 400;
     line-height: 22px;
     color: ${(props) => secondaryColors[props.color]};
     font-size: ${(props) =>
@@ -80,7 +80,7 @@ export const GradientButton = styled(BaseButton)<{
   color: ButtonThemeType
 }>`
   position: relative;
-  padding: 0 27px;
+  padding: 0 8px;
   height: ${(props) =>
     props.size ? buttonHeights[props.size] : buttonHeights.normal};
   display: flex;

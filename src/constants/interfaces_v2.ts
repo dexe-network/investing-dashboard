@@ -104,3 +104,27 @@ export interface OwnedPools {
   basic: string[]
   invest: string[]
 }
+
+export interface IExchange {
+  fromToken: string
+  toToken: string
+  fromVolume: string
+  toVolume: string
+  day: {
+    day: number
+  }
+}
+
+export interface IPosition {
+  closed: boolean
+  id: string
+  positionToken: string
+  exchanges: IExchange[]
+}
+
+export interface IPositionQuery {
+  baseToken: string
+  ticker: string
+  descriptionURL: string
+  positions: IPosition[]
+}

@@ -27,6 +27,7 @@ const GlobalStyle = createGlobalStyle`
     width:100%;
     overflow-x:hidden;
     overflow-y:hidden;
+    background: #0E121B;
 
     /* height: calc(var(--vh, 1vh) * 100);
     min-height: calc(var(--vh, 1vh) * 100); */

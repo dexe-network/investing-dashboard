@@ -1,13 +1,9 @@
-import React, { useEffect, useState } from "react"
-// import styled from "styled-components"
-
 import { useWeb3React } from "@web3-react/core"
-import { useConnectWalletContext } from "context/ConnectWalletContext"
 
 import Wallet from "assets/menu/mobile/Wallet"
 import Profile from "assets/menu/mobile/Profile"
 import TopTraders from "assets/menu/mobile/TopTraders"
-import Notifications from "assets/menu/mobile/Notifications"
+import Insurance from "assets/menu/mobile/Insurance"
 
 import { MobileMenu, NavItem } from "./styled"
 import { shortenAddress } from "utils"
@@ -34,11 +30,7 @@ export const TapBar = () => {
         text="My profile"
       />
       <NavItem path="/" Icon={TopTraders} text="Traders" />
-      <NavItem
-        path="/notifications"
-        Icon={Notifications}
-        text="Notifications"
-      />
+      <NavItem path="/insurance/voting" Icon={Insurance} text="Insurance" />
     </MobileMenu>
   )
 }

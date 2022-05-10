@@ -16,6 +16,16 @@ const Img = styled.img<{ size: number }>`
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
 `
 
+const Overlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 30, 44, 0.87);
+  border-radius: 150px;
+`
+
 const HoverCamera = styled.div`
   box-sizing: border-box;
   position: absolute;
@@ -128,6 +138,8 @@ const Avatar: React.FC<Props> = ({
         src={croppedImg ? URL.createObjectURL(croppedImg) : url}
         size={size}
       />
+      {showUploader && !url && <Overlay />}
+      {showUploader && !url && <CameraIcon src={picture} />}
       {showUploader && (
         <>
           <FileUpload
@@ -135,6 +147,7 @@ const Avatar: React.FC<Props> = ({
             accept="image/*"
             onChange={handleSelectFile}
           />
+
           <ImageCropper
             submit={setCroppedImg}
             img={upImg}

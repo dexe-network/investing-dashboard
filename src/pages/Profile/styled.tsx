@@ -8,6 +8,10 @@ export const Container = styled(motion.div)`
   overflow-y: auto;
   overflow-x: hidden;
   height: calc(100vh - 94px);
+
+  @media all and (display-mode: standalone) {
+    height: calc(100vh - 115px);
+  }
 `
 
 export const ButtonContainer = styled(Flex)`

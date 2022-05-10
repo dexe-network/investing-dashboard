@@ -7,6 +7,7 @@ import {
   UsersInfo,
   IPriceHistoryQuery,
   IPriceHistory,
+  IPositionQuery,
 } from "constants/interfaces_v2"
 import { poolTypes } from "constants/index"
 import { Contract } from "@ethersproject/contracts"
@@ -21,6 +22,7 @@ import {
   PoolsQuery,
   PoolsQueryByType,
   PriceHistoryQuery,
+  BasicPositionsQuery,
 } from "queries"
 import { addPools, setFilter, setPagination } from "state/pools/actions"
 import { selectPoolsFilters } from "./selectors"
@@ -221,4 +223,15 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
   }
 
   return [loading, handleMore]
+}
+
+export function usePoolPositions(address?: string, closed = false) {
+  const [response, executeQuery] = useQuery<{
+    basicPool: IPositionQuery
+  }>({
+    query: BasicPositionsQuery,
+    variables: { address, closed },
+  })
+
+  return response.data?.basicPool
 }

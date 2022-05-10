@@ -13,6 +13,7 @@ export interface ContractsState {
   Treasury: string
   Dividends: string
   CoreProperties: string
+  UserRegistry: string
 }
 
 export const initialState: ContractsState = {
@@ -27,6 +28,7 @@ export const initialState: ContractsState = {
   Treasury: "",
   Dividends: "",
   CoreProperties: "",
+  UserRegistry: "",
 }
 
 export default createReducer(initialState, (builder) =>
@@ -42,5 +44,6 @@ export default createReducer(initialState, (builder) =>
     state.Treasury = action.payload.params.Treasury
     state.Dividends = action.payload.params.Dividends
     state.CoreProperties = action.payload.params.CoreProperties
+    state.UserRegistry = action.payload.params.UserRegistry
   })
 )
