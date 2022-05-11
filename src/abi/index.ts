@@ -12,6 +12,7 @@ import TraderPoolRiskyProposal from "./TraderPoolRiskyProposal"
 import BasicTraderPool from "./BasicTraderPool"
 import InvestTraderPool from "./InvestTraderPool"
 import UserRegistry from "./UserRegistry"
+import Insurance from "./Insurance"
 
 export {
   PancakeExchangeTool,
@@ -28,4 +29,5 @@ export {
   BasicTraderPool,
   InvestTraderPool,
   UserRegistry,
+  Insurance,
 }

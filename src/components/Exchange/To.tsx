@@ -89,7 +89,8 @@ const ExchangeTo: React.FC<IToProps> = ({
     <ToContainer dir="column" full>
       <Flex p="0 0 2px" full>
         <Price>
-          ≈${formatBigNumber(price, 18, 2)} ({priceImpact}%)
+          ≈${formatBigNumber(price, 18, 2)}{" "}
+          {priceImpact && <>({priceImpact}%)</>}
         </Price>
         <Balance onClick={setMaxAmount}>
           <Tokens>{formatBigNumber(balance, decimal, 8)}</Tokens>

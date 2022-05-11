@@ -4,6 +4,7 @@ import { RingSpinner } from "react-spinners-kit"
 import styled from "styled-components"
 
 import unknown from "assets/icons/Unknown.svg"
+import dexe from "assets/icons/dexe.svg"
 
 export const Icon = styled.img<{ size?: number; m: string }>`
   height: ${(props) => (props.size ? props.size : 28)}px;
@@ -39,6 +40,10 @@ const getIconsPathByChain = (id, address) => {
   if (!address) return
 
   const a = address.toLowerCase()
+
+  if (a === "0xa651edbbf77e1a2678defae08a33c5004b491457") {
+    return dexe
+  }
   if (id === 97) {
     return `https://pancake.kiemtienonline360.com/images/coins/${a}.png`
   }

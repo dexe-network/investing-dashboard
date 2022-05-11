@@ -2,18 +2,21 @@ import { useEffect, useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
 import { useSelector } from "react-redux"
-import { UserRegistry } from "abi"
+import { Insurance, UserRegistry } from "abi"
 
 import { PulseSpinner } from "react-spinners-kit"
 import Avatar from "components/Avatar"
 import Header, { EHeaderTitles } from "components/Header"
 import IconButton from "components/IconButton"
 
-import { selectUserRegistryAddress } from "state/contracts/selectors"
+import {
+  selectInsuranceAddress,
+  selectUserRegistryAddress,
+} from "state/contracts/selectors"
 import useContract from "hooks/useContract"
 
 import { addUserMetadata, parseUserData } from "utils/ipfs"
-import { shortenAddress } from "utils"
+import { formatBigNumber, shortenAddress } from "utils"
 
 import pen from "assets/icons/pencil-edit.svg"
 import bsc from "assets/wallets/bsc.svg"
@@ -52,6 +55,7 @@ import {
   Tabs,
   NavButton,
 } from "./styled"
+import { BigNumber } from "ethers"
 
 const transactions = []
 
@@ -142,9 +146,29 @@ export default function Wallet() {
     { setUserEditing, setUserName, setUserAvatar, handleUserSubmit },
   ] = useUserSettings()
 
+  const [insuranceAmount, setInsuranceAmount] = useState(BigNumber.from("0"))
+
+  const insuranceAddress = useSelector(selectInsuranceAddress)
+  const insurance = useContract(insuranceAddress, Insurance)
+
+  useEffect(() => {
+    if (!insurance) return
+
+    fetchInsuranceBalance().catch(console.error)
+  }, [insurance])
+
+  const fetchInsuranceBalance = async () => {
+    const userInsurance = await insurance?.getInsurance(account)
+    setInsuranceAmount(userInsurance[1])
+  }
+
   const handleLogout = () => {
     deactivate()
     localStorage.removeItem("dexe.network/investing/web3-auth-method")
+  }
+
+  const handleInsuranceRedirect = () => {
+    navigate("/insurance/management")
   }
 
   if (!account) return <Navigate to="/welcome" />
@@ -199,9 +223,12 @@ export default function Wallet() {
 
           <InsuranceCard>
             <InsuranceInfo>
-              <InsuranceTitle>Total Amount Insured: 0.00 DEXE</InsuranceTitle>
+              <InsuranceTitle>
+                Total Amount Insured: {formatBigNumber(insuranceAmount, 18, 2)}{" "}
+                DEXE
+              </InsuranceTitle>
             </InsuranceInfo>
-            <InsuranceButton>
+            <InsuranceButton onClick={handleInsuranceRedirect}>
               <InsuranceIcon src={add} alt="add" /> Add insurance
             </InsuranceButton>
           </InsuranceCard>

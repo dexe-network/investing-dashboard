@@ -285,6 +285,7 @@ export const InsuranceButton = styled.button`
   line-height: 12px;
   text-align: right;
   color: #9ae2cb;
+  z-index: 100;
 `
 
 export const Tabs = styled(Flex)`
