@@ -1,18 +1,5 @@
-import { motion } from "framer-motion"
-import { device, Flex, BaseButton } from "theme"
+import { Flex, BaseButton } from "theme"
 import styled from "styled-components"
-
-export const SearchOverlay = styled(Flex)`
-  position: fixed;
-  top: 79px;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  margin: auto;
-  z-index: 25;
-  opacity: 0.1;
-`
 
 export const Title = styled(Flex)`
   font-family: "Gilroy";
@@ -133,61 +120,3 @@ export const tabsVariants = {
     opacity: 0,
   },
 }
-
-export const overlayVariants = {
-  visible: {
-    opacity: 1,
-    display: "flex",
-  },
-  hidden: {
-    opacity: 0,
-    transition: { delay: 0.2 },
-    transitionEnd: {
-      display: "none",
-    },
-  },
-}
-
-export const FormLabel = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 19px;
-  color: #c4c4c4;
-  margin-bottom: 10px;
-  &:nth-of-type(3) {
-    margin-top: 36px;
-  }
-`
-
-export const FiltersBody = styled(Flex)`
-  padding: 20px 16px;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-`
-
-export const FilterContainer = styled.div`
-  width: 100%;
-  border-radius: 6px;
-  overflow: auto;
-`
-
-export const FilterSelectableItem = styled.div<{ active?: boolean }>`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 40px;
-  font-family: Gilroy;
-  font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 200%;
-  padding: 7px 10px 8px 16px;
-  color: ${(props) => (props.active ? "#fff" : "#c2c3c4")};
-  // box-shadow: 0px 7px 4px rgba(0, 0, 0, 0.07);
-`

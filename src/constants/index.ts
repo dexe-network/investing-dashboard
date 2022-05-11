@@ -1,5 +1,6 @@
 import { addDays, addMonths, addYears } from "date-fns"
 import { createStaticRanges } from "react-date-range"
+import { ISortItem } from "./interfaces"
 
 export const poolTypes: {
   all: "ALL_POOL"
@@ -11,20 +12,42 @@ export const poolTypes: {
   invest: "INVEST_POOL",
 }
 
-export const sortItemsList = [
-  "Trader rating",
-  "P&L in %",
-  "P&L in currency",
-  "Personal funds",
-  "Invested",
-  "Trades",
-  "Aver.trades.per.day",
-  "Aver.time.position",
-  "Maximum Loss",
-  "Sortino ETH",
-  "Sortino BTC",
-  "Total supply",
-  "Circulating supply",
+export const sortItemsList: ISortItem[] = [
+  {
+    label: "Max Loss",
+    key: "maxLoss",
+    direction: "",
+  },
+  {
+    label: "Investors amount",
+    key: "investorsCount",
+    direction: "",
+  },
+  {
+    label: "Date of creation",
+    key: "creationTime",
+    direction: "",
+  },
+  {
+    label: "Total trades",
+    key: "totalTrades",
+    direction: "",
+  },
+  {
+    label: "Max. total closed positions",
+    key: "totalClosedPositions",
+    direction: "",
+  },
+  {
+    label: "Max. average trades ",
+    key: "averageTrades",
+    direction: "",
+  },
+  {
+    label: "Average position time ",
+    key: "averagePositionTime",
+    direction: "",
+  },
 ]
 
 export const currencies = [

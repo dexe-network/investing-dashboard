@@ -1,4 +1,6 @@
-import { ChangeEventHandler, useEffect, useRef, useState } from "react"
+import { ChangeEventHandler, useRef } from "react"
+import { createPortal } from "react-dom"
+import { overlayVariants } from "motion/variants"
 
 import { useClickAway } from "react-use"
 import { DebounceInput } from "react-debounce-input"
@@ -13,7 +15,10 @@ import {
   Divider,
   wrapperVariants,
   inputVariants,
+  SearchOverlay,
 } from "./styled"
+
+const overlayRoot = document.getElementById("overlay")
 
 interface Props {
   active: boolean
@@ -50,33 +55,44 @@ const IconSearch: React.FC<Props> = ({
   }
 
   return (
-    <IconArea
-      ref={inputElement}
-      initial="hidden"
-      animate={active ? "visible" : "hidden"}
-      variants={wrapperVariants}
-      transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
-    >
-      <DebounceInput
-        autoFocus
+    <>
+      <IconArea
+        ref={inputElement}
         initial="hidden"
         animate={active ? "visible" : "hidden"}
-        transition={{ duration: 0.2, ease: [0.29, 0.98, 0.29, 1] }}
-        variants={inputVariants}
-        element={Input}
-        minLength={0}
-        placeholder="Name, Ticker, Address"
-        debounceTimeout={300}
-        onChange={change}
-        value={q}
-      />
-      <Divider />
-      {active ? (
-        <Icon onClick={clear} src={remove} />
-      ) : (
-        <Icon onClick={onClick} src={search} />
-      )}
-    </IconArea>
+        variants={wrapperVariants}
+        transition={{ duration: 0.1, ease: [0.29, 0.98, 0.29, 1] }}
+      >
+        <DebounceInput
+          autoFocus
+          initial="hidden"
+          animate={active ? "visible" : "hidden"}
+          transition={{ duration: 0.2, ease: [0.29, 0.98, 0.29, 1] }}
+          variants={inputVariants}
+          element={Input}
+          minLength={0}
+          placeholder="Name, Ticker, Address"
+          debounceTimeout={300}
+          onChange={change}
+          value={q}
+        />
+        <Divider />
+        {active ? (
+          <Icon onClick={clear} src={remove} />
+        ) : (
+          <Icon onClick={onClick} src={search} />
+        )}
+      </IconArea>
+      {overlayRoot &&
+        createPortal(
+          <SearchOverlay
+            initial="hidden"
+            animate={!active ? "hidden" : "visible"}
+            variants={overlayVariants}
+          />,
+          overlayRoot
+        )}
+    </>
   )
 }
 

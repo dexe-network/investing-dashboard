@@ -1,7 +1,7 @@
 /**
  * Components which are used in Header
  */
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, FC } from "react"
 import { ITopMembersFilters } from "constants/interfaces"
 import IconSearch from "components/IconSearch"
 
@@ -18,10 +18,11 @@ import { useNavigate } from "react-router-dom"
 interface IFiltersProps {
   onClick: () => void
 }
-export const Filters = ({ onClick }: IFiltersProps) => {
+export const Filters: FC<IFiltersProps> = ({ onClick, children }) => {
   return (
     <ClickableArea onClick={onClick}>
       <IconButton src={filtersIcon} />
+      {children}
     </ClickableArea>
   )
 }

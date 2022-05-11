@@ -1,5 +1,18 @@
 import styled from "styled-components"
 import { motion } from "framer-motion"
+import { Flex } from "theme"
+
+export const SearchOverlay = styled(Flex)`
+  position: fixed;
+  top: 79px;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  margin: auto;
+  z-index: 25;
+  opacity: 0.1;
+`
 
 export const IconArea = styled(motion.div)`
   z-index: 10;

@@ -21,8 +21,14 @@ export interface IStaticRanges {
   range: () => void
 }
 
+export interface ISortItem {
+  label: string
+  key: string
+  direction: "asc" | "desc" | ""
+}
+
 export interface ITopMembersFilters {
-  sort: string
+  sort: ISortItem
   period: string[]
   query: string
   currency: string

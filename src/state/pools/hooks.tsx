@@ -1,33 +1,40 @@
 import { useState, useEffect } from "react"
+import { Contract } from "@ethersproject/contracts"
+import { useDispatch, useSelector } from "react-redux"
+import { TraderPoolRegistry, TraderPool } from "abi"
+import { useQuery } from "urql"
+
+import useContract from "hooks/useContract"
+import { AppDispatch, AppState } from "state"
+import { addPools, setFilter, setPagination } from "state/pools/actions"
+import { selectPoolsFilters } from "state/pools/selectors"
+import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
+
+import { poolTypes } from "constants/index"
+
+import { isAddress } from "utils"
+
 import {
   IPoolQuery,
   PoolType,
   LeverageInfo,
   PoolInfo,
-  UsersInfo,
   IPriceHistoryQuery,
   IPriceHistory,
   IPositionQuery,
 } from "constants/interfaces_v2"
-import { poolTypes } from "constants/index"
-import { Contract } from "@ethersproject/contracts"
-import { useDispatch, useSelector } from "react-redux"
-import { AppDispatch, AppState } from "state"
-import { TraderPoolRegistry, TraderPool } from "abi"
-import useContract from "hooks/useContract"
-import { useQuery } from "urql"
+
 import {
   OwnedPoolsQuery,
   PoolQuery,
   PoolsQuery,
   PoolsQueryByType,
+  PoolsQueryWithSort,
+  PoolsQueryByTypeWithSort,
   PriceHistoryQuery,
   BasicPositionsQuery,
+  getPoolsQueryVariables,
 } from "queries"
-import { addPools, setFilter, setPagination } from "state/pools/actions"
-import { selectPoolsFilters } from "./selectors"
-import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
-import { isAddress } from "utils"
 
 /**
  * Returns top members filter state variables and setter
@@ -158,25 +165,22 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
 
   const filters = useSelector(selectPoolsFilters)
 
+  const queryArgs = getPoolsQueryVariables(isAll, filters, poolType)
+
   const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
   const traderPoolRegistry = useContract(
     traderPoolRegistryAddress,
     TraderPoolRegistry
   )
 
-  const [response, executeQuery] = useQuery<{
+  const [response] = useQuery<{
     traderPools: IPoolQuery[]
-  }>({
-    query: isAll ? PoolsQuery : PoolsQueryByType,
-    variables: isAll
-      ? { q: filters.query }
-      : { q: filters.query, type: poolType },
-  })
+  }>(queryArgs)
 
   // update data on search change
-  useEffect(() => {
-    executeQuery()
-  }, [filters.query, executeQuery])
+  // useEffect(() => {
+  //   executeQuery()
+  // }, [filters.query, executeQuery])
 
   // Fetch total number of pools
   useEffect(() => {

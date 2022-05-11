@@ -1,18 +1,23 @@
+import { Flex, Center, To } from "theme"
 import React, { useEffect } from "react"
+import { useSelector } from "react-redux"
+import { CubeSpinner } from "react-spinners-kit"
+import { Routes, Route } from "react-router-dom"
+import { createClient, Provider as GraphProvider } from "urql"
+import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
+
 import TopMembersBar from "components/TopMembersBar"
 import MemberMobile from "components/MemberMobile"
 import LoadMore from "components/LoadMore"
-import { CubeSpinner } from "react-spinners-kit"
-import { Flex, Center, To } from "theme"
-import { createClient, Provider as GraphProvider } from "urql"
-import { usePools } from "state/pools/hooks"
-import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
-import { Routes, Route } from "react-router-dom"
 
-// THE GRAPH CLIENT
-const AllPoolsClient = createClient({
-  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
-})
+import { usePools } from "state/pools/hooks"
+import { PoolType } from "constants/interfaces_v2"
+
+import {
+  selectBasicPools,
+  selectInvestPools,
+  selectPools,
+} from "state/pools/selectors"
 
 import {
   StyledTopMembers,
@@ -21,14 +26,10 @@ import {
   LoadingText,
 } from "./styled"
 
-import "./pagination.css"
-import { useSelector } from "react-redux"
-import {
-  selectBasicPools,
-  selectInvestPools,
-  selectPools,
-} from "state/pools/selectors"
-import { PoolType } from "constants/interfaces_v2"
+// THE GRAPH CLIENT
+const AllPoolsClient = createClient({
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+})
 
 interface Props {
   poolType: PoolType

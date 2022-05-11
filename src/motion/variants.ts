@@ -39,6 +39,20 @@ export const modalContainerVariants = {
   },
 }
 
+export const overlayVariants = {
+  visible: {
+    opacity: 1,
+    display: "flex",
+  },
+  hidden: {
+    opacity: 0,
+    transition: { delay: 0.2 },
+    transitionEnd: {
+      display: "none",
+    },
+  },
+}
+
 export default {
   opacityVariants,
   titleVariants,
