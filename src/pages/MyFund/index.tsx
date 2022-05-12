@@ -1,3 +1,4 @@
+import { useState } from "react"
 import Header, { EHeaderTitles } from "components/Header"
 import {
   Container,
@@ -55,7 +56,6 @@ const MyFund = () => {
       icon: null,
     },
   ]
-
   const [isActive, setActive] = useState()
 
   return (
