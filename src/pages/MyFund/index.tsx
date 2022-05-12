@@ -56,7 +56,6 @@ const MyFund = () => {
       icon: null,
     },
   ]
-
   const [isActive, setActive] = useState()
 
   return (
