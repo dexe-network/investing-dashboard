@@ -27,16 +27,14 @@ const overlayRoot = document.getElementById("overlay")
 
 const getDirection = (direction: "asc" | "desc" | "") => {
   switch (direction) {
-    case "":
-      return "desc"
-
     case "desc":
       return "asc"
 
     case "asc":
-      return ""
+      return "desc"
+
     default:
-      return ""
+      return "desc"
   }
 }
 

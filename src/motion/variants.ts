@@ -46,7 +46,7 @@ export const overlayVariants = {
   },
   hidden: {
     opacity: 0,
-    transition: { delay: 0.2 },
+    transition: { delay: 0.1 },
     transitionEnd: {
       display: "none",
     },

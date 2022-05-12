@@ -177,11 +177,6 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
     traderPools: IPoolQuery[]
   }>(queryArgs)
 
-  // update data on search change
-  // useEffect(() => {
-  //   executeQuery()
-  // }, [filters.query, executeQuery])
-
   // Fetch total number of pools
   useEffect(() => {
     if (!traderPoolRegistry || !dispatch) return

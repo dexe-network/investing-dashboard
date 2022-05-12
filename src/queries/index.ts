@@ -95,7 +95,7 @@ const PoolsQueryByType = `
 `
 
 const PoolsQueryByTypeWithSort = `
-  query ($q: String!, $type: String!) {
+  query ($q: String!, $type: String!, $orderBy: String!, $orderDirection: String!) {
     traderPools(where: { ticker_contains_nocase: $q, type: $type } first: 100 orderBy: $orderBy orderDirection: $orderDirection) {
       ${POOL}
     }

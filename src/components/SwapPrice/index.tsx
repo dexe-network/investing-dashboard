@@ -35,7 +35,7 @@ const SwapPrice: React.FC<Props> = ({
   const [full, setFull] = useState(false)
 
   useEffect(() => {
-    if (!fromSymbol || !toSymbol || !tokensCost || !usdCost) {
+    if (tokensCost.eq("0") || usdCost.eq("0")) {
       setLoading(true)
       return
     }
@@ -88,7 +88,9 @@ const SwapPrice: React.FC<Props> = ({
     </>
   )
 
-  return <Container>{loading ? loaderContent : mainContent}</Container>
+  return !!fromSymbol && !!toSymbol ? (
+    <Container>{loading ? loaderContent : mainContent}</Container>
+  ) : null
 }
 
 export default SwapPrice
