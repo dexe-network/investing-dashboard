@@ -1,9 +1,7 @@
 import { useState } from "react"
-import Header, { EHeaderTitles } from "components/Header"
+
 import {
   Container,
-  TransparentBg,
-  MyFundContainer,
   AvatarContainer,
   ContentContainer,
   BasicSettingsContainer,
@@ -11,14 +9,15 @@ import {
   Image,
 } from "./styled"
 import SettingItem from "./SettingItem"
-import link from "assets/icons/link.svg"
-import info from "assets/icons/info.svg"
 import Avatar from "components/Avatar"
 import Switch from "components/Switch"
 import { Flex } from "theme"
 import DescriptionComponent from "./DescriptionComponent"
 
-const MyFund = () => {
+import link from "assets/icons/link.svg"
+import info from "assets/icons/info.svg"
+
+const FundDetailsEdit = () => {
   const basicSettingsData = [
     {
       field: "Owner",
@@ -59,11 +58,7 @@ const MyFund = () => {
   const [isActive, setActive] = useState()
 
   return (
-    <MyFundContainer>
-      {/* Delete background */}
-      <TransparentBg>
-        <Header title={EHeaderTitles.myFund} />
-      </TransparentBg>
+    <>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -119,8 +114,8 @@ const MyFund = () => {
           <Switch name="Limited Emission" isOn={true} onChange={() => {}} />
         </ContentContainer>
       </Container>
-    </MyFundContainer>
+    </>
   )
 }
 
-export default MyFund
+export default FundDetailsEdit
