@@ -10,10 +10,23 @@ export interface AddResult {
   mtime?: any
 }
 
-const projectId = "22KLJOk3vVydhC8Uh0jr3SMEqxI"
-const projectSecret = "bc66dc46a6d50e884dce16faa2a393ea"
+// @params assets - base64 string array. last item represents current avatar
+interface FundMetadataAdder {
+  (
+    assets: string[],
+    description: string,
+    strategy: string,
+    account: string
+  ): Promise<AddResult>
+}
+
 const auth =
-  "Basic " + Buffer.from(projectId + ":" + projectSecret).toString("base64")
+  "Basic " +
+  Buffer.from(
+    process.env.REACT_APP_IPFS_PROJECT_ID +
+      ":" +
+      process.env.REACT_APP_IPFS_PROJECT_SECRET
+  ).toString("base64")
 
 const client = create({
   host: "ipfs.infura.io",
@@ -71,18 +84,18 @@ export const parseUserData = async (hash) => {
   }
 }
 
-export const addFundMetadata = (
-  b64,
+export const addFundMetadata: FundMetadataAdder = (
+  assets,
   description,
   strategy,
   account
-): Promise<AddResult> => {
+) => {
   const data = {
     timestamp: new Date().getTime() / 1000,
     account,
     description,
     strategy,
-    assets: [b64],
+    assets,
   }
   const dataString = stringify(data)
 

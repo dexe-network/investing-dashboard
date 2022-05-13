@@ -152,12 +152,12 @@ const CreateFund: FC = () => {
   }, [managers, traderPool])
 
   const handleSubmit = async () => {
-    if (!traderPoolFactory) return
+    if (!traderPoolFactory || !account) return
     setCreating(true)
 
     try {
       const ipfsReceipt = await addFundMetadata(
-        avatarBlobString,
+        [avatarBlobString],
         description,
         strategy,
         account
