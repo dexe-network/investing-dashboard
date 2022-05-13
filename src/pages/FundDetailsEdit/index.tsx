@@ -253,7 +253,7 @@ const FundDetailsEdit = () => {
           </StepBody>
         </Step>
       </Steps>
-      <Flex full p="0 16px 42px">
+      <Flex full p="0 16px 61px">
         <Button full size="large" onClick={handleSubmit}>
           Confirm changes
         </Button>
