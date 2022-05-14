@@ -1,23 +1,17 @@
-import { Token } from "constants/interfaces"
 import React from "react"
 
 interface IState {
   loading: boolean
+
+  avatarBlobString: string
   assets: string[]
-  fundType: string
-  fundName: string
-  fundSymbol: string
-  ipfsHash: string
+
   description: string
   strategy: string
-  trader: string
-  privatePool: boolean
+
   totalLPEmission: string
-  baseToken: Token
-  ownInvestments: string
   minimalInvestment: string
-  commissionPeriod: number
-  commissionPercentage: number
+
   managers: string[]
   investors: string[]
 }
@@ -29,26 +23,16 @@ interface IContext extends IState {
 
 const defaultState = {
   loading: true,
+
+  avatarBlobString: "",
   assets: [],
-  fundType: "basic",
-  fundName: "",
-  fundSymbol: "",
-  ipfsHash: "",
+
   description: "",
   strategy: "",
-  trader: "",
-  privatePool: false,
+
   totalLPEmission: "",
-  baseToken: {
-    address: "",
-    name: "",
-    symbol: "",
-    decimals: 0,
-  },
-  ownInvestments: "",
   minimalInvestment: "",
-  commissionPeriod: 0,
-  commissionPercentage: 30,
+
   managers: [],
   investors: [],
 }
@@ -68,26 +52,16 @@ class UpdateFundContext extends React.Component {
 
   state = {
     loading: true,
+
+    avatarBlobString: "",
     assets: [],
-    fundType: "basic",
-    fundName: "",
-    fundSymbol: "",
-    ipfsHash: "",
+
     description: "",
     strategy: "",
-    trader: "",
-    privatePool: false,
+
     totalLPEmission: "",
-    baseToken: {
-      address: "",
-      name: "",
-      symbol: "",
-      decimals: 0,
-    },
-    ownInvestments: "",
     minimalInvestment: "",
-    commissionPeriod: 0,
-    commissionPercentage: 30,
+
     managers: [],
     investors: [],
   }

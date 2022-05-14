@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner } from "react-spinners-kit"
+import { format } from "date-fns"
 
 import {
   Container,
@@ -34,25 +35,30 @@ import MinInvestIcon from "assets/icons/MinInvestAmount"
 import link from "assets/icons/link.svg"
 import info from "assets/icons/info.svg"
 
-import { shortenAddress } from "utils"
+import { expandTimestamp, shortenAddress, formatBigNumber } from "utils"
 import { parsePoolData } from "utils/ipfs"
-import { usePool } from "state/pools/hooks"
 import { useUpdateFundContext } from "context/UpdateFundContext"
+import { usePool } from "state/pools/hooks"
+import { useERC20 } from "hooks/useContract"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
+const fundTypes = {
+  BASIC_POOL: "Basic",
+  INVEST_POOL: "Invest",
+}
+
 const FundDetailsEdit = () => {
   const { poolAddress } = useParams()
-  const [traderPool, poolData, leverageInfo, poolInfoData] =
-    usePool(poolAddress)
   const { account } = useWeb3React()
 
+  const [, poolData, , poolInfoData] = usePool(poolAddress)
+  const [, baseData] = useERC20(poolData?.baseToken)
+
   console.groupCollapsed("pool payload")
-  console.log("traderPool", traderPool)
   console.log("poolData", poolData)
-  console.log("leverageInfo", leverageInfo)
   console.log("poolInfoData", poolInfoData)
   console.groupEnd()
 
@@ -60,40 +66,50 @@ const FundDetailsEdit = () => {
     loading,
     handleChange,
     setInitial,
+
+    avatarBlobString,
     assets,
-    baseToken,
+
     description,
     strategy,
-    managers,
-    investors,
+
     totalLPEmission,
     minimalInvestment,
+
+    managers,
+    investors,
   } = useUpdateFundContext()
 
+  const updateAwatar = useMemo(
+    () => avatarBlobString.length > 0,
+    [avatarBlobString]
+  )
   const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
   const [isMinimalInvest, setMinimalInvest] = useState(minimalInvestment !== "")
   const [isManagersAdded, setManagers] = useState(!!managers.length)
   const [isInvestorsAdded, setInvestors] = useState(!!investors.length)
 
   useEffect(() => {
-    if (!poolData) return
+    if (!poolData || !poolInfoData) return
     ;(async () => {
-      const parsed = await parsePoolData(poolData.descriptionURL)
+      const parsedIpfs = await parsePoolData(poolData.descriptionURL)
 
-      if (!!parsed) {
-        console.log(parsed)
-        setInitial({ ...parsed })
+      // totalLPEmission
+      // minimalInvestment
+
+      if (!!parsedIpfs) {
+        console.log("From IPFS:", parsedIpfs)
+        setInitial({ ...parsedIpfs })
       }
     })()
-  }, [poolData, setInitial])
+  }, [poolData, poolInfoData, setInitial])
 
   const handleSubmit = async () => {
     console.log("Save changes")
-    // Avatar Blob string must be array with previous
+    // Avatar Blob string must be array with previous avatars
 
-    // account
     // const ipfsReceipt = await addFundMetadata(
-    //   avatarBlobString,
+    //   [avatarBlobString],
     //   description,
     //   strategy,
     //   account
@@ -115,7 +131,7 @@ const FundDetailsEdit = () => {
       <AvatarWrapper>
         <Avatar
           m="0 auto"
-          url={assets[0]}
+          url={updateAwatar ? avatarBlobString : assets.at(-1)}
           onCrop={handleChange}
           showUploader
           size={100}
@@ -131,36 +147,45 @@ const FundDetailsEdit = () => {
               <BasicItem>
                 <BasicTitle>Owner</BasicTitle>
                 <BasicValue>
-                  {shortenAddress(poolData?.baseToken ?? "baseToken", 3)}
+                  {shortenAddress(account, 3)}
                   <BasicValueIcon src={link}></BasicValueIcon>
                 </BasicValue>
               </BasicItem>
               <BasicItem>
                 <BasicTitle>Created</BasicTitle>
-                <BasicValue>12.12.22</BasicValue>
+                <BasicValue>
+                  {format(expandTimestamp(poolData!.creationTime), "MM.dd.yy")}
+                </BasicValue>
               </BasicItem>
               <BasicItem>
                 <BasicTitle>Fund name</BasicTitle>
-                <BasicValue>{poolInfoData?.name}</BasicValue>
+                <BasicValue>{poolData?.name}</BasicValue>
               </BasicItem>
               <BasicItem>
                 <BasicTitle>Fund ticker</BasicTitle>
-                <BasicValue>PTHPNH</BasicValue>
+                <BasicValue>{poolData?.ticker}</BasicValue>
               </BasicItem>
               <BasicItem>
                 <BasicTitle>Basic token</BasicTitle>
-                <BasicValue>DEXE</BasicValue>
+                <BasicValue>{baseData?.symbol}</BasicValue>
               </BasicItem>
               <BasicItem>
                 <BasicTitle>Fund Type</BasicTitle>
                 <BasicValue>
-                  Standart
-                  <BasicValueIcon src={info}></BasicValueIcon>
+                  {fundTypes[poolData!.type]}
+                  <BasicValueIcon src={info} />
                 </BasicValue>
               </BasicItem>
               <BasicItem>
                 <BasicTitle>Performance Fee 3 month</BasicTitle>
-                <BasicValue>30%</BasicValue>
+                <BasicValue>
+                  {formatBigNumber(
+                    poolInfoData?.parameters.commissionPercentage,
+                    25,
+                    0
+                  )}
+                  %
+                </BasicValue>
               </BasicItem>
             </BasicContainer>
           </StepBody>
@@ -219,7 +244,7 @@ const FundDetailsEdit = () => {
                 onChange={(v) => handleChange("minimalInvestment", v)}
                 label="Minimum investment amount"
                 value={minimalInvestment}
-                rightIcon={<InputText>{baseToken.symbol}</InputText>}
+                rightIcon={<InputText>{baseData?.symbol}</InputText>}
               />
             </SwtichRow>
             <SwtichRow
