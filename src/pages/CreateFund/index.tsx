@@ -274,43 +274,48 @@ const CreateFund: FC = () => {
   }
 
   const handleNextStep = async () => {
-    if (steps[step].title === "Create") {
-      setStepPending(true)
-      const data = await handlePoolCreate()
+    try {
+      if (steps[step].title === "Create") {
+        setStepPending(true)
+        const data = await handlePoolCreate()
 
-      // check if transaction is mined
-      if (
-        !!data &&
-        ((data.logs.length && data.logs[0].address) || data.address)
-      ) {
-        const createdAddress = data.address
-          ? data.address
-          : data.logs[0].address
-        setCreactedAddress(createdAddress)
+        // check if transaction is mined
+        if (
+          !!data &&
+          ((data.logs.length && data.logs[0].address) || data.address)
+        ) {
+          const createdAddress = data.address
+            ? data.address
+            : data.logs[0].address
+          setCreactedAddress(createdAddress)
+          setStep(step + 1)
+          setStepPending(false)
+        }
+      }
+
+      if (steps[step].title === "Managers") {
+        setStepPending(true)
+        await handleManagersAdd()
+
         setStep(step + 1)
         setStepPending(false)
       }
-    }
 
-    if (steps[step].title === "Managers") {
-      setStepPending(true)
-      await handleManagersAdd()
+      if (steps[step].title === "Investors") {
+        setStepPending(true)
+        await handleInvestorsAdd()
 
-      setStep(step + 1)
-      setStepPending(false)
-    }
+        setStep(step + 1)
+        setStepPending(false)
+      }
 
-    if (steps[step].title === "Investors") {
-      setStepPending(true)
-      await handleInvestorsAdd()
-
-      setStep(step + 1)
-      setStepPending(false)
-    }
-
-    if (steps[step].title === "Success") {
-      setCreating(false)
-      navigate(`/success/${contractAddress}`)
+      if (steps[step].title === "Success") {
+        setCreating(false)
+        setStepPending(false)
+        navigate(`/success/${contractAddress}`)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
