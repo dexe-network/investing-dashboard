@@ -15,7 +15,14 @@ interface IState {
   minimalInvestment: string
 
   managers: string[]
+  managersInitial: string[]
+  managersAdded: string[]
+  managersRemoved: string[]
+
   investors: string[]
+  investorsInitial: string[]
+  investorsAdded: string[]
+  investorsRemoved: string[]
 }
 
 interface IContext extends IState {
@@ -40,7 +47,14 @@ const defaultState = {
   minimalInvestment: "",
 
   managers: [],
+  managersInitial: [],
+  managersAdded: [],
+  managersRemoved: [],
+
   investors: [],
+  investorsInitial: [],
+  investorsAdded: [],
+  investorsRemoved: [],
 }
 
 const defaultContext = {
@@ -54,6 +68,12 @@ const defaultContext = {
 export const FundContext = React.createContext<IContext>(defaultContext)
 
 export const useUpdateFundContext = () => React.useContext(FundContext)
+
+const arrayDifference = (a1: string[], a2: string[]): string[] =>
+  a1.filter((x) => !a2.includes(x))
+const arrayIntersection = (a1: string[], a2: string[]): string[] =>
+  a1.filter((x) => a2.includes(x))
+const arrayIncludes = (a: string[], value: string): boolean => a.includes(value)
 
 class UpdateFundContext extends React.Component {
   static contextType = FundContext
@@ -73,11 +93,24 @@ class UpdateFundContext extends React.Component {
     minimalInvestment: "",
 
     managers: [],
+    managersInitial: [],
+    managersAdded: [],
+    managersRemoved: [],
+
     investors: [],
+    investorsInitial: [],
+    investorsAdded: [],
+    investorsRemoved: [],
   }
 
   handleChange = (name: string, value: any) => {
     if (Object.prototype.toString.call(value) === "[object Array]") {
+      if (value.length < this.state[name].length) {
+        this.updateRemovedList(name, value)
+      } else {
+        this.updateAddingList(name, value)
+      }
+
       this.setState({
         [name]: [...value],
       })
@@ -88,11 +121,51 @@ class UpdateFundContext extends React.Component {
     this.setState({ [name]: value })
   }
 
+  updateRemovedList = (name: string, value: any) => {
+    // Who removed
+    const removed = arrayDifference(this.state[name], value)[0]
+    const inInitial = arrayIncludes(this.state[`${name}Initial`], removed)
+
+    // Add in list for removing if address has been in initial list
+    if (inInitial) {
+      this.setState({
+        [`${name}Removed`]: [...this.state[`${name}Removed`], removed],
+      })
+    }
+
+    // Clear added list from removed address
+    this.setState({
+      [`${name}Added`]: arrayIntersection(this.state[`${name}Added`], value),
+    })
+  }
+
+  updateAddingList = (name: string, value: any) => {
+    // Who added
+    const added = arrayDifference(value, this.state[name])[0]
+    const inInitial = arrayIncludes(this.state[`${name}Initial`], added)
+
+    // Add in list for adding if address doesnt been in initial list
+    if (!inInitial) {
+      this.setState({
+        [`${name}Added`]: [...this.state[`${name}Added`], added],
+      })
+    }
+
+    // Clear removed list from added address
+    this.setState({
+      [`${name}Removed`]: this.state[`${name}Removed`].filter(
+        (x) => x !== added
+      ),
+    })
+  }
+
   setInitial = (payload: any) => {
     this.setState({
       loading: false,
       descriptionInitial: payload.description,
       strategyInitial: payload.strategy,
+      investorsInitial: payload.investors,
+      managersInitial: payload.managers,
       ...payload,
     })
   }

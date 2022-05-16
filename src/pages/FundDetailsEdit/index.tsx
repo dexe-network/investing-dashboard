@@ -79,7 +79,14 @@ const FundDetailsEdit: FC = () => {
     minimalInvestment,
 
     managers,
+    managersInitial,
+    managersRemoved,
+    managersAdded,
+
     investors,
+    investorsInitial,
+    investorsRemoved,
+    investorsAdded,
   } = useUpdateFundContext()
 
   const avatar = useMemo(() => {
