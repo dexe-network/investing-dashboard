@@ -7,7 +7,9 @@ interface IState {
   assets: string[]
 
   description: string
+  descriptionInitial: string
   strategy: string
+  strategyInitial: string
 
   totalLPEmission: string
   minimalInvestment: string
@@ -19,6 +21,8 @@ interface IState {
 interface IContext extends IState {
   handleChange: (name: string, value: any) => void
   setInitial: (payload: any) => void
+  setDefault: () => void
+  isIpfsDataUpdated: () => boolean
 }
 
 const defaultState = {
@@ -28,7 +32,9 @@ const defaultState = {
   assets: [],
 
   description: "",
+  descriptionInitial: "",
   strategy: "",
+  strategyInitial: "",
 
   totalLPEmission: "",
   minimalInvestment: "",
@@ -41,6 +47,8 @@ const defaultContext = {
   ...defaultState,
   handleChange: () => {},
   setInitial: () => {},
+  setDefault: () => {},
+  isIpfsDataUpdated: () => false,
 }
 
 export const FundContext = React.createContext<IContext>(defaultContext)
@@ -57,7 +65,9 @@ class UpdateFundContext extends React.Component {
     assets: [],
 
     description: "",
+    descriptionInitial: "",
     strategy: "",
+    strategyInitial: "",
 
     totalLPEmission: "",
     minimalInvestment: "",
@@ -71,6 +81,7 @@ class UpdateFundContext extends React.Component {
       this.setState({
         [name]: [...value],
       })
+
       return
     }
 
@@ -78,7 +89,27 @@ class UpdateFundContext extends React.Component {
   }
 
   setInitial = (payload: any) => {
-    this.setState({ loading: false, ...payload })
+    this.setState({
+      loading: false,
+      descriptionInitial: payload.description,
+      strategyInitial: payload.strategy,
+      ...payload,
+    })
+  }
+
+  setDefault = () => {
+    this.setState(defaultState)
+  }
+
+  isIpfsDataUpdated = () => {
+    if (
+      this.state.avatarBlobString !== "" ||
+      this.state.description !== this.state.descriptionInitial ||
+      this.state.strategy !== this.state.strategyInitial
+    ) {
+      return true
+    }
+    return false
   }
 
   render() {
@@ -90,6 +121,8 @@ class UpdateFundContext extends React.Component {
           ...this.state,
           handleChange: this.handleChange,
           setInitial: this.setInitial,
+          setDefault: this.setDefault,
+          isIpfsDataUpdated: this.isIpfsDataUpdated,
         }}
       >
         {children}

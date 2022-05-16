@@ -112,7 +112,9 @@ export const BasicValue = styled(Flex)`
 export const BasicValueIcon = styled.img`
   width: 12px;
   height: 12px;
-  margin-left: 7px;
+`
+export const BasicValueText = styled.span`
+  margin-right: 7px;
 `
 
 interface SwitchRowProps {
