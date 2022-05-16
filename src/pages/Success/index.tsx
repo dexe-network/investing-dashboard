@@ -1,4 +1,25 @@
-import React from "react"
+import { FC, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { TraderPool, TraderPoolRegistry } from "abi"
+import { Center } from "theme"
+import { GuardSpinner } from "react-spinners-kit"
+import { useSelector } from "react-redux"
+
+import IpfsIcon from "components/IpfsIcon"
+import Button from "components/Button"
+
+import useContract from "hooks/useContract"
+import { PoolInfo, PoolType } from "constants/interfaces_v2"
+import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
+
+import { shortenAddress } from "utils"
+
+import LinkImg from "assets/icons/link.svg"
+import GreenCheck from "assets/icons/green-check.svg"
+import facebook from "assets/icons/facebook.svg"
+import twitter from "assets/icons/twitter.svg"
+import telegram from "assets/icons/telegram.svg"
+
 import {
   SuccessContainer,
   Body,
@@ -8,9 +29,7 @@ import {
   TopSideContent,
   Title,
   CenterSideContent,
-  Subtitle1,
-  Subtitle2,
-  Subtitle3,
+  Subtitle,
   ListDiv,
   Check,
   BottomSideContent,
@@ -21,60 +40,90 @@ import {
   TelegramIcon,
   ButtonsContainer,
 } from "./styled"
-import IpfsIcon from "components/IpfsIcon"
-import LinkImg from "assets/icons/link.svg"
-import GreenCheck from "assets/icons/green-check.svg"
-import facebook from "assets/icons/facebook.svg"
-import twitter from "assets/icons/twitter.svg"
-import telegram from "assets/icons/telegram.svg"
-import { shortenAddress } from "utils"
-import Button from "components/Button"
 
 interface SuccessProps {}
 
-const Success: React.FC<SuccessProps> = () => {
-  const title = "Big Trade Fund"
-  const subtitle1 = "Listable on Exchandges"
-  const subtitle2 = "Smart Contract Ready"
-  const subtitle3 = "Borderless Transactions"
-  const bottomtitle = "Share my fund"
+const CheckList = [
+  "Listable on Exchandges",
+  "Smart Contract Ready",
+  "Borderless Transactions",
+]
+
+const Success: FC<SuccessProps> = () => {
+  const { poolAddress } = useParams()
+  const navigate = useNavigate()
+
+  const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
+  const [poolType, setPoolType] = useState<PoolType | null>(null)
+
+  const traderPool = useContract(poolAddress, TraderPool)
+  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
+  const traderPoolRegistry = useContract(
+    traderPoolRegistryAddress,
+    TraderPoolRegistry
+  )
+
+  // get pool info
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      const info = await traderPool.getPoolInfo()
+      setPoolInfo(info)
+    })()
+  }, [traderPool])
+
+  useEffect(() => {
+    if (!traderPoolRegistry) return
+    ;(async () => {
+      const isBase = await traderPoolRegistry.isBasePool(poolAddress)
+      setPoolType(isBase ? "BASIC_POOL" : "INVEST_POOL")
+    })()
+  }, [traderPoolRegistry, poolAddress])
+
+  const handleDepositRedirect = () => {
+    navigate(`/pool/invest/${poolType}/${poolAddress}`)
+  }
+
+  if (!poolInfo) {
+    return (
+      <Center>
+        <GuardSpinner size={40} loading />
+      </Center>
+    )
+  }
+
   return (
     <SuccessContainer>
       <Body>
         <IconContainer>
-          <IpfsIcon size={110} />
+          <IpfsIcon
+            hash={poolInfo.parameters.descriptionURL}
+            m="0"
+            size={110}
+          />
         </IconContainer>
+
         <TopSideContent>
           <AddressContainer>
-            <Address>
-              {shortenAddress("0xd18b9615388afacf2c95282980c6b84a235a32a8")}
-            </Address>
+            <Address>{shortenAddress(poolAddress)}</Address>
             <img src={LinkImg} alt="link" />
           </AddressContainer>
-          <Title>{title}</Title>
+          <Title>{poolInfo.name}</Title>
         </TopSideContent>
+
         <CenterSideContent>
-          <ListDiv>
-            <Check>
-              <img src={GreenCheck} alt="green check" />
-            </Check>
-            <Subtitle1>{subtitle1}</Subtitle1>
-          </ListDiv>
-          <ListDiv>
-            <Check>
-              <img src={GreenCheck} alt="green check" />
-            </Check>
-            <Subtitle2>{subtitle2}</Subtitle2>
-          </ListDiv>
-          <ListDiv>
-            <Check>
-              <img src={GreenCheck} alt="green check" />
-            </Check>
-            <Subtitle3>{subtitle3}</Subtitle3>
-          </ListDiv>
+          {CheckList.map((item) => (
+            <ListDiv key={item}>
+              <Check>
+                <img src={GreenCheck} alt="green check" />
+              </Check>
+              <Subtitle>{item}</Subtitle>
+            </ListDiv>
+          ))}
         </CenterSideContent>
+
         <BottomSideContent>
-          <BottomTitle>{bottomtitle}</BottomTitle>
+          <BottomTitle>Share my fund</BottomTitle>
           <ShareIcons>
             <FacebookIcon>
               <img src={facebook} alt="facebook" />
@@ -87,9 +136,11 @@ const Success: React.FC<SuccessProps> = () => {
             </TelegramIcon>
           </ShareIcons>
         </BottomSideContent>
+
         <ButtonsContainer>
-          <Button>Open my fund</Button>
-          <Button>New Positions</Button>
+          <Button onClick={handleDepositRedirect} size="large" full>
+            Deposit funds
+          </Button>
         </ButtonsContainer>
       </Body>
     </SuccessContainer>
