@@ -5,6 +5,7 @@ import { Center } from "theme"
 import { GuardSpinner } from "react-spinners-kit"
 import { useSelector } from "react-redux"
 
+import Header from "components/Header/Layout"
 import IpfsIcon from "components/IpfsIcon"
 import Button from "components/Button"
 
@@ -93,57 +94,64 @@ const Success: FC<SuccessProps> = () => {
   }
 
   return (
-    <SuccessContainer>
-      <Body>
-        <IconContainer>
-          <IpfsIcon
-            hash={poolInfo.parameters.descriptionURL}
-            m="0"
-            size={110}
-          />
-        </IconContainer>
+    <>
+      <Header>Success</Header>
+      <SuccessContainer>
+        <Body>
+          <IconContainer>
+            <IpfsIcon
+              hash={poolInfo.parameters.descriptionURL}
+              m="0"
+              size={110}
+            />
+          </IconContainer>
 
-        <TopSideContent>
-          <AddressContainer>
-            <Address>{shortenAddress(poolAddress)}</Address>
-            <img src={LinkImg} alt="link" />
-          </AddressContainer>
-          <Title>{poolInfo.name}</Title>
-        </TopSideContent>
+          <TopSideContent>
+            <AddressContainer
+              href={`https://bscscan.com/address/${poolAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Address>{shortenAddress(poolAddress)}</Address>
+              <img src={LinkImg} alt="link" />
+            </AddressContainer>
+            <Title>{poolInfo.name}</Title>
+          </TopSideContent>
 
-        <CenterSideContent>
-          {CheckList.map((item) => (
-            <ListDiv key={item}>
-              <Check>
-                <img src={GreenCheck} alt="green check" />
-              </Check>
-              <Subtitle>{item}</Subtitle>
-            </ListDiv>
-          ))}
-        </CenterSideContent>
+          <CenterSideContent>
+            {CheckList.map((item) => (
+              <ListDiv key={item}>
+                <Check>
+                  <img src={GreenCheck} alt="green check" />
+                </Check>
+                <Subtitle>{item}</Subtitle>
+              </ListDiv>
+            ))}
+          </CenterSideContent>
 
-        <BottomSideContent>
-          <BottomTitle>Share my fund</BottomTitle>
-          <ShareIcons>
-            <FacebookIcon>
-              <img src={facebook} alt="facebook" />
-            </FacebookIcon>
-            <TwitterIcon>
-              <img src={twitter} alt="twitter" />
-            </TwitterIcon>
-            <TelegramIcon>
-              <img src={telegram} alt="telegram" />
-            </TelegramIcon>
-          </ShareIcons>
-        </BottomSideContent>
+          <BottomSideContent>
+            <BottomTitle>Share my fund</BottomTitle>
+            <ShareIcons>
+              <FacebookIcon>
+                <img src={facebook} alt="facebook" />
+              </FacebookIcon>
+              <TwitterIcon>
+                <img src={twitter} alt="twitter" />
+              </TwitterIcon>
+              <TelegramIcon>
+                <img src={telegram} alt="telegram" />
+              </TelegramIcon>
+            </ShareIcons>
+          </BottomSideContent>
 
-        <ButtonsContainer>
-          <Button onClick={handleDepositRedirect} size="large" full>
-            Deposit funds
-          </Button>
-        </ButtonsContainer>
-      </Body>
-    </SuccessContainer>
+          <ButtonsContainer>
+            <Button onClick={handleDepositRedirect} size="large" full>
+              Deposit funds
+            </Button>
+          </ButtonsContainer>
+        </Body>
+      </SuccessContainer>
+    </>
   )
 }
 

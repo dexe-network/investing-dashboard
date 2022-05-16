@@ -49,7 +49,9 @@ export const TopSideContent = styled.div`
   box-sizing: border-box;
 `
 
-export const AddressContainer = styled.div`
+export const AddressContainer = styled.a`
+  text-decoration: none;
+  color: #3399ff;
   display: flex;
   align-items: center;
   justify-content: center;
