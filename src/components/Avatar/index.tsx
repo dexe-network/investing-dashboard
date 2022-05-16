@@ -1,94 +1,33 @@
-import { useState, useEffect, Dispatch, SetStateAction } from "react"
-import styled from "styled-components"
+import { useState, useEffect, useCallback } from "react"
+import Compressor from "compressorjs"
 import ImageCropper from "modals/ImageCropper"
 import defaultAvatar from "assets/icons/default-avatar.svg"
 import picture from "assets/icons/picture.svg"
-import { device } from "theme"
 import { blobToBase64 } from "utils/ipfs"
 
-const Img = styled.img<{ size: number }>`
-  display: block;
-  width: ${(props) => `${props.size}px`};
-  height: ${(props) => `${props.size}px`};
-  min-width: ${(props) => `${props.size}px`};
-  min-height: ${(props) => `${props.size}px`};
-  border-radius: 150px;
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
-`
+import {
+  Img,
+  Overlay,
+  HoverCamera,
+  FileUpload,
+  CameraIcon,
+  Container,
+} from "./styled"
 
-const Overlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(24, 30, 44, 0.87);
-  border-radius: 150px;
-`
-
-const HoverCamera = styled.div`
-  box-sizing: border-box;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: fill-available;
-  width: 100%;
-  border-radius: 150px;
-  transition: all 0.4s ease-in-out;
-
-  @media only screen and (${device.xs}) {
-    opacity: 1;
-  }
-`
-
-const FileUpload = styled.input`
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  -webkit-appearance: none;
-  outline: none;
-  height: fill-available;
-  width: 100%;
-  opacity: 0;
-  cursor: pointer;
-  z-index: 20;
-`
-
-const CameraIcon = styled.img`
-  margin: auto;
-  transition: all 0.2s cubic-bezier(0.63, 0.08, 0.49, 0.84);
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px;
-  width: 18px;
-  top: 24px;
-
-  @media only screen and (${device.xs}) {
-    bottom: 25px;
-  }
-`
-
-const Container = styled.div<{ margin: string }>`
-  position: relative;
-  border-radius: 150px;
-  width: fit-content;
-  height: fit-content;
-  margin: ${(props) => props.margin};
-  /* overflow: hidden; */
-
-  &:hover {
-    ${HoverCamera} {
-      opacity: 1;
-    }
-    ${CameraIcon} {
-      bottom: 25px;
-    }
-  }
-`
+const getNormalizedFile = (file) => {
+  return new Promise((resolve, reject) => {
+    new Compressor(file, {
+      maxWidth: 1000,
+      maxHeight: 1000,
+      success(normalizedFile) {
+        resolve(normalizedFile)
+      },
+      error(error) {
+        reject(error)
+      },
+    })
+  })
+}
 
 interface Props {
   url?: string
@@ -109,12 +48,25 @@ const Avatar: React.FC<Props> = ({
   const [upImg, setUpImg] = useState<string | ArrayBuffer | null>()
   const [croppedImg, setCroppedImg] = useState<Blob | null>(null)
 
-  const handleSelectFile = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader()
+  const readFile = useCallback((file): Promise<string | ArrayBuffer | null> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        getNormalizedFile(file)
+          .then((normalizedFile: any) => reader.readAsDataURL(normalizedFile))
+          .catch((error) => reject(error))
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }, [])
 
-      reader.addEventListener("load", () => setUpImg(reader.result))
-      reader.readAsDataURL(e.target.files[0])
+  const handleSelectFile = async (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0]
+      const imageDataUrl = await readFile(file)
+      setUpImg(imageDataUrl || null)
     }
   }
 
