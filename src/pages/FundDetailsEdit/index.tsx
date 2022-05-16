@@ -1,9 +1,8 @@
-import { FC, MouseEventHandler, useState, useEffect, useMemo } from "react"
+import { FC, useState, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner } from "react-spinners-kit"
-import { format } from "date-fns"
 import { ethers } from "ethers"
 
 import {
@@ -14,12 +13,6 @@ import {
   Step,
   StepTitle,
   StepBody,
-  BasicContainer,
-  BasicItem,
-  BasicTitle,
-  BasicValue,
-  BasicValueIcon,
-  BasicValueText,
   InputText,
   SwtichRow,
 } from "./styled"
@@ -30,15 +23,14 @@ import TextArea from "components/TextArea"
 import Input from "components/Input"
 import AddressChips from "components/AddressChips"
 import Payload from "components/Payload"
-import Tooltip from "components/Tooltip"
+
+import BasicSettings from "./BasicSettings"
 
 import ManagersIcon from "assets/icons/Managers"
 import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
-import link from "assets/icons/link.svg"
 
-import { expandTimestamp, shortenAddress, formatBigNumber } from "utils"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
 import { usePool } from "state/pools/hooks"
@@ -48,11 +40,6 @@ import { TraderPool } from "abi"
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
-
-const fundTypes = {
-  BASIC_POOL: "Basic",
-  INVEST_POOL: "Invest",
-}
 
 const FundDetailsEdit: FC = () => {
   const { poolAddress } = useParams()
@@ -102,14 +89,6 @@ const FundDetailsEdit: FC = () => {
   const [isInvestorsAdded, setInvestors] = useState(!!investors.length)
 
   const [isCreating, setCreating] = useState(false)
-
-  const handleTokenRedirect = (address: string) =>
-    window.open(`https://bscscan.com/address/${address}`, "_blank")
-
-  const handleTokenLinkClick: MouseEventHandler = (e) => {
-    e.stopPropagation()
-    handleTokenRedirect(account!)
-  }
 
   const handleSubmit = async () => {
     if (!traderPool || !poolData || !account) return
@@ -220,59 +199,13 @@ const FundDetailsEdit: FC = () => {
           <Step>
             <StepTitle>Basic settings</StepTitle>
             <StepBody>
-              <BasicContainer>
-                <BasicItem>
-                  <BasicTitle>Owner</BasicTitle>
-                  <BasicValue>
-                    <BasicValueText>
-                      {shortenAddress(account, 3)}
-                    </BasicValueText>
-                    <BasicValueIcon
-                      onClick={handleTokenLinkClick}
-                      src={link}
-                    ></BasicValueIcon>
-                  </BasicValue>
-                </BasicItem>
-                <BasicItem>
-                  <BasicTitle>Created</BasicTitle>
-                  <BasicValue>
-                    {format(
-                      expandTimestamp(poolData!.creationTime),
-                      "MM.dd.yy"
-                    )}
-                  </BasicValue>
-                </BasicItem>
-                <BasicItem>
-                  <BasicTitle>Fund name</BasicTitle>
-                  <BasicValue>{poolData?.name}</BasicValue>
-                </BasicItem>
-                <BasicItem>
-                  <BasicTitle>Fund ticker</BasicTitle>
-                  <BasicValue>{poolData?.ticker}</BasicValue>
-                </BasicItem>
-                <BasicItem>
-                  <BasicTitle>Basic token</BasicTitle>
-                  <BasicValue>{baseData?.symbol}</BasicValue>
-                </BasicItem>
-                <BasicItem>
-                  <BasicTitle>Fund Type</BasicTitle>
-                  <BasicValue>
-                    <BasicValueText>{fundTypes[poolData!.type]}</BasicValueText>
-                    <Tooltip id="fund-type-info">Lorem ipsum</Tooltip>
-                  </BasicValue>
-                </BasicItem>
-                <BasicItem>
-                  <BasicTitle>Performance Fee 3 month</BasicTitle>
-                  <BasicValue>
-                    {formatBigNumber(
-                      poolInfoData?.parameters.commissionPercentage,
-                      25,
-                      0
-                    )}
-                    %
-                  </BasicValue>
-                </BasicItem>
-              </BasicContainer>
+              <BasicSettings
+                poolData={poolData}
+                symbol={baseData?.symbol}
+                commissionPercentage={
+                  poolInfoData?.parameters.commissionPercentage
+                }
+              />
             </StepBody>
           </Step>
           <Step>
