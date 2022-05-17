@@ -49,7 +49,9 @@ export const TopSideContent = styled.div`
   box-sizing: border-box;
 `
 
-export const AddressContainer = styled.div`
+export const AddressContainer = styled.a`
+  text-decoration: none;
+  color: #3399ff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,15 +95,7 @@ export const CenterSideContent = styled.div`
   align-items: center;
 `
 
-export const Subtitle1 = styled.div`
-  text-align: center;
-`
-
-export const Subtitle2 = styled.div`
-  text-align: center;
-`
-
-export const Subtitle3 = styled.div`
+export const Subtitle = styled.div`
   text-align: center;
 `
 
@@ -165,5 +159,6 @@ export const ButtonsContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-bottom: 21px;
+  margin: 0 auto 21px;
+  width: 241px;
 `

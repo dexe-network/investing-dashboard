@@ -104,7 +104,7 @@ const Input: FC<Props> = ({
       <InputField
         type={type}
         disabled={disabled}
-        defaultValue={value || ""}
+        value={value || ""}
         onChange={handleChange}
         autoComplete="off"
         autoCorrect="off"
@@ -112,6 +112,7 @@ const Input: FC<Props> = ({
         initial={isLabelActive ? "active" : "default"}
         animate={isLabelActive ? "active" : "default"}
         variants={inputVariants}
+        onFocus={() => setLabelActive(true)}
         onBlur={onBlur}
         ref={fieldRef}
         placeholder={placeholder}

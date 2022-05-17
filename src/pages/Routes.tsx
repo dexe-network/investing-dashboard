@@ -27,7 +27,7 @@ const CreateInvestProposal = lazy(() => import("pages/CreateInvestProposal"))
 const PrivacyPolicy = lazy(() => import("pages/PrivacyPolicy"))
 const Insurance = lazy(() => import("pages/Insurance"))
 const FundPositions = lazy(() => import("pages/FundPositions"))
-const MyFund = lazy(() => import("pages/MyFund")) // TODO: my trader profile
+const FundDetails = lazy(() => import("pages/FundDetails")) // TODO: my trader profile
 
 function Layout() {
   return <Outlet />
@@ -107,7 +107,10 @@ export default function Routes() {
                 </Route>
 
                 <Route path="privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="privacy-policy" element={<MyFund />} />
+                <Route
+                  path="fund-details/:poolAddress/*"
+                  element={<FundDetails />}
+                />
 
                 <Route path="*" element={<p>Not found</p>} />
               </Route>

@@ -3,6 +3,7 @@ import { Flex, Text } from "theme"
 
 import { opacityVariants } from "motion/variants"
 import Switch from "components/Switch"
+import { ReactNode, FC } from "react"
 
 export const Container = styled.div`
   margin: 0 auto;
@@ -69,17 +70,26 @@ export const FundTypeCards = styled.div``
 
 export const FeeCards = styled.div``
 
+export const ValidationError = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #fc6d6d;
+  margin: 12px 0 0 3px;
+`
+
+export const InputRow = styled(Flex)`
+  width: 100%;
+  padding: 12px 0;
+  flex-direction: column;
+  align-items: flex-start;
+`
+
 //-------
 // # SWITCH
 //-------
-
-interface SwitchRowProps {
-  icon: React.ReactNode
-  title: string
-  isOn: boolean
-  name: string
-  onChange: (state: boolean) => void
-}
 
 const RowContainer = styled(Flex)`
   position: relative;
@@ -127,6 +137,14 @@ const FormLabel = styled(Text)`
   margin-left: 8px;
 `
 
+interface SwitchRowProps {
+  icon: React.ReactNode
+  title: string
+  isOn: boolean
+  name: string
+  onChange: (state: boolean) => void
+}
+
 export const SwtichRow: React.FC<SwitchRowProps> = ({
   icon,
   title,
@@ -156,5 +174,85 @@ export const SwtichRow: React.FC<SwitchRowProps> = ({
         {children}
       </Flex>
     </>
+  )
+}
+
+const ModalIconsContainer = styled(Flex)`
+  flex-direction: column;
+  margin-top: 28px;
+  width: 100%;
+`
+
+const IconsContainer = styled(Flex)`
+  width: 52px;
+  height: 32px;
+  position: relative;
+`
+
+const LeftIcon = styled.div`
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  left: 0;
+  top: 0;
+`
+
+const RightIcon = styled.div`
+  height: 32px;
+  width: 32px;
+  position: absolute;
+  right: 0;
+  top: 0;
+`
+
+const TickersContainer = styled(Flex)`
+  margin-top: 7px;
+  justify-content: center;
+`
+
+const Ticker = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 15px;
+  letter-spacing: 0.3px;
+`
+
+const FundTicker = styled(Ticker)`
+  color: #e4f2ff;
+  text-align: right;
+  padding-right: 4px;
+`
+
+const BaseTicker = styled(Ticker)`
+  color: #5e6d8e;
+  text-align: left;
+`
+
+interface ModalIconsProps {
+  left: ReactNode
+  right: ReactNode
+  fund: string
+  base: string
+}
+
+export const ModalIcons: FC<ModalIconsProps> = ({
+  left,
+  right,
+  fund,
+  base,
+}) => {
+  return (
+    <ModalIconsContainer>
+      <IconsContainer>
+        <LeftIcon>{left}</LeftIcon>
+        <RightIcon>{right}</RightIcon>
+      </IconsContainer>
+      <TickersContainer>
+        <FundTicker>{fund}</FundTicker>
+        <BaseTicker>{base}</BaseTicker>
+      </TickersContainer>
+    </ModalIconsContainer>
   )
 }
