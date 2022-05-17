@@ -13,11 +13,10 @@ import {
   Step,
   StepTitle,
   StepBody,
-  InputText,
-  SwtichRow,
   ModalIcons,
 } from "./styled"
 import { Flex } from "theme"
+import SwitchRow, { InputText } from "components/SwitchRow"
 import Button from "components/Button"
 import Avatar from "components/Avatar"
 import TextArea from "components/TextArea"
@@ -429,7 +428,7 @@ const FundDetailsEdit: FC = () => {
           <Step>
             <StepTitle>Investment</StepTitle>
             <StepBody>
-              <SwtichRow
+              <SwitchRow
                 icon={<EmissionIcon active={isEmissionLimited} />}
                 title="Limited Emission"
                 isOn={isEmissionLimited}
@@ -444,8 +443,8 @@ const FundDetailsEdit: FC = () => {
                     rightIcon={<InputText>LP</InputText>}
                   />
                 </Flex>
-              </SwtichRow>
-              <SwtichRow
+              </SwitchRow>
+              <SwitchRow
                 icon={<MinInvestIcon active={isMinimalInvest} />}
                 title="Minimum investment amount"
                 isOn={isMinimalInvest}
@@ -459,8 +458,8 @@ const FundDetailsEdit: FC = () => {
                   value={minimalInvestment}
                   rightIcon={<InputText>{baseData?.symbol}</InputText>}
                 />
-              </SwtichRow>
-              <SwtichRow
+              </SwitchRow>
+              <SwitchRow
                 icon={<ManagersIcon active={isManagersAdded} />}
                 title="New fund managers"
                 isOn={isManagersAdded}
@@ -473,8 +472,8 @@ const FundDetailsEdit: FC = () => {
                   limit={100}
                   label="0x..."
                 />
-              </SwtichRow>
-              <SwtichRow
+              </SwitchRow>
+              <SwitchRow
                 icon={<InvestorsIcon active={isInvestorsAdded} />}
                 title="Invited investors"
                 isOn={isInvestorsAdded}
@@ -487,7 +486,7 @@ const FundDetailsEdit: FC = () => {
                   limit={100}
                   label="0x..."
                 />
-              </SwtichRow>
+              </SwitchRow>
             </StepBody>
           </Step>
         </Steps>
