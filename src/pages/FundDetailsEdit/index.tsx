@@ -14,6 +14,8 @@ import {
   StepTitle,
   StepBody,
   ModalIcons,
+  ValidationError,
+  InputRow,
 } from "./styled"
 import { Flex } from "theme"
 import SwitchRow, { InputText } from "components/SwitchRow"
@@ -55,6 +57,7 @@ const FundDetailsEdit: FC = () => {
   const {
     loading,
     handleChange,
+    handleValidate,
     setInitial,
     setDefault,
     isIpfsDataUpdated,
@@ -76,6 +79,8 @@ const FundDetailsEdit: FC = () => {
     investors,
     investorsRemoved,
     investorsAdded,
+
+    validationErrors,
   } = useUpdateFundContext()
 
   const avatar = useMemo(() => {
@@ -178,7 +183,10 @@ const FundDetailsEdit: FC = () => {
   const handleSubmit = async () => {
     if (stepsFormating) return
 
+    if (!handleValidate()) return
+
     setStepsFormating(true)
+
     let stepsShape: IStep[] = []
 
     if (isPoolParametersUpdated()) {
@@ -298,6 +306,30 @@ const FundDetailsEdit: FC = () => {
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  const getFieldErrors = (name: string) => {
+    return validationErrors
+      .filter((error) => error.field === name)
+      .map((error) => (
+        <ValidationError key={error.field}>{error.message}</ValidationError>
+      ))
+  }
+
+  const handleEmissionRowChange = (state: boolean) => {
+    setEmission(state)
+
+    if (!state) {
+      handleChange("totalLPEmission", "")
+    }
+  }
+
+  const handleMinInvestRowChange = (state: boolean) => {
+    setMinimalInvest(state)
+
+    if (!state) {
+      handleChange("minimalInvestment", "")
     }
   }
 
@@ -442,31 +474,35 @@ const FundDetailsEdit: FC = () => {
                 title="Limited Emission"
                 isOn={isEmissionLimited}
                 name="_emissionLimited"
-                onChange={setEmission}
+                onChange={handleEmissionRowChange}
               >
-                <Flex full p="12px 0">
+                <InputRow>
                   <Input
                     label="LP tokens emission"
                     value={totalLPEmission}
                     onChange={(value) => handleChange("totalLPEmission", value)}
                     rightIcon={<InputText>LP</InputText>}
                   />
-                </Flex>
+                  {getFieldErrors("totalLPEmission")}
+                </InputRow>
               </SwitchRow>
               <SwitchRow
                 icon={<MinInvestIcon active={isMinimalInvest} />}
                 title="Minimum investment amount"
                 isOn={isMinimalInvest}
                 name="_minInvestRestricted"
-                onChange={setMinimalInvest}
+                onChange={handleMinInvestRowChange}
               >
-                <Input
-                  placeholder="---"
-                  onChange={(v) => handleChange("minimalInvestment", v)}
-                  label="Minimum investment amount"
-                  value={minimalInvestment}
-                  rightIcon={<InputText>{baseData?.symbol}</InputText>}
-                />
+                <InputRow>
+                  <Input
+                    placeholder="---"
+                    onChange={(v) => handleChange("minimalInvestment", v)}
+                    label="Minimum investment amount"
+                    value={minimalInvestment}
+                    rightIcon={<InputText>{baseData?.symbol}</InputText>}
+                  />
+                  {getFieldErrors("minimalInvestment")}
+                </InputRow>
               </SwitchRow>
               <SwitchRow
                 icon={<ManagersIcon active={isManagersAdded} />}

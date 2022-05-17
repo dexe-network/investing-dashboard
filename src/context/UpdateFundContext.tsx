@@ -25,6 +25,13 @@ interface IState {
   investorsInitial: string[]
   investorsAdded: string[]
   investorsRemoved: string[]
+
+  validationErrors: IValidationError[]
+}
+
+interface IValidationError {
+  message: string
+  field: string
 }
 
 interface IContext extends IState {
@@ -33,6 +40,7 @@ interface IContext extends IState {
   setDefault: () => void
   isIpfsDataUpdated: () => boolean
   isPoolParametersUpdated: () => boolean
+  handleValidate: () => boolean
 }
 
 const defaultState = {
@@ -60,6 +68,8 @@ const defaultState = {
   investorsInitial: [],
   investorsAdded: [],
   investorsRemoved: [],
+
+  validationErrors: [],
 }
 
 const defaultContext = {
@@ -69,6 +79,7 @@ const defaultContext = {
   setDefault: () => {},
   isIpfsDataUpdated: () => false,
   isPoolParametersUpdated: () => false,
+  handleValidate: () => false,
 }
 
 export const FundContext = React.createContext<IContext>(defaultContext)
@@ -122,6 +133,8 @@ class UpdateFundContext extends React.Component {
     investorsInitial: [],
     investorsAdded: [],
     investorsRemoved: [],
+
+    validationErrors: [],
   }
 
   handleChange = (name: string, value: any) => {
@@ -219,6 +232,38 @@ class UpdateFundContext extends React.Component {
     return false
   }
 
+  handleValidate = () => {
+    const { totalLPEmission, minimalInvestment } = this.state
+
+    const errors: IValidationError[] = []
+
+    // TOTAL LPEmission
+
+    if (totalLPEmission !== "") {
+      if (isNaN(Number(totalLPEmission))) {
+        errors.push({
+          message: "Total LP emission must be a number",
+          field: "totalLPEmission",
+        })
+      }
+    }
+
+    // MINIMAL INVESTMENT
+
+    if (minimalInvestment !== "") {
+      if (isNaN(Number(minimalInvestment))) {
+        errors.push({
+          message: "Minimal investment must be a number",
+          field: "minimalInvestment",
+        })
+      }
+    }
+
+    this.setState({ validationErrors: errors })
+
+    return !errors.length
+  }
+
   render() {
     const { children } = this.props
 
@@ -231,6 +276,7 @@ class UpdateFundContext extends React.Component {
           setDefault: this.setDefault,
           isIpfsDataUpdated: this.isIpfsDataUpdated,
           isPoolParametersUpdated: this.isPoolParametersUpdated,
+          handleValidate: this.handleValidate,
         }}
       >
         {children}

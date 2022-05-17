@@ -115,6 +115,23 @@ export const BasicValueText = styled.span`
   margin-right: 7px;
 `
 
+export const ValidationError = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #fc6d6d;
+  margin: 12px 0 0 3px;
+`
+
+export const InputRow = styled(Flex)`
+  width: 100%;
+  padding: 12px 0;
+  flex-direction: column;
+  align-items: flex-start;
+`
+
 // Stepper modal
 
 const ModalIconsContainer = styled(Flex)`
