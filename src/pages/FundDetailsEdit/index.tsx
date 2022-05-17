@@ -1,8 +1,8 @@
-import { FC, useState, useEffect, useMemo } from "react"
-import { useParams } from "react-router-dom"
+import { FC, useState, useEffect, useMemo, useCallback } from "react"
+import { useParams, useNavigate } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
-import { RotateSpinner } from "react-spinners-kit"
+import { RotateSpinner, PulseSpinner } from "react-spinners-kit"
 import { ethers } from "ethers"
 
 import {
@@ -15,6 +15,7 @@ import {
   StepBody,
   InputText,
   SwtichRow,
+  ModalIcons,
 } from "./styled"
 import { Flex } from "theme"
 import Button from "components/Button"
@@ -22,7 +23,9 @@ import Avatar from "components/Avatar"
 import TextArea from "components/TextArea"
 import Input from "components/Input"
 import AddressChips from "components/AddressChips"
-import Payload from "components/Payload"
+import Stepper, { Step as IStep } from "components/Stepper"
+import TokenIcon from "components/TokenIcon"
+import IpfsIcon from "components/IpfsIcon"
 
 import BasicSettings from "./BasicSettings"
 
@@ -43,6 +46,7 @@ const poolsClient = createClient({
 
 const FundDetailsEdit: FC = () => {
   const { poolAddress } = useParams()
+  const navigate = useNavigate()
   const { account } = useWeb3React()
 
   const [, poolData, , poolInfoData] = usePool(poolAddress)
@@ -55,6 +59,7 @@ const FundDetailsEdit: FC = () => {
     setInitial,
     setDefault,
     isIpfsDataUpdated,
+    isPoolParametersUpdated,
 
     avatarBlobString,
     assets,
@@ -66,12 +71,10 @@ const FundDetailsEdit: FC = () => {
     minimalInvestment,
 
     managers,
-    managersInitial,
     managersRemoved,
     managersAdded,
 
     investors,
-    investorsInitial,
     investorsRemoved,
     investorsAdded,
   } = useUpdateFundContext()
@@ -88,46 +91,214 @@ const FundDetailsEdit: FC = () => {
   const [isManagersAdded, setManagers] = useState(!!managers.length)
   const [isInvestorsAdded, setInvestors] = useState(!!investors.length)
 
+  const [step, setStep] = useState(0)
+  const [steps, setSteps] = useState<IStep[]>([])
+  const [stepPending, setStepPending] = useState(false)
+  const [stepsFormating, setStepsFormating] = useState(false)
   const [isCreating, setCreating] = useState(false)
+  const [descriptionURL, setDescriptionURL] = useState("")
 
-  const handleSubmit = async () => {
+  const handleParametersUpdate = useCallback(async () => {
     if (!traderPool || !poolData || !account) return
 
-    setCreating(true)
+    let ipfsReceipt
+    if (isIpfsDataUpdated()) {
+      // Avatar Blob string must be array with previous avatars
+      const assetsParam = assets
+      if (avatarBlobString !== "") {
+        assetsParam.push(avatarBlobString)
+      }
+      ipfsReceipt = await addFundMetadata(
+        assetsParam,
+        description,
+        strategy,
+        account
+      )
+    } else {
+      ipfsReceipt = poolData.descriptionURL
+    }
 
+    setDescriptionURL(ipfsReceipt.path)
+
+    const receipt = await traderPool.changePoolParameters(
+      ipfsReceipt.path,
+      // investors.length > 0, // - TODO: info about privacy rules
+      Number(poolData.investorsCount) > 0,
+      ethers.utils
+        .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
+        .toHexString(),
+      ethers.utils
+        .parseEther(minimalInvestment !== "" ? minimalInvestment : "0")
+        .toHexString()
+    )
+
+    return await receipt.wait()
+  }, [
+    traderPool,
+    poolData,
+    account,
+    assets,
+    avatarBlobString,
+    description,
+    isIpfsDataUpdated,
+    minimalInvestment,
+    strategy,
+    totalLPEmission,
+  ])
+
+  const handleManagersRemove = useCallback(async () => {
+    const receipt = await traderPool?.modifyAdmins(managersRemoved, false)
+
+    return await receipt.wait()
+  }, [managersRemoved, traderPool])
+
+  const handleManagersAdd = useCallback(async () => {
+    const receipt = await traderPool?.modifyAdmins(managersAdded, true)
+
+    return await receipt.wait()
+  }, [managersAdded, traderPool])
+
+  const handleInvestorsRemove = useCallback(async () => {
+    const receipt = await traderPool?.modifyPrivateInvestors(
+      investorsRemoved,
+      false
+    )
+
+    return await receipt.wait()
+  }, [investorsRemoved, traderPool])
+
+  const handleInvestorsAdd = useCallback(async () => {
+    const receipt = await traderPool?.modifyPrivateInvestors(
+      investorsAdded,
+      true
+    )
+
+    return await receipt.wait()
+  }, [investorsAdded, traderPool])
+
+  const handleSubmit = async () => {
+    if (stepsFormating) return
+
+    setStepsFormating(true)
+    let stepsShape: IStep[] = []
+
+    if (isPoolParametersUpdated()) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Parameters",
+          description:
+            "Update your fund by signing a transaction in your wallet. This will update ERC20 compatible data.",
+          buttonText: "Update fund",
+        },
+      ]
+    }
+
+    if (!!managersRemoved.length) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Remove Managers",
+          description: "Remove managers from your fund.",
+          buttonText: "Remove managers",
+        },
+      ]
+    }
+    if (!!managersAdded.length) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Add Managers",
+          description: "Add managers from your fund.",
+          buttonText: "Add managers",
+        },
+      ]
+    }
+
+    if (!!investorsRemoved.length) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Remove Investors",
+          description: "Remove investors to your fund.",
+          buttonText: "Remove investors",
+        },
+      ]
+    }
+
+    if (!!investorsAdded.length) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Add Investors",
+          description: "Add investors to your fund.",
+          buttonText: "Add investors",
+        },
+      ]
+    }
+
+    stepsShape = [
+      ...stepsShape,
+      {
+        title: "Success",
+        description: "Your fund has been successfully updated.",
+        buttonText: "Finish",
+      },
+    ]
+
+    setSteps(stepsShape)
+    setStepsFormating(false)
+    setCreating(true)
+  }
+
+  const handleNextStep = async () => {
     try {
-      let ipfsReceipt
-      if (isIpfsDataUpdated()) {
-        // Avatar Blob string must be array with previous avatars
-        const assetsParam = assets
-        if (avatarBlobString !== "") {
-          assetsParam.push(avatarBlobString)
+      if (steps[step].title === "Parameters") {
+        setStepPending(true)
+        const data = await handleParametersUpdate()
+
+        // check if transaction is mined
+        if (!!data && data.logs.length && data.logs[0].address) {
+          setStep(step + 1)
+          setStepPending(false)
         }
-        ipfsReceipt = await addFundMetadata(
-          assetsParam,
-          description,
-          strategy,
-          account
-        )
-      } else {
-        ipfsReceipt = poolData.descriptionURL
+      }
+      if (steps[step].title === "Remove Managers") {
+        setStepPending(true)
+        await handleManagersRemove()
+
+        setStep(step + 1)
+        setStepPending(false)
+      }
+      if (steps[step].title === "Add Managers") {
+        setStepPending(true)
+        await handleManagersAdd()
+
+        setStep(step + 1)
+        setStepPending(false)
+      }
+      if (steps[step].title === "Remove Investors") {
+        setStepPending(true)
+        await handleInvestorsRemove()
+
+        setStep(step + 1)
+        setStepPending(false)
+      }
+      if (steps[step].title === "Add Investors") {
+        setStepPending(true)
+        await handleInvestorsAdd()
+
+        setStep(step + 1)
+        setStepPending(false)
       }
 
-      await traderPool.changePoolParameters(
-        ipfsReceipt.path,
-        Number(poolData.investorsCount) > 0,
-        ethers.utils
-          .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
-          .toHexString(),
-        ethers.utils
-          .parseEther(minimalInvestment !== "" ? minimalInvestment : "0")
-          .toHexString()
-      )
-
-      setCreating(false)
-    } catch (e) {
-      console.log(e)
-      // TODO: handle error
+      if (steps[step].title === "Success") {
+        setCreating(false)
+        setStepPending(false)
+        navigate(`/success/${poolData?.id}`)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -144,9 +315,13 @@ const FundDetailsEdit: FC = () => {
 
       if (!!parsedIpfs) {
         setInitial({
-          ...parsedIpfs,
+          assets: parsedIpfs.assets,
+          description: parsedIpfs.description,
+          strategy: parsedIpfs.strategy,
           totalLPEmission: totalEmission,
           minimalInvestment: minInvestment,
+          investors: [],
+          managers: [],
         })
       }
     })()
@@ -168,7 +343,7 @@ const FundDetailsEdit: FC = () => {
     return () => {
       setDefault()
     }
-  }, [])
+  }, [setDefault])
 
   if (loading || !poolData || !poolInfoData) {
     return (
@@ -182,7 +357,27 @@ const FundDetailsEdit: FC = () => {
 
   return (
     <>
-      <Payload isOpen={isCreating} toggle={() => setCreating(false)} />
+      {!!steps.length && (
+        <Stepper
+          isOpen={isCreating}
+          onClose={() => setCreating(false)}
+          onSubmit={handleNextStep}
+          current={step}
+          pending={stepPending}
+          steps={steps}
+          title="Updatig of fund"
+        >
+          {baseData?.address && (
+            <ModalIcons
+              left={<IpfsIcon m="0" size={28} hash={descriptionURL} />}
+              right={<TokenIcon m="0" size={28} address={baseData.address} />}
+              fund={poolData.ticker}
+              base={baseData.symbol}
+            />
+          )}
+        </Stepper>
+      )}
+
       <Container>
         <AvatarWrapper>
           <Avatar
@@ -298,7 +493,11 @@ const FundDetailsEdit: FC = () => {
         </Steps>
         <Flex full p="0 16px 61px">
           <Button full size="large" onClick={handleSubmit}>
-            Confirm changes
+            {stepsFormating ? (
+              <PulseSpinner color="#34455F" size={20} loading />
+            ) : (
+              "Confirm changes"
+            )}
           </Button>
         </Flex>
       </Container>

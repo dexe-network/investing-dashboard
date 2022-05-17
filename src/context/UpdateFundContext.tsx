@@ -12,7 +12,9 @@ interface IState {
   strategyInitial: string
 
   totalLPEmission: string
+  totalLPEmissionInitial: string
   minimalInvestment: string
+  minimalInvestmentInitial: string
 
   managers: string[]
   managersInitial: string[]
@@ -30,6 +32,7 @@ interface IContext extends IState {
   setInitial: (payload: any) => void
   setDefault: () => void
   isIpfsDataUpdated: () => boolean
+  isPoolParametersUpdated: () => boolean
 }
 
 const defaultState = {
@@ -44,7 +47,9 @@ const defaultState = {
   strategyInitial: "",
 
   totalLPEmission: "",
+  totalLPEmissionInitial: "",
   minimalInvestment: "",
+  minimalInvestmentInitial: "",
 
   managers: [],
   managersInitial: [],
@@ -63,6 +68,7 @@ const defaultContext = {
   setInitial: () => {},
   setDefault: () => {},
   isIpfsDataUpdated: () => false,
+  isPoolParametersUpdated: () => false,
 }
 
 export const FundContext = React.createContext<IContext>(defaultContext)
@@ -90,7 +96,9 @@ class UpdateFundContext extends React.Component {
     strategyInitial: "",
 
     totalLPEmission: "",
+    totalLPEmissionInitial: "",
     minimalInvestment: "",
+    minimalInvestmentInitial: "",
 
     managers: [],
     managersInitial: [],
@@ -166,6 +174,8 @@ class UpdateFundContext extends React.Component {
       strategyInitial: payload.strategy,
       investorsInitial: payload.investors,
       managersInitial: payload.managers,
+      totalLPEmissionInitial: payload.totalLPEmission,
+      minimalInvestmentInitial: payload.minimalInvestment,
       ...payload,
     })
   }
@@ -185,6 +195,17 @@ class UpdateFundContext extends React.Component {
     return false
   }
 
+  isPoolParametersUpdated = () => {
+    if (
+      this.isIpfsDataUpdated() ||
+      this.state.totalLPEmission !== this.state.totalLPEmissionInitial ||
+      this.state.minimalInvestment !== this.state.minimalInvestmentInitial
+    ) {
+      return true
+    }
+    return false
+  }
+
   render() {
     const { children } = this.props
 
@@ -196,6 +217,7 @@ class UpdateFundContext extends React.Component {
           setInitial: this.setInitial,
           setDefault: this.setDefault,
           isIpfsDataUpdated: this.isIpfsDataUpdated,
+          isPoolParametersUpdated: this.isPoolParametersUpdated,
         }}
       >
         {children}
