@@ -104,7 +104,7 @@ const Input: FC<Props> = ({
       <InputField
         type={type}
         disabled={disabled}
-        defaultValue={value || ""}
+        value={value || ""}
         onChange={handleChange}
         autoComplete="off"
         autoCorrect="off"

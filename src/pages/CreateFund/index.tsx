@@ -1,9 +1,10 @@
-import { FC, MouseEventHandler, useState, useEffect, useCallback } from "react"
+import { FC, MouseEventHandler, useState, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import { useSelector } from "react-redux"
 import { PulseSpinner } from "react-spinners-kit"
+import { ethers } from "ethers"
 
 import Button from "components/Button"
 import Avatar from "components/Avatar"
@@ -12,16 +13,17 @@ import AddressChips from "components/AddressChips"
 import Input from "components/Input"
 import IconButton from "components/IconButton"
 import TextArea from "components/TextArea"
-import Payload from "components/Payload"
 import TokenIcon from "components/TokenIcon"
 import Slider from "components/Slider"
 import Stepper, { Step as IStep } from "components/Stepper"
+import IpfsIcon from "components/IpfsIcon"
 
 import TokenSelect from "modals/TokenSelect"
 
 import { useCreateFundContext } from "context/CreateFundContext"
 import { selectTraderPoolFactoryAddress } from "state/contracts/selectors"
 import { Token } from "constants/interfaces"
+import { sliderPropsByPeriodType, performanceFees } from "constants/index"
 import useContract from "hooks/useContract"
 import { TraderPool, TraderPoolFactory } from "abi"
 
@@ -53,45 +55,9 @@ import {
   LinkButton,
   AvatarWrapper,
   ModalIcons,
+  ValidationError,
+  InputRow,
 } from "./styled"
-import { ethers } from "ethers"
-import IpfsIcon from "components/IpfsIcon"
-
-const performanceFees = [
-  {
-    id: 0,
-    title: "1 Month Fee withdrawal",
-    description: "Performance Fee limits of 20% to 30%",
-    monthes: 1,
-  },
-  {
-    id: 1,
-    title: "3 Months Fee withdrawal",
-    description: "Performance Fee limits of 20% to 50%",
-    monthes: 3,
-  },
-  {
-    id: 2,
-    title: "12 Months Fee withdrawal",
-    description: "Performance Fee limits of 20% to 70%",
-    monthes: 12,
-  },
-]
-
-const sliderPropsByPeriodType = {
-  "0": {
-    min: 20,
-    max: 30,
-  },
-  "1": {
-    min: 20,
-    max: 50,
-  },
-  "2": {
-    min: 20,
-    max: 70,
-  },
-}
 
 const deployMethodByType = {
   basic: "deployBasicPool",
@@ -101,6 +67,7 @@ const deployMethodByType = {
 const CreateFund: FC = () => {
   const {
     handleChange,
+    handleValidate,
     baseToken,
     description,
     strategy,
@@ -114,6 +81,7 @@ const CreateFund: FC = () => {
     totalLPEmission,
     minimalInvestment,
     avatarBlobString,
+    validationErrors,
   } = useCreateFundContext()
 
   const navigate = useNavigate()
@@ -227,7 +195,10 @@ const CreateFund: FC = () => {
   const handleSubmit = async () => {
     if (stepsFormating) return
 
+    if (!handleValidate()) return
+
     setStepsFormating(true)
+
     let stepsShape = [
       {
         title: "Create",
@@ -319,6 +290,46 @@ const CreateFund: FC = () => {
     }
   }
 
+  const getFieldErrors = (name: string) => {
+    return validationErrors
+      .filter((error) => error.field === name)
+      .map((error) => (
+        <ValidationError key={error.field}>{error.message}</ValidationError>
+      ))
+  }
+
+  const handleEmissionRowChange = (state: boolean) => {
+    setEmission(state)
+
+    if (!state) {
+      handleChange("totalLPEmission", "")
+    }
+  }
+
+  const handleManagersRowChange = (state: boolean) => {
+    setManagers(state)
+
+    if (!state) {
+      handleChange("managers", [])
+    }
+  }
+
+  const handleInvestorsRowChange = (state: boolean) => {
+    setInvestors(state)
+
+    if (!state) {
+      handleChange("investors", [])
+    }
+  }
+
+  const handleMinInvestRowChange = (state: boolean) => {
+    setMinimalInvest(state)
+
+    if (!state) {
+      handleChange("minimalInvestment", "")
+    }
+  }
+
   const baseTokenAvatar = !!baseToken.address && (
     <TokenIcon size={24} address={baseToken.address} />
   )
@@ -351,7 +362,6 @@ const CreateFund: FC = () => {
           )}
         </Stepper>
       )}
-      {/* <Payload isOpen={isCreating} toggle={() => setCreating(false)} /> */}
       <TokenSelect
         onSelect={handleTokenSelect}
         isOpen={isOpen}
@@ -373,7 +383,7 @@ const CreateFund: FC = () => {
                 index="1"
               />
               <StepBody>
-                <Flex full p="12px 0">
+                <InputRow>
                   <Input
                     placeholder="---"
                     onClick={handleTokenSelectOpen}
@@ -383,23 +393,26 @@ const CreateFund: FC = () => {
                     value={baseToken.symbol}
                     rightIcon={baseTokenLink}
                   />
-                </Flex>
-                <Flex full p="12px 0">
+                  {getFieldErrors("baseToken")}
+                </InputRow>
+                <InputRow>
                   <Input
                     label="Fund name"
                     limit={15}
                     value={fundName}
                     onChange={(value) => handleChange("fundName", value)}
                   />
-                </Flex>
-                <Flex full p="12px 0">
+                  {getFieldErrors("fundName")}
+                </InputRow>
+                <InputRow>
                   <Input
-                    limit={5}
+                    limit={8}
                     label="Ticker symbol"
                     value={fundSymbol}
                     onChange={(value) => handleChange("fundSymbol", value)}
                   />
-                </Flex>
+                  {getFieldErrors("fundSymbol")}
+                </InputRow>
               </StepBody>
             </Step>
             <Step>
@@ -447,25 +460,26 @@ const CreateFund: FC = () => {
                   title="Limited Emission"
                   isOn={isEmissionLimited}
                   name="_emissionLimited"
-                  onChange={setEmission}
+                  onChange={handleEmissionRowChange}
                 >
-                  <Flex full p="12px 0">
+                  <InputRow>
                     <Input
-                      label="LP tokens emission"
+                      placeholder="---"
                       value={totalLPEmission}
                       onChange={(value) =>
                         handleChange("totalLPEmission", value)
                       }
                       rightIcon={<InputText>LP</InputText>}
                     />
-                  </Flex>
+                    {getFieldErrors("totalLPEmission")}
+                  </InputRow>
                 </SwtichRow>
                 <SwtichRow
                   icon={<ManagersIcon active={isManagersAdded} />}
                   title="New fund managers"
                   isOn={isManagersAdded}
                   name="_managersRestricted"
-                  onChange={setManagers}
+                  onChange={handleManagersRowChange}
                 >
                   <AddressChips
                     items={managers}
@@ -479,7 +493,7 @@ const CreateFund: FC = () => {
                   title="Invited investors"
                   isOn={isInvestorsAdded}
                   name="_investorsRestricted"
-                  onChange={setInvestors}
+                  onChange={handleInvestorsRowChange}
                 >
                   <AddressChips
                     items={investors}
@@ -493,15 +507,17 @@ const CreateFund: FC = () => {
                   title="Minimum investment amount"
                   isOn={isMinimalInvest}
                   name="_minInvestRestricted"
-                  onChange={setMinimalInvest}
+                  onChange={handleMinInvestRowChange}
                 >
-                  <Input
-                    placeholder="---"
-                    onChange={(v) => handleChange("minimalInvestment", v)}
-                    label="Minimum investment amount"
-                    value={minimalInvestment}
-                    rightIcon={<InputText>{baseToken.symbol}</InputText>}
-                  />
+                  <InputRow>
+                    <Input
+                      placeholder="---"
+                      onChange={(v) => handleChange("minimalInvestment", v)}
+                      value={minimalInvestment}
+                      rightIcon={<InputText>{baseToken.symbol}</InputText>}
+                    />
+                    {getFieldErrors("minimalInvestment")}
+                  </InputRow>
                 </SwtichRow>
               </StepBody>
             </Step>
@@ -552,6 +568,7 @@ const CreateFund: FC = () => {
                   ))}
                 </FeeCards>
 
+                {getFieldErrors("commissionPercentage")}
                 <Slider
                   limits={sliderPropsByPeriodType[commissionPeriod]}
                   name="commissionPercentage"
