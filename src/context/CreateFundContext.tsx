@@ -1,5 +1,5 @@
 import { Token } from "constants/interfaces"
-import { sliderPropsByPeriodType, performanceFees } from "constants/index"
+import { sliderPropsByPeriodType } from "constants/index"
 import React from "react"
 
 interface IState {

@@ -65,6 +65,10 @@ export function fromBig(
 export function bigify(value: string, decimals: number) {
   const multiplier = BigNumber.from(10).pow(decimals)
 
+  if (value === "") {
+    return BigNumber.from("0").mul(multiplier)
+  }
+
   return BigNumber.from(value).mul(multiplier)
 }
 

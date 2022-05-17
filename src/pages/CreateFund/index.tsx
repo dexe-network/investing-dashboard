@@ -29,7 +29,6 @@ import { TraderPool, TraderPoolFactory } from "abi"
 
 import { addFundMetadata } from "utils/ipfs"
 import { bigify } from "utils"
-import getReceipt from "utils/getReceipt"
 
 import ManagersIcon from "assets/icons/Managers"
 import InvestorsIcon from "assets/icons/Investors"
@@ -85,7 +84,7 @@ const CreateFund: FC = () => {
   } = useCreateFundContext()
 
   const navigate = useNavigate()
-  const { library, account } = useWeb3React()
+  const { account } = useWeb3React()
 
   const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
   const [isMinimalInvest, setMinimalInvest] = useState(minimalInvestment !== "")
@@ -137,21 +136,20 @@ const CreateFund: FC = () => {
 
     setDescriptionURL(ipfsReceipt.path)
 
+    const totalEmission = bigify(totalLPEmission, 18).toHexString()
+    const minInvest = bigify(minimalInvestment, 18).toHexString()
+    const percentage = bigify(commissionPercentage.toString(), 25).toHexString()
+
     const poolParameters = {
       descriptionURL: ipfsReceipt.path,
       trader: account,
       privatePool: isInvestorsAdded,
-      totalLPEmission: ethers.utils
-        .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
-        .toHexString(),
+      totalLPEmission: totalEmission,
       baseToken: baseToken.address,
       baseTokenDecimals: baseToken.decimals,
-      minimalInvestment: 0,
+      minimalInvestment: minInvest,
       commissionPeriod,
-      commissionPercentage: bigify(
-        commissionPercentage.toString(),
-        25
-      ).toString(),
+      commissionPercentage: percentage,
     }
 
     const typeName = deployMethodByType[fundType]
@@ -175,6 +173,7 @@ const CreateFund: FC = () => {
     fundSymbol,
     fundType,
     isInvestorsAdded,
+    minimalInvestment,
     strategy,
     totalLPEmission,
     traderPoolFactory,
