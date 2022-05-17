@@ -81,6 +81,19 @@ const arrayIntersection = (a1: string[], a2: string[]): string[] =>
   a1.filter((x) => a2.includes(x))
 const arrayIncludes = (a: string[], value: string): boolean => a.includes(value)
 
+const propertiesMapping = {
+  managers: {
+    initial: "managersInitial",
+    added: "managersAdded",
+    removed: "managersRemoved",
+  },
+  investors: {
+    initial: "investorsInitial",
+    added: "investorsAdded",
+    removed: "investorsRemoved",
+  },
+}
+
 class UpdateFundContext extends React.Component {
   static contextType = FundContext
 
@@ -130,40 +143,40 @@ class UpdateFundContext extends React.Component {
   }
 
   updateRemovedList = (name: string, value: any) => {
+    const { initial, removed, added } = propertiesMapping[name]
     // Who removed
-    const removed = arrayDifference(this.state[name], value)[0]
-    const inInitial = arrayIncludes(this.state[`${name}Initial`], removed)
+    const removedAddress = arrayDifference(this.state[name], value)[0]
+    const inInitial = arrayIncludes(this.state[initial], removedAddress)
 
     // Add in list for removing if address has been in initial list
     if (inInitial) {
       this.setState({
-        [`${name}Removed`]: [...this.state[`${name}Removed`], removed],
+        [removed]: [...this.state[removed], removedAddress],
       })
     }
 
     // Clear added list from removed address
     this.setState({
-      [`${name}Added`]: arrayIntersection(this.state[`${name}Added`], value),
+      [added]: arrayIntersection(this.state[added], value),
     })
   }
 
   updateAddingList = (name: string, value: any) => {
+    const { initial, removed, added } = propertiesMapping[name]
     // Who added
-    const added = arrayDifference(value, this.state[name])[0]
-    const inInitial = arrayIncludes(this.state[`${name}Initial`], added)
+    const addedAddress = arrayDifference(value, this.state[name])[0]
+    const inInitial = arrayIncludes(this.state[initial], addedAddress)
 
     // Add in list for adding if address doesnt been in initial list
     if (!inInitial) {
       this.setState({
-        [`${name}Added`]: [...this.state[`${name}Added`], added],
+        [added]: [...this.state[added], addedAddress],
       })
     }
 
     // Clear removed list from added address
     this.setState({
-      [`${name}Removed`]: this.state[`${name}Removed`].filter(
-        (x) => x !== added
-      ),
+      [removed]: this.state[removed].filter((x) => x !== addedAddress),
     })
   }
 
