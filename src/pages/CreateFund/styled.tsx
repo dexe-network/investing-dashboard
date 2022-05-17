@@ -70,6 +70,23 @@ export const FundTypeCards = styled.div``
 
 export const FeeCards = styled.div``
 
+export const ValidationError = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #fc6d6d;
+  margin: 12px 0 0 3px;
+`
+
+export const InputRow = styled(Flex)`
+  width: 100%;
+  padding: 12px 0;
+  flex-direction: column;
+  align-items: flex-start;
+`
+
 const ModalIconsContainer = styled(Flex)`
   flex-direction: column;
   margin-top: 28px;

@@ -267,4 +267,40 @@ export const EXCHANGE_DEFAULT_PERCENTS = [
   },
 ]
 
+export const performanceFees = [
+  {
+    id: 0,
+    title: "1 Month Fee withdrawal",
+    description: "Performance Fee limits of 20% to 30%",
+    monthes: 1,
+  },
+  {
+    id: 1,
+    title: "3 Months Fee withdrawal",
+    description: "Performance Fee limits of 20% to 50%",
+    monthes: 3,
+  },
+  {
+    id: 2,
+    title: "12 Months Fee withdrawal",
+    description: "Performance Fee limits of 20% to 70%",
+    monthes: 12,
+  },
+]
+
+export const sliderPropsByPeriodType = {
+  "0": {
+    min: 20,
+    max: 30,
+  },
+  "1": {
+    min: 20,
+    max: 50,
+  },
+  "2": {
+    min: 20,
+    max: 70,
+  },
+}
+
 export default {}

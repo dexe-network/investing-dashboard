@@ -57,6 +57,7 @@ export const GradientBorderButton = styled(GradientBorder)<{
   border-radius: 10px;
   cursor: pointer;
   width: ${(props) => (props.full ? "100%" : "fit-content")};
+  box-sizing: border-box;
   margin: ${(props) => props.m || "0 auto"};
   min-width: fit-content;
 
@@ -91,6 +92,7 @@ export const GradientButton = styled(BaseButton)<{
   cursor: pointer;
   transition: all 0.1s ease-in-out;
   width: ${(props) => (props.full ? "100%" : "fit-content")};
+  box-sizing: border-box;
   margin: ${(props) => props.m || "0 auto"};
   min-width: fit-content;
   animation: changeButton 3s ease infinite;

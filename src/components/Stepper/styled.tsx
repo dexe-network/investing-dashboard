@@ -140,7 +140,7 @@ export const Track = styled.div<{ offset: number }>`
   right: ${({ offset }) => offset}px;
 `
 
-export const Step = styled(Flex)<{ active?: boolean }>`
+export const Step = styled(Flex)<{ active?: boolean; failed?: boolean }>`
   flex-direction: column;
   flex: 1;
 
@@ -153,6 +153,8 @@ export const Step = styled(Flex)<{ active?: boolean }>`
   }
 
   ${Circle} {
-    border: 1px solid ${({ active }) => (active ? "#9ae2cb" : "#616D8B")};
+    border: 1px solid
+      ${({ active, failed }) =>
+        active ? (failed ? "#DB6D6D" : "#9ae2cb") : "#616D8B"};
   }
 `
