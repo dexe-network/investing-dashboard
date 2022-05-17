@@ -1,12 +1,14 @@
-import { FC, useEffect, useRef } from "react"
+import { FC } from "react"
 import { createPortal } from "react-dom"
 import { CircleSpinner } from "react-spinners-kit"
+import { Flex } from "theme"
 
 import IconButton from "components/IconButton"
-import Button from "components/Button"
+import Button, { SecondaryButton } from "components/Button"
 
 import close from "assets/icons/close-gray.svg"
 import check from "assets/icons/stepper-check.svg"
+import fail from "assets/icons/stepper-fail.svg"
 
 import {
   Container,
@@ -45,6 +47,7 @@ interface Props {
   steps: Step[]
   current: number
   pending: boolean
+  failed?: boolean
   onClose: () => void
   onSubmit: () => void
 }
@@ -55,6 +58,7 @@ const Stepper: FC<Props> = ({
   steps,
   current,
   pending,
+  failed,
   children,
   onClose,
   onSubmit,
@@ -65,8 +69,49 @@ const Stepper: FC<Props> = ({
       return stepWidth * current + stepWidth / 2
     }
 
-    return stepWidth * current
+    return stepWidth * (failed ? current - 1 : current)
   }
+
+  const getCircleContent = (i) => {
+    if (i < current) {
+      return <IconButton media={check} size={16} />
+    }
+
+    if (i > current) {
+      return <Number>{i + 1}</Number>
+    }
+
+    if (i === current && pending) {
+      return <CircleSpinner color="#A4EBD4" size={8} />
+    }
+
+    if (i === current && failed) {
+      return <IconButton media={fail} size={16} />
+    }
+
+    return <Number>{i + 1}</Number>
+  }
+
+  const buttonWithFailed = failed ? (
+    <Button onClick={onSubmit} size="large" fz={16} full>
+      Try again
+    </Button>
+  ) : (
+    <Button onClick={onSubmit} size="large" fz={16} full>
+      {steps[current].buttonText}
+    </Button>
+  )
+
+  const buttonWithPending = pending ? (
+    <SecondaryButton theme="disabled" size="large" fz={16} full>
+      <Flex>
+        <Flex p="0 4px 0 0">Loading</Flex>
+        <CircleSpinner color="#616D8B" size={8} />
+      </Flex>
+    </SecondaryButton>
+  ) : (
+    buttonWithFailed
+  )
 
   return (
     stepperRoot &&
@@ -117,22 +162,17 @@ const Stepper: FC<Props> = ({
               />
               <Track offset={predefinedOffset[steps.length]} />
               {steps.map((step, i) => (
-                <Step active={i <= current} key={step.title}>
-                  <Circle>
-                    {i < current && <IconButton media={check} size={16} />}
-                    {i > current && <Number>{i + 1}</Number>}
-                    {i === current && pending && (
-                      <CircleSpinner color="#A4EBD4" size={8} />
-                    )}
-                    {i === current && !pending && <Number>{i + 1}</Number>}
-                  </Circle>
+                <Step
+                  failed={i === current && failed}
+                  active={i <= current}
+                  key={step.title}
+                >
+                  <Circle>{getCircleContent(i)}</Circle>
                   <Label>{step.title}</Label>
                 </Step>
               ))}
             </StepsContainer>
-            <Button onClick={onSubmit} size="large" full>
-              {steps[current].buttonText}
-            </Button>
+            {buttonWithPending}
           </Body>
         </Container>
       </>,

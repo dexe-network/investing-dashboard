@@ -96,6 +96,7 @@ const CreateFund: FC = () => {
   const [stepPending, setStepPending] = useState(false)
   const [isOpen, setModalState] = useState(false)
   const [isCreating, setCreating] = useState(false)
+  const [transactionFail, setTransactionFail] = useState(false)
   const [stepsFormating, setStepsFormating] = useState(false)
   const [descriptionURL, setDescriptionURL] = useState("")
   const [contractAddress, setCreactedAddress] = useState("")
@@ -245,6 +246,7 @@ const CreateFund: FC = () => {
 
   const handleNextStep = async () => {
     try {
+      setTransactionFail(false)
       if (steps[step].title === "Create") {
         setStepPending(true)
         const data = await handlePoolCreate()
@@ -285,6 +287,8 @@ const CreateFund: FC = () => {
         navigate(`/success/${contractAddress}`)
       }
     } catch (error) {
+      setStepPending(false)
+      setTransactionFail(true)
       console.log(error)
     }
   }
@@ -343,6 +347,7 @@ const CreateFund: FC = () => {
     <>
       {!!steps.length && (
         <Stepper
+          failed={transactionFail}
           isOpen={isCreating}
           onClose={() => setCreating(false)}
           onSubmit={handleNextStep}
