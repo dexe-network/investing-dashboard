@@ -112,6 +112,7 @@ const Input: FC<Props> = ({
         initial={isLabelActive ? "active" : "default"}
         animate={isLabelActive ? "active" : "default"}
         variants={inputVariants}
+        onFocus={() => setLabelActive(true)}
         onBlur={onBlur}
         ref={fieldRef}
         placeholder={placeholder}
