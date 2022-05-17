@@ -85,10 +85,10 @@ const FundDetailsEdit: FC = () => {
     return assets.at(-1)
   }, [avatarBlobString, assets])
 
-  const [isEmissionLimited, setEmission] = useState(false)
-  const [isMinimalInvest, setMinimalInvest] = useState(false)
-  const [isManagersAdded, setManagers] = useState(!!managers.length)
-  const [isInvestorsAdded, setInvestors] = useState(!!investors.length)
+  const [isEmissionLimited, setEmission] = useState<boolean>(false)
+  const [isMinimalInvest, setMinimalInvest] = useState<boolean>(false)
+  const [isManagersAdded, setManagers] = useState<boolean>(false)
+  const [isInvestorsAdded, setInvestors] = useState<boolean>(false)
 
   const [step, setStep] = useState(0)
   const [steps, setSteps] = useState<IStep[]>([])
@@ -331,12 +331,21 @@ const FundDetailsEdit: FC = () => {
       setEmission(true)
     }
   }, [totalLPEmission])
-
   useEffect(() => {
     if (minimalInvestment !== "") {
       setMinimalInvest(true)
     }
   }, [minimalInvestment])
+  useEffect(() => {
+    if (!!managers.length) {
+      setManagers(true)
+    }
+  }, [managers])
+  useEffect(() => {
+    if (!!investors.length) {
+      setInvestors(true)
+    }
+  }, [investors])
 
   useEffect(() => {
     return () => {
