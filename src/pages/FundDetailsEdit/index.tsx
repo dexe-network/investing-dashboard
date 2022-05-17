@@ -35,6 +35,7 @@ import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
 
+import { bigify } from "utils"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
 import { usePool } from "state/pools/hooks"
@@ -100,13 +101,16 @@ const FundDetailsEdit: FC = () => {
   const [stepPending, setStepPending] = useState(false)
   const [stepsFormating, setStepsFormating] = useState(false)
   const [isCreating, setCreating] = useState(false)
+  const [transactionFail, setTransactionFail] = useState(false)
   const [descriptionURL, setDescriptionURL] = useState("")
 
   const handleParametersUpdate = useCallback(async () => {
     if (!traderPool || !poolData || !account) return
 
+    const ipfsChanged = isIpfsDataUpdated()
+
     let ipfsReceipt
-    if (isIpfsDataUpdated()) {
+    if (ipfsChanged) {
       // Avatar Blob string must be array with previous avatars
       const assetsParam = assets
       if (avatarBlobString !== "") {
@@ -124,16 +128,17 @@ const FundDetailsEdit: FC = () => {
 
     setDescriptionURL(ipfsReceipt.path)
 
+    const descriptionURL = ipfsChanged ? ipfsReceipt.path : ipfsReceipt
+    // investors.length > 0, // - TODO: info about privacy rule
+    const privatePool = Number(poolData.investorsCount) > 0
+    const totalEmission = bigify(totalLPEmission, 18).toHexString()
+    const minInvest = bigify(minimalInvestment, 18).toHexString()
+
     const receipt = await traderPool.changePoolParameters(
-      ipfsReceipt.path,
-      // investors.length > 0, // - TODO: info about privacy rules
-      Number(poolData.investorsCount) > 0,
-      ethers.utils
-        .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
-        .toHexString(),
-      ethers.utils
-        .parseEther(minimalInvestment !== "" ? minimalInvestment : "0")
-        .toHexString()
+      descriptionURL,
+      privatePool,
+      totalEmission,
+      minInvest
     )
 
     return await receipt.wait()
@@ -201,45 +206,26 @@ const FundDetailsEdit: FC = () => {
       ]
     }
 
-    if (!!managersRemoved.length) {
+    if (!!managersRemoved.length || !!managersAdded.length) {
+      // TODO: description must include count of transactions and what user must approve
       stepsShape = [
         ...stepsShape,
         {
-          title: "Remove Managers",
-          description: "Remove managers from your fund.",
-          buttonText: "Remove managers",
-        },
-      ]
-    }
-    if (!!managersAdded.length) {
-      stepsShape = [
-        ...stepsShape,
-        {
-          title: "Add Managers",
-          description: "Add managers from your fund.",
-          buttonText: "Add managers",
+          title: "Managers",
+          description: "Update managers for your fund.",
+          buttonText: "Update managers",
         },
       ]
     }
 
-    if (!!investorsRemoved.length) {
+    if (!!investorsRemoved.length || !!investorsAdded.length) {
+      // TODO: description must include count of transactions and what user must approve
       stepsShape = [
         ...stepsShape,
         {
-          title: "Remove Investors",
-          description: "Remove investors to your fund.",
-          buttonText: "Remove investors",
-        },
-      ]
-    }
-
-    if (!!investorsAdded.length) {
-      stepsShape = [
-        ...stepsShape,
-        {
-          title: "Add Investors",
-          description: "Add investors to your fund.",
-          buttonText: "Add investors",
+          title: "Investors",
+          description: "Update investors for your fund.",
+          buttonText: "Update investors",
         },
       ]
     }
@@ -260,6 +246,7 @@ const FundDetailsEdit: FC = () => {
 
   const handleNextStep = async () => {
     try {
+      setTransactionFail(false)
       if (steps[step].title === "Parameters") {
         setStepPending(true)
         const data = await handleParametersUpdate()
@@ -270,30 +257,29 @@ const FundDetailsEdit: FC = () => {
           setStepPending(false)
         }
       }
-      if (steps[step].title === "Remove Managers") {
+      if (steps[step].title === "Managers") {
         setStepPending(true)
-        await handleManagersRemove()
+
+        if (!!managersRemoved.length) {
+          await handleManagersRemove()
+        }
+        if (!!managersAdded.length) {
+          await handleManagersAdd()
+        }
 
         setStep(step + 1)
         setStepPending(false)
       }
-      if (steps[step].title === "Add Managers") {
-        setStepPending(true)
-        await handleManagersAdd()
 
-        setStep(step + 1)
-        setStepPending(false)
-      }
-      if (steps[step].title === "Remove Investors") {
+      if (steps[step].title === "Investors") {
         setStepPending(true)
-        await handleInvestorsRemove()
 
-        setStep(step + 1)
-        setStepPending(false)
-      }
-      if (steps[step].title === "Add Investors") {
-        setStepPending(true)
-        await handleInvestorsAdd()
+        if (!!investorsRemoved.length) {
+          await handleInvestorsRemove()
+        }
+        if (!!investorsAdded.length) {
+          await handleInvestorsAdd()
+        }
 
         setStep(step + 1)
         setStepPending(false)
@@ -305,6 +291,8 @@ const FundDetailsEdit: FC = () => {
         navigate(`/success/${poolData?.id}`)
       }
     } catch (error) {
+      setStepPending(false)
+      setTransactionFail(true)
       console.log(error)
     }
   }
@@ -399,6 +387,7 @@ const FundDetailsEdit: FC = () => {
     <>
       {!!steps.length && (
         <Stepper
+          failed={transactionFail}
           isOpen={isCreating}
           onClose={() => setCreating(false)}
           onSubmit={handleNextStep}
