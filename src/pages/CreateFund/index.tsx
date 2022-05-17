@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import { useSelector } from "react-redux"
+import { PulseSpinner } from "react-spinners-kit"
 
 import Button from "components/Button"
 import Avatar from "components/Avatar"
@@ -14,6 +15,7 @@ import TextArea from "components/TextArea"
 import Payload from "components/Payload"
 import TokenIcon from "components/TokenIcon"
 import Slider from "components/Slider"
+import Stepper, { Step as IStep } from "components/Stepper"
 
 import TokenSelect from "modals/TokenSelect"
 
@@ -50,8 +52,10 @@ import {
   SwtichRow,
   LinkButton,
   AvatarWrapper,
+  ModalIcons,
 } from "./styled"
 import { ethers } from "ethers"
+import IpfsIcon from "components/IpfsIcon"
 
 const performanceFees = [
   {
@@ -120,8 +124,13 @@ const CreateFund: FC = () => {
   const [isManagersAdded, setManagers] = useState(!!managers.length)
   const [isInvestorsAdded, setInvestors] = useState(!!investors.length)
 
+  const [step, setStep] = useState(0)
+  const [steps, setSteps] = useState<IStep[]>([])
+  const [stepPending, setStepPending] = useState(false)
   const [isOpen, setModalState] = useState(false)
   const [isCreating, setCreating] = useState(false)
+  const [stepsFormating, setStepsFormating] = useState(false)
+  const [descriptionURL, setDescriptionURL] = useState("")
   const [contractAddress, setCreactedAddress] = useState("")
 
   const poolFactoryAddress = useSelector(selectTraderPoolFactoryAddress)
@@ -139,93 +148,176 @@ const CreateFund: FC = () => {
     setModalState(false)
   }
 
-  const handleTokenRedirect = (address: string) =>
+  const handleTokenRedirect = (address: string) => {
     window.open(`https://bscscan.com/address/${address}`, "_blank")
+  }
 
   const handleTokenLinkClick: MouseEventHandler = (e) => {
     e.stopPropagation()
     handleTokenRedirect(baseToken.address)
   }
 
+  const handlePoolCreate = useCallback(async () => {
+    if (!account || !traderPoolFactory) return
+
+    const ipfsReceipt = await addFundMetadata(
+      [avatarBlobString],
+      description,
+      strategy,
+      account
+    )
+
+    setDescriptionURL(ipfsReceipt.path)
+
+    const poolParameters = {
+      descriptionURL: ipfsReceipt.path,
+      trader: account,
+      privatePool: isInvestorsAdded,
+      totalLPEmission: ethers.utils
+        .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
+        .toHexString(),
+      baseToken: baseToken.address,
+      baseTokenDecimals: baseToken.decimals,
+      minimalInvestment: 0,
+      commissionPeriod,
+      commissionPercentage: bigify(
+        commissionPercentage.toString(),
+        25
+      ).toString(),
+    }
+
+    const typeName = deployMethodByType[fundType]
+
+    const receipt = await traderPoolFactory[typeName](
+      fundName,
+      fundSymbol,
+      poolParameters
+    )
+
+    return await receipt.wait()
+  }, [
+    account,
+    avatarBlobString,
+    baseToken.address,
+    baseToken.decimals,
+    commissionPercentage,
+    commissionPeriod,
+    description,
+    fundName,
+    fundSymbol,
+    fundType,
+    isInvestorsAdded,
+    strategy,
+    totalLPEmission,
+    traderPoolFactory,
+  ])
+
   const handleManagersAdd = useCallback(async () => {
-    return await traderPool?.modifyAdmins(managers, true)
+    const receipt = await traderPool?.modifyAdmins(managers, true)
+
+    return await receipt.wait()
   }, [managers, traderPool])
 
+  const handleInvestorsAdd = useCallback(async () => {
+    const receipt = await traderPool?.modifyPrivateInvestors(investors, true)
+
+    return await receipt.wait()
+  }, [investors, traderPool])
+
   const handleSubmit = async () => {
-    if (!traderPoolFactory || !account) return
-    setCreating(true)
+    if (stepsFormating) return
 
-    try {
-      const ipfsReceipt = await addFundMetadata(
-        [avatarBlobString],
-        description,
-        strategy,
-        account
-      )
+    setStepsFormating(true)
+    let stepsShape = [
+      {
+        title: "Create",
+        description:
+          "Create your fund by signing a transaction in your wallet. This will create ERC20 compatible token.",
+        buttonText: "Create fund",
+      },
+    ]
 
-      const poolParameters = {
-        descriptionURL: ipfsReceipt.path,
-        trader: account,
-        privatePool: isInvestorsAdded,
-        totalLPEmission: ethers.utils
-          .parseEther(totalLPEmission !== "" ? totalLPEmission : "0")
-          .toHexString(),
-        baseToken: baseToken.address,
-        baseTokenDecimals: baseToken.decimals,
-        minimalInvestment: 0,
-        commissionPeriod,
-        commissionPercentage: bigify(
-          commissionPercentage.toString(),
-          25
-        ).toString(),
-      }
-
-      const typeName = deployMethodByType[fundType]
-
-      const createReceipt = await traderPoolFactory[typeName](
-        fundName,
-        fundSymbol,
-        poolParameters
-      )
-
-      const data: any = await getReceipt(library, createReceipt.hash)
-
-      setCreating(false)
-
-      if (
-        !!data &&
-        ((data.logs.length && data.logs[0].address) || data.address)
-      ) {
-        const createdAddress = data.address
-          ? data.address
-          : data.logs[0].address
-        setCreactedAddress(createdAddress)
-      }
-    } catch (e) {
-      console.log(e)
-      // TODO: handle error
+    if (managers.length) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Managers",
+          description: "Add managers to your fund.",
+          buttonText: "Add managers",
+        },
+      ]
     }
+
+    if (investors.length) {
+      stepsShape = [
+        ...stepsShape,
+        {
+          title: "Investors",
+          description: "Add investors to your fund.",
+          buttonText: "Add investors",
+        },
+      ]
+    }
+
+    stepsShape = [
+      ...stepsShape,
+      {
+        title: "Success",
+        description: "Your fund has been successfully created.",
+        buttonText: "Finish",
+      },
+    ]
+
+    setSteps(stepsShape)
+    setStepsFormating(false)
+    setCreating(true)
   }
 
-  // watch for contract creation
-  useEffect(() => {
-    if (!contractAddress.length || !traderPool) return
-    ;(async () => {
-      if (!!managers.length) {
-        const managersReceipt = await handleManagersAdd()
-        const receipt = await getReceipt(library, managersReceipt.hash)
+  const handleNextStep = async () => {
+    try {
+      if (steps[step].title === "Create") {
+        setStepPending(true)
+        const data = await handlePoolCreate()
+
+        // check if transaction is mined
+        if (
+          !!data &&
+          ((data.logs.length && data.logs[0].address) || data.address)
+        ) {
+          const createdAddress = data.address
+            ? data.address
+            : data.logs[0].address
+          setCreactedAddress(createdAddress)
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
-      navigate(`/success/${contractAddress}`)
-    })()
-  }, [
-    contractAddress,
-    traderPool,
-    navigate,
-    handleManagersAdd,
-    managers,
-    library,
-  ])
+      if (steps[step].title === "Managers") {
+        setStepPending(true)
+        await handleManagersAdd()
+
+        setStep(step + 1)
+        setStepPending(false)
+      }
+
+      if (steps[step].title === "Investors") {
+        setStepPending(true)
+        await handleInvestorsAdd()
+
+        setStep(step + 1)
+        setStepPending(false)
+      }
+
+      if (steps[step].title === "Success") {
+        setCreating(false)
+        setStepPending(false)
+        navigate(`/success/${contractAddress}`)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const baseTokenAvatar = !!baseToken.address && (
     <TokenIcon size={24} address={baseToken.address} />
@@ -239,7 +331,27 @@ const CreateFund: FC = () => {
 
   return (
     <>
-      <Payload isOpen={isCreating} toggle={() => setCreating(false)} />
+      {!!steps.length && (
+        <Stepper
+          isOpen={isCreating}
+          onClose={() => setCreating(false)}
+          onSubmit={handleNextStep}
+          current={step}
+          pending={stepPending}
+          steps={steps}
+          title="Creation of fund"
+        >
+          {baseToken.address && (
+            <ModalIcons
+              left={<IpfsIcon m="0" size={28} hash={descriptionURL} />}
+              right={<TokenIcon m="0" size={28} address={baseToken.address} />}
+              fund={fundSymbol}
+              base={baseToken.symbol}
+            />
+          )}
+        </Stepper>
+      )}
+      {/* <Payload isOpen={isCreating} toggle={() => setCreating(false)} /> */}
       <TokenSelect
         onSelect={handleTokenSelect}
         isOpen={isOpen}
@@ -451,7 +563,11 @@ const CreateFund: FC = () => {
           </Steps>
           <Flex full p="0 16px 42px">
             <Button full size="large" onClick={handleSubmit}>
-              Create fund
+              {stepsFormating ? (
+                <PulseSpinner color="#34455F" size={20} loading />
+              ) : (
+                "Create fund"
+              )}
             </Button>
           </Flex>
         </Body>

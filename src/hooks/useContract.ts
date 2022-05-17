@@ -12,6 +12,11 @@ import { useActiveWeb3React } from "hooks"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ITokenBase } from "constants/interfaces"
 import { isAddress } from "utils"
+import { ethers } from "ethers"
+
+const provider = new ethers.providers.JsonRpcProvider(
+  "https://data-seed-prebsc-1-s1.binance.org:8545/"
+)
 
 export default function useContract(
   address: string | undefined,
@@ -21,20 +26,20 @@ export default function useContract(
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !library || !isAddress(address)) return null
+    if (!address || !ABI || !provider || !isAddress(address)) return null
 
     try {
       return getContract(
         address,
         ABI,
-        library,
+        library || provider,
         withSignerIfPossible && account ? account : undefined
       )
     } catch (error) {
       console.error("Failed to get contract", error)
       return null
     }
-  }, [address, ABI, library, withSignerIfPossible, account])
+  }, [address, ABI, library, provider, withSignerIfPossible, account])
 }
 
 export function useUniswapExchangeTool(): Contract | null {
