@@ -288,6 +288,8 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Success") {
         setCreating(false)
         setStepPending(false)
+        setStep(0)
+        setSteps([])
       }
     } catch (error) {
       setStepPending(false)
