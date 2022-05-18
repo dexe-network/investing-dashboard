@@ -437,7 +437,7 @@ const FundDetailsEdit: FC = () => {
             <StepBody>
               <Flex full p="0">
                 <TextArea
-                  theme="grey"
+                  theme="black"
                   defaultValue={description}
                   name="description"
                   placeholder="Fund description"
@@ -446,7 +446,7 @@ const FundDetailsEdit: FC = () => {
               </Flex>
               <Flex full p="32px 0 0">
                 <TextArea
-                  theme="grey"
+                  theme="black"
                   defaultValue={strategy}
                   name="strategy"
                   placeholder="Fund strategy"
