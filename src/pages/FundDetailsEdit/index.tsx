@@ -288,7 +288,6 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Success") {
         setCreating(false)
         setStepPending(false)
-        navigate(`/success/${poolData?.id}`)
       }
     } catch (error) {
       setStepPending(false)
@@ -321,10 +320,20 @@ const FundDetailsEdit: FC = () => {
     }
   }
 
+  // update initial value context
   useEffect(() => {
     if (!poolData || !poolInfoData) return
     ;(async () => {
       const parsedIpfs = await parsePoolData(poolData.descriptionURL)
+
+      if (!!parsedIpfs) {
+        setInitial({
+          assets: parsedIpfs.assets,
+          description: parsedIpfs.description,
+          strategy: parsedIpfs.strategy,
+        })
+      }
+
       const totalEmission =
         poolInfoData &&
         ethers.utils.formatEther(poolInfoData.parameters.totalLPEmission)
@@ -332,41 +341,52 @@ const FundDetailsEdit: FC = () => {
         poolInfoData &&
         ethers.utils.formatEther(poolInfoData.parameters.minimalInvestment)
 
-      if (!!parsedIpfs) {
-        setInitial({
-          assets: parsedIpfs.assets,
-          description: parsedIpfs.description,
-          strategy: parsedIpfs.strategy,
-          totalLPEmission: totalEmission,
-          minimalInvestment: minInvestment,
-          investors: [],
-          managers: [],
-        })
-      }
+      setInitial({
+        totalLPEmission: totalEmission,
+        minimalInvestment: minInvestment,
+        investors: [],
+        managers: [],
+      })
     })()
   }, [poolData, poolInfoData, setInitial])
 
+  // update emission switch state
   useEffect(() => {
-    if (totalLPEmission !== "") {
+    if (!poolInfoData) return
+    if (
+      !poolInfoData.parameters.totalLPEmission.eq(ethers.utils.parseEther("0"))
+    ) {
       setEmission(true)
     }
-  }, [totalLPEmission])
+  }, [poolInfoData])
+
+  // update min invest amount switch state
   useEffect(() => {
-    if (minimalInvestment !== "") {
+    if (!poolInfoData) return
+    if (
+      !poolInfoData.parameters.minimalInvestment.eq(
+        ethers.utils.parseEther("0")
+      )
+    ) {
       setMinimalInvest(true)
     }
-  }, [minimalInvestment])
+  }, [poolInfoData])
+
+  // update managers switch state
   useEffect(() => {
     if (!!managers.length) {
       setManagers(true)
     }
   }, [managers])
+
+  // update investors switch state
   useEffect(() => {
     if (!!investors.length) {
       setInvestors(true)
     }
   }, [investors])
 
+  // clean state when user leaves page
   useEffect(() => {
     return () => {
       setDefault()

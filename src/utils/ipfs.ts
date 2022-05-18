@@ -65,7 +65,7 @@ export const parsePoolData = async (hash) => {
     }
   } catch (e) {
     console.log(e)
-    return []
+    return false
   }
 }
 

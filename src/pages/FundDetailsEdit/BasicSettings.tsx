@@ -90,12 +90,9 @@ const BasicSettings: FC<{
     <BasicContainer>
       <BasicItem>
         <BasicTitle>Owner</BasicTitle>
-        <BasicValue>
+        <BasicValue onClick={handleTokenLinkClick}>
           <BasicValueText>{address}</BasicValueText>
-          <BasicValueIcon
-            onClick={handleTokenLinkClick}
-            src={link}
-          ></BasicValueIcon>
+          <BasicValueIcon src={link}></BasicValueIcon>
         </BasicValue>
       </BasicItem>
       <BasicItem>

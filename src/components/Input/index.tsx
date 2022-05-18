@@ -1,4 +1,4 @@
-import { FC, ReactNode, useState, useRef } from "react"
+import { FC, ReactNode, useState, useRef, useEffect } from "react"
 
 import { Container, Label, InputField, LimitText } from "./styled"
 
@@ -58,8 +58,14 @@ const Input: FC<Props> = ({
 }) => {
   const fieldRef = useRef<HTMLInputElement | null>(null)
 
-  const [isLabelActive, setLabelActive] = useState(!label || !!value)
+  const [isLabelActive, setLabelActive] = useState(!label)
   const [valueLength, setValueLength] = useState(value ? value.length : 0)
+
+  useEffect(() => {
+    if (isLabelActive || !value) return
+
+    setLabelActive(true)
+  }, [value, isLabelActive])
 
   const handleClick = () => {
     if (onClick) onClick()

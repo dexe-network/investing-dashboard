@@ -5,6 +5,7 @@ import { TabsMenu } from "components/TopMembersBar/styled"
 import { ITab } from "constants/interfaces"
 import { useLocation } from "react-router-dom"
 import { To } from "theme"
+import isActiveRoute from "utils/isActiveRoute"
 import { EHeaderTitles } from "."
 import { Tabs, Tab, TabAmount } from "./styled"
 
@@ -20,7 +21,9 @@ const HeaderTabs = ({ tabs }: IHeaderTabsProps) => {
         {tabs.map((tab: ITab) => {
           return (
             <To key={tab.title} to={tab.source}>
-              <Tab active={pathname === tab.source}>{tab.title}</Tab>
+              <Tab active={isActiveRoute(pathname, tab.source)}>
+                {tab.title}
+              </Tab>
 
               {(tab?.amount || 0) > 0 && <TabAmount>{tab.amount}</TabAmount>}
             </To>
