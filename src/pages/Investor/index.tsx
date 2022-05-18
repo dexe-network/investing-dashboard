@@ -19,7 +19,7 @@ import {
   MainText,
   MainValue,
   SecondaryText,
-  Buttons,
+  ButtonContainer,
   Period,
   ChartPeriods,
 } from "./styled"
@@ -167,18 +167,18 @@ function Investor(props: Props) {
         transition={{ duration: 0.2 }}
       >
         <InvestorMobile account={account}>
-          <Buttons>
-            <Flex p="0 0 0 12px">
-              <To to="/">
-                <SecondaryButton>New investment</SecondaryButton>
-              </To>
-            </Flex>
-            <Flex p="0 12px 0 0">
-              <To to="/">
-                <Button>My investments</Button>
-              </To>
-            </Flex>
-          </Buttons>
+          <ButtonContainer>
+            <To to="/">
+              <SecondaryButton full fz={14}>
+                New investment
+              </SecondaryButton>
+            </To>
+            <To to="/">
+              <Button full fz={14}>
+                My investments
+              </Button>
+            </To>
+          </ButtonContainer>
         </InvestorMobile>
         <TabCard>
           <TabContainer>

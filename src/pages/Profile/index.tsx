@@ -178,10 +178,10 @@ const Profile: React.FC<Props> = () => {
       >
         <MemberMobile data={poolData}>
           <ButtonContainer>
-            <SecondaryButton onClick={handleBuyRedirect} m="0" size="small">
+            <SecondaryButton onClick={handleBuyRedirect} m="0" fz={14} full>
               Fund positions
             </SecondaryButton>
-            <Button onClick={handleBuyRedirect} m="0" size="small">
+            <Button onClick={handleBuyRedirect} m="0" fz={14} full>
               Buy {poolData.ticker}
             </Button>
           </ButtonContainer>

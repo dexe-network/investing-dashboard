@@ -39,7 +39,7 @@ const InvestorMobile: React.FC<Props> = ({ account, children }) => {
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <Avatar size={45} />
+          <Avatar size={38} />
           <Flex p="0 0 0 10px" dir="column" ai="flex-start">
             <Title>{shortenAddress(account)}</Title>
             <Description>Investing</Description>

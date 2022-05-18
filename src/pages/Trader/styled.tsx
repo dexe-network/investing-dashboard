@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Flex, Text } from "theme"
+import { Flex, GradientBorder, Text } from "theme"
 import IconButton from "components/IconButton"
 
 export const Container = styled(Flex)`
@@ -17,13 +17,17 @@ export const Container = styled(Flex)`
   }
 `
 
-export const Details = styled.div`
+export const Details = styled(GradientBorder)`
+  flex-direction: column;
   padding: 0 16px 16px;
-  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
   border-radius: 10px;
   margin-top: 16px;
   width: 100%;
   position: relative;
+
+  &:after {
+    background: #181e2c;
+  }
 `
 
 export const ButtonContainer = styled.div`

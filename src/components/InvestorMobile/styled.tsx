@@ -1,19 +1,22 @@
 import styled from "styled-components"
-import { Flex, Text, BaseButton, device } from "theme"
+import { Flex, Text, BaseButton, device, GradientBorder } from "theme"
 
-export const Card = styled(Flex)`
+export const Card = styled(GradientBorder)`
   width: 100%;
-  background: linear-gradient(64.44deg, #1f232c 32.35%, #282f3f 100%);
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 0 9px 20px;
   box-sizing: border-box;
   flex-direction: column;
   justify-content: space-evenly;
+
+  &:after {
+    background: #181e2c;
+  }
 `
 
 export const PoolInfoContainer = styled(Flex)`
   position: relative;
-  height: 71px;
+  height: 62px;
   width: 100%;
   justify-content: flex-start;
 
@@ -36,9 +39,8 @@ export const PoolInfo = styled(Flex)`
 
 export const Title = styled.div`
   font-family: Gilroy;
-  font-weight: 700;
-  font-weight: bold;
-  font-size: 18px;
+  font-weight: 600;
+  font-size: 16px;
   line-height: 20px;
   display: flex;
   align-items: center;
@@ -52,7 +54,7 @@ export const Description = styled.div`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 15px;
 
   color: #5a6071;
@@ -70,7 +72,7 @@ export const Divider = styled.div`
 
 export const PoolStatisticContainer = styled.div`
   padding: 15px 16px 0;
-  height: 80px;
+  height: 60px;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -119,8 +121,8 @@ const Label = styled.div`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 12px;
+  line-height: 12px;
   text-align: left;
 
   color: #5a6071;
@@ -131,8 +133,8 @@ const Value = styled(Flex)`
   font-style: normal;
   font-family: Gilroy;
   font-weight: 600;
-  font-size: 18px;
-  line-height: 30px;
+  font-size: 16px;
+  line-height: 16px;
   text-align: left;
   color: #f7f7f7;
 `
