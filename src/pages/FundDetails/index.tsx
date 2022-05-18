@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom"
 import { Flex } from "theme"
 import { EHeaderTitles } from "components/Header"
 import Header from "components/Header/Layout"
-import { Container, ContentContainer } from "./styled"
+import { Container } from "./styled"
 
 import FundDetailsEdit from "pages/FundDetailsEdit"
 
@@ -22,17 +22,17 @@ const FundDetails = () => {
   ]
 
   return (
-    <Container>
+    <>
       <Header tabs={tabs}>
         <Flex>{EHeaderTitles.myFund}</Flex>
       </Header>
-      <ContentContainer>
+      <Container>
         <Routes>
           <Route path="edit" element={<FundDetailsEdit />}></Route>
           <Route path="fee" element={<FundDetailsEdit />}></Route>
         </Routes>
-      </ContentContainer>
-    </Container>
+      </Container>
+    </>
   )
 }
 

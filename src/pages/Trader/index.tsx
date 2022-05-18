@@ -16,6 +16,8 @@ import { Profiles } from "components/Header/Components"
 import Pools from "components/Header/Pools"
 import AreaChart from "components/AreaChart"
 import BarChart from "pages/Investor/Bar"
+import IconButton from "components/IconButton"
+import pencil from "assets/icons/pencil.svg"
 
 import { usePool } from "state/pools/hooks"
 import { IDetailedChart } from "constants/interfaces"
@@ -36,6 +38,7 @@ import {
   TextWhiteBig,
   TextGrey,
   FundsUsed,
+  DetailsEditLinkFrame,
 } from "./styled"
 
 const pnlNew: IDetailedChart[] = [
@@ -227,6 +230,16 @@ function Trader(props: Props) {
         </TabCard>
 
         <Details>
+          <DetailsEditLinkFrame>
+            <IconButton
+              filled
+              media={pencil}
+              onClick={() => {
+                navigate(`/fund-details/${poolData.id}/edit`)
+              }}
+              size={10}
+            />
+          </DetailsEditLinkFrame>
           <TabsLight
             tabs={[
               {

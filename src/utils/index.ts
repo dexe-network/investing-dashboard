@@ -63,13 +63,11 @@ export function fromBig(
 }
 
 export function bigify(value: string, decimals: number) {
-  const multiplier = BigNumber.from(10).pow(decimals)
-
   if (value === "") {
-    return BigNumber.from("0").mul(multiplier)
+    return ethers.utils.parseUnits("0", decimals)
   }
 
-  return BigNumber.from(value).mul(multiplier)
+  return ethers.utils.parseUnits(value, decimals)
 }
 
 // create dummy data 90% positive number 10% negative
