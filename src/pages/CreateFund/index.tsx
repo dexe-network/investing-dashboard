@@ -16,6 +16,7 @@ import TextArea from "components/TextArea"
 import TokenIcon from "components/TokenIcon"
 import Slider from "components/Slider"
 import Stepper, { Step as IStep } from "components/Stepper"
+import SwitchRow, { InputText } from "components/SwitchRow"
 import IpfsIcon from "components/IpfsIcon"
 
 import TokenSelect from "modals/TokenSelect"
@@ -47,10 +48,8 @@ import {
   Steps,
   Step,
   StepBody,
-  InputText,
   FundTypeCards,
   FeeCards,
-  SwtichRow,
   LinkButton,
   AvatarWrapper,
   ModalIcons,
@@ -459,7 +458,7 @@ const CreateFund: FC = () => {
                 index="3"
               />
               <StepBody>
-                <SwtichRow
+                <SwitchRow
                   icon={<EmissionIcon active={isEmissionLimited} />}
                   title="Limited Emission"
                   isOn={isEmissionLimited}
@@ -477,8 +476,8 @@ const CreateFund: FC = () => {
                     />
                     {getFieldErrors("totalLPEmission")}
                   </InputRow>
-                </SwtichRow>
-                <SwtichRow
+                </SwitchRow>
+                <SwitchRow
                   icon={<ManagersIcon active={isManagersAdded} />}
                   title="New fund managers"
                   isOn={isManagersAdded}
@@ -491,8 +490,8 @@ const CreateFund: FC = () => {
                     limit={100}
                     label="0x..."
                   />
-                </SwtichRow>
-                <SwtichRow
+                </SwitchRow>
+                <SwitchRow
                   icon={<InvestorsIcon active={isInvestorsAdded} />}
                   title="Invited investors"
                   isOn={isInvestorsAdded}
@@ -505,8 +504,8 @@ const CreateFund: FC = () => {
                     limit={100}
                     label="0x..."
                   />
-                </SwtichRow>
-                <SwtichRow
+                </SwitchRow>
+                <SwitchRow
                   icon={<MinInvestIcon active={isMinimalInvest} />}
                   title="Minimum investment amount"
                   isOn={isMinimalInvest}
@@ -522,7 +521,7 @@ const CreateFund: FC = () => {
                     />
                     {getFieldErrors("minimalInvestment")}
                   </InputRow>
-                </SwtichRow>
+                </SwitchRow>
               </StepBody>
             </Step>
             <Step>

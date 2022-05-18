@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { Flex, Text } from "theme"
+import IconButton from "components/IconButton"
 
 export const Container = styled(Flex)`
   width: 100%;
@@ -22,6 +23,7 @@ export const Details = styled.div`
   border-radius: 10px;
   margin-top: 16px;
   width: 100%;
+  position: relative;
 `
 
 export const ButtonContainer = styled.div`
@@ -181,3 +183,10 @@ export const FundsUsed: React.FC<{ total: string; current: string }> = ({
     </EmissionContainer>
   )
 }
+
+export const DetailsEditLinkFrame = styled(Flex)`
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+`
