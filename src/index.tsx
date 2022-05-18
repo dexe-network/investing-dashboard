@@ -11,8 +11,10 @@ import store from "state"
 
 import App from "pages/App"
 import SideBar from "components/Sidebar"
+import Alert from "components/Alert"
 
 import SideBarContext from "context/SideBarContext"
+import AlertContext from "context/AlertContext"
 
 import GlobalStyle from "theme/GlobalStyle"
 
@@ -50,6 +52,7 @@ const GlobalComponents = () => (
     <Normalize />
     <GlobalStyle />
     <SideBar />
+    <Alert />
   </>
 )
 
@@ -58,16 +61,18 @@ ReactDOM.render(
     <BrowserRouter>
       <ModalProvider>
         <SideBarContext>
-          <Web3ReactProvider getLibrary={getLibrary}>
-            <Web3ProviderNetwork getLibrary={getLibrary}>
-              <Provider store={store}>
-                <>
-                  <GlobalComponents />
-                  <App />
-                </>
-              </Provider>
-            </Web3ProviderNetwork>
-          </Web3ReactProvider>
+          <AlertContext>
+            <Web3ReactProvider getLibrary={getLibrary}>
+              <Web3ProviderNetwork getLibrary={getLibrary}>
+                <Provider store={store}>
+                  <>
+                    <GlobalComponents />
+                    <App />
+                  </>
+                </Provider>
+              </Web3ProviderNetwork>
+            </Web3ReactProvider>
+          </AlertContext>
         </SideBarContext>
       </ModalProvider>
     </BrowserRouter>
