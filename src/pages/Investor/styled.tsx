@@ -3,11 +3,15 @@ import { Flex, device, GradientBorder } from "theme"
 
 export const Container = styled(Flex)`
   width: 100%;
-  padding: 32px 16px 80px;
+  padding: 16px 16px 80px;
   flex-direction: column;
   justify-content: flex-start;
   overflow-y: auto;
-  height: 100%;
+  height: calc(100vh - 94px);
+
+  @media all and (display-mode: standalone) {
+    height: calc(100vh - 115px);
+  }
 `
 
 export const TabContainer = styled(Flex)`
@@ -71,6 +75,10 @@ export const TabCard = styled(GradientBorder)`
   flex-direction: column;
   justify-content: flex-start;
   width: 100%;
+
+  &:after {
+    background: #181e2c;
+  }
 `
 
 export const Row = styled(Flex)`
@@ -105,11 +113,15 @@ export const SecondaryText = styled(MainText)`
   color: #5a6071;
 `
 
-export const Buttons = styled(Flex)`
+export const ButtonContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  grid-gap: 16px;
+  padding-top: 16px;
   width: 100%;
-  justify-content: space-between;
-  margin-top: auto;
-  justify-self: flex-end;
 `
 
 export const ChartPeriods = styled(Flex)`

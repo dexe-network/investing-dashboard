@@ -211,14 +211,14 @@ function Invest() {
     poolAddress: string
     poolType: PoolType
   }>()
-  const [, poolData] = usePool(poolAddress)
+  const [, , , poolInfo] = usePool(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
-  const traderPool = useContract(poolData?.id, TraderPool)
+  const traderPool = useContract(poolAddress, TraderPool)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
   const [fromToken, fromData, fromBalance, updateFromBalance] = useERC20(
-    poolData?.baseToken
+    poolInfo?.parameters.baseToken
   )
 
   const updatePriceImpact = (from: BigNumber, to: BigNumber) => {
@@ -237,8 +237,8 @@ function Invest() {
   const fetchAndUpdateAllowance = async () => {
     const allowance = await getAllowance(
       account,
-      poolData?.baseToken,
-      poolData?.id,
+      poolInfo?.parameters.baseToken,
+      poolAddress,
       library
     )
     setAllowance(allowance.toString())
@@ -328,7 +328,7 @@ function Invest() {
       setToAmount(tokens.lpAmount.toString())
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
-        poolData?.baseToken,
+        poolInfo?.parameters.baseToken,
         amount.toHexString()
       )
       setInPrice(fromPrice.amountOut)
@@ -355,7 +355,7 @@ function Invest() {
       setFromAmount(tokens.receptions.baseAmount)
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
-        poolData?.baseToken,
+        poolInfo?.parameters.baseToken,
         tokens.receptions.baseAmount.toHexString()
       )
       setOutPrice(fromPrice.amountOut)
@@ -378,7 +378,7 @@ function Invest() {
 
     const approveToken = async () => {
       const amount = BigNumber.from(fromAmount)
-      const approveResponse = await fromToken.approve(poolData?.id, amount)
+      const approveResponse = await fromToken.approve(poolAddress, amount)
       setSubmiting(false)
 
       const receipt = await getReceipt(library, approveResponse.hash)
@@ -396,7 +396,7 @@ function Invest() {
       !fromToken ||
       !account ||
       !library ||
-      !poolData ||
+      !poolInfo ||
       direction === "withdraw"
     )
       return
@@ -408,7 +408,7 @@ function Invest() {
     fetchAndUpdateAllowance().catch(console.error)
 
     return () => clearInterval(allowanceInterval)
-  }, [fromToken, account, library, poolData, direction])
+  }, [fromToken, account, library, poolInfo, direction])
 
   // get LP tokens balance
   useEffect(() => {
@@ -467,8 +467,8 @@ function Invest() {
         full
       >
         {direction === "deposit"
-          ? `Buy ${poolData?.ticker}`
-          : `Sell ${poolData?.ticker}`}
+          ? `Buy ${poolInfo?.ticker}`
+          : `Sell ${poolInfo?.ticker}`}
       </Button>
     )
   }
@@ -480,7 +480,7 @@ function Invest() {
       price={inPrice}
       amount={fromAmount}
       balance={fromBalance}
-      address={poolData?.baseToken}
+      address={poolInfo?.parameters.baseToken}
       symbol={fromData?.symbol}
       decimal={fromData?.decimals}
       onChange={handleFromChange}
@@ -489,13 +489,15 @@ function Invest() {
 
   const to = (
     <ExchangeTo
-      customIcon={<IpfsIcon size={27} hash={poolData?.descriptionURL} />}
+      customIcon={
+        <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />
+      }
       priceImpact={priceImpact}
       price={outPrice}
       amount={toAmount}
       balance={toBalance}
       address={poolAddress}
-      symbol={poolData?.ticker}
+      symbol={poolInfo?.ticker}
       decimal={18}
       onChange={handleToChange}
     />
@@ -539,7 +541,7 @@ function Invest() {
 
   return (
     <>
-      <Header>{poolData?.name}</Header>
+      <Header>{poolInfo?.name}</Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

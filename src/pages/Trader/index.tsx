@@ -142,6 +142,7 @@ function Trader(props: Props) {
         <MemberMobile data={poolData}>
           <ButtonContainer>
             <SecondaryButton
+              fz={14}
               full
               onClick={() =>
                 navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)
@@ -150,6 +151,7 @@ function Trader(props: Props) {
               Open new trade
             </SecondaryButton>
             <Button
+              fz={14}
               onClick={() => navigate(`/fund-positions/${poolData.id}/open`)}
               full
             >

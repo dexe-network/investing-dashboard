@@ -10,6 +10,10 @@ export const Card = styled(GradientBorder)`
   justify-content: space-evenly;
   z-index: 5;
 
+  &:after {
+    background: #181e2c;
+  }
+
   @media only screen and (min-width: ${size.xs}) {
     flex-direction: row;
   }
