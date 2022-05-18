@@ -237,6 +237,7 @@ function Trader(props: Props) {
               onClick={() => {
                 navigate(`/fund-details/${poolData.id}/edit`)
               }}
+              size={10}
             />
           </DetailsEditLinkFrame>
           <TabsLight
