@@ -48,7 +48,15 @@ export const Title = styled.span`
   color: #ffffff;
 `
 
-export const Content = styled(Flex)``
+export const Content = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.03em;
+  color: #e4f2ff;
+`
 
 export const Close = styled.div`
   position: absolute;
