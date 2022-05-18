@@ -12,6 +12,10 @@ export const Container = styled(GradientBorder)`
   border-radius: 16px;
   z-index: 90;
 
+  @media all and (display-mode: standalone) {
+    bottom: 86px;
+  }
+
   &:after {
     background: #181e2c;
   }
