@@ -23,6 +23,7 @@ import getLibrary from "utils/getLibrary"
 import { ContractsRegistryUpdater } from "state/contracts/updater"
 import { PriceFeedUpdater } from "state/pricefeed/updater"
 import { UserPoolsUpdater } from "state/user/updater"
+import { TransactionUpdater } from "state/transactions/updater"
 import "react-virtualized/styles.css"
 
 const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
@@ -49,6 +50,7 @@ const GlobalComponents = () => (
     <ContractsRegistryUpdater />
     <UserPoolsUpdater />
     <PriceFeedUpdater />
+    <TransactionUpdater />
     <Normalize />
     <GlobalStyle />
     <SideBar />

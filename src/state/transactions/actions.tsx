@@ -1,8 +1,38 @@
 import { createAction } from "@reduxjs/toolkit"
 
-// export interface Iuser {}
+interface IAddTransaction {
+  hash: string
+  from: string
+  info: any
+  chainId: number
+}
+interface ICheckTransaction {
+  hash: string
+  blockNumber: any
+  chainId: number
+}
+interface IFinalizeTransaction {
+  hash: string
+  chainId: number
+  receipt: any
+}
 
-export const createuser = createAction<{ params: any }>("user/create")
-export const readuser = createAction<{ params: any }>("user/read")
-export const updateuser = createAction<{ params: any }>("user/update")
-export const deleteuser = createAction<{ params: any }>("user/delete")
+export const addTransation = createAction<{
+  params: IAddTransaction
+}>("transation/add")
+
+export const checkedTransaction = createAction<{
+  params: ICheckTransaction
+}>("transation/check")
+
+export const finalizeTransaction = createAction<{
+  params: IFinalizeTransaction
+}>("transation/finalize")
+
+export const readTransation = createAction<{ params: any }>("transation/read")
+export const updateTransation = createAction<{ params: any }>(
+  "transation/update"
+)
+export const deleteTransation = createAction<{ params: any }>(
+  "transation/delete"
+)
