@@ -1,7 +1,12 @@
 import { useCallback, useMemo, useEffect } from "react"
 
+import {
+  DEFAULT_TXN_DISMISS_MS,
+  TRANSACTION_PENDING_DIVIDER,
+} from "constants/misc"
 import { useAppDispatch, useAppSelector } from "state/hooks"
 import { checkedTransaction, finalizeTransaction } from "./actions"
+import { useAddToast } from "state/application/hooks"
 
 import { useActiveWeb3React } from "hooks"
 import useBlockNumber from "hooks/useBlockNumber"
@@ -15,14 +20,13 @@ interface Transaction {
   lastCheckedBlockNumber?: number
 }
 
-const ONE_MINUTE_MS = 60000
-
 export function shouldCheck(blockNumber: number, tx: Transaction): boolean {
   if (tx.receipt) return false
   if (!tx.lastCheckedBlockNumber) return true
   const blocksSinceCheck = blockNumber - tx.lastCheckedBlockNumber
   if (blocksSinceCheck < 1) return false
-  const minutesPending = (new Date().getTime() - tx.addedTime) / ONE_MINUTE_MS
+  const minutesPending =
+    (new Date().getTime() - tx.addedTime) / TRANSACTION_PENDING_DIVIDER
   if (minutesPending > 60) {
     // every 10 blocks if pending longer than an hour
     return blocksSinceCheck > 9
@@ -41,16 +45,21 @@ export function TransactionUpdater() {
 
   const blockNumber = useBlockNumber()
 
+  const addToast = useAddToast()
+
   const onCheck = useCallback(
-    ({ chainId, hash, blockNumber }) =>
-      dispatch(checkedTransaction({ params: { chainId, hash, blockNumber } })),
+    ({ chainId, hash, blockNumber }) => {
+      dispatch(checkedTransaction({ params: { chainId, hash, blockNumber } }))
+    },
     [dispatch]
   )
 
   const onReceipt = useCallback(
-    ({ chainId, hash, receipt }) =>
-      dispatch(finalizeTransaction({ params: { chainId, hash, receipt } })),
-    [dispatch]
+    ({ chainId, hash, receipt }) => {
+      dispatch(finalizeTransaction({ params: { chainId, hash, receipt } }))
+      addToast({ txn: { hash } }, hash, DEFAULT_TXN_DISMISS_MS)
+    },
+    [dispatch, addToast]
   )
 
   const getReceipt = useCallback(

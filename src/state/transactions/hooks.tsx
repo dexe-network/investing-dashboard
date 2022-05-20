@@ -2,8 +2,9 @@ import { useCallback } from "react"
 
 import { useActiveWeb3React } from "hooks"
 
-import { useAppDispatch } from "state/hooks"
+import { useAppDispatch, useAppSelector } from "state/hooks"
 import { addTransation } from "./actions"
+import { TransactionDetails } from "./types"
 
 export function useTransactionAdder() {
   const { chainId, account } = useActiveWeb3React()
@@ -25,4 +26,25 @@ export function useTransactionAdder() {
     },
     [chainId, account, dispatch]
   )
+}
+
+// returns all the transactions for the current chain
+export function useAllTransactions(): { [txHash: string]: TransactionDetails } {
+  const { chainId } = useActiveWeb3React()
+
+  const state = useAppSelector((state) => state.transactions)
+
+  return chainId ? state[chainId] ?? {} : {}
+}
+
+export function useTransaction(
+  transactionHash?: string
+): TransactionDetails | undefined {
+  const allTransactions = useAllTransactions()
+
+  if (!transactionHash) {
+    return undefined
+  }
+
+  return allTransactions[transactionHash]
 }

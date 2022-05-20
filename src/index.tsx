@@ -12,6 +12,7 @@ import store from "state"
 import App from "pages/App"
 import SideBar from "components/Sidebar"
 import Alert from "components/Alert"
+import ToastContainer from "components/Toasts"
 
 import SideBarContext from "context/SideBarContext"
 import AlertContext from "context/AlertContext"
@@ -55,6 +56,7 @@ const GlobalComponents = () => (
     <GlobalStyle />
     <SideBar />
     <Alert />
+    <ToastContainer />
   </>
 )
 

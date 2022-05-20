@@ -39,6 +39,9 @@ import {
 } from "components/Exchange/styled"
 import getReceipt from "utils/getReceipt"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
@@ -176,6 +179,8 @@ function Swap() {
     { fromAmount, toAmount, direction, slippage },
     { setFromAmount, setToAmount, setDirection, setSlippage },
   ] = useSwap()
+
+  const addTransaction = useTransactionAdder()
 
   const [error, setError] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -331,7 +336,9 @@ function Swap() {
             exchangeWithSlippage.toHexString(),
             []
           )
-          await getReceipt(library, transactionResponse.hash)
+          const receipt = await getReceipt(library, transactionResponse.hash)
+          addTransaction(receipt, { type: TransactionType.SWAP })
+
           updatePoolData()
         } catch (error: any) {
           if (!!error && !!error.data && !!error.data.message) {
