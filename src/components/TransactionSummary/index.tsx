@@ -25,12 +25,18 @@ const FundCreateSummary: React.FC<{ info: FundCreateTransactionInfo }> = ({
   )
 }
 
+const CredentialsUpdateSummary: React.FC = () => {
+  return <>Successfully update Credentials</>
+}
+
 const TransactionSummary: React.FC<IProps> = ({ info }) => {
   switch (info.type) {
     case TransactionType.APPROVAL:
       return <Container>Approval</Container>
     case TransactionType.FUND_CREATE:
       return <FundCreateSummary info={info} />
+    case TransactionType.UPDATE_USER_CREDENTIALS:
+      return <CredentialsUpdateSummary />
 
     default:
       return <Container>Default</Container>

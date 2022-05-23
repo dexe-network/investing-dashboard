@@ -18,6 +18,9 @@ import useContract from "hooks/useContract"
 import { addUserMetadata, parseUserData } from "utils/ipfs"
 import { formatBigNumber, shortenAddress } from "utils"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 import pen from "assets/icons/pencil-edit.svg"
 import bsc from "assets/wallets/bsc.svg"
 import add from "assets/icons/add-green.svg"
@@ -75,6 +78,8 @@ const useUserSettings = (): [
 ] => {
   const { account } = useWeb3React()
 
+  const addTransaction = useTransactionAdder()
+
   const [isLoading, setLoading] = useState(true)
   const [isUserEditing, setUserEditing] = useState(false)
   const [userName, setUserName] = useState("")
@@ -90,7 +95,10 @@ const useUserSettings = (): [
       [...assets, userAvatar],
       account
     )
-    await userRegistry?.changeProfile(ipfsReceipt.path)
+    const trx = await userRegistry?.changeProfile(ipfsReceipt.path)
+
+    addTransaction(trx, { type: TransactionType.UPDATE_USER_CREDENTIALS })
+
     setLoading(false)
     setUserEditing(false)
   }

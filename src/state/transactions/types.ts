@@ -30,7 +30,14 @@ export interface FundCreateTransactionInfo {
   fundName: string
 }
 
-export type TransactionInfo = FundCreateTransactionInfo | any
+export interface UpdateCredentialsTransactionInfo {
+  type: TransactionType.UPDATE_USER_CREDENTIALS
+}
+
+export type TransactionInfo =
+  | FundCreateTransactionInfo
+  | UpdateCredentialsTransactionInfo
+  | any
 
 export interface TransactionDetails {
   hash: string
