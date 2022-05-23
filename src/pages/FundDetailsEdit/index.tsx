@@ -42,9 +42,6 @@ import { usePool } from "state/pools/hooks"
 import useContract, { useERC20 } from "hooks/useContract"
 import { TraderPool } from "abi"
 
-import { useTransactionAdder } from "state/transactions/hooks"
-import { TransactionType } from "state/transactions/types"
-
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
@@ -53,8 +50,6 @@ const FundDetailsEdit: FC = () => {
   const { poolAddress } = useParams()
   const navigate = useNavigate()
   const { account } = useWeb3React()
-
-  const addTransaction = useTransactionAdder()
 
   const [, poolData, , poolInfoData] = usePool(poolAddress)
   const [, baseData] = useERC20(poolData?.baseToken)
@@ -146,8 +141,6 @@ const FundDetailsEdit: FC = () => {
       minInvest
     )
 
-    addTransaction(receipt, { type: TransactionType.UPDATE_POOL_PARAMETERS })
-
     return await receipt.wait()
   }, [
     traderPool,
@@ -160,7 +153,6 @@ const FundDetailsEdit: FC = () => {
     minimalInvestment,
     strategy,
     totalLPEmission,
-    addTransaction,
   ])
 
   const handleManagersRemove = useCallback(async () => {
