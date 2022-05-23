@@ -1,5 +1,7 @@
 import ToastBase from "./ToastBase"
+import { TransactionBody, TransactionLink } from "./styled"
 
+import TransactionSummary from "components/TransactionSummary"
 import { useTransaction } from "state/transactions/hooks"
 
 interface IProps {
@@ -14,12 +16,15 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose }) => {
 
   if (!tx) return null
   const success = Boolean(tx.receipt && tx.receipt.status === 1)
+  const type = success ? "success" : "warning"
 
   return (
     <>
-      <ToastBase type={success ? "success" : "warning"} onClose={onClose}>
-        <div>{hash}</div>
-        <a href="#">View on BSCscan</a>
+      <ToastBase type={type} onClose={onClose}>
+        <TransactionBody>
+          <TransactionSummary info={tx.info} />
+        </TransactionBody>
+        <TransactionLink hash={hash} type={type} />
       </ToastBase>
     </>
   )

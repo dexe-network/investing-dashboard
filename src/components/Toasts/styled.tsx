@@ -1,28 +1,37 @@
+import React, { MouseEventHandler } from "react"
 import styled from "styled-components"
 
 import { GradientBorder, Flex } from "theme"
+import link from "assets/icons/link.svg"
+import linkSuccess from "assets/icons/link-green.svg"
 
 export const ToastsContainer = styled.div<{ height: string | number }>`
-  position: relative;
-  max-width: 100%;
+  position: fixed;
+  width: 100%;
   height: ${({ height }) => height};
+  z-index: 10;
 `
 export const ToastsInner = styled.div`
-  height: 99%;
-  overflow-x: auto;
-  overflow-y: hidden;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: row;
+  justify-content: flex-end;
+  margin-top: 32px;
+  padding-bottom: 1px;
   -webkit-overflow-scrolling: touch;
   ::-webkit-scrollbar {
     display: none;
   }
 `
 
-export const Container = styled(GradientBorder)`
+export const Container = styled(GradientBorder)<{ width?: string }>`
+  width: ${({ width }) => (width ? width : "210px")};
   position: relative;
-  padding: 16px 0 16px 11px;
-  margin-top: 16px;
+  padding: 16px 24px 16px 11px;
+  margin: 16px 16px 0;
+  border-radius: 16px;
 
   &:after {
     background: #181e2c;
@@ -57,3 +66,46 @@ export const Content = styled.div`
   letter-spacing: 0.03em;
   color: #e4f2ff;
 `
+
+export const TransactionBody = styled(Flex)`
+  margin-bottom: 10px;
+`
+
+export const TransactionLinkContainer = styled(Flex)<{ type?: string }>`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  letter-spacing: 0.03em;
+  color: ${({ type }) => (type === "success" ? "#9AE2CB" : "#e4f2ff")};
+`
+export const TransactionLinkIcon = styled.img`
+  width: 12px;
+  height: 12px;
+`
+export const TransactionLinkText = styled.span`
+  margin-right: 7px;
+`
+
+export const TransactionLink: React.FC<{
+  text?: string
+  hash: string
+  type?: string
+}> = ({ text = "View on bscscan", hash, type }) => {
+  const handleTokenRedirect = (address: string) => {
+    window.open(`https://bscscan.com/address/${address}`, "_blank")
+  }
+
+  const handleTokenLinkClick: MouseEventHandler = (e) => {
+    e.stopPropagation()
+    handleTokenRedirect(hash)
+  }
+
+  return (
+    <TransactionLinkContainer onClick={handleTokenLinkClick} type={type}>
+      <TransactionLinkText>{text}</TransactionLinkText>
+      <TransactionLinkIcon src={type === "success" ? linkSuccess : link} />
+    </TransactionLinkContainer>
+  )
+}

@@ -24,6 +24,14 @@ export enum TransactionType {
   VOTE_INSURANCE_PROPOSAL = 16,
 }
 
+export interface FundCreateTransactionInfo {
+  type: TransactionType.FUND_CREATE
+  baseCurrencyId: string
+  fundName: string
+}
+
+export type TransactionInfo = FundCreateTransactionInfo | any
+
 export interface TransactionDetails {
   hash: string
   receipt?: any // TODO: SerializableTransactionReceipt
@@ -31,5 +39,5 @@ export interface TransactionDetails {
   addedTime: number
   confirmedTime?: number
   from: string
-  info: any // TODO: TransactionInfo
+  info: TransactionInfo
 }
