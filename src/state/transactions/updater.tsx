@@ -12,7 +12,11 @@ import { useActiveWeb3React } from "hooks"
 import useBlockNumber from "hooks/useBlockNumber"
 import { retry, RetryableError, RetryOptions } from "utils/retry"
 
-const DEFAULT_RETRY_OPTIONS: RetryOptions = { n: 5, minWait: 0, maxWait: 0 }
+const DEFAULT_RETRY_OPTIONS: RetryOptions = {
+  n: 10,
+  minWait: 250,
+  maxWait: 1000,
+}
 
 interface Transaction {
   addedTime: number
