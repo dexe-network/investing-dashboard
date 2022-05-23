@@ -94,7 +94,7 @@ export const TransactionLink: React.FC<{
   type?: string
 }> = ({ text = "View on bscscan", hash, type }) => {
   const handleTokenRedirect = (address: string) => {
-    window.open(`https://bscscan.com/address/${address}`, "_blank")
+    window.open(`https://bscscan.com/tx/${address}`, "_blank")
   }
 
   const handleTokenLinkClick: MouseEventHandler = (e) => {
