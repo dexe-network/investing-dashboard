@@ -29,9 +29,9 @@ export const selectPriceFeedAddress = createSelector(
   (contracts) => contracts.PriceFeed || ""
 )
 
-export const selectTraderPoolFactoryAddress = createSelector(
+export const selectPoolFactoryAddress = createSelector(
   [selectContracts],
-  (contracts) => contracts.TraderPoolFactory || ""
+  (contracts) => contracts.PoolFactory || ""
 )
 
 export const selectTraderPoolRegistryAddress = createSelector(

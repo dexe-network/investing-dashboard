@@ -72,7 +72,7 @@ export default [
   },
   {
     inputs: [],
-    name: "__TraderPoolRegistry_init",
+    name: "__PoolContractsRegistry_init",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

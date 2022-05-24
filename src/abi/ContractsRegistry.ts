@@ -59,6 +59,19 @@ export default [
   },
   {
     inputs: [],
+    name: "GOV_POOL_REGISTRY_NAME",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "INSURANCE_NAME",
     outputs: [
       {
@@ -72,7 +85,7 @@ export default [
   },
   {
     inputs: [],
-    name: "PRICE_FEED_NAME",
+    name: "POOL_FACTORY_NAME",
     outputs: [
       {
         internalType: "string",
@@ -85,7 +98,7 @@ export default [
   },
   {
     inputs: [],
-    name: "TRADER_POOL_FACTORY_NAME",
+    name: "PRICE_FEED_NAME",
     outputs: [
       {
         internalType: "string",
@@ -276,6 +289,19 @@ export default [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getGovPoolRegistryContract",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "string",
@@ -309,6 +335,19 @@ export default [
   },
   {
     inputs: [],
+    name: "getPoolFactoryContract",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "getPriceFeedContract",
     outputs: [
       {
@@ -323,19 +362,6 @@ export default [
   {
     inputs: [],
     name: "getProxyUpgrader",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getTraderPoolFactoryContract",
     outputs: [
       {
         internalType: "address",
