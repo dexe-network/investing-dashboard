@@ -19,7 +19,7 @@ import Payload from "components/Payload"
 import TransactionError from "modals/TransactionError"
 
 import useContract from "hooks/useContract"
-import { usePool } from "state/pools/hooks"
+import { useTraderPool } from "hooks/usePool"
 
 import { addInvestProposalMetadata } from "utils/ipfs"
 import getReceipt from "utils/getReceipt"
@@ -108,7 +108,7 @@ const CreateInvestProposal: FC = () => {
   const { poolAddress } = useParams()
   const navigate = useNavigate()
   const { account, library } = useWeb3React()
-  const [traderPool] = usePool(poolAddress)
+  const traderPool = useTraderPool(poolAddress)
 
   const [error, setError] = useState("")
   const [isSubmiting, setSubmiting] = useState(false)

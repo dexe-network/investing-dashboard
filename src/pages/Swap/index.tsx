@@ -18,6 +18,7 @@ import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
 
 import useContract, { useERC20 } from "hooks/useContract"
+import { usePoolQuery, useTraderPool, usePoolContract } from "hooks/usePool"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
@@ -29,7 +30,6 @@ import close from "assets/icons/close-big.svg"
 import plus from "assets/icons/plus.svg"
 
 import { selectPriceFeedAddress } from "state/contracts/selectors"
-import { usePool } from "state/pools/hooks"
 import {
   Container,
   Card,
@@ -38,6 +38,7 @@ import {
   IconsGroup,
 } from "components/Exchange/styled"
 import getReceipt from "utils/getReceipt"
+import { ExchangeType } from "constants/interfaces_v2"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -198,8 +199,9 @@ function Swap() {
 
   const { poolType, poolAddress, outputTokenAddress } = useParams()
 
-  const [traderPool, poolData, , poolInfoData, updatePoolData] =
-    usePool(poolAddress)
+  const traderPool = useTraderPool(poolAddress)
+  const [poolData, updatePoolData] = usePoolQuery(poolAddress)
+  const [, poolInfoData] = usePoolContract(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
@@ -282,11 +284,12 @@ function Swap() {
     const amount = ethers.utils.parseUnits("1", 18)
 
     const fetchAndUpdatePrices = async () => {
-      const tokensCost = await traderPool?.getExchangeToExactAmount(
+      const tokensCost = await traderPool?.getExchangeAmount(
         fromAddress,
         toAddress,
         amount.toHexString(),
-        []
+        [],
+        ExchangeType.TO_EXACT
       )
       const usdCost = await priceFeed?.getNormalizedPriceOutUSD(
         toAddress,
@@ -316,11 +319,12 @@ function Swap() {
           const to = outputTokenAddress
           const amount = BigNumber.from(fromAmount)
 
-          const exchange = await traderPool?.getExchangeFromExactAmount(
+          const exchange = await traderPool?.getExchangeAmount(
             from,
             to,
             amount.toHexString(),
-            []
+            [],
+            ExchangeType.FROM_EXACT
           )
 
           const sl = 1 - parseFloat(slippage) / 100
@@ -368,11 +372,12 @@ function Swap() {
           const to = poolData?.baseToken
           const amount = BigNumber.from(fromAmount)
 
-          const exchange = await traderPool?.getExchangeFromExactAmount(
+          const exchange = await traderPool?.getExchangeAmount(
             from,
             to,
             amount.toHexString(),
-            []
+            [],
+            ExchangeType.FROM_EXACT
           )
 
           const sl = 1 - parseFloat(slippage) / 100
@@ -433,11 +438,12 @@ function Swap() {
     const fetchAndUpdateTo = async () => {
       const amount = BigNumber.from(v)
 
-      const exchange = await traderPool?.getExchangeFromExactAmount(
+      const exchange = await traderPool?.getExchangeAmount(
         fromAddress,
         toAddress,
         amount.toHexString(),
-        []
+        [],
+        ExchangeType.FROM_EXACT
       )
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         fromAddress,
@@ -465,11 +471,12 @@ function Swap() {
     const fetchAndUpdateFrom = async () => {
       const amount = BigNumber.from(v)
 
-      const exchange = await traderPool?.getExchangeToExactAmount(
+      const exchange = await traderPool?.getExchangeAmount(
         fromAddress,
         toAddress,
         amount.toHexString(),
-        []
+        [],
+        ExchangeType.TO_EXACT
       )
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(

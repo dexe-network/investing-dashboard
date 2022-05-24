@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux"
 import { updateContracts } from "./actions"
 
 const contractAddressGetters = [
-  "getTraderPoolFactoryContract",
+  "getPoolFactoryContract",
   "getTraderPoolRegistryContract",
   "getDEXEContract",
   "getUSDContract",

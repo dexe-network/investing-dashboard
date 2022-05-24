@@ -68,37 +68,6 @@ export default [
       {
         indexed: false,
         internalType: "address",
-        name: "fromToken",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "toToken",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "fromVolume",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "toVolume",
-        type: "uint256",
-      },
-    ],
-    name: "Exchanged",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
         name: "investor",
         type: "address",
       },
@@ -168,12 +137,18 @@ export default [
     inputs: [
       {
         indexed: false,
-        internalType: "address",
-        name: "position",
-        type: "address",
+        internalType: "address[]",
+        name: "privateInvestors",
+        type: "address[]",
+      },
+      {
+        indexed: false,
+        internalType: "bool",
+        name: "add",
+        type: "bool",
       },
     ],
-    name: "PositionClosed",
+    name: "ModifiedPrivateInvestors",
     type: "event",
   },
   {
@@ -491,12 +466,12 @@ export default [
       },
       {
         internalType: "uint256",
-        name: "amountIn",
+        name: "amount",
         type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "minAmountOut",
+        name: "amountBound",
         type: "uint256",
       },
       {
@@ -504,41 +479,13 @@ export default [
         name: "optionalPath",
         type: "address[]",
       },
-    ],
-    name: "exchangeFromExact",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
       {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amountOut",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "maxAmountIn",
-        type: "uint256",
-      },
-      {
-        internalType: "address[]",
-        name: "optionalPath",
-        type: "address[]",
+        internalType: "enum ITraderPool.ExchangeType",
+        name: "exType",
+        type: "uint8",
       },
     ],
-    name: "exchangeToExact",
+    name: "exchange",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -630,7 +577,7 @@ export default [
       },
       {
         internalType: "uint256",
-        name: "amountIn",
+        name: "amount",
         type: "uint256",
       },
       {
@@ -638,56 +585,22 @@ export default [
         name: "optionalPath",
         type: "address[]",
       },
+      {
+        internalType: "enum ITraderPool.ExchangeType",
+        name: "exType",
+        type: "uint8",
+      },
     ],
-    name: "getExchangeFromExactAmount",
+    name: "getExchangeAmount",
     outputs: [
       {
         internalType: "uint256",
-        name: "minAmountOut",
+        name: "",
         type: "uint256",
       },
       {
         internalType: "address[]",
-        name: "path",
-        type: "address[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "from",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "to",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "amountOut",
-        type: "uint256",
-      },
-      {
-        internalType: "address[]",
-        name: "optionalPath",
-        type: "address[]",
-      },
-    ],
-    name: "getExchangeToExactAmount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "maxAmountIn",
-        type: "uint256",
-      },
-      {
-        internalType: "address[]",
-        name: "path",
+        name: "",
         type: "address[]",
       },
     ],
@@ -1174,6 +1087,19 @@ export default [
   },
   {
     inputs: [],
+    name: "openPositions",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "priceFeed",
     outputs: [
       {
@@ -1276,19 +1202,6 @@ export default [
   {
     inputs: [],
     name: "totalInvestors",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "totalOpenPositions",
     outputs: [
       {
         internalType: "uint256",

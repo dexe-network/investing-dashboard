@@ -1,14 +1,10 @@
-import { useState, useEffect, useCallback } from "react"
 import MemberMobile from "components/MemberMobile"
 import Button, { SecondaryButton } from "components/Button"
-import { useSelector } from "react-redux"
 import { useParams, useNavigate } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { GuardSpinner } from "react-spinners-kit"
-import FundsWidget from "components/FundsWidget"
 import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
-import NavTabs from "components/NavTabs"
 import {
   Container,
   ButtonContainer,
@@ -18,12 +14,10 @@ import {
   FundsUsed,
 } from "./styled"
 import { Flex, Center } from "theme"
-import { AppState } from "state"
 import { IDetailedChart } from "constants/interfaces"
 import {
   TabCard,
   Row,
-  MainText,
   MainValue,
   Period,
   ChartPeriods,
@@ -35,9 +29,8 @@ import BarChart from "pages/Investor/Bar"
 import TabsLight from "components/TabsLight"
 import Header from "components/Header/Layout"
 import { PoolType } from "constants/interfaces_v2"
-import { usePool } from "state/pools/hooks"
-import { formateChartData } from "utils/formulas"
 import { shortenAddress } from "utils"
+import { usePoolContract, usePoolQuery } from "hooks/usePool"
 
 const pnl: IDetailedChart[] = [
   {
@@ -151,7 +144,8 @@ const Profile: React.FC<Props> = () => {
   }>()
   const navigate = useNavigate()
 
-  const [, poolData, leverageInfo, poolInfoData] = usePool(poolAddress)
+  const [poolData] = usePoolQuery(poolAddress)
+  const [leverageInfo, poolInfoData] = usePoolContract(poolAddress)
 
   const handleBuyRedirect = () => {
     navigate(`/pool/invest/${poolType}/${poolData?.id}`)
