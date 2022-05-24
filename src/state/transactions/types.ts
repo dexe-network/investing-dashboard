@@ -77,6 +77,13 @@ export interface UpdateCredentialsTransactionInfo {
   type: TransactionType.UPDATE_USER_CREDENTIALS
 }
 
+export interface CreateRiskyProposalTransactionInfo {
+  type: TransactionType.CREATE_RISKY_PROPOSAL
+}
+export interface EditRiskyProposalTransactionInfo {
+  type: TransactionType.EDIT_RISKY_PROPOSAL
+}
+
 export interface StakeInsuranceTransactionInfo {
   type: TransactionType.STAKE_INSURANCE
   amount: number
@@ -95,6 +102,8 @@ export type TransactionInfo =
   | ExactOutputSwapTransactionInfo
   | FundCreateTransactionInfo
   | UpdateCredentialsTransactionInfo
+  | CreateRiskyProposalTransactionInfo
+  | EditRiskyProposalTransactionInfo
   | StakeInsuranceTransactionInfo
   | UnstakeInsuranceTransactionInfo
   | StakeInsuranceTransactionInfo

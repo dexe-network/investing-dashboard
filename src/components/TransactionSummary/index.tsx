@@ -9,6 +9,8 @@ import {
   DepositLiquidityTransactionInfo,
   WithdrawLiquidityTransactionInfo,
   FundCreateTransactionInfo,
+  CreateRiskyProposalTransactionInfo,
+  EditRiskyProposalTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
   TransactionInfo,
@@ -119,6 +121,17 @@ const CredentialsUpdateSummary: React.FC = () => {
   return <>Successfully update Credentials</>
 }
 
+const CreateRiskyProposalSummary: React.FC<{
+  info: CreateRiskyProposalTransactionInfo
+}> = ({ info }) => {
+  return <>Create Risky Proposal</>
+}
+const EditRiskyProposalSummary: React.FC<{
+  info: EditRiskyProposalTransactionInfo
+}> = ({ info }) => {
+  return <>Update Risky Proposal</>
+}
+
 const StakeInsuranceSummary: React.FC<{
   info: StakeInsuranceTransactionInfo
 }> = ({ info: { amount } }) => {
@@ -149,6 +162,10 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <FundCreateSummary info={info} />
     case TransactionType.UPDATE_USER_CREDENTIALS:
       return <CredentialsUpdateSummary />
+    case TransactionType.CREATE_RISKY_PROPOSAL:
+      return <CreateRiskyProposalSummary info={info} />
+    case TransactionType.EDIT_RISKY_PROPOSAL:
+      return <EditRiskyProposalSummary info={info} />
     case TransactionType.STAKE_INSURANCE:
       return <StakeInsuranceSummary info={info} />
     case TransactionType.UNSTAKE_INSURANCE:
