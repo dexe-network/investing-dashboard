@@ -17,7 +17,7 @@ import TransactionError from "modals/TransactionError"
 
 import useContract, { useERC20 } from "hooks/useContract"
 
-import { PriceFeed, TraderPool, TraderPoolRiskyProposal } from "abi"
+import { PriceFeed, TraderPool } from "abi"
 import { getDividedBalance } from "utils/formulas"
 
 import settings from "assets/icons/settings.svg"
@@ -32,6 +32,8 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
+import { useRiskyProposal } from "hooks/useRiskyProposals"
+import { usePool } from "state/pools/hooks"
 
 export const useRiskyInvest = (): [
   {
@@ -165,8 +167,6 @@ function InvestRiskyProposal() {
     { setFromAmount, setToAmount, setDirection, setSlippage },
   ] = useRiskyInvest()
 
-  const [error, setError] = useState("")
-  const [proposalAddress, setProposalAddress] = useState("")
   const [fromAddress, setFromAddress] = useState("")
   const [toAddress, setToAddress] = useState("")
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
@@ -176,36 +176,19 @@ function InvestRiskyProposal() {
 
   const [isSlippageOpen, setSlippageOpen] = useState(false)
 
-  const { poolAddress } = useParams()
+  const { poolAddress, index } = useParams()
 
   const traderPool = useContract(poolAddress, TraderPool)
+  const proposal = useRiskyProposal(poolAddress, index)
+  const [, , , poolInfo] = usePool(poolAddress)
+  console.log(proposal)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
-  const traderPoolRiskyProposal = useContract(
-    proposalAddress,
-    TraderPoolRiskyProposal
-  )
 
   const [, fromData] = useERC20(fromAddress)
   const [, toData] = useERC20(toAddress)
-
-  useEffect(() => {
-    if (!traderPool) return
-    ;(async () => {
-      const address = await traderPool.proposalPoolAddress()
-      setProposalAddress(address)
-    })()
-  }, [traderPool])
-
-  useEffect(() => {
-    if (!traderPoolRiskyProposal) return
-    ;(async () => {
-      const data = await traderPoolRiskyProposal.getProposalInfos(0, 4)
-      console.log(data)
-    })()
-  }, [traderPoolRiskyProposal])
 
   // TODO: check last changed input (from || to)
   const handleSubmit = async () => {}
@@ -326,9 +309,8 @@ function InvestRiskyProposal() {
         price={inPrice}
         amount={fromAmount}
         balance={fromBalance}
-        address={fromAddress}
-        symbol={fromData?.symbol}
-        decimal={fromData?.decimals}
+        symbol={poolInfo?.ticker}
+        decimal={18}
         onChange={handleFromChange}
       />
 
@@ -370,9 +352,6 @@ function InvestRiskyProposal() {
       >
         {form}
       </Container>
-      <TransactionError isOpen={!!error.length} toggle={() => setError("")}>
-        {error}
-      </TransactionError>
     </>
   )
 }

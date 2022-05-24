@@ -6,12 +6,10 @@ import PositionCard from "components/PositionCard"
 import RiskyCard from "components/RiskyCard"
 
 import { usePool, usePoolPositions } from "state/pools/hooks"
-import useContract, { useERC20 } from "hooks/useContract"
+import { useERC20 } from "hooks/useContract"
 
 import { Container, List } from "./styled"
-import { TraderPool, TraderPoolRiskyProposal } from "abi"
-import { useEffect, useState } from "react"
-import { RiskyProposal } from "constants/interfaces_v2"
+import useRiskyProposals from "hooks/useRiskyProposals"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
@@ -42,41 +40,17 @@ const Proposals = () => {
   const { poolAddress } = useParams()
   const [, , , poolInfo] = usePool(poolAddress)
   const navigate = useNavigate()
+  const proposals = useRiskyProposals(poolAddress)
 
-  const [proposalAddress, setProposalAddress] = useState("")
-  const [proposals, setProposals] = useState<RiskyProposal[]>([])
-
-  const traderPool = useContract(poolAddress, TraderPool)
-  const traderPoolRiskyProposal = useContract(
-    proposalAddress,
-    TraderPoolRiskyProposal
-  )
-
-  useEffect(() => {
-    if (!traderPool) return
-    ;(async () => {
-      const address = await traderPool.proposalPoolAddress()
-      setProposalAddress(address)
-    })()
-  }, [traderPool])
-
-  useEffect(() => {
-    if (!traderPoolRiskyProposal) return
-    ;(async () => {
-      const data = await traderPoolRiskyProposal.getProposalInfos(0, 100)
-      setProposals(data)
-    })()
-  }, [traderPoolRiskyProposal])
-
-  const handleCardClick = () => {
-    navigate(`/invest-risky-proposal/${poolAddress}`)
+  const handleCardClick = (index) => {
+    navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
   }
 
   return (
     <List>
-      {proposals.map((position) => (
+      {proposals.map((position, index) => (
         <RiskyCard
-          onClick={handleCardClick}
+          onClick={() => handleCardClick(index)}
           baseTokenAddress={poolInfo?.parameters.baseToken}
           fundSymbol={poolInfo?.ticker}
           description={poolInfo?.parameters.descriptionURL}
