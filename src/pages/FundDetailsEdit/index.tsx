@@ -60,7 +60,13 @@ const FundDetailsEdit: FC = () => {
     handleChange,
     handleValidate,
     setInitial,
+    setInitialIpfs,
     setDefault,
+    poolParametersSaveCallback,
+    managersRemoveCallback,
+    managersAddCallback,
+    investorsRemoveCallback,
+    investorsAddCallback,
     isIpfsDataUpdated,
     isPoolParametersUpdated,
 
@@ -255,6 +261,7 @@ const FundDetailsEdit: FC = () => {
         if (!!data && data.logs.length && data.logs[0].address) {
           setStep(step + 1)
           setStepPending(false)
+          poolParametersSaveCallback()
         }
       }
       if (steps[step].title === "Managers") {
@@ -262,9 +269,11 @@ const FundDetailsEdit: FC = () => {
 
         if (!!managersRemoved.length) {
           await handleManagersRemove()
+          managersRemoveCallback()
         }
         if (!!managersAdded.length) {
           await handleManagersAdd()
+          managersAddCallback()
         }
 
         setStep(step + 1)
@@ -276,9 +285,11 @@ const FundDetailsEdit: FC = () => {
 
         if (!!investorsRemoved.length) {
           await handleInvestorsRemove()
+          investorsRemoveCallback()
         }
         if (!!investorsAdded.length) {
           await handleInvestorsAdd()
+          investorsAddCallback()
         }
 
         setStep(step + 1)
@@ -288,6 +299,8 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Success") {
         setCreating(false)
         setStepPending(false)
+        setStep(0)
+        setSteps([])
       }
     } catch (error) {
       setStepPending(false)
@@ -327,7 +340,7 @@ const FundDetailsEdit: FC = () => {
       const parsedIpfs = await parsePoolData(poolData.descriptionURL)
 
       if (!!parsedIpfs) {
-        setInitial({
+        setInitialIpfs({
           assets: parsedIpfs.assets,
           description: parsedIpfs.description,
           strategy: parsedIpfs.strategy,
@@ -348,7 +361,7 @@ const FundDetailsEdit: FC = () => {
         managers: [],
       })
     })()
-  }, [poolData, poolInfoData, setInitial])
+  }, [poolData, poolInfoData, setInitialIpfs, setInitial])
 
   // update emission switch state
   useEffect(() => {
