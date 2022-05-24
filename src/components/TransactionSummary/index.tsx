@@ -4,12 +4,17 @@ import { BigNumber } from "@ethersproject/bignumber"
 import {
   TransactionType,
   ApproveTransactionInfo,
+  ExactInputSwapTransactionInfo,
+  ExactOutputSwapTransactionInfo,
   FundCreateTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
   TransactionInfo,
 } from "state/transactions/types"
+import { TradeType } from "constants/types"
+
 import { Container } from "./styled"
+import FormattedCurrencyAmount from "./FormattedCurrencyAmount"
 
 import { selectWhitelistItem } from "state/pricefeed/selectors"
 import { formatBigNumber } from "utils"
@@ -24,6 +29,52 @@ const ApprovalSummary: React.FC<{ info: ApproveTransactionInfo }> = ({
   const token = useSelector(selectWhitelistItem(tokenAddress))
 
   return <>Approve {token?.symbol}</>
+}
+const SwapSummaryInput: React.FC<{ info: ExactInputSwapTransactionInfo }> = ({
+  info,
+}) => {
+  return (
+    <>
+      Swap from
+      <FormattedCurrencyAmount
+        rawAmount={info.inputCurrencyAmountRaw}
+        rawCurrency={info.inputCurrencyId}
+      />{" "}
+      to{" "}
+      <FormattedCurrencyAmount
+        rawAmount={info.expectedOutputCurrencyAmountRaw}
+        rawCurrency={info.outputCurrencyId}
+      />
+    </>
+  )
+}
+const SwapSummaryOutput: React.FC<{ info: ExactOutputSwapTransactionInfo }> = ({
+  info,
+}) => {
+  return (
+    <>
+      Swap from
+      <FormattedCurrencyAmount
+        rawAmount={info.outputCurrencyAmountRaw}
+        rawCurrency={info.inputCurrencyId}
+      />{" "}
+      to{" "}
+      <FormattedCurrencyAmount
+        rawAmount={info.expectedInputCurrencyAmountRaw}
+        rawCurrency={info.outputCurrencyId}
+      />
+    </>
+  )
+}
+
+const SwapSummary: React.FC<{
+  info: ExactInputSwapTransactionInfo | ExactOutputSwapTransactionInfo
+}> = ({ info }) => {
+  if (info.tradeType === TradeType.EXACT_INPUT) {
+    return <SwapSummaryInput info={info} />
+  } else {
+    return <SwapSummaryOutput info={info} />
+  }
 }
 
 const FundCreateSummary: React.FC<{ info: FundCreateTransactionInfo }> = ({
@@ -63,6 +114,8 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
   switch (info.type) {
     case TransactionType.APPROVAL:
       return <ApprovalSummary info={info} />
+    case TransactionType.SWAP:
+      return <SwapSummary info={info} />
     case TransactionType.FUND_CREATE:
       return <FundCreateSummary info={info} />
     case TransactionType.UPDATE_USER_CREDENTIALS:

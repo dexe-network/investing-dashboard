@@ -1,3 +1,5 @@
+import { TradeType } from "constants/types"
+
 export enum TransactionType {
   APPROVAL = 0,
   SWAP = 1,
@@ -30,6 +32,27 @@ export interface ApproveTransactionInfo {
   spender: string
 }
 
+interface BaseSwapTransactionInfo {
+  type: TransactionType.SWAP
+  tradeType: TradeType
+  inputCurrencyId: string
+  outputCurrencyId: string
+}
+
+export interface ExactInputSwapTransactionInfo extends BaseSwapTransactionInfo {
+  tradeType: TradeType.EXACT_INPUT
+  inputCurrencyAmountRaw: string
+  expectedOutputCurrencyAmountRaw: string
+  minimumOutputCurrencyAmountRaw: string
+}
+export interface ExactOutputSwapTransactionInfo
+  extends BaseSwapTransactionInfo {
+  tradeType: TradeType.EXACT_OUTPUT
+  outputCurrencyAmountRaw: string
+  expectedInputCurrencyAmountRaw: string
+  maximumInputCurrencyAmountRaw: string
+}
+
 export interface FundCreateTransactionInfo {
   type: TransactionType.FUND_CREATE
   baseCurrencyId: string
@@ -52,6 +75,8 @@ export interface UnstakeInsuranceTransactionInfo {
 
 export type TransactionInfo =
   | ApproveTransactionInfo
+  | ExactInputSwapTransactionInfo
+  | ExactOutputSwapTransactionInfo
   | FundCreateTransactionInfo
   | UpdateCredentialsTransactionInfo
   | StakeInsuranceTransactionInfo

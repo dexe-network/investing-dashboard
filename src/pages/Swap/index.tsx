@@ -41,6 +41,7 @@ import getReceipt from "utils/getReceipt"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
+import { TradeType } from "constants/types"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -336,8 +337,19 @@ function Swap() {
             exchangeWithSlippage.toHexString(),
             []
           )
-          const receipt = await getReceipt(library, transactionResponse.hash)
-          addTransaction(receipt, { type: TransactionType.SWAP })
+
+          addTransaction(transactionResponse, {
+            type: TransactionType.SWAP,
+            tradeType: TradeType.EXACT_INPUT,
+            inputCurrencyId: from,
+            inputCurrencyAmountRaw: amount.toHexString(),
+            expectedOutputCurrencyAmountRaw:
+              exchange.minAmountOut.toHexString(),
+            outputCurrencyId: to,
+            minimumOutputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
+          })
+
+          await getReceipt(library, transactionResponse.hash)
 
           updatePoolData()
         } catch (error: any) {
@@ -377,6 +389,17 @@ function Swap() {
             exchangeWithSlippage.toHexString(),
             []
           )
+
+          addTransaction(transactionResponse, {
+            type: TransactionType.SWAP,
+            tradeType: TradeType.EXACT_OUTPUT,
+            inputCurrencyId: from,
+            outputCurrencyAmountRaw: amount.toHexString(),
+            expectedInputCurrencyAmountRaw: exchange.minAmountOut.toHexString(),
+            outputCurrencyId: to,
+            minimumInputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
+          })
+
           await getReceipt(library, transactionResponse.hash)
           updatePoolData()
         } catch (error: any) {
