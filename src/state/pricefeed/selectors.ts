@@ -11,5 +11,8 @@ export const selectWhitelist = createSelector(
 export const selectWhitelistItem = (address: string) =>
   createSelector(
     [selectWhitelist],
-    (whitelist) => whitelist.filter((item) => item.address === address)[0]
+    (whitelist) =>
+      whitelist.filter(
+        (item) => item.address.toLowerCase() === address.toLowerCase()
+      )[0]
   )
