@@ -24,6 +24,12 @@ export enum TransactionType {
   VOTE_INSURANCE_PROPOSAL = 16,
 }
 
+export interface ApproveTransactionInfo {
+  type: TransactionType.APPROVAL
+  tokenAddress: string
+  spender: string
+}
+
 export interface FundCreateTransactionInfo {
   type: TransactionType.FUND_CREATE
   baseCurrencyId: string
@@ -34,10 +40,24 @@ export interface UpdateCredentialsTransactionInfo {
   type: TransactionType.UPDATE_USER_CREDENTIALS
 }
 
+export interface StakeInsuranceTransactionInfo {
+  type: TransactionType.STAKE_INSURANCE
+  amount: number
+}
+
+export interface UnstakeInsuranceTransactionInfo {
+  type: TransactionType.UNSTAKE_INSURANCE
+  amount: number
+}
+
 export type TransactionInfo =
+  | ApproveTransactionInfo
   | FundCreateTransactionInfo
   | UpdateCredentialsTransactionInfo
-  | any
+  | StakeInsuranceTransactionInfo
+  | UnstakeInsuranceTransactionInfo
+  | StakeInsuranceTransactionInfo
+  | UnstakeInsuranceTransactionInfo
 
 export interface TransactionDetails {
   hash: string
