@@ -16,8 +16,9 @@ export const ToastsInner = styled.div`
   overflow-x: hidden;
   overflow-y: auto;
   display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
   margin-top: 32px;
   padding-bottom: 1px;
   -webkit-overflow-scrolling: touch;
