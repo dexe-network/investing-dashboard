@@ -22,11 +22,11 @@ import IpfsIcon from "components/IpfsIcon"
 import TokenSelect from "modals/TokenSelect"
 
 import { useCreateFundContext } from "context/CreateFundContext"
-import { selectTraderPoolFactoryAddress } from "state/contracts/selectors"
+import { selectPoolFactoryAddress } from "state/contracts/selectors"
 import { Token } from "constants/interfaces"
 import { sliderPropsByPeriodType, performanceFees } from "constants/index"
 import useContract from "hooks/useContract"
-import { TraderPool, TraderPoolFactory } from "abi"
+import { TraderPool, PoolFactory } from "abi"
 
 import { addFundMetadata } from "utils/ipfs"
 import { bigify } from "utils"
@@ -100,8 +100,8 @@ const CreateFund: FC = () => {
   const [descriptionURL, setDescriptionURL] = useState("")
   const [contractAddress, setCreactedAddress] = useState("")
 
-  const poolFactoryAddress = useSelector(selectTraderPoolFactoryAddress)
-  const traderPoolFactory = useContract(poolFactoryAddress, TraderPoolFactory)
+  const poolFactoryAddress = useSelector(selectPoolFactoryAddress)
+  const traderPoolFactory = useContract(poolFactoryAddress, PoolFactory)
   const traderPool = useContract(contractAddress, TraderPool)
 
   const hideModal = () => setModalState(false)

@@ -128,3 +128,11 @@ export interface IPositionQuery {
   descriptionURL: string
   positions: IPosition[]
 }
+
+/// @notice The enum of exchange types
+/// @param FROM_EXACT the type corresponding to the exchangeFromExact function
+/// @param TO_EXACT the type corresponding to the exchangeToExact function
+export enum ExchangeType {
+  FROM_EXACT,
+  TO_EXACT,
+}
