@@ -7,9 +7,10 @@ import { useTransaction } from "state/transactions/hooks"
 interface IProps {
   hash: string
   onClose: () => void
+  visible: boolean
 }
 
-const ToastTransaction: React.FC<IProps> = ({ hash, onClose }) => {
+const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
   const tx = useTransaction(hash)
 
   console.log("transaction", tx)
@@ -20,7 +21,7 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose }) => {
 
   return (
     <>
-      <ToastBase type={type} onClose={onClose}>
+      <ToastBase type={type} onClose={onClose} visible={visible}>
         <TransactionBody>
           <TransactionSummary info={tx.info} />
         </TransactionBody>

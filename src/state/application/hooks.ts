@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react"
 import { DEFAULT_TXN_DISMISS_MS } from "constants/misc"
 import { AppState } from "state"
 import { useAppDispatch, useAppSelector } from "state/hooks"
-import { addToast, removeToast } from "./actions"
+import { addToast, hideToast, removeToast } from "./actions"
 import { ToastContent } from "./types"
 
 // returns a function that allows adding a popup
@@ -34,7 +34,12 @@ export function useRemoveToast(): (key: string) => void {
   const dispatch = useAppDispatch()
   return useCallback(
     (key: string) => {
-      dispatch(removeToast({ params: { key } }))
+      dispatch(hideToast({ params: { key } }))
+
+      const removeTimeout = setTimeout(() => {
+        dispatch(removeToast({ params: { key } }))
+        clearTimeout(removeTimeout)
+      }, 2000)
     },
     [dispatch]
   )

@@ -24,6 +24,7 @@ const ToastContainer: React.FC = () => {
                 toastkey={item.key}
                 content={item.content}
                 removeAfterMs={item.removeAfterMs}
+                visible={item.visible}
               />
             ))}
         </ToastsInner>

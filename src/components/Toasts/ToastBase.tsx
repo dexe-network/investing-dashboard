@@ -17,16 +17,29 @@ interface IProps {
   type: string
   children: React.ReactNode
   onClose: () => void
+  visible: boolean
 }
 
 const ToastBase: React.FC<IProps> = ({
   type,
   children,
   onClose = () => {},
+  visible,
 }) => {
   return (
     <>
-      <Container>
+      <Container
+        animate={visible ? "visible" : "hidden"}
+        initial="hidden"
+        variants={{
+          visible: {
+            x: 0,
+          },
+          hidden: {
+            x: "100vw",
+          },
+        }}
+      >
         <Close>
           <IconButton
             onClick={onClose}

@@ -9,9 +9,15 @@ interface IProps {
   toastkey: string
   content: ToastContent
   removeAfterMs: number | null
+  visible: boolean
 }
 
-const Toast: React.FC<IProps> = ({ toastkey, content, removeAfterMs }) => {
+const Toast: React.FC<IProps> = ({
+  toastkey,
+  content,
+  removeAfterMs,
+  visible,
+}) => {
   const removeToast = useRemoveToast()
   const remove = useCallback(
     () => removeToast(toastkey),
@@ -34,7 +40,7 @@ const Toast: React.FC<IProps> = ({ toastkey, content, removeAfterMs }) => {
     const {
       txn: { hash },
     } = content
-    return <ToastTransaction hash={hash} onClose={remove} />
+    return <ToastTransaction hash={hash} onClose={remove} visible={visible} />
   } else {
     return null
   }
