@@ -2,7 +2,7 @@ import { createReducer } from "@reduxjs/toolkit"
 import { updateContracts } from "./actions"
 
 export interface ContractsState {
-  TraderPoolFactory: string
+  PoolFactory: string
   TraderPoolRegistry: string
   DEXE: string
   USD: string
@@ -17,7 +17,7 @@ export interface ContractsState {
 }
 
 export const initialState: ContractsState = {
-  TraderPoolFactory: "",
+  PoolFactory: "",
   TraderPoolRegistry: "",
   DEXE: "",
   USD: "",
@@ -33,7 +33,7 @@ export const initialState: ContractsState = {
 
 export default createReducer(initialState, (builder) =>
   builder.addCase(updateContracts, (state, action) => {
-    state.TraderPoolFactory = action.payload.params.TraderPoolFactory
+    state.PoolFactory = action.payload.params.PoolFactory
     state.TraderPoolRegistry = action.payload.params.TraderPoolRegistry
     state.DEXE = action.payload.params.DEXE
     state.USD = action.payload.params.USD

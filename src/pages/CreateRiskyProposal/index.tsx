@@ -28,7 +28,7 @@ import DatePicker from "components/DatePicker"
 import Payload from "components/Payload"
 import TransactionError from "modals/TransactionError"
 
-import { usePool } from "state/pools/hooks"
+import { usePoolQuery, useTraderPool } from "hooks/usePool"
 import { Token } from "constants/interfaces"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { selectWhitelist } from "state/pricefeed/selectors"
@@ -161,7 +161,9 @@ const CreateRiskyProposal: FC = () => {
   const whitelisted = useSelector(selectWhitelist)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
-  const [traderPool, poolQuery] = usePool(poolAddress)
+  const traderPool = useTraderPool(poolAddress)
+  const [poolQuery] = usePoolQuery(poolAddress)
+
   const basicTraderPool = useContract(poolAddress, BasicTraderPool)
   const [, baseTokenData] = useERC20(poolQuery?.baseToken)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)

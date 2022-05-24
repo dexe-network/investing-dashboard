@@ -38,7 +38,7 @@ import MinInvestIcon from "assets/icons/MinInvestAmount"
 import { bigify } from "utils"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
-import { usePool } from "state/pools/hooks"
+import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
 import { TraderPool } from "abi"
 
@@ -51,7 +51,8 @@ const FundDetailsEdit: FC = () => {
   const navigate = useNavigate()
   const { account } = useWeb3React()
 
-  const [, poolData, , poolInfoData] = usePool(poolAddress)
+  const [poolData] = usePoolQuery(poolAddress)
+  const [, poolInfoData] = usePoolContract(poolAddress)
   const [, baseData] = useERC20(poolData?.baseToken)
   const traderPool = useContract(poolData?.id, TraderPool)
 

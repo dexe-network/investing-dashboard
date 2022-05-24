@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
-import { Contract } from "@ethersproject/contracts"
 import { useDispatch, useSelector } from "react-redux"
-import { TraderPoolRegistry, TraderPool } from "abi"
+import { TraderPoolRegistry } from "abi"
 import { useQuery } from "urql"
 
 import useContract from "hooks/useContract"
@@ -17,8 +16,6 @@ import { isAddress } from "utils"
 import {
   IPoolQuery,
   PoolType,
-  LeverageInfo,
-  PoolInfo,
   IPriceHistoryQuery,
   IPriceHistory,
   IPositionQuery,
@@ -26,11 +23,6 @@ import {
 
 import {
   OwnedPoolsQuery,
-  PoolQuery,
-  PoolsQuery,
-  PoolsQueryByType,
-  PoolsQueryWithSort,
-  PoolsQueryByTypeWithSort,
   PriceHistoryQuery,
   BasicPositionsQuery,
   getPoolsQueryVariables,
@@ -73,55 +65,6 @@ export function useOwnedPools(
   }, [pool])
 
   return [pools, pool.fetching]
-}
-
-/**
- * Returns contract info about the pool
- */
-export function usePool(
-  address: string | undefined
-): [
-  Contract | null,
-  IPoolQuery | undefined,
-  LeverageInfo | null,
-  PoolInfo | null,
-  () => void
-] {
-  const traderPool = useContract(address, TraderPool)
-  const [update, setUpdate] = useState(false)
-  const [leverageInfo, setLeverageInfo] = useState<LeverageInfo | null>(null)
-  const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
-
-  const [pool, executeQuery] = useQuery<{
-    traderPool: IPoolQuery
-  }>({
-    pause: !isAddress(address),
-    query: PoolQuery,
-    variables: { address },
-  })
-
-  const fetchUpdate = () => {
-    setUpdate(!update)
-    executeQuery()
-  }
-
-  useEffect(() => {
-    if (!traderPool) return
-    ;(async () => {
-      const leverage = await traderPool?.getLeverageInfo()
-      const poolInfo = await traderPool?.getPoolInfo()
-      setPoolInfo(poolInfo)
-      setLeverageInfo(leverage)
-    })()
-  }, [traderPool, update])
-
-  return [
-    traderPool,
-    pool.data?.traderPool,
-    leverageInfo,
-    poolInfo,
-    fetchUpdate,
-  ]
 }
 
 /**

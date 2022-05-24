@@ -20,7 +20,6 @@ import TransactionError from "modals/TransactionError"
 
 import { PriceFeed, TraderPool } from "abi"
 import useContract, { useERC20 } from "hooks/useContract"
-import { usePool } from "state/pools/hooks"
 import { PoolType } from "constants/interfaces_v2"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
@@ -53,6 +52,7 @@ import {
   SettingsButton,
   SettingsInput,
 } from "./styled"
+import { usePoolContract } from "hooks/usePool"
 
 export const useInvest = (): [
   {
@@ -211,7 +211,7 @@ function Invest() {
     poolAddress: string
     poolType: PoolType
   }>()
-  const [, , , poolInfo] = usePool(poolAddress)
+  const [, poolInfo] = usePoolContract(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 

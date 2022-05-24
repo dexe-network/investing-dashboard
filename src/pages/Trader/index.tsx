@@ -19,8 +19,8 @@ import BarChart from "pages/Investor/Bar"
 import IconButton from "components/IconButton"
 import pencil from "assets/icons/pencil.svg"
 
-import { usePool } from "state/pools/hooks"
 import { IDetailedChart } from "constants/interfaces"
+import { usePoolQuery, usePoolContract, useTraderPool } from "hooks/usePool"
 
 import {
   TabCard,
@@ -104,8 +104,9 @@ function Trader(props: Props) {
     localStorage.setItem("last-visited-profile", pathname)
   }, [pathname])
 
-  const [traderPool, poolData, leverageInfo, poolInfoData] =
-    usePool(poolAddress)
+  const traderPool = useTraderPool(poolAddress)
+  const [poolData] = usePoolQuery(poolAddress)
+  const [leverageInfo, poolInfoData] = usePoolContract(poolAddress)
   const navigate = useNavigate()
 
   const redirectToInvestor = () => {
