@@ -29,6 +29,9 @@ import { calcSlippage, getAllowance, parseTransactionError } from "utils"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
 import getReceipt from "utils/getReceipt"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
 import LockedIcon from "assets/icons/LockedIcon"
@@ -221,6 +224,8 @@ function Invest() {
     poolInfo?.parameters.baseToken
   )
 
+  const addTransaction = useTransactionAdder()
+
   const updatePriceImpact = (from: BigNumber, to: BigNumber) => {
     const f = ethers.utils.formatUnits(from, 18)
     const t = ethers.utils.formatUnits(to, 18)
@@ -380,6 +385,12 @@ function Invest() {
       const amount = BigNumber.from(fromAmount)
       const approveResponse = await fromToken.approve(poolAddress, amount)
       setSubmiting(false)
+
+      addTransaction(approveResponse, {
+        type: TransactionType.APPROVAL,
+        tokenAddress: fromToken.address,
+        spender: account,
+      })
 
       const receipt = await getReceipt(library, approveResponse.hash)
       if (receipt !== null && receipt.logs.length) {
