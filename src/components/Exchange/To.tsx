@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { ReactNode } from "react"
 import { Flex } from "theme"
 import { BigNumber } from "@ethersproject/bignumber"
 import { BigNumberInput } from "big-number-input"
@@ -23,7 +23,6 @@ import {
   SymbolLabel,
   Icon,
 } from "./styled"
-import { ReactNode } from "react"
 
 interface IToProps {
   price: BigNumber

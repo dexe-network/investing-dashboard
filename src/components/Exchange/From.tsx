@@ -1,12 +1,16 @@
-import React from "react"
-import { Flex, Text } from "theme"
-import { ethers } from "ethers"
+import { FC, ReactNode } from "react"
+import { Flex } from "theme"
 import { BigNumber } from "@ethersproject/bignumber"
+import { BigNumberInput } from "big-number-input"
+
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
-import { BigNumberInput } from "big-number-input"
+
 import angleIcon from "assets/icons/angle-down.svg"
 import locker from "assets/icons/locker.svg"
+
+import { formatBigNumber } from "utils"
+
 import {
   FromContainer,
   Price,
@@ -19,7 +23,6 @@ import {
   Tokens,
   Icon,
 } from "./styled"
-import { formatBigNumber, calcPrice } from "utils"
 
 interface IFromProps {
   price: BigNumber
@@ -28,17 +31,19 @@ interface IFromProps {
   address?: string
   symbol?: string
   decimal?: number
+  customIcon?: ReactNode
   onChange: (amount: string) => void
   onSelect?: () => void
 }
 
-const ExchangeFrom: React.FC<IFromProps> = ({
+const ExchangeFrom: FC<IFromProps> = ({
   price,
   amount,
   balance,
   address,
   symbol,
   decimal,
+  customIcon,
   onChange,
   onSelect,
 }) => {
@@ -73,6 +78,12 @@ const ExchangeFrom: React.FC<IFromProps> = ({
     )
   }
 
+  const icon = customIcon ? (
+    customIcon
+  ) : (
+    <TokenIcon address={address} size={27} />
+  )
+
   return (
     <FromContainer full>
       <Flex full dir="column">
@@ -91,7 +102,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
             renderInput={(props: any) => <Input {...props} />}
           />
           <ActiveSymbol onClick={select}>
-            {!noData && <TokenIcon address={address} size={27} />}
+            {!noData && icon}
             {noData ? (
               <SelectToken>Select Token</SelectToken>
             ) : (

@@ -82,6 +82,28 @@ interface PoolParameters {
   totalLPEmission: BigNumber
 }
 
+interface RiskyProposalLimits {
+  investLPLimit: BigNumber
+  maxTokenPriceLimit: BigNumber
+  timestampLimit: BigNumber
+}
+
+interface RiskyProposalInfo {
+  balanceBase: BigNumber
+  balancePosition: BigNumber
+  lpLocked: BigNumber
+  propoosalLimits: RiskyProposalLimits
+  token: string
+  tokenDecimals: BigNumber
+}
+
+export interface RiskyProposal {
+  lp2Supply: BigNumber
+  proposalInfo: RiskyProposalInfo
+  totalProposalBase: BigNumber
+  totalProposalUSD
+}
+
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
 /// @param totalPoolUSDWithProposals the total USD value of the pool
 /// @param traderLeverageUSDTokens the maximal amount of USD that the trader is allowed to own
