@@ -73,6 +73,12 @@ export interface FundCreateTransactionInfo {
   fundName: string
 }
 
+export interface FundEditTransactionInfo {
+  type: TransactionType.FUND_EDIT
+  baseCurrencyId: string
+  fundName: string
+}
+
 export interface UpdateCredentialsTransactionInfo {
   type: TransactionType.UPDATE_USER_CREDENTIALS
 }
@@ -114,6 +120,7 @@ export type TransactionInfo =
   | ExactInputSwapTransactionInfo
   | ExactOutputSwapTransactionInfo
   | FundCreateTransactionInfo
+  | FundEditTransactionInfo
   | UpdateCredentialsTransactionInfo
   | CreateRiskyProposalTransactionInfo
   | EditRiskyProposalTransactionInfo

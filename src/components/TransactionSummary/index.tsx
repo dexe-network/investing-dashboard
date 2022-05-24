@@ -9,6 +9,7 @@ import {
   DepositLiquidityTransactionInfo,
   WithdrawLiquidityTransactionInfo,
   FundCreateTransactionInfo,
+  FundEditTransactionInfo,
   CreateRiskyProposalTransactionInfo,
   EditRiskyProposalTransactionInfo,
   CreateInvestProposalTransactionInfo,
@@ -119,6 +120,19 @@ const FundCreateSummary: React.FC<{ info: FundCreateTransactionInfo }> = ({
   )
 }
 
+const FundEditSummary: React.FC<{ info: FundEditTransactionInfo }> = ({
+  info: { fundName, baseCurrencyId },
+}) => {
+  const baseCurrency = useSelector(selectWhitelistItem(baseCurrencyId))
+
+  return (
+    <>
+      Update &ldquo;{fundName}&rdquo; fund with {baseCurrency?.symbol} base
+      currency.
+    </>
+  )
+}
+
 const CredentialsUpdateSummary: React.FC = () => {
   return <>Successfully update Credentials</>
 }
@@ -175,6 +189,8 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <WithdrawLiquiditySummary info={info} />
     case TransactionType.FUND_CREATE:
       return <FundCreateSummary info={info} />
+    case TransactionType.FUND_EDIT:
+      return <FundEditSummary info={info} />
     case TransactionType.UPDATE_USER_CREDENTIALS:
       return <CredentialsUpdateSummary />
     case TransactionType.CREATE_RISKY_PROPOSAL:
