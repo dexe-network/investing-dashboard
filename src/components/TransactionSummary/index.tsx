@@ -11,6 +11,8 @@ import {
   FundCreateTransactionInfo,
   CreateRiskyProposalTransactionInfo,
   EditRiskyProposalTransactionInfo,
+  CreateInvestProposalTransactionInfo,
+  EditInvestProposalTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
   TransactionInfo,
@@ -132,6 +134,19 @@ const EditRiskyProposalSummary: React.FC<{
   return <>Update Risky Proposal</>
 }
 
+const CreateInvestProposalSummary: React.FC<{
+  info: CreateInvestProposalTransactionInfo
+}> = ({ info: { investLpAmountRaw } }) => {
+  const amount = formatBigNumber(BigNumber.from(investLpAmountRaw))
+  return <>Create Invest Proposal for {amount} LP tokens</>
+}
+const EditInvestProposalSummary: React.FC<{
+  info: EditInvestProposalTransactionInfo
+}> = ({ info: { investLpAmountRaw } }) => {
+  const amount = formatBigNumber(BigNumber.from(investLpAmountRaw))
+  return <>Update Invest Proposal with {amount} of LP tokens</>
+}
+
 const StakeInsuranceSummary: React.FC<{
   info: StakeInsuranceTransactionInfo
 }> = ({ info: { amount } }) => {
@@ -166,6 +181,10 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <CreateRiskyProposalSummary info={info} />
     case TransactionType.EDIT_RISKY_PROPOSAL:
       return <EditRiskyProposalSummary info={info} />
+    case TransactionType.CREATE_INVEST_PROPOSAL:
+      return <CreateInvestProposalSummary info={info} />
+    case TransactionType.EDIT_INVEST_PROPOSAL:
+      return <EditInvestProposalSummary info={info} />
     case TransactionType.STAKE_INSURANCE:
       return <StakeInsuranceSummary info={info} />
     case TransactionType.UNSTAKE_INSURANCE:

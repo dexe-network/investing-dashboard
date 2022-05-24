@@ -84,6 +84,19 @@ export interface EditRiskyProposalTransactionInfo {
   type: TransactionType.EDIT_RISKY_PROPOSAL
 }
 
+export interface CreateInvestProposalTransactionInfo {
+  type: TransactionType.CREATE_INVEST_PROPOSAL
+  amount: string
+  ipfsPath: string
+  investLpAmountRaw: string
+}
+export interface EditInvestProposalTransactionInfo {
+  type: TransactionType.EDIT_INVEST_PROPOSAL
+  amount: string
+  ipfsPath: string
+  investLpAmountRaw: string
+}
+
 export interface StakeInsuranceTransactionInfo {
   type: TransactionType.STAKE_INSURANCE
   amount: number
@@ -104,8 +117,8 @@ export type TransactionInfo =
   | UpdateCredentialsTransactionInfo
   | CreateRiskyProposalTransactionInfo
   | EditRiskyProposalTransactionInfo
-  | StakeInsuranceTransactionInfo
-  | UnstakeInsuranceTransactionInfo
+  | CreateInvestProposalTransactionInfo
+  | EditInvestProposalTransactionInfo
   | StakeInsuranceTransactionInfo
   | UnstakeInsuranceTransactionInfo
 
