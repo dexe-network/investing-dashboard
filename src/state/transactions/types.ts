@@ -32,6 +32,20 @@ export interface ApproveTransactionInfo {
   spender: string
 }
 
+export interface DepositLiquidityTransactionInfo {
+  type: TransactionType.DEPOSIT_LIQUIDITY_STAKING
+  currencyId: string
+  poolAddress: string
+  amount: string
+}
+
+export interface WithdrawLiquidityTransactionInfo {
+  type: TransactionType.WITHDRAW_LIQUIDITY_STAKING
+  currencyId: string
+  poolAddress: string
+  amount: string
+}
+
 interface BaseSwapTransactionInfo {
   type: TransactionType.SWAP
   tradeType: TradeType
@@ -75,6 +89,8 @@ export interface UnstakeInsuranceTransactionInfo {
 
 export type TransactionInfo =
   | ApproveTransactionInfo
+  | DepositLiquidityTransactionInfo
+  | WithdrawLiquidityTransactionInfo
   | ExactInputSwapTransactionInfo
   | ExactOutputSwapTransactionInfo
   | FundCreateTransactionInfo

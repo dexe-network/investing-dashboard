@@ -267,6 +267,13 @@ function Invest() {
           amountsWithSlippage
         )
 
+        addTransaction(depositResponse, {
+          type: TransactionType.DEPOSIT_LIQUIDITY_STAKING,
+          poolAddress: poolAddress,
+          currencyId: poolInfo?.parameters.baseToken,
+          amount: amount.toHexString(),
+        })
+
         setSubmiting(false)
         await getReceipt(library, depositResponse.hash)
 
@@ -291,11 +298,19 @@ function Invest() {
           account,
           amount.toHexString()
         )
-        await traderPool?.divest(
+        const withdrawResponse = await traderPool?.divest(
           amount.toHexString(),
           divest.receptions.receivedAmounts,
           divest.commissions.dexeDexeCommission
         )
+
+        addTransaction(withdrawResponse, {
+          type: TransactionType.WITHDRAW_LIQUIDITY_STAKING,
+          poolAddress: poolAddress,
+          currencyId: poolInfo?.parameters.baseToken,
+          amount: amount.toHexString(),
+        })
+
         setSubmiting(false)
       }
 

@@ -6,6 +6,8 @@ import {
   ApproveTransactionInfo,
   ExactInputSwapTransactionInfo,
   ExactOutputSwapTransactionInfo,
+  DepositLiquidityTransactionInfo,
+  WithdrawLiquidityTransactionInfo,
   FundCreateTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
@@ -30,6 +32,7 @@ const ApprovalSummary: React.FC<{ info: ApproveTransactionInfo }> = ({
 
   return <>Approve {token?.symbol}</>
 }
+
 const SwapSummaryInput: React.FC<{ info: ExactInputSwapTransactionInfo }> = ({
   info,
 }) => {
@@ -77,6 +80,28 @@ const SwapSummary: React.FC<{
   }
 }
 
+const DepositLiquiditySummary: React.FC<{
+  info: DepositLiquidityTransactionInfo
+}> = ({ info: { currencyId, amount } }) => {
+  return (
+    <>
+      Deposit liquidity{" "}
+      <FormattedCurrencyAmount rawAmount={amount} rawCurrency={currencyId} />
+    </>
+  )
+}
+
+const WithdrawLiquiditySummary: React.FC<{
+  info: WithdrawLiquidityTransactionInfo
+}> = ({ info: { currencyId, amount } }) => {
+  return (
+    <>
+      Withdraw liquidity{" "}
+      <FormattedCurrencyAmount rawAmount={amount} rawCurrency={currencyId} />
+    </>
+  )
+}
+
 const FundCreateSummary: React.FC<{ info: FundCreateTransactionInfo }> = ({
   info: { fundName, baseCurrencyId },
 }) => {
@@ -116,6 +141,10 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <ApprovalSummary info={info} />
     case TransactionType.SWAP:
       return <SwapSummary info={info} />
+    case TransactionType.DEPOSIT_LIQUIDITY_STAKING:
+      return <DepositLiquiditySummary info={info} />
+    case TransactionType.WITHDRAW_LIQUIDITY_STAKING:
+      return <WithdrawLiquiditySummary info={info} />
     case TransactionType.FUND_CREATE:
       return <FundCreateSummary info={info} />
     case TransactionType.UPDATE_USER_CREDENTIALS:
