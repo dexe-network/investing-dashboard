@@ -37,7 +37,13 @@ interface IValidationError {
 interface IContext extends IState {
   handleChange: (name: string, value: any) => void
   setInitial: (payload: any) => void
+  setInitialIpfs: (payload: any) => void
   setDefault: () => void
+  poolParametersSaveCallback: () => void
+  managersRemoveCallback: () => void
+  managersAddCallback: () => void
+  investorsRemoveCallback: () => void
+  investorsAddCallback: () => void
   isIpfsDataUpdated: () => boolean
   isPoolParametersUpdated: () => boolean
   handleValidate: () => boolean
@@ -77,6 +83,12 @@ const defaultContext = {
   handleChange: () => {},
   setInitial: () => {},
   setDefault: () => {},
+  setInitialIpfs: () => {},
+  poolParametersSaveCallback: () => {},
+  managersRemoveCallback: () => {},
+  managersAddCallback: () => {},
+  investorsRemoveCallback: () => {},
+  investorsAddCallback: () => {},
   isIpfsDataUpdated: () => false,
   isPoolParametersUpdated: () => false,
   handleValidate: () => false,
@@ -193,11 +205,10 @@ class UpdateFundContext extends React.Component {
     })
   }
 
+  // Set initial pool data
   setInitial = (payload: any) => {
     this.setState({
       loading: false,
-      descriptionInitial: payload.description,
-      strategyInitial: payload.strategy,
       investorsInitial: payload.investors,
       managersInitial: payload.managers,
       totalLPEmissionInitial: payload.totalLPEmission,
@@ -206,8 +217,81 @@ class UpdateFundContext extends React.Component {
     })
   }
 
+  // Set initial data from IPFS
+  setInitialIpfs = (payload: any) => {
+    this.setState({
+      descriptionInitial: payload.description,
+      strategyInitial: payload.strategy,
+      ...payload,
+    })
+  }
+
   setDefault = () => {
     this.setState(defaultState)
+  }
+
+  // Clean pool parameters state after saving
+  poolParametersSaveCallback = () => {
+    this.setState({
+      avatarBlobString: "",
+      assets: [...this.state.assets, this.state.avatarBlobString],
+      descriptionInitial: this.state.description,
+      strategyInitial: this.state.strategy,
+      totalLPEmissionInitial: this.state.totalLPEmission,
+      minimalInvestmentInitial: this.state.minimalInvestment,
+    })
+  }
+
+  // Clean managers state after removing
+  managersRemoveCallback = () => {
+    const newManagersInitial = arrayDifference(
+      this.state.managersInitial,
+      this.state.managersRemoved
+    )
+
+    this.setState({
+      managersInitial: newManagersInitial,
+      managersRemoved: [],
+    })
+  }
+
+  // Clean managers state after adding
+  managersAddCallback = () => {
+    const newManagersInitial = [
+      ...this.state.managersInitial,
+      ...this.state.managersAdded,
+    ]
+
+    this.setState({
+      managersInitial: newManagersInitial,
+      managersAdded: [],
+    })
+  }
+
+  // Clean investors state after removing
+  investorsRemoveCallback = () => {
+    const newInvestorsInitial = arrayDifference(
+      this.state.investorsInitial,
+      this.state.investorsRemoved
+    )
+
+    this.setState({
+      investorsInitial: newInvestorsInitial,
+      investorsRemoved: [],
+    })
+  }
+
+  // Clean investors state after adding
+  investorsAddCallback = () => {
+    const newInvestorsInitial = [
+      ...this.state.investorsInitial,
+      ...this.state.investorsAdded,
+    ]
+
+    this.setState({
+      investorsInitial: newInvestorsInitial,
+      investorsAdded: [],
+    })
   }
 
   isIpfsDataUpdated = () => {
@@ -273,7 +357,13 @@ class UpdateFundContext extends React.Component {
           ...this.state,
           handleChange: this.handleChange,
           setInitial: this.setInitial,
+          setInitialIpfs: this.setInitialIpfs,
           setDefault: this.setDefault,
+          poolParametersSaveCallback: this.poolParametersSaveCallback,
+          managersRemoveCallback: this.managersRemoveCallback,
+          managersAddCallback: this.managersAddCallback,
+          investorsRemoveCallback: this.investorsRemoveCallback,
+          investorsAddCallback: this.investorsAddCallback,
           isIpfsDataUpdated: this.isIpfsDataUpdated,
           isPoolParametersUpdated: this.isPoolParametersUpdated,
           handleValidate: this.handleValidate,
