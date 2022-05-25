@@ -6,7 +6,7 @@ import {
 } from "constants/misc"
 import { useAppDispatch, useAppSelector } from "state/hooks"
 import { checkedTransaction, finalizeTransaction } from "./actions"
-import { useAddToast } from "state/application/hooks"
+import { useAddToast, useRemoveToast } from "state/application/hooks"
 
 import { useActiveWeb3React } from "hooks"
 import useBlockNumber from "hooks/useBlockNumber"
@@ -50,6 +50,7 @@ export function TransactionUpdater() {
   const blockNumber = useBlockNumber()
 
   const addToast = useAddToast()
+  const removeToast = useRemoveToast()
 
   const onCheck = useCallback(
     ({ chainId, hash, blockNumber }) => {
@@ -61,9 +62,11 @@ export function TransactionUpdater() {
   const onReceipt = useCallback(
     ({ chainId, hash, receipt }) => {
       dispatch(finalizeTransaction({ params: { chainId, hash, receipt } }))
+
       addToast({ txn: { hash } }, hash, DEFAULT_TXN_DISMISS_MS)
+      removeToast(`${hash}-wait`)
     },
-    [dispatch, addToast]
+    [dispatch, removeToast, addToast]
   )
 
   const getReceipt = useCallback(

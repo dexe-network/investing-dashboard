@@ -2,15 +2,17 @@ import { Flex } from "theme"
 import { Container, Body, Content, Icon, Close } from "./styled"
 import IconButton from "components/IconButton"
 
+import { ToastType } from "./types"
+
 import close from "assets/icons/close-gray.svg"
 import success from "assets/icons/alert-check.svg"
 import waiting from "assets/icons/alert-clock.svg"
 import warning from "assets/icons/alert-warning.svg"
 
 const iconMapper = {
-  info: <Icon src={waiting} />,
-  success: <Icon src={success} />,
-  warning: <Icon src={warning} />,
+  [ToastType.Waiting]: <Icon src={waiting} />,
+  [ToastType.Success]: <Icon src={success} />,
+  [ToastType.Warning]: <Icon src={warning} />,
 }
 
 interface IProps {

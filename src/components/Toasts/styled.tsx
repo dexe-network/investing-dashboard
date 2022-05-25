@@ -1,6 +1,8 @@
 import React, { MouseEventHandler } from "react"
 import styled from "styled-components"
 
+import { ToastType } from "./types"
+
 import { GradientBorder, Flex } from "theme"
 import link from "assets/icons/link.svg"
 import linkSuccess from "assets/icons/link-green.svg"
@@ -68,18 +70,17 @@ export const Content = styled.div`
   color: #e4f2ff;
 `
 
-export const TransactionBody = styled(Flex)`
-  margin-bottom: 10px;
-`
+export const TransactionBody = styled(Flex)``
 
-export const TransactionLinkContainer = styled(Flex)<{ type?: string }>`
+export const TransactionLinkContainer = styled(Flex)<{ type?: ToastType }>`
+  margin-top: 10px;
   font-family: "Gilroy";
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
   line-height: 12px;
   letter-spacing: 0.03em;
-  color: ${({ type }) => (type === "success" ? "#9AE2CB" : "#e4f2ff")};
+  color: ${({ type }) => (type === ToastType.Success ? "#9AE2CB" : "#e4f2ff")};
 `
 export const TransactionLinkIcon = styled.img`
   width: 12px;
@@ -92,7 +93,7 @@ export const TransactionLinkText = styled.span`
 export const TransactionLink: React.FC<{
   text?: string
   hash: string
-  type?: string
+  type?: ToastType
 }> = ({ text = "View on bscscan", hash, type }) => {
   const handleTokenRedirect = (address: string) => {
     window.open(`https://bscscan.com/tx/${address}`, "_blank")
@@ -106,7 +107,9 @@ export const TransactionLink: React.FC<{
   return (
     <TransactionLinkContainer onClick={handleTokenLinkClick} type={type}>
       <TransactionLinkText>{text}</TransactionLinkText>
-      <TransactionLinkIcon src={type === "success" ? linkSuccess : link} />
+      <TransactionLinkIcon
+        src={type === ToastType.Success ? linkSuccess : link}
+      />
     </TransactionLinkContainer>
   )
 }

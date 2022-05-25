@@ -1,14 +1,16 @@
 import { useCallback } from "react"
 
 import { useActiveWeb3React } from "hooks"
-
+import { useAddToast } from "state/application/hooks"
 import { useAppDispatch, useAppSelector } from "state/hooks"
 import { addTransation } from "./actions"
 import { TransactionDetails } from "./types"
+import { DEFAULT_TXN_DISMISS_MS } from "constants/misc"
 
 export function useTransactionAdder() {
   const { chainId, account } = useActiveWeb3React()
   const dispatch = useAppDispatch()
+  const addToast = useAddToast()
 
   return useCallback(
     (response, info) => {
@@ -23,8 +25,9 @@ export function useTransactionAdder() {
       dispatch(
         addTransation({ params: { hash, from: account, info, chainId } })
       )
+      addToast({ wait: true, txn: { hash } }, hash, DEFAULT_TXN_DISMISS_MS)
     },
-    [chainId, account, dispatch]
+    [chainId, account, dispatch, addToast]
   )
 }
 

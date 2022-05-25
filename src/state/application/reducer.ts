@@ -29,11 +29,11 @@ export default createReducer(initialState, (builder) =>
 
       state.toastList = (
         key
-          ? state.toastList.filter((popup) => popup.key !== key)
+          ? state.toastList.filter((toast) => toast.key !== key)
           : state.toastList
       ).concat([
         {
-          key: key || nanoid(),
+          key: content.wait ? `${key}-wait` || nanoid() : key || nanoid(),
           show: true,
           visible: true,
           content,
@@ -44,18 +44,18 @@ export default createReducer(initialState, (builder) =>
     .addCase(hideToast, (state, { payload }) => {
       const { key } = payload.params
 
-      state.toastList.forEach((p) => {
-        if (p.key === key) {
-          p.visible = false
+      state.toastList.forEach((t) => {
+        if (t.key === key) {
+          t.visible = false
         }
       })
     })
     .addCase(removeToast, (state, { payload }) => {
       const { key } = payload.params
 
-      state.toastList.forEach((p) => {
-        if (p.key === key) {
-          p.show = false
+      state.toastList.forEach((t) => {
+        if (t.key === key) {
+          t.show = false
         }
       })
     })

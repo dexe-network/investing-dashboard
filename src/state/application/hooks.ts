@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "state/hooks"
 import { addToast, hideToast, removeToast } from "./actions"
 import { ToastContent } from "./types"
 
-// returns a function that allows adding a popup
+// returns a function that allows adding a toast
 export function useAddToast(): (
   content: ToastContent,
   key?: string,
@@ -29,17 +29,21 @@ export function useAddToast(): (
   )
 }
 
-// returns a function that allows removing a popup via its key
+// returns a function that allows removing a toast via its key
 export function useRemoveToast(): (key: string) => void {
   const dispatch = useAppDispatch()
+
   return useCallback(
     (key: string) => {
-      dispatch(hideToast({ params: { key } }))
+      const hideTimeout = setTimeout(() => {
+        dispatch(hideToast({ params: { key } }))
+        clearTimeout(hideTimeout)
+      }, 500)
 
       const removeTimeout = setTimeout(() => {
         dispatch(removeToast({ params: { key } }))
         clearTimeout(removeTimeout)
-      }, 2000)
+      }, 1500)
     },
     [dispatch]
   )
