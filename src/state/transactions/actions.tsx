@@ -28,11 +28,3 @@ export const checkedTransaction = createAction<{
 export const finalizeTransaction = createAction<{
   params: IFinalizeTransaction
 }>("transation/finalize")
-
-export const readTransation = createAction<{ params: any }>("transation/read")
-export const updateTransation = createAction<{ params: any }>(
-  "transation/update"
-)
-export const deleteTransation = createAction<{ params: any }>(
-  "transation/delete"
-)

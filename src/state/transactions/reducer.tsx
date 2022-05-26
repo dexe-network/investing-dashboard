@@ -5,9 +5,6 @@ import {
   addTransation,
   checkedTransaction,
   finalizeTransaction,
-  readTransation,
-  updateTransation,
-  deleteTransation,
 } from "./actions"
 import { TransactionDetails } from "./types"
 
@@ -66,14 +63,5 @@ export default createReducer(initialState, (builder) =>
 
       tx.receipt = receipt
       tx.confirmedTime = now()
-    })
-    .addCase(readTransation, (state, action) => {
-      //
-    })
-    .addCase(updateTransation, (state, action) => {
-      //
-    })
-    .addCase(deleteTransation, (state, action) => {
-      //
     })
 )
