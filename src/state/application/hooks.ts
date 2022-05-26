@@ -38,12 +38,12 @@ export function useRemoveToast(): (key: string) => void {
       const hideTimeout = setTimeout(() => {
         dispatch(hideToast({ params: { key } }))
         clearTimeout(hideTimeout)
-      }, 500)
+      }, 400)
 
       const removeTimeout = setTimeout(() => {
         dispatch(removeToast({ params: { key } }))
         clearTimeout(removeTimeout)
-      }, 1500)
+      }, 700)
     },
     [dispatch]
   )
