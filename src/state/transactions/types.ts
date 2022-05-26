@@ -1,5 +1,16 @@
 import { TradeType } from "constants/types"
 
+interface SerializableTransactionReceipt {
+  to: string
+  from: string
+  contractAddress: string
+  transactionIndex: number
+  blockHash: string
+  transactionHash: string
+  blockNumber: number
+  status?: number
+}
+
 export enum TransactionType {
   APPROVAL = 0,
   SWAP = 1,
@@ -131,7 +142,7 @@ export type TransactionInfo =
 
 export interface TransactionDetails {
   hash: string
-  receipt?: any // TODO: SerializableTransactionReceipt
+  receipt?: SerializableTransactionReceipt
   lastCheckedBlockNumber?: number
   addedTime: number
   confirmedTime?: number
