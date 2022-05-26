@@ -31,7 +31,6 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
       No need dependency, otherwise React will 
       re-render content of 'wait toast' after transaction is confirmed 
     */
-    // TODO: maybe we can add all transaction info to toast object in store
   }, [])
 
   const body = useMemo(() => {
@@ -51,7 +50,6 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
       No need dependency, otherwise React will 
       re-render content of 'wait toast' after transaction is confirmed 
     */
-    // TODO: maybe we can add all transaction info to toast object in store
   }, [])
 
   if (!tx) return null
