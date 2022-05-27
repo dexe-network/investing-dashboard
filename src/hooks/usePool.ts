@@ -52,6 +52,8 @@ export function usePoolContract(
       const poolInfo = await traderPool?.getPoolInfo()
       setPoolInfo(poolInfo)
       setLeverageInfo(leverage)
+      console.log("leverage", leverage)
+      console.log("poolInfo", poolInfo)
     })()
   }, [traderPool, update])
 

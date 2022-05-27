@@ -36,7 +36,7 @@ const Token: FC<{
         address,
         ethers.utils.parseUnits("1", 18).toHexString()
       )
-      setPrice(baseTokenPrice.amountOut)
+      setPrice(baseTokenPrice[0])
     }
 
     getPrice()

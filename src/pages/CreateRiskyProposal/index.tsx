@@ -209,7 +209,7 @@ const CreateRiskyProposal: FC = () => {
         tokenAddress,
         ethers.utils.parseUnits("1", 18).toHexString()
       )
-      setProposalTokenPrice(baseTokenPrice.amountOut)
+      setProposalTokenPrice(baseTokenPrice[0])
     }
 
     getPrice().catch(console.error)

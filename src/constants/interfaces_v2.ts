@@ -26,6 +26,7 @@ export interface IPoolQuery {
   type: PoolType
   name: string
   ticker: string
+  trader: string
   creationTime: number
   descriptionURL: string
   maxLoss: number
@@ -34,6 +35,7 @@ export interface IPoolQuery {
   averageTrades: number
   investorsCount: number
   averagePositionTime: number
+  admins: string[]
   priceHistory: IPriceHistory[]
 }
 

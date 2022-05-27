@@ -19,11 +19,13 @@ import TransactionError from "modals/TransactionError"
 
 import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolQuery, useTraderPool, usePoolContract } from "hooks/usePool"
+import { ExchangeType } from "constants/interfaces_v2"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
 import { calcSlippage, isAddress, parseTransactionError } from "utils"
+import getReceipt from "utils/getReceipt"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
@@ -37,8 +39,7 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
-import getReceipt from "utils/getReceipt"
-import { ExchangeType } from "constants/interfaces_v2"
+import useTransactionWaiter from "hooks/useTransactionWaiter"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -173,6 +174,7 @@ export const useSwap = (): [
 function Swap() {
   const navigate = useNavigate()
   const { library } = useWeb3React()
+  const wait = useTransactionWaiter(library)
   const [
     { fromAmount, toAmount, direction, slippage },
     { setFromAmount, setToAmount, setDirection, setSlippage },
@@ -194,8 +196,7 @@ function Swap() {
   const { poolType, poolAddress, outputTokenAddress } = useParams()
 
   const traderPool = useTraderPool(poolAddress)
-  const [poolData, updatePoolData] = usePoolQuery(poolAddress)
-  const [, poolInfoData] = usePoolContract(poolAddress)
+  const [, poolInfoData, refresh] = usePoolContract(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
@@ -208,20 +209,20 @@ function Swap() {
 
   // watch and update from/to addresses
   useEffect(() => {
-    if (!outputTokenAddress || !poolData || !poolData.baseToken) return
+    if (!outputTokenAddress || !poolInfoData) return
 
     if (direction === "deposit") {
-      setFromAddress(poolData.baseToken)
+      setFromAddress(poolInfoData.parameters.baseToken)
       setToAddress(outputTokenAddress)
     }
 
     if (direction === "withdraw") {
-      setToAddress(poolData.baseToken)
+      setToAddress(poolInfoData.parameters.baseToken)
       setFromAddress(outputTokenAddress)
     }
 
     handleFromChange(toAmount)
-  }, [direction, outputTokenAddress, poolData])
+  }, [direction, outputTokenAddress, poolInfoData])
 
   // read and update pool base tokens balance
   useEffect(() => {
@@ -289,8 +290,8 @@ function Swap() {
         toAddress,
         amount.toHexString()
       )
-      setTokenCost(tokensCost.maxAmountIn)
-      setUSDCost(usdCost.amountOut)
+      setTokenCost(tokensCost[0])
+      setUSDCost(usdCost[0])
     }
 
     fetchAndUpdatePrices().catch(console.error)
@@ -309,7 +310,7 @@ function Swap() {
     if (direction === "deposit") {
       ;(async () => {
         try {
-          const from = poolData?.baseToken
+          const from = poolInfoData?.parameters.baseToken
           const to = outputTokenAddress
           const amount = BigNumber.from(fromAmount)
 
@@ -322,21 +323,18 @@ function Swap() {
           )
 
           const sl = 1 - parseFloat(slippage) / 100
-          const exchangeWithSlippage = calcSlippage(
-            exchange.minAmountOut,
-            18,
-            sl
-          )
+          const exchangeWithSlippage = calcSlippage(exchange[0], 18, sl)
 
-          const transactionResponse = await traderPool?.exchangeFromExact(
+          const transactionResponse = await traderPool?.exchange(
             from,
             to,
             amount.toHexString(),
             exchangeWithSlippage.toHexString(),
-            []
+            [],
+            ExchangeType.FROM_EXACT
           )
-          await getReceipt(library, transactionResponse.hash)
-          updatePoolData()
+          await wait(transactionResponse.hash)
+          refresh()
         } catch (error: any) {
           if (!!error && !!error.data && !!error.data.message) {
             setError(error.data.message)
@@ -350,7 +348,7 @@ function Swap() {
       ;(async () => {
         try {
           const from = outputTokenAddress
-          const to = poolData?.baseToken
+          const to = poolInfoData?.parameters.baseToken
           const amount = BigNumber.from(fromAmount)
 
           const exchange = await traderPool?.getExchangeAmount(
@@ -362,21 +360,18 @@ function Swap() {
           )
 
           const sl = 1 - parseFloat(slippage) / 100
-          const exchangeWithSlippage = calcSlippage(
-            exchange.minAmountOut,
-            18,
-            sl
-          )
+          const exchangeWithSlippage = calcSlippage(exchange[0], 18, sl)
 
-          const transactionResponse = await traderPool?.exchangeFromExact(
+          const transactionResponse = await traderPool?.exchange(
             from,
             to,
             amount.toHexString(),
             exchangeWithSlippage.toHexString(),
-            []
+            [],
+            ExchangeType.FROM_EXACT
           )
-          await getReceipt(library, transactionResponse.hash)
-          updatePoolData()
+          await wait(transactionResponse.hash)
+          refresh()
         } catch (error: any) {
           if (!!error && !!error.data && !!error.data.message) {
             setError(error.data.message)
@@ -421,13 +416,13 @@ function Swap() {
       )
       const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
         toAddress,
-        exchange.minAmountOut.toHexString()
+        exchange[0].toHexString()
       )
-      setToAmount(exchange.minAmountOut.toString())
-      setInPrice(fromPrice.amountOut)
-      setOutPrice(toPrice.amountOut)
+      setToAmount(exchange[0].toString())
+      setInPrice(fromPrice[0])
+      setOutPrice(toPrice[0])
 
-      updatePriceImpact(fromPrice.amountOut, toPrice.amountOut)
+      updatePriceImpact(fromPrice[0], toPrice[0])
     }
 
     if (!isToAddressTokenValid) return
@@ -455,13 +450,13 @@ function Swap() {
       )
       const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
         fromAddress,
-        exchange.maxAmountIn
+        exchange[0]
       )
-      setFromAmount(exchange.maxAmountIn.toString())
-      setInPrice(fromPrice.amountOut)
-      setOutPrice(toPrice.amountOut)
+      setFromAmount(exchange[0].toString())
+      setInPrice(fromPrice[0])
+      setOutPrice(toPrice[0])
 
-      updatePriceImpact(fromPrice.amountOut, toPrice.amountOut)
+      updatePriceImpact(fromPrice[0], toPrice[0])
     }
 
     if (!isToAddressTokenValid) return
@@ -583,7 +578,7 @@ function Swap() {
 
   return (
     <>
-      <Header>{poolData?.name}</Header>
+      <Header>{poolInfoData?.name}</Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

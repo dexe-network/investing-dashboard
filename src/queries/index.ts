@@ -43,6 +43,7 @@ const POOL = `
   name
   type
   ticker
+  trader
   creationTime
   descriptionURL
   maxLoss
@@ -51,6 +52,7 @@ const POOL = `
   averageTrades
   averagePositionTime
   investorsCount
+  admins
   ${PRICE_HISTORY_LAST}
 `
 
