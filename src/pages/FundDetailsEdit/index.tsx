@@ -44,6 +44,7 @@ import { TraderPool } from "abi"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
+import { UpdateListType } from "constants/types"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -176,14 +177,26 @@ const FundDetailsEdit: FC = () => {
   const handleManagersRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersRemoved, false)
 
+    addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_MANAGERS,
+      editType: UpdateListType.REMOVE,
+      poolId: poolAddress,
+    })
+
     return await receipt.wait()
-  }, [managersRemoved, traderPool])
+  }, [managersRemoved, traderPool, addTransaction, poolAddress])
 
   const handleManagersAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersAdded, true)
 
+    addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_MANAGERS,
+      editType: UpdateListType.ADD,
+      poolId: poolAddress,
+    })
+
     return await receipt.wait()
-  }, [managersAdded, traderPool])
+  }, [managersAdded, traderPool, addTransaction, poolAddress])
 
   const handleInvestorsRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -191,8 +204,14 @@ const FundDetailsEdit: FC = () => {
       false
     )
 
+    addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_INVESTORS,
+      editType: UpdateListType.REMOVE,
+      poolId: poolAddress,
+    })
+
     return await receipt.wait()
-  }, [investorsRemoved, traderPool])
+  }, [investorsRemoved, traderPool, addTransaction, poolAddress])
 
   const handleInvestorsAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -200,8 +219,14 @@ const FundDetailsEdit: FC = () => {
       true
     )
 
+    addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_INVESTORS,
+      editType: UpdateListType.ADD,
+      poolId: poolAddress,
+    })
+
     return await receipt.wait()
-  }, [investorsAdded, traderPool])
+  }, [investorsAdded, traderPool, addTransaction, poolAddress])
 
   const handleSubmit = async () => {
     if (stepsFormating) return

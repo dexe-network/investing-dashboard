@@ -10,6 +10,8 @@ import {
   WithdrawLiquidityTransactionInfo,
   FundCreateTransactionInfo,
   FundEditTransactionInfo,
+  FundUpdateInvestorsTransactionInfo,
+  FundUpdateManagersTransactionInfo,
   CreateRiskyProposalTransactionInfo,
   EditRiskyProposalTransactionInfo,
   CreateInvestProposalTransactionInfo,
@@ -18,9 +20,8 @@ import {
   UnstakeInsuranceTransactionInfo,
   TransactionInfo,
 } from "state/transactions/types"
-import { TradeType } from "constants/types"
+import { TradeType, UpdateListType } from "constants/types"
 
-import { Container } from "./styled"
 import FormattedCurrencyAmount from "./FormattedCurrencyAmount"
 
 import { selectWhitelistItem } from "state/pricefeed/selectors"
@@ -133,6 +134,20 @@ const FundEditSummary: React.FC<{ info: FundEditTransactionInfo }> = ({
   )
 }
 
+const FundUpdateUnvestorsSummary: React.FC<{
+  info: FundUpdateInvestorsTransactionInfo
+}> = ({ info }) => {
+  const action = info.editType === UpdateListType.ADD ? "add" : "remove"
+  return <>Successlully {action} investors</>
+}
+
+const FundUpdateManagersSummary: React.FC<{
+  info: FundUpdateManagersTransactionInfo
+}> = ({ info }) => {
+  const action = info.editType === UpdateListType.ADD ? "add" : "remove"
+  return <>Successlully {action} managers</>
+}
+
 const CredentialsUpdateSummary: React.FC = () => {
   return <>Successfully update Credentials</>
 }
@@ -191,6 +206,10 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <FundCreateSummary info={info} />
     case TransactionType.FUND_EDIT:
       return <FundEditSummary info={info} />
+    case TransactionType.FUND_UPDATE_INVESTORS:
+      return <FundUpdateUnvestorsSummary info={info} />
+    case TransactionType.FUND_UPDATE_MANAGERS:
+      return <FundUpdateManagersSummary info={info} />
     case TransactionType.UPDATE_USER_CREDENTIALS:
       return <CredentialsUpdateSummary />
     case TransactionType.CREATE_RISKY_PROPOSAL:
@@ -207,7 +226,7 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <UnstakeInsuranceSummary info={info} />
 
     default:
-      return <Container>Default</Container>
+      return null
   }
 }
 
