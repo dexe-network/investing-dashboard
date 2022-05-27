@@ -31,6 +31,9 @@ import { TraderPool, PoolFactory } from "abi"
 import { addFundMetadata } from "utils/ipfs"
 import { bigify } from "utils"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 import ManagersIcon from "assets/icons/Managers"
 import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
@@ -84,6 +87,8 @@ const CreateFund: FC = () => {
 
   const navigate = useNavigate()
   const { account } = useWeb3React()
+
+  const addTransaction = useTransactionAdder()
 
   const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
   const [isMinimalInvest, setMinimalInvest] = useState(minimalInvestment !== "")
@@ -160,6 +165,12 @@ const CreateFund: FC = () => {
       poolParameters
     )
 
+    addTransaction(receipt, {
+      type: TransactionType.FUND_CREATE,
+      baseCurrencyId: baseToken.address,
+      fundName,
+    })
+
     return await receipt.wait()
   }, [
     account,
@@ -177,6 +188,7 @@ const CreateFund: FC = () => {
     strategy,
     totalLPEmission,
     traderPoolFactory,
+    addTransaction,
   ])
 
   const handleManagersAdd = useCallback(async () => {

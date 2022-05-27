@@ -30,6 +30,9 @@ import {
   parseTransactionError,
 } from "utils"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 import close from "assets/icons/close-big.svg"
 import calendar from "assets/icons/calendar.svg"
 
@@ -114,6 +117,8 @@ const CreateInvestProposal: FC = () => {
 
   const investTraderPool = useContract(poolAddress, InvestTraderPool)
 
+  const addTransaction = useTransactionAdder()
+
   useEffect(() => {
     if (!traderPool || !account) return
 
@@ -144,15 +149,23 @@ const CreateInvestProposal: FC = () => {
         account
       )
 
+      const investLPLimitHex = ethers.utils
+        .parseUnits(investLPLimit, 18)
+        .toHexString()
+
       const createReceipt = await investTraderPool.createProposal(
         ipfsReceipt.path,
         amount,
-        [
-          timestampLimit,
-          ethers.utils.parseUnits(investLPLimit, 18).toHexString(),
-        ],
+        [timestampLimit, investLPLimitHex],
         divests.receptions.receivedAmounts
       )
+
+      addTransaction(createReceipt, {
+        type: TransactionType.CREATE_INVEST_PROPOSAL,
+        amount,
+        ipfsPath: ipfsReceipt.path,
+        investLpAmountRaw: investLPLimitHex,
+      })
 
       await getReceipt(library, createReceipt.hash)
       setSubmiting(false)
