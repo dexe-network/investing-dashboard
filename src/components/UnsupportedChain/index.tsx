@@ -3,9 +3,9 @@
 import { useEffect, useCallback } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import IconButton from "components/IconButton"
-import { BigNumber, ethers } from "ethers"
+import { BigNumber } from "ethers"
 
-import { connectorsByName, injected, RPC_URLS } from "constants/connectors"
+import { connectorsByName, RPC_URLS } from "constants/connectors"
 
 import warn from "assets/icons/warning.svg"
 
