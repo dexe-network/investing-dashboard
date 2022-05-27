@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import { useEffect, useCallback } from "react"
+import { useCallback } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import IconButton from "components/IconButton"
 import { BigNumber } from "ethers"
@@ -12,7 +12,7 @@ import warn from "assets/icons/warning.svg"
 import { Container, TextContainer, Button } from "./styled"
 
 const UnsupportedChain: React.FC = () => {
-  const { error, library } = useWeb3React()
+  const { error } = useWeb3React()
   const isUnsupportedChainIdError = error instanceof UnsupportedChainIdError
 
   const changeNetwork = useCallback(async () => {
@@ -53,12 +53,6 @@ const UnsupportedChain: React.FC = () => {
       // handle other "switch" errors
     }
   }, [])
-
-  useEffect(() => {
-    if (!isUnsupportedChainIdError) return
-
-    changeNetwork().catch(console.error)
-  }, [library, isUnsupportedChainIdError, changeNetwork])
 
   return isUnsupportedChainIdError ? (
     <Container>
