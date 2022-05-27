@@ -11,7 +11,7 @@ export const Container = styled(Flex)`
   height: 100vh;
   position: realtive;
   padding: 40px 32px;
-  // background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);
+
   &:before {
     content: "";
     position: absolute;

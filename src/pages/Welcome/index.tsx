@@ -1,12 +1,9 @@
-import axios from "axios"
 import { useState, useEffect, useCallback } from "react"
-import { useNavigate, useLocation, Navigate, Outlet } from "react-router-dom"
-import { Text, To, Flex } from "theme"
+import { useNavigate } from "react-router-dom"
+import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
-import { useSwipeable } from "react-swipeable"
 import { CubeSpinner } from "react-spinners-kit"
 import { useConnectWalletContext } from "context/ConnectWalletContext"
-import { getSignature } from "utils"
 import Button, { SecondaryButton } from "components/Button"
 import ConnectWallet from "modals/ConnectWallet"
 import { getRedirectedPoolAddress } from "utils"
@@ -50,10 +47,6 @@ const Welcome: React.FC = () => {
   const ownedPools = useSelector(selectOwnedPools)
   const redirectPath = getRedirectedPoolAddress(ownedPools)
 
-  const activeProviderName = localStorage.getItem(
-    "dexe.network/investing/web3-auth-method"
-  )
-
   const getTraderPath = useCallback(() => {
     if (!redirectPath) return LoginPathMapper.investor
     return `${LoginPathMapper.trader}/${redirectPath[0]}/${redirectPath[1]}`
@@ -66,9 +59,14 @@ const Welcome: React.FC = () => {
   }, [account, navigate])
 
   useEffect(() => {
-    setTimeout(() => {
+    const loadingTimeout = setTimeout(() => {
       setLoading(false)
+      clearTimeout(loadingTimeout)
     }, 1500)
+
+    return () => {
+      clearTimeout(loadingTimeout)
+    }
   }, [])
 
   return (
