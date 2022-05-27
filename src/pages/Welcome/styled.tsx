@@ -95,15 +95,20 @@ export const SocialIcon = styled.img`
 
 export const Buttons = styled.div`
   display: grid;
-  grid-template-columns: 1fr 0.7fr;
+  grid-template-columns: 180px 119px;
   gap: 12px;
-  width: 100%;
+  width: fit-content;
   justify-content: space-between;
-  margin-top: 48px;
+  align-self: baseline;
+  margin-top: auto;
 `
 
 export const LoginContainer = styled(Flex)`
-  width: 100%;
+  width: fit-content;
+  margin-top: 24px;
+  margin-right: auto;
+  margin-left: 19%;
+  margin-left: 61px;
   justify-content: center;
   font-family: "Gilroy";
   font-style: normal;
@@ -112,7 +117,6 @@ export const LoginContainer = styled(Flex)`
   line-height: 16px;
   text-align: center;
   color: #616d8b;
-  margin-top: 24px;
   z-index: 1;
 `
 
