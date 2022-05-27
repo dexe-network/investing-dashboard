@@ -18,9 +18,13 @@ const pathVariants = {
   },
 }
 
-const CircularProgress = () => {
+interface IProps {
+  className?: string
+}
+
+const CircularProgress = ({ className }: IProps) => {
   return (
-    <Container>
+    <Container className={className}>
       <svg viewBox="0 0 24 24">
         <motion.path
           initial="hidden"

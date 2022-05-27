@@ -41,6 +41,10 @@ import {
 } from "components/Exchange/styled"
 import useTransactionWaiter from "hooks/useTransactionWaiter"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+import { TradeType } from "constants/types"
+
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
@@ -179,6 +183,8 @@ function Swap() {
     { fromAmount, toAmount, direction, slippage },
     { setFromAmount, setToAmount, setDirection, setSlippage },
   ] = useSwap()
+
+  const addTransaction = useTransactionAdder()
 
   const [error, setError] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -333,6 +339,18 @@ function Swap() {
             [],
             ExchangeType.FROM_EXACT
           )
+
+          addTransaction(transactionResponse, {
+            type: TransactionType.SWAP,
+            tradeType: TradeType.EXACT_INPUT,
+            inputCurrencyId: from,
+            inputCurrencyAmountRaw: amount.toHexString(),
+            expectedOutputCurrencyAmountRaw:
+              exchange.minAmountOut.toHexString(),
+            outputCurrencyId: to,
+            minimumOutputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
+          })
+
           await wait(transactionResponse.hash)
           refresh()
         } catch (error: any) {
@@ -370,6 +388,17 @@ function Swap() {
             [],
             ExchangeType.FROM_EXACT
           )
+
+          addTransaction(transactionResponse, {
+            type: TransactionType.SWAP,
+            tradeType: TradeType.EXACT_OUTPUT,
+            inputCurrencyId: from,
+            outputCurrencyAmountRaw: amount.toHexString(),
+            expectedInputCurrencyAmountRaw: exchange.minAmountOut.toHexString(),
+            outputCurrencyId: to,
+            minimumInputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
+          })
+
           await wait(transactionResponse.hash)
           refresh()
         } catch (error: any) {
