@@ -70,7 +70,7 @@ export const Title = styled.div`
   font-size: 42px;
   line-height: 110%;
   color: #c5d1dc;
-  margin-top: 70px;
+  margin-top: 34px;
 `
 
 export const Description = styled.div`
@@ -81,7 +81,7 @@ export const Description = styled.div`
   line-height: 130%;
   letter-spacing: 0.3px;
   color: #c5d1dc;
-  padding: 35px 0;
+  padding: 12px 0 35px;
 `
 
 export const Socials = styled(Flex)`
@@ -93,8 +93,31 @@ export const SocialIcon = styled.img`
   margin-right: 22px;
 `
 
-export const Buttons = styled(Flex)`
+export const Buttons = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 0.7fr;
+  gap: 12px;
   width: 100%;
   justify-content: space-between;
-  margin-top: 70px;
+  margin-top: 48px;
+`
+
+export const LoginContainer = styled(Flex)`
+  width: 100%;
+  justify-content: center;
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+  color: #616d8b;
+  margin-top: 24px;
+  z-index: 1;
+`
+
+export const ArrowOutlineRight = styled.img`
+  width: 4.69px;
+  height: 8px;
+  margin-left: 5.31px;
 `
