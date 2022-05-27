@@ -51,6 +51,10 @@ const POOL = `
   averageTrades
   averagePositionTime
   investorsCount
+  admins
+  privateInvestors {
+    id
+  }
   ${PRICE_HISTORY_LAST}
 `
 

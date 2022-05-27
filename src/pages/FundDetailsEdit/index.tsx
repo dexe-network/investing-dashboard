@@ -1,5 +1,5 @@
 import { FC, useState, useEffect, useMemo, useCallback } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner, PulseSpinner } from "react-spinners-kit"
@@ -48,7 +48,6 @@ const poolsClient = createClient({
 
 const FundDetailsEdit: FC = () => {
   const { poolAddress } = useParams()
-  const navigate = useNavigate()
   const { account } = useWeb3React()
 
   const [poolData] = usePoolQuery(poolAddress)
@@ -355,11 +354,14 @@ const FundDetailsEdit: FC = () => {
         poolInfoData &&
         ethers.utils.formatEther(poolInfoData.parameters.minimalInvestment)
 
+      const investors = poolData?.privateInvestors.map((m) => m.id)
+      const managers = poolData?.admins
+
       setInitial({
         totalLPEmission: totalEmission,
         minimalInvestment: minInvestment,
-        investors: [],
-        managers: [],
+        investors: investors,
+        managers: managers,
       })
     })()
   }, [poolData, poolInfoData, setInitialIpfs, setInitial])

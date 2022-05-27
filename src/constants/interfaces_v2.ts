@@ -9,6 +9,10 @@ export interface User {
   updated_at: number
 }
 
+export interface Investor {
+  id: string
+}
+
 export type PoolType = "ALL_POOL" | "INVEST_POOL" | "BASIC_POOL"
 
 export interface IPriceHistory {
@@ -35,6 +39,8 @@ export interface IPoolQuery {
   investorsCount: number
   averagePositionTime: number
   priceHistory: IPriceHistory[]
+  privateInvestors: Investor[]
+  admins: string[]
 }
 
 export interface IPriceHistoryQuery {
