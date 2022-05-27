@@ -14,6 +14,8 @@ import logo from "assets/icons/logo-big.svg"
 import facebook from "assets/icons/facebook.svg"
 import twitter from "assets/icons/twitter.svg"
 import telegram from "assets/icons/telegram.svg"
+import linkedin from "assets/icons/linkedin.svg"
+import medium from "assets/icons/medium.svg"
 import arrowOutlineRight from "assets/icons/arrow-outline-right.svg"
 import {
   Container,
@@ -25,6 +27,7 @@ import {
   Title,
   Description,
   Socials,
+  SocialLink,
   SocialIcon,
   LoginContainer,
   ArrowOutlineRight,
@@ -97,9 +100,41 @@ const Welcome: React.FC = () => {
                 crypto platform
               </Description>
               <Socials>
-                <SocialIcon src={facebook} />
-                <SocialIcon src={twitter} />
-                <SocialIcon src={telegram} />
+                <SocialLink
+                  href="https://t.me/Dexe_network"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={telegram} />
+                </SocialLink>
+                <SocialLink
+                  href="https://twitter.com/DexeNetwork"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={twitter} />
+                </SocialLink>
+                <SocialLink
+                  href="https://www.facebook.com/dexe.network/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={facebook} />
+                </SocialLink>
+                <SocialLink
+                  href="https://www.linkedin.com/company/dexe-network/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={linkedin} />
+                </SocialLink>
+                <SocialLink
+                  href="https://dexenetwork.medium.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={medium} />
+                </SocialLink>
               </Socials>
             </Content>
             <Buttons>

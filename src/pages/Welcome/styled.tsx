@@ -81,17 +81,27 @@ export const Description = styled.div`
   line-height: 130%;
   letter-spacing: 0.3px;
   color: #c5d1dc;
-  padding: 12px 0 35px;
+  padding: 12px 0 27px;
 `
 
 export const Socials = styled(Flex)`
   justify-content: flex-start;
   width: 100%;
+  margin-left: -8px;
+  z-index: 1;
 `
 
-export const SocialIcon = styled.img`
-  margin-right: 22px;
+export const SocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  text-decoration: none;
+  margin-right: 11px;
 `
+
+export const SocialIcon = styled.img``
 
 export const Buttons = styled.div`
   display: grid;
