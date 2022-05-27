@@ -12,6 +12,7 @@ import store from "state"
 import App from "pages/App"
 import SideBar from "components/Sidebar"
 import Alert from "components/Alert"
+import ToastContainer from "components/Toasts"
 
 import SideBarContext from "context/SideBarContext"
 import AlertContext from "context/AlertContext"
@@ -23,6 +24,7 @@ import getLibrary from "utils/getLibrary"
 import { ContractsRegistryUpdater } from "state/contracts/updater"
 import { PriceFeedUpdater } from "state/pricefeed/updater"
 import { UserPoolsUpdater } from "state/user/updater"
+import { TransactionUpdater } from "state/transactions/updater"
 import "react-virtualized/styles.css"
 
 const Web3ProviderNetwork = createWeb3ReactRoot("NETWORK")
@@ -49,10 +51,12 @@ const GlobalComponents = () => (
     <ContractsRegistryUpdater />
     <UserPoolsUpdater />
     <PriceFeedUpdater />
+    <TransactionUpdater />
     <Normalize />
     <GlobalStyle />
     <SideBar />
     <Alert />
+    <ToastContainer />
   </>
 )
 
