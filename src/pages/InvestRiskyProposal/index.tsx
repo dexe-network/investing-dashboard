@@ -25,6 +25,9 @@ import close from "assets/icons/close-big.svg"
 
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
+import { useRiskyProposal } from "hooks/useRiskyProposals"
+import { usePoolContract } from "hooks/usePool"
+
 import {
   Container,
   Card,
@@ -32,8 +35,6 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
-import { useRiskyProposal } from "hooks/useRiskyProposals"
-import { usePool } from "state/pools/hooks"
 
 export const useRiskyInvest = (): [
   {
@@ -180,7 +181,7 @@ function InvestRiskyProposal() {
 
   const traderPool = useContract(poolAddress, TraderPool)
   const proposal = useRiskyProposal(poolAddress, index)
-  const [, , , poolInfo] = usePool(poolAddress)
+  const [, poolInfo] = usePoolContract(poolAddress)
   console.log(proposal)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)

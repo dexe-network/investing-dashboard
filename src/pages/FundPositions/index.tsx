@@ -5,11 +5,12 @@ import { createClient, Provider as GraphProvider } from "urql"
 import PositionCard from "components/PositionCard"
 import RiskyCard from "components/RiskyCard"
 
-import { usePool, usePoolPositions } from "state/pools/hooks"
+import { usePoolPositions } from "state/pools/hooks"
 import { useERC20 } from "hooks/useContract"
+import useRiskyProposals from "hooks/useRiskyProposals"
+import { usePoolContract } from "hooks/usePool"
 
 import { Container, List } from "./styled"
-import useRiskyProposals from "hooks/useRiskyProposals"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
@@ -38,7 +39,7 @@ const Open = () => {
 
 const Proposals = () => {
   const { poolAddress } = useParams()
-  const [, , , poolInfo] = usePool(poolAddress)
+  const [, poolInfo] = usePoolContract(poolAddress)
   const navigate = useNavigate()
   const proposals = useRiskyProposals(poolAddress)
 
