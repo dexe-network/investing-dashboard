@@ -1,5 +1,17 @@
+import { useEffect, useState } from "react"
 import { useSideBarContext } from "context/SideBarContext"
 import { createPortal } from "react-dom"
+import { useSelector } from "react-redux"
+import { BigNumber, ethers } from "ethers"
+
+import { PriceFeed } from "abi"
+import {
+  selectPriceFeedAddress,
+  selectDexeAddress,
+} from "state/contracts/selectors"
+import useContract from "hooks/useContract"
+import { normalizeBigNumber } from "utils"
+
 import {
   Container,
   Overlay,
@@ -52,6 +64,25 @@ const Sidebar: React.FC = () => {
   const { toggleSideBar, isSideBarOpen } = useSideBarContext()
   const isOpen = isSideBarOpen ? "visible" : "hidden"
 
+  const priceFeedAddress = useSelector(selectPriceFeedAddress)
+  const dexeAddress = useSelector(selectDexeAddress)
+  const priceFeed = useContract(priceFeedAddress, PriceFeed)
+
+  const [markPriceUSD, setMarkPriceUSD] = useState(BigNumber.from(0))
+
+  useEffect(() => {
+    if (!dexeAddress || !priceFeed) return
+    ;(async () => {
+      const amount = ethers.utils.parseUnits("1", 18)
+
+      const priceUSD = await priceFeed
+        ?.getNormalizedPriceOutUSD(dexeAddress, amount.toHexString())
+        .catch(console.error)
+
+      setMarkPriceUSD(priceUSD?.amountOut.toString())
+    })()
+  }, [dexeAddress, priceFeed])
+
   if (!sidebarRoot) return null
   return createPortal(
     <>
@@ -76,8 +107,8 @@ const Sidebar: React.FC = () => {
           </Close>
         </HeaderBar>
         <MenuList>
-          {list.map(({ label, icon, path }) => (
-            <MenuItem key={path}>
+          {list.map(({ label, icon, path }, index) => (
+            <MenuItem key={path + index}>
               <MenuIcon>{icon}</MenuIcon>
               <MenuText>{label}</MenuText>
             </MenuItem>
@@ -94,7 +125,7 @@ const Sidebar: React.FC = () => {
             <MiniLogoDexe>
               <img src={MiniLogo} alt="dexe-logo" />
             </MiniLogoDexe>
-            <Total>$ 100</Total>
+            <Total>$ {normalizeBigNumber(markPriceUSD, 18, 2)}</Total>
             <BuyText>Buy DEXE</BuyText>
             <ArrowSymbol>
               <img src={Arrow} alt="arrow" />
