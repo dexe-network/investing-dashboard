@@ -29,6 +29,12 @@ export interface RetryOptions {
   maxWait: number
 }
 
+export const DEFAULT_RETRY_OPTIONS: RetryOptions = {
+  n: 10,
+  minWait: 250,
+  maxWait: 1000,
+}
+
 /**
  * Retries the function that returns the promise until the promise successfully resolves up to n retries
  * @param fn function to retry

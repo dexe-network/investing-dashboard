@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers"
+import { BigNumber, ethers, FixedNumber } from "ethers"
 import { formatNumber } from "utils"
 
 export const getPNL = (SP: string) => {
@@ -74,10 +74,10 @@ export const getDividedBalance = (
   decimals: number | undefined = 18,
   percent: string
 ): string => {
-  const balanceDivided = parseFloat(
-    ethers.utils.formatUnits(balance.mul(percent), decimals + 18).toString()
+  const fn = FixedNumber.fromValue(balance, decimals).mulUnsafe(
+    FixedNumber.fromValue(BigNumber.from(percent), 18)
   )
-  return ethers.utils.parseUnits(balanceDivided.toString(), decimals).toString()
+  return BigNumber.from(fn._hex).toString()
 }
 
 export const getLP = (baseTVL: string, supply: string): string => {

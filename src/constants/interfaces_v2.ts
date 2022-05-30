@@ -34,6 +34,7 @@ export interface IPoolQuery {
   type: PoolType
   name: string
   ticker: string
+  trader: string
   creationTime: number
   descriptionURL: string
   maxLoss: number

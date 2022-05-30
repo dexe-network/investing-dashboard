@@ -100,7 +100,7 @@ const PositionCard: React.FC<Props> = ({
         amount
       )
 
-      setMarkPriceUSD(priceUSD.amountOut.toString())
+      setMarkPriceUSD(priceUSD[0].toString())
     }
 
     getMarkPriceUSD().catch(console.error)

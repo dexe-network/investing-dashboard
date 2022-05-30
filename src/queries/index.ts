@@ -43,6 +43,7 @@ const POOL = `
   name
   type
   ticker
+  trader
   creationTime
   descriptionURL
   maxLoss
