@@ -25,6 +25,9 @@ import getReceipt from "utils/getReceipt"
 import { getDividedBalance } from "utils/formulas"
 import { formatBigNumber, getAllowance, parseTransactionError } from "utils"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 import LockedIcon from "assets/icons/LockedIcon"
 
 import { Card, CardHeader, Title } from "components/Exchange/styled"
@@ -190,6 +193,8 @@ function Management() {
   const [fromToken, fromData, fromBalance, refetchBalance] =
     useERC20(dexeAddress)
 
+  const addTransaction = useTransactionAdder()
+
   const fetchAndUpdateAllowance = async () => {
     const allowance = await getAllowance(
       account,
@@ -206,7 +211,7 @@ function Management() {
       insuranceAmount
     )
 
-    setInsuranceAmountUSD(price.amountOut)
+    setInsuranceAmountUSD(price[0])
   }
 
   const fetchInsuranceBalance = async () => {
@@ -235,6 +240,10 @@ function Management() {
     const handleBuy = async () => {
       const amount = BigNumber.from(fromAmount)
       const response = await insurance?.buyInsurance(amount)
+      addTransaction(response, {
+        type: TransactionType.STAKE_INSURANCE,
+        amount: fromAmount,
+      })
       await getReceipt(library, response.hash)
       refetchBalance()
       await fetchInsuranceBalance()
@@ -244,6 +253,10 @@ function Management() {
     const handleSell = async () => {
       const amount = BigNumber.from(toAmount)
       const response = await insurance?.withdraw(amount)
+      addTransaction(response, {
+        type: TransactionType.UNSTAKE_INSURANCE,
+        amount: toAmount,
+      })
       await getReceipt(library, response.hash)
       refetchBalance()
       await fetchInsuranceBalance()
@@ -269,6 +282,12 @@ function Management() {
       const amount = BigNumber.from(fromAmount)
       const approveResponse = await fromToken.approve(insuranceAddress, amount)
       setLoading(false)
+
+      addTransaction(approveResponse, {
+        type: TransactionType.APPROVAL,
+        tokenAddress: dexeAddress,
+        spender: account,
+      })
 
       const receipt = await getReceipt(library, approveResponse.hash)
       if (receipt !== null && receipt.logs.length) {
@@ -297,8 +316,8 @@ function Management() {
         amount
       )
       setToAmount(outAmount)
-      setInPrice(price.amountOut)
-      setOutPrice(price.amountOut.mul(BigNumber.from("10")))
+      setInPrice(price[0])
+      setOutPrice(price[0].mul(BigNumber.from("10")))
     }
 
     fetchAndUpdateTo().catch(console.error)

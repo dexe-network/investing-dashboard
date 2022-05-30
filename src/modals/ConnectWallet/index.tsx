@@ -111,8 +111,8 @@ export default function ConnectWallet({ isOpen, onRequestClose, onConnect }) {
         <Body>
           <PrivacyText>
             By connecting the wallet I accept
-            <LinkText href="#"> Terms of Service </LinkText>and
-            <LinkText href="#"> Privacy Policy </LinkText>
+            <LinkText to="/service-terms"> Terms of Service </LinkText>and
+            <LinkText to="/privacy-policy"> Privacy Policy </LinkText>
             DeXe Network
           </PrivacyText>
 

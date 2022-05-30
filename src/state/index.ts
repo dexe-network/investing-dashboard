@@ -6,6 +6,7 @@ import transactions from "./transactions/reducer"
 import pools from "./pools/reducer"
 import contracts from "./contracts/reducer"
 import pricefeed from "./pricefeed/reducer"
+import application from "./application/reducer"
 
 const PERSISTED_KEYS: string[] = ["user", "transactions", "pools"]
 
@@ -28,6 +29,7 @@ shouldReset()
 const store = configureStore({
   reducer: {
     user,
+    application,
     transactions,
     pools,
     contracts,

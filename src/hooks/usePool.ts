@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Contract } from "@ethersproject/contracts"
 import { IPoolQuery, LeverageInfo, PoolInfo } from "constants/interfaces_v2"
 import useContract from "hooks/useContract"
@@ -41,9 +41,9 @@ export function usePoolContract(
   const [leverageInfo, setLeverageInfo] = useState<LeverageInfo | null>(null)
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
 
-  const fetchUpdate = () => {
+  const fetchUpdate = useCallback(() => {
     setUpdate(!update)
-  }
+  }, [update])
 
   useEffect(() => {
     if (!traderPool) return
