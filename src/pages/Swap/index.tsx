@@ -18,7 +18,8 @@ import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
 
 import useContract, { useERC20 } from "hooks/useContract"
-import { usePoolQuery, useTraderPool, usePoolContract } from "hooks/usePool"
+import { useTraderPool, usePoolContract } from "hooks/usePool"
+import { ExchangeType } from "constants/interfaces_v2"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
@@ -37,8 +38,6 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
-import getReceipt from "utils/getReceipt"
-import { ExchangeType } from "constants/interfaces_v2"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -176,7 +175,6 @@ export const useSwap = (): [
 
 function Swap() {
   const navigate = useNavigate()
-  const { library } = useWeb3React()
   const [
     { fromAmount, toAmount, direction, slippage },
     { setFromAmount, setToAmount, setDirection, setSlippage },
@@ -200,34 +198,244 @@ function Swap() {
   const { poolType, poolAddress, outputTokenAddress } = useParams()
 
   const traderPool = useTraderPool(poolAddress)
-  const [poolData, updatePoolData] = usePoolQuery(poolAddress)
-  const [, poolInfoData] = usePoolContract(poolAddress)
+  const [, poolInfoData, refresh] = usePoolContract(poolAddress)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
-  const [, fromData] = useERC20(fromAddress)
-  const [, toData] = useERC20(toAddress)
+  const [, fromToken] = useERC20(poolInfoData?.parameters.baseToken)
+  const [, toToken] = useERC20(outputTokenAddress)
 
-  const isToAddressTokenValid = isAddress(outputTokenAddress || "")
+  const fromData = direction === "deposit" ? fromToken : toToken
+  const toData = direction === "deposit" ? toToken : fromToken
+
+  const handleProposalRedirect = () => {
+    if (poolType === "INVEST_POOL") {
+      navigate(`/create-invest-proposal/${poolAddress}`)
+    } else {
+      navigate(`/create-risky-proposal/${poolAddress}/0x/1`)
+    }
+  }
+
+  // TODO: check last changed input (from || to)
+  const handleSubmit = async () => {
+    if (direction === "deposit") {
+      ;(async () => {
+        try {
+          const from = poolInfoData?.parameters.baseToken
+          const to = outputTokenAddress
+          const amount = BigNumber.from(fromAmount)
+
+          const exchange = await traderPool?.getExchangeAmount(
+            from,
+            to,
+            amount.toHexString(),
+            [],
+            ExchangeType.FROM_EXACT
+          )
+
+          const sl = 1 - parseFloat(slippage) / 100
+          const exchangeWithSlippage = calcSlippage(exchange[0], 18, sl)
+
+          const transactionResponse = await traderPool?.exchange(
+            from,
+            to,
+            amount.toHexString(),
+            exchangeWithSlippage.toHexString(),
+            [],
+            ExchangeType.FROM_EXACT
+          )
+
+          addTransaction(transactionResponse, {
+            type: TransactionType.SWAP,
+            tradeType: TradeType.EXACT_INPUT,
+            inputCurrencyId: from,
+            inputCurrencyAmountRaw: amount.toHexString(),
+            expectedOutputCurrencyAmountRaw: exchange[0].toHexString(),
+            outputCurrencyId: to,
+            minimumOutputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
+          })
+        } catch (error: any) {
+          if (!!error && !!error.data && !!error.data.message) {
+            setError(error.data.message)
+          } else {
+            const errorMessage = parseTransactionError(error.toString())
+            !!errorMessage && setError(errorMessage)
+          }
+        }
+      })()
+    } else {
+      ;(async () => {
+        try {
+          const from = outputTokenAddress
+          const to = poolInfoData?.parameters.baseToken
+          const amount = BigNumber.from(fromAmount)
+
+          const exchange = await traderPool?.getExchangeAmount(
+            from,
+            to,
+            amount.toHexString(),
+            [],
+            ExchangeType.FROM_EXACT
+          )
+
+          const sl = 1 - parseFloat(slippage) / 100
+          const exchangeWithSlippage = calcSlippage(exchange[0], 18, sl)
+
+          const transactionResponse = await traderPool?.exchange(
+            from,
+            to,
+            amount.toHexString(),
+            exchangeWithSlippage.toHexString(),
+            [],
+            ExchangeType.FROM_EXACT
+          )
+
+          addTransaction(transactionResponse, {
+            type: TransactionType.SWAP,
+            tradeType: TradeType.EXACT_OUTPUT,
+            inputCurrencyId: from,
+            outputCurrencyAmountRaw: amount.toHexString(),
+            expectedInputCurrencyAmountRaw: exchange[0].toHexString(),
+            outputCurrencyId: to,
+            minimumInputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
+          })
+        } catch (error: any) {
+          if (!!error && !!error.data && !!error.data.message) {
+            setError(error.data.message)
+          } else {
+            const errorMessage = parseTransactionError(error.toString())
+            !!errorMessage && setError(errorMessage)
+          }
+        }
+      })()
+    }
+  }
+
+  const updatePriceImpact = (from: BigNumber, to: BigNumber) => {
+    const f = ethers.utils.formatUnits(from, 18)
+    const t = ethers.utils.formatUnits(to, 18)
+
+    const result = getPriceImpact(parseFloat(f), parseFloat(t))
+    setPriceImpact(result.toFixed(4))
+  }
+
+  const handlePercentageChange = (percent) => {
+    const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
+    handleFromChange(from)
+  }
+
+  const handleFromChange = useCallback(
+    (v: string) => {
+      setFromAmount(v)
+
+      const fetchAndUpdateTo = async () => {
+        const amount = BigNumber.from(v)
+
+        const exchange = await traderPool?.getExchangeAmount(
+          fromAddress,
+          toAddress,
+          amount.toHexString(),
+          [],
+          ExchangeType.FROM_EXACT
+        )
+        const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+          fromAddress,
+          amount.toHexString()
+        )
+        const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
+          toAddress,
+          exchange[0].toHexString()
+        )
+        setToAmount(exchange[0].toString())
+        setInPrice(fromPrice[0])
+        setOutPrice(toPrice[0])
+
+        updatePriceImpact(fromPrice[0], toPrice[0])
+      }
+
+      if (!isAddress(fromAddress) || !isAddress(toAddress)) return
+
+      fetchAndUpdateTo().catch(console.error)
+    },
+    [traderPool, priceFeed, fromAddress, toAddress, setFromAmount, setToAmount]
+  )
+
+  const handleToChange = useCallback(
+    (v: string) => {
+      setToAmount(v)
+
+      const fetchAndUpdateFrom = async () => {
+        const amount = BigNumber.from(v)
+
+        const exchange = await traderPool?.getExchangeAmount(
+          fromAddress,
+          toAddress,
+          amount.toHexString(),
+          [],
+          ExchangeType.TO_EXACT
+        )
+
+        const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+          toAddress,
+          amount
+        )
+        const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
+          fromAddress,
+          exchange[0]
+        )
+        setFromAmount(exchange[0].toString())
+        setInPrice(fromPrice[0])
+        setOutPrice(toPrice[0])
+
+        updatePriceImpact(fromPrice[0], toPrice[0])
+      }
+
+      if (!isAddress(fromAddress) || !isAddress(toAddress)) return
+      fetchAndUpdateFrom().catch(console.error)
+    },
+    [traderPool, priceFeed, fromAddress, toAddress, setFromAmount, setToAmount]
+  )
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refresh()
+    }, 20 * 1000)
+
+    return () => clearInterval(interval)
+  }, [refresh])
 
   // watch and update from/to addresses
   useEffect(() => {
-    if (!outputTokenAddress || !poolData || !poolData.baseToken) return
+    if (!outputTokenAddress || !poolInfoData) return
 
-    if (direction === "deposit") {
-      setFromAddress(poolData.baseToken)
+    if (
+      direction === "deposit" &&
+      fromAddress !== poolInfoData.parameters.baseToken
+    ) {
+      setFromAddress(poolInfoData.parameters.baseToken)
       setToAddress(outputTokenAddress)
+      setFromAmount(toAmount)
+      setToAmount(fromAmount)
     }
 
-    if (direction === "withdraw") {
-      setToAddress(poolData.baseToken)
+    if (direction === "withdraw" && fromAddress !== outputTokenAddress) {
+      setToAddress(poolInfoData.parameters.baseToken)
       setFromAddress(outputTokenAddress)
+      setFromAmount(toAmount)
+      setToAmount(fromAmount)
     }
-
-    handleFromChange(toAmount)
-  }, [direction, outputTokenAddress, poolData])
+  }, [
+    direction,
+    outputTokenAddress,
+    poolInfoData,
+    fromAddress,
+    fromAmount,
+    toAmount,
+    setFromAmount,
+    setToAmount,
+  ])
 
   // read and update pool base tokens balance
   useEffect(() => {
@@ -295,208 +503,13 @@ function Swap() {
         toAddress,
         amount.toHexString()
       )
-      setTokenCost(tokensCost.maxAmountIn)
-      setUSDCost(usdCost.amountOut)
+      setTokenCost(tokensCost[0])
+      setUSDCost(usdCost[0])
     }
 
+    if (!isAddress(fromAddress) || !isAddress(toAddress)) return
     fetchAndUpdatePrices().catch(console.error)
   }, [traderPool, priceFeed, fromAddress, toAddress])
-
-  const handleProposalRedirect = () => {
-    if (poolType === "INVEST_POOL") {
-      navigate(`/create-invest-proposal/${poolAddress}`)
-    } else {
-      navigate(`/create-risky-proposal/${poolAddress}/0x/1`)
-    }
-  }
-
-  // TODO: check last changed input (from || to)
-  const handleSubmit = async () => {
-    if (direction === "deposit") {
-      ;(async () => {
-        try {
-          const from = poolData?.baseToken
-          const to = outputTokenAddress
-          const amount = BigNumber.from(fromAmount)
-
-          const exchange = await traderPool?.getExchangeAmount(
-            from,
-            to,
-            amount.toHexString(),
-            [],
-            ExchangeType.FROM_EXACT
-          )
-
-          const sl = 1 - parseFloat(slippage) / 100
-          const exchangeWithSlippage = calcSlippage(
-            exchange.minAmountOut,
-            18,
-            sl
-          )
-
-          const transactionResponse = await traderPool?.exchangeFromExact(
-            from,
-            to,
-            amount.toHexString(),
-            exchangeWithSlippage.toHexString(),
-            []
-          )
-
-          addTransaction(transactionResponse, {
-            type: TransactionType.SWAP,
-            tradeType: TradeType.EXACT_INPUT,
-            inputCurrencyId: from,
-            inputCurrencyAmountRaw: amount.toHexString(),
-            expectedOutputCurrencyAmountRaw:
-              exchange.minAmountOut.toHexString(),
-            outputCurrencyId: to,
-            minimumOutputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
-          })
-
-          await getReceipt(library, transactionResponse.hash)
-
-          updatePoolData()
-        } catch (error: any) {
-          if (!!error && !!error.data && !!error.data.message) {
-            setError(error.data.message)
-          } else {
-            const errorMessage = parseTransactionError(error.toString())
-            !!errorMessage && setError(errorMessage)
-          }
-        }
-      })()
-    } else {
-      ;(async () => {
-        try {
-          const from = outputTokenAddress
-          const to = poolData?.baseToken
-          const amount = BigNumber.from(fromAmount)
-
-          const exchange = await traderPool?.getExchangeAmount(
-            from,
-            to,
-            amount.toHexString(),
-            [],
-            ExchangeType.FROM_EXACT
-          )
-
-          const sl = 1 - parseFloat(slippage) / 100
-          const exchangeWithSlippage = calcSlippage(
-            exchange.minAmountOut,
-            18,
-            sl
-          )
-
-          const transactionResponse = await traderPool?.exchangeFromExact(
-            from,
-            to,
-            amount.toHexString(),
-            exchangeWithSlippage.toHexString(),
-            []
-          )
-
-          addTransaction(transactionResponse, {
-            type: TransactionType.SWAP,
-            tradeType: TradeType.EXACT_OUTPUT,
-            inputCurrencyId: from,
-            outputCurrencyAmountRaw: amount.toHexString(),
-            expectedInputCurrencyAmountRaw: exchange.minAmountOut.toHexString(),
-            outputCurrencyId: to,
-            minimumInputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
-          })
-
-          await getReceipt(library, transactionResponse.hash)
-          updatePoolData()
-        } catch (error: any) {
-          if (!!error && !!error.data && !!error.data.message) {
-            setError(error.data.message)
-          } else {
-            const errorMessage = parseTransactionError(error.toString())
-            !!errorMessage && setError(errorMessage)
-          }
-        }
-      })()
-    }
-  }
-
-  const updatePriceImpact = (from: BigNumber, to: BigNumber) => {
-    const f = ethers.utils.formatUnits(from, 18)
-    const t = ethers.utils.formatUnits(to, 18)
-
-    const result = getPriceImpact(parseFloat(f), parseFloat(t))
-    setPriceImpact(result.toFixed(4))
-  }
-
-  const handlePercentageChange = (percent) => {
-    const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
-    handleFromChange(from)
-  }
-
-  const handleFromChange = (v: string) => {
-    setFromAmount(v)
-
-    const fetchAndUpdateTo = async () => {
-      const amount = BigNumber.from(v)
-
-      const exchange = await traderPool?.getExchangeAmount(
-        fromAddress,
-        toAddress,
-        amount.toHexString(),
-        [],
-        ExchangeType.FROM_EXACT
-      )
-      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
-        fromAddress,
-        amount.toHexString()
-      )
-      const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
-        toAddress,
-        exchange.minAmountOut.toHexString()
-      )
-      setToAmount(exchange.minAmountOut.toString())
-      setInPrice(fromPrice.amountOut)
-      setOutPrice(toPrice.amountOut)
-
-      updatePriceImpact(fromPrice.amountOut, toPrice.amountOut)
-    }
-
-    if (!isToAddressTokenValid) return
-
-    fetchAndUpdateTo().catch(console.error)
-  }
-
-  const handleToChange = (v: string) => {
-    setToAmount(v)
-
-    const fetchAndUpdateFrom = async () => {
-      const amount = BigNumber.from(v)
-
-      const exchange = await traderPool?.getExchangeAmount(
-        fromAddress,
-        toAddress,
-        amount.toHexString(),
-        [],
-        ExchangeType.TO_EXACT
-      )
-
-      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
-        toAddress,
-        amount
-      )
-      const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
-        fromAddress,
-        exchange.maxAmountIn
-      )
-      setFromAmount(exchange.maxAmountIn.toString())
-      setInPrice(fromPrice.amountOut)
-      setOutPrice(toPrice.amountOut)
-
-      updatePriceImpact(fromPrice.amountOut, toPrice.amountOut)
-    }
-
-    if (!isToAddressTokenValid) return
-    fetchAndUpdateFrom().catch(console.error)
-  }
 
   const getButton = () => {
     if (fromAmount === "0" || toAmount === "0") {
@@ -613,7 +626,7 @@ function Swap() {
 
   return (
     <>
-      <Header>{poolData?.name}</Header>
+      <Header>{poolInfoData?.name}</Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
