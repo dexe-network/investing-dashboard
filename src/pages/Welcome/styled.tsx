@@ -11,7 +11,7 @@ export const Container = styled(Flex)`
   height: 100vh;
   position: realtive;
   padding: 40px 32px;
-  // background: linear-gradient(8.35deg, #171b1f 0.79%, #1e222d 109.7%);
+
   &:before {
     content: "";
     position: absolute;
@@ -70,7 +70,7 @@ export const Title = styled.div`
   font-size: 42px;
   line-height: 110%;
   color: #c5d1dc;
-  margin-top: 70px;
+  margin-top: 34px;
 `
 
 export const Description = styled.div`
@@ -81,20 +81,57 @@ export const Description = styled.div`
   line-height: 130%;
   letter-spacing: 0.3px;
   color: #c5d1dc;
-  padding: 35px 0;
+  padding: 12px 0 27px;
 `
 
 export const Socials = styled(Flex)`
   justify-content: flex-start;
   width: 100%;
+  margin-left: -8px;
+  z-index: 1;
 `
 
-export const SocialIcon = styled.img`
-  margin-right: 22px;
+export const SocialLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  text-decoration: none;
+  margin-right: 11px;
 `
 
-export const Buttons = styled(Flex)`
-  width: 100%;
+export const SocialIcon = styled.img``
+
+export const Buttons = styled.div`
+  display: grid;
+  grid-template-columns: 180px 119px;
+  gap: 12px;
+  width: fit-content;
   justify-content: space-between;
-  margin-top: 70px;
+  align-self: baseline;
+  margin-top: auto;
+`
+
+export const LoginContainer = styled(Flex)`
+  width: fit-content;
+  margin-top: 24px;
+  margin-right: auto;
+  margin-left: 19%;
+  margin-left: 61px;
+  justify-content: center;
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+  color: #616d8b;
+  z-index: 1;
+`
+
+export const ArrowOutlineRight = styled.img`
+  width: 4.69px;
+  height: 8px;
+  margin-left: 5.31px;
 `

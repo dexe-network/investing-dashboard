@@ -1,18 +1,22 @@
-import axios from "axios"
-import { useState, useEffect } from "react"
-import { useNavigate, useLocation, Navigate, Outlet } from "react-router-dom"
-import { Text, To, Flex } from "theme"
+import { useState, useEffect, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
+import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
-import { useSwipeable } from "react-swipeable"
+import { CubeSpinner } from "react-spinners-kit"
 import { useConnectWalletContext } from "context/ConnectWalletContext"
-import { getSignature } from "utils"
 import Button, { SecondaryButton } from "components/Button"
 import ConnectWallet from "modals/ConnectWallet"
-import { CubeSpinner } from "react-spinners-kit"
+import { getRedirectedPoolAddress } from "utils"
+import { useSelector } from "react-redux"
+import { selectOwnedPools } from "state/user/selectors"
+
 import logo from "assets/icons/logo-big.svg"
 import facebook from "assets/icons/facebook.svg"
 import twitter from "assets/icons/twitter.svg"
 import telegram from "assets/icons/telegram.svg"
+import linkedin from "assets/icons/linkedin.svg"
+import medium from "assets/icons/medium.svg"
+import arrowOutlineRight from "assets/icons/arrow-outline-right.svg"
 import {
   Container,
   Center,
@@ -23,18 +27,33 @@ import {
   Title,
   Description,
   Socials,
+  SocialLink,
   SocialIcon,
+  LoginContainer,
+  ArrowOutlineRight,
 } from "./styled"
+
+enum LoginPathMapper {
+  trader = "/me/trader/profile",
+  investor = "/me/investor",
+  wallet = "/wallet",
+}
 
 const Welcome: React.FC = () => {
   const [isLoading, setLoading] = useState(true)
+  const [loginPath, setLoginPath] = useState<LoginPathMapper | string | null>(
+    null
+  )
   const { toggleConnectWallet, isWalletOpen } = useConnectWalletContext()
   const navigate = useNavigate()
   const { account } = useWeb3React()
+  const ownedPools = useSelector(selectOwnedPools)
+  const redirectPath = getRedirectedPoolAddress(ownedPools)
 
-  const activeProviderName = localStorage.getItem(
-    "dexe.network/investing/web3-auth-method"
-  )
+  const getTraderPath = useCallback(() => {
+    if (!redirectPath) return LoginPathMapper.investor
+    return `${LoginPathMapper.trader}/${redirectPath[0]}/${redirectPath[1]}`
+  }, [redirectPath])
 
   useEffect(() => {
     if (!account) return
@@ -43,9 +62,14 @@ const Welcome: React.FC = () => {
   }, [account, navigate])
 
   useEffect(() => {
-    setTimeout(() => {
+    const loadingTimeout = setTimeout(() => {
       setLoading(false)
+      clearTimeout(loadingTimeout)
     }, 1500)
+
+    return () => {
+      clearTimeout(loadingTimeout)
+    }
   }, [])
 
   return (
@@ -76,34 +100,88 @@ const Welcome: React.FC = () => {
                 crypto platform
               </Description>
               <Socials>
-                <SocialIcon src={facebook} />
-                <SocialIcon src={twitter} />
-                <SocialIcon src={telegram} />
+                <SocialLink
+                  href="https://t.me/Dexe_network"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={telegram} />
+                </SocialLink>
+                <SocialLink
+                  href="https://twitter.com/DexeNetwork"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={twitter} />
+                </SocialLink>
+                <SocialLink
+                  href="https://www.facebook.com/dexe.network/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={facebook} />
+                </SocialLink>
+                <SocialLink
+                  href="https://www.linkedin.com/company/dexe-network/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={linkedin} />
+                </SocialLink>
+                <SocialLink
+                  href="https://dexenetwork.medium.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <SocialIcon src={medium} />
+                </SocialLink>
               </Socials>
             </Content>
             <Buttons>
               <Button
-                size="large"
+                full
+                size="big"
                 m="0"
-                onClick={() => toggleConnectWallet(true)}
+                onClick={() => {
+                  toggleConnectWallet(true)
+                  setLoginPath(getTraderPath())
+                }}
               >
                 Become a trader
               </Button>
               <SecondaryButton
-                size="large"
+                full
+                size="big"
                 m="0"
-                onClick={() => toggleConnectWallet(true)}
+                onClick={() => {
+                  toggleConnectWallet(true)
+                  setLoginPath(LoginPathMapper.investor)
+                }}
               >
                 Investing
               </SecondaryButton>
             </Buttons>
+            <LoginContainer
+              onClick={() => {
+                toggleConnectWallet(true)
+                setLoginPath(LoginPathMapper.wallet)
+              }}
+            >
+              <Flex>
+                I already have account{" "}
+                <ArrowOutlineRight src={arrowOutlineRight} />
+              </Flex>
+            </LoginContainer>
           </>
         )}
       </Container>
       <ConnectWallet
         isOpen={isWalletOpen}
-        onRequestClose={() => toggleConnectWallet(false)}
-        onConnect={() => navigate("/", { replace: true })}
+        onRequestClose={() => {
+          toggleConnectWallet(false)
+          setLoginPath(null)
+        }}
+        onConnect={() => navigate(loginPath ?? "/", { replace: true })}
       />
     </>
   )
