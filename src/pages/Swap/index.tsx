@@ -18,14 +18,13 @@ import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
 
 import useContract, { useERC20 } from "hooks/useContract"
-import { usePoolQuery, useTraderPool, usePoolContract } from "hooks/usePool"
+import { useTraderPool, usePoolContract } from "hooks/usePool"
 import { ExchangeType } from "constants/interfaces_v2"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { PriceFeed } from "abi"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
 import { calcSlippage, isAddress, parseTransactionError } from "utils"
-import getReceipt from "utils/getReceipt"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
@@ -39,7 +38,6 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
-import useTransactionWaiter from "hooks/useTransactionWaiter"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -177,8 +175,6 @@ export const useSwap = (): [
 
 function Swap() {
   const navigate = useNavigate()
-  const { library } = useWeb3React()
-  const wait = useTransactionWaiter(library)
   const [
     { fromAmount, toAmount, direction, slippage },
     { setFromAmount, setToAmount, setDirection, setSlippage },
@@ -208,8 +204,11 @@ function Swap() {
 
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
-  const [, fromData] = useERC20(fromAddress)
-  const [, toData] = useERC20(toAddress)
+  const [, fromToken] = useERC20(poolInfoData?.parameters.baseToken)
+  const [, toToken] = useERC20(outputTokenAddress)
+
+  const fromData = direction === "deposit" ? fromToken : toToken
+  const toData = direction === "deposit" ? toToken : fromToken
 
   const handleProposalRedirect = () => {
     if (poolType === "INVEST_POOL") {
@@ -248,14 +247,12 @@ function Swap() {
             ExchangeType.FROM_EXACT
           )
 
-          console.log(transactionResponse)
           addTransaction(transactionResponse, {
             type: TransactionType.SWAP,
             tradeType: TradeType.EXACT_INPUT,
             inputCurrencyId: from,
             inputCurrencyAmountRaw: amount.toHexString(),
-            expectedOutputCurrencyAmountRaw:
-              exchange.minAmountOut.toHexString(),
+            expectedOutputCurrencyAmountRaw: exchange[0].toHexString(),
             outputCurrencyId: to,
             minimumOutputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
           })
@@ -295,13 +292,12 @@ function Swap() {
             ExchangeType.FROM_EXACT
           )
 
-          console.log(transactionResponse)
           addTransaction(transactionResponse, {
             type: TransactionType.SWAP,
             tradeType: TradeType.EXACT_OUTPUT,
             inputCurrencyId: from,
             outputCurrencyAmountRaw: amount.toHexString(),
-            expectedInputCurrencyAmountRaw: exchange.minAmountOut.toHexString(),
+            expectedInputCurrencyAmountRaw: exchange[0].toHexString(),
             outputCurrencyId: to,
             minimumInputCurrencyAmountRaw: exchangeWithSlippage.toHexString(),
           })
@@ -420,13 +416,15 @@ function Swap() {
     ) {
       setFromAddress(poolInfoData.parameters.baseToken)
       setToAddress(outputTokenAddress)
-      handleFromChange(toAmount)
+      setFromAmount(toAmount)
+      setToAmount(fromAmount)
     }
 
     if (direction === "withdraw" && fromAddress !== outputTokenAddress) {
       setToAddress(poolInfoData.parameters.baseToken)
       setFromAddress(outputTokenAddress)
-      handleToChange(fromAmount)
+      setFromAmount(toAmount)
+      setToAmount(fromAmount)
     }
   }, [
     direction,
@@ -435,8 +433,8 @@ function Swap() {
     fromAddress,
     fromAmount,
     toAmount,
-    handleFromChange,
-    handleToChange,
+    setFromAmount,
+    setToAmount,
   ])
 
   // read and update pool base tokens balance
