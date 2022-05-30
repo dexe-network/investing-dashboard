@@ -12,7 +12,7 @@ import {
 } from "react-router-dom"
 import { useSelector } from "react-redux"
 import { useWeb3React } from "@web3-react/core"
-import { PriceFeed, TraderPoolRiskyProposal, BasicTraderPool } from "abi"
+import { TraderPoolRiskyProposal, BasicTraderPool } from "abi"
 import { createClient, Provider as GraphProvider } from "urql"
 
 import Header from "components/Header/Layout"
@@ -30,9 +30,9 @@ import TransactionError from "modals/TransactionError"
 
 import { usePoolQuery, useTraderPool } from "hooks/usePool"
 import { Token } from "constants/interfaces"
-import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { selectWhitelist } from "state/pricefeed/selectors"
 import useContract, { useERC20 } from "hooks/useContract"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 
 import {
   expandTimestamp,
@@ -148,25 +148,22 @@ const CreateRiskyProposal: FC = () => {
   const [riskyProposalAddress, setRiskyProposalAddress] = useState("")
   const [isChecked, setChecked] = useState(false)
   const [isDateOpen, setDateOpen] = useState(false)
-  const [proposalTokenPrice, setProposalTokenPrice] = useState<
-    BigNumber | undefined
-  >()
   const [baseTokenPrice, setBaseTokenPrice] = useState<BigNumber | undefined>()
   const [lpAvailable, setLpAvailable] = useState<BigNumber | undefined>()
+
+  const proposalTokenPrice = useTokenPriceOutUSD({ tokenAddress: tokenAddress })
 
   const { account, library } = useWeb3React()
   const [, tokenData] = useERC20(tokenAddress)
   const navigate = useNavigate()
 
   const whitelisted = useSelector(selectWhitelist)
-  const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
   const traderPool = useTraderPool(poolAddress)
   const [poolQuery] = usePoolQuery(poolAddress)
 
   const basicTraderPool = useContract(poolAddress, BasicTraderPool)
   const [, baseTokenData] = useERC20(poolQuery?.baseToken)
-  const priceFeed = useContract(priceFeedAddress, PriceFeed)
   const riskyProposal = useContract(
     riskyProposalAddress,
     TraderPoolRiskyProposal
@@ -199,21 +196,6 @@ const CreateRiskyProposal: FC = () => {
 
     getProposalPoolAddress().catch(console.error)
   }, [basicTraderPool])
-
-  // get token price
-  useEffect(() => {
-    if (!priceFeed || !tokenAddress || tokenAddress.length !== 42) return
-
-    const getPrice = async () => {
-      const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
-        tokenAddress,
-        ethers.utils.parseUnits("1", 18).toHexString()
-      )
-      setProposalTokenPrice(baseTokenPrice.amountOut)
-    }
-
-    getPrice().catch(console.error)
-  }, [priceFeed, tokenAddress])
 
   useEffect(() => {
     if (!traderPool || !account) return

@@ -7,6 +7,7 @@ import { BigNumber, ethers } from "ethers"
 import TokenIcon from "components/TokenIcon"
 import IpfsIcon from "components/IpfsIcon"
 
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { IPosition } from "constants/interfaces_v2"
@@ -47,7 +48,10 @@ const PositionCard: React.FC<Props> = ({
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
-  const [markPriceUSD, setMarkPriceUSD] = useState(BigNumber.from(0))
+
+  const markPriceUSD = useTokenPriceOutUSD({
+    tokenAddress: position.positionToken,
+  })
 
   useEffect(() => {
     if (!tokenData) return
@@ -87,24 +91,6 @@ const PositionCard: React.FC<Props> = ({
 
     getMarkPrice().catch(console.error)
   }, [priceFeed, baseToken, position.positionToken])
-
-  // get mark price in USD
-  useEffect(() => {
-    if (!priceFeed) return
-
-    const amount = ethers.utils.parseUnits("1", 18)
-
-    const getMarkPriceUSD = async () => {
-      const priceUSD = await priceFeed.getNormalizedPriceOutUSD(
-        position.positionToken,
-        amount
-      )
-
-      setMarkPriceUSD(priceUSD.amountOut.toString())
-    }
-
-    getMarkPriceUSD().catch(console.error)
-  }, [priceFeed, position.positionToken])
 
   if (baseToken === position.positionToken) {
     return null
