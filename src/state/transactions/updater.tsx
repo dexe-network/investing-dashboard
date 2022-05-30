@@ -10,13 +10,7 @@ import { useAddToast, useRemoveToast } from "state/application/hooks"
 
 import { useActiveWeb3React } from "hooks"
 import useBlockNumber from "hooks/useBlockNumber"
-import { retry, RetryableError, RetryOptions } from "utils/retry"
-
-const DEFAULT_RETRY_OPTIONS: RetryOptions = {
-  n: 10,
-  minWait: 250,
-  maxWait: 1000,
-}
+import { retry, RetryableError, DEFAULT_RETRY_OPTIONS } from "utils/retry"
 
 interface Transaction {
   addedTime: number

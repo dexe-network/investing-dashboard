@@ -351,12 +351,12 @@ function Invest() {
         poolInfo?.parameters.baseToken,
         amount.toHexString()
       )
-      setInPrice(fromPrice.amountOut)
+      setInPrice(fromPrice[0])
 
-      const priceOut = fromPrice.amountOut.div(amount).mul(tokens.lpAmount)
+      const priceOut = fromPrice[0].div(amount).mul(tokens.lpAmount)
       setOutPrice(priceOut)
 
-      updatePriceImpact(fromPrice.amountOut, priceOut)
+      updatePriceImpact(fromPrice[0], priceOut)
     }
 
     fetchAndUpdateTo().catch(console.error)
@@ -378,15 +378,13 @@ function Invest() {
         poolInfo?.parameters.baseToken,
         tokens.receptions.baseAmount.toHexString()
       )
-      setOutPrice(fromPrice.amountOut)
+      setOutPrice(fromPrice[0])
 
-      const priceIn = fromPrice.amountOut
-        .div(tokens.receptions.baseAmount)
-        .mul(amount)
+      const priceIn = fromPrice[0].div(tokens.receptions.baseAmount).mul(amount)
 
       setInPrice(priceIn)
 
-      updatePriceImpact(fromPrice.amountOut, priceIn)
+      updatePriceImpact(fromPrice[0], priceIn)
     }
 
     fetchAndUpdateFrom().catch(console.error)

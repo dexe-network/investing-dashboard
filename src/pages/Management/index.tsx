@@ -211,7 +211,7 @@ function Management() {
       insuranceAmount
     )
 
-    setInsuranceAmountUSD(price.amountOut)
+    setInsuranceAmountUSD(price[0])
   }
 
   const fetchInsuranceBalance = async () => {
@@ -316,8 +316,8 @@ function Management() {
         amount
       )
       setToAmount(outAmount)
-      setInPrice(price.amountOut)
-      setOutPrice(price.amountOut.mul(BigNumber.from("10")))
+      setInPrice(price[0])
+      setOutPrice(price[0].mul(BigNumber.from("10")))
     }
 
     fetchAndUpdateTo().catch(console.error)
