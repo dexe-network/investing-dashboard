@@ -7,7 +7,7 @@ import { selectPriceFeedAddress } from "state/contracts/selectors"
 import useContract from "hooks/useContract"
 
 interface IParams {
-  tokenAddress: string
+  tokenAddress: string | undefined
 }
 
 export default function useTokenPriceOutUSD({
@@ -19,7 +19,7 @@ export default function useTokenPriceOutUSD({
   const [markPriceUSD, setMarkPriceUSD] = useState(BigNumber.from(0))
 
   useEffect(() => {
-    if (!tokenAddress || !priceFeed) return
+    if (!priceFeed || !tokenAddress || tokenAddress.length !== 42) return
     ;(async () => {
       const amount = ethers.utils.parseUnits("1", 18)
 
