@@ -83,21 +83,39 @@ const useUserSettings = (): [
   const [isLoading, setLoading] = useState(true)
   const [isUserEditing, setUserEditing] = useState(false)
   const [userName, setUserName] = useState("")
+  const [userNameInitial, setUserNameInitial] = useState("")
   const [userAvatar, setUserAvatar] = useState("")
+  const [userAvatarInitial, setUserAvatarInitial] = useState("")
   const [assets, setAssets] = useState<string[]>([])
   const userRegistryAddress = useSelector(selectUserRegistryAddress)
   const userRegistry = useContract(userRegistryAddress, UserRegistry)
 
   const handleUserSubmit = async () => {
     setLoading(true)
-    const ipfsReceipt = await addUserMetadata(
-      userName,
-      [...assets, userAvatar],
-      account
-    )
+    const isAvatarChanged = userAvatar !== userAvatarInitial
+    const isNameChanged = userName !== userNameInitial
+
+    if (!isAvatarChanged && !isNameChanged) {
+      setLoading(false)
+      setUserEditing(false)
+      return
+    }
+
+    const actualAssets = isAvatarChanged ? [...assets, userAvatar] : assets
+
+    const ipfsReceipt = await addUserMetadata(userName, actualAssets, account)
     const trx = await userRegistry?.changeProfile(ipfsReceipt.path)
 
     addTransaction(trx, { type: TransactionType.UPDATE_USER_CREDENTIALS })
+
+    if (isAvatarChanged) {
+      setUserAvatarInitial(userAvatar)
+      setAssets(actualAssets)
+    }
+
+    if (isNameChanged) {
+      setUserNameInitial(userName)
+    }
 
     setLoading(false)
     setUserEditing(false)
@@ -113,10 +131,12 @@ const useUserSettings = (): [
 
       if ("name" in user) {
         setUserName(user.name)
+        setUserNameInitial(user.name)
       }
 
       if ("assets" in user && user.assets.length) {
         setUserAvatar(user.assets[user.assets.length - 1])
+        setUserAvatarInitial(user.assets[user.assets.length - 1])
         setAssets(user.assets)
       }
 
