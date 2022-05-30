@@ -14,12 +14,14 @@ import {
   selectUserRegistryAddress,
 } from "state/contracts/selectors"
 import useContract from "hooks/useContract"
+import useCopyClipboard from "hooks/useCopyClipboard"
 
 import { addUserMetadata, parseUserData } from "utils/ipfs"
 import { formatBigNumber, shortenAddress } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
+import { useAddToast } from "state/application/hooks"
 
 import pen from "assets/icons/pencil-edit.svg"
 import bsc from "assets/wallets/bsc.svg"
@@ -169,6 +171,9 @@ export default function Wallet() {
   const { account, deactivate } = useWeb3React()
   const navigate = useNavigate()
 
+  const [isCopied, copy] = useCopyClipboard()
+  const addToast = useAddToast()
+
   const [
     { isUserEditing, userName, userAvatar, isLoading },
     { setUserEditing, setUserName, setUserAvatar, handleUserSubmit },
@@ -198,6 +203,21 @@ export default function Wallet() {
   const handleInsuranceRedirect = () => {
     navigate("/insurance/management")
   }
+
+  const handleAddressCopy = () => {
+    if (!account) return
+    copy(account)
+  }
+
+  useEffect(() => {
+    if (isCopied && account) {
+      addToast(
+        { type: "success", content: "Address copied to clipboard" },
+        account,
+        2000
+      )
+    }
+  }, [isCopied, addToast, account])
 
   if (!account) return <Navigate to="/welcome" />
 
@@ -269,7 +289,7 @@ export default function Wallet() {
             <Address>{shortenAddress(account, 8)}</Address>
             <CardButtons>
               <TextButton color="#9AE2CB">Change</TextButton>
-              <TextButton>Copy</TextButton>
+              <TextButton onClick={handleAddressCopy}>Copy</TextButton>
               <TextButton onClick={handleLogout}>Disconnect</TextButton>
             </CardButtons>
           </Card>
