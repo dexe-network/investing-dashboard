@@ -107,10 +107,7 @@ export const BasicValue = styled(Flex)`
   letter-spacing: 0.03em;
   color: #e4f2ff;
 `
-export const BasicValueIcon = styled.img`
-  width: 12px;
-  height: 12px;
-`
+
 export const BasicValueText = styled.span`
   margin-right: 7px;
 `
