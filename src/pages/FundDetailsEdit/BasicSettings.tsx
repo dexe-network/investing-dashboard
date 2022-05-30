@@ -31,12 +31,12 @@ const BasicSettings: FC<{
   const { account } = useWeb3React()
 
   const address = useMemo(() => {
-    if (!!account) {
-      return shortenAddress(account, 3)
+    if (!!poolData) {
+      return shortenAddress(poolData.trader, 3)
     }
 
     return ""
-  }, [account])
+  }, [poolData])
 
   const creationTime = useMemo(() => {
     if (!!poolData) {
