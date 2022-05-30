@@ -54,6 +54,10 @@ const POOL = `
   admins
   privateInvestors {
     id
+    insurance
+    claimedAmount
+    activePools
+    allPools
   }
   ${PRICE_HISTORY_LAST}
 `
