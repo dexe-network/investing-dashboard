@@ -2,7 +2,7 @@ import styled from "styled-components"
 
 export const Container = styled.div`
   margin: 0 auto;
-  bacground-color: #040a0f;
+  background-color: #040a0f;
   width: fill-available;
   height: calc(100vh - 45px);
   overflow-y: auto;
