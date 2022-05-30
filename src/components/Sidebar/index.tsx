@@ -1,15 +1,9 @@
-import { useEffect, useState } from "react"
 import { useSideBarContext } from "context/SideBarContext"
 import { createPortal } from "react-dom"
 import { useSelector } from "react-redux"
-import { BigNumber, ethers } from "ethers"
 
-import { PriceFeed } from "abi"
-import {
-  selectPriceFeedAddress,
-  selectDexeAddress,
-} from "state/contracts/selectors"
-import useContract from "hooks/useContract"
+import { selectDexeAddress } from "state/contracts/selectors"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { normalizeBigNumber } from "utils"
 
 import {
@@ -64,24 +58,8 @@ const Sidebar: React.FC = () => {
   const { toggleSideBar, isSideBarOpen } = useSideBarContext()
   const isOpen = isSideBarOpen ? "visible" : "hidden"
 
-  const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const dexeAddress = useSelector(selectDexeAddress)
-  const priceFeed = useContract(priceFeedAddress, PriceFeed)
-
-  const [markPriceUSD, setMarkPriceUSD] = useState(BigNumber.from(0))
-
-  useEffect(() => {
-    if (!dexeAddress || !priceFeed) return
-    ;(async () => {
-      const amount = ethers.utils.parseUnits("1", 18)
-
-      const priceUSD = await priceFeed
-        ?.getNormalizedPriceOutUSD(dexeAddress, amount.toHexString())
-        .catch(console.error)
-
-      setMarkPriceUSD(priceUSD?.amountOut.toString())
-    })()
-  }, [dexeAddress, priceFeed])
+  const markPriceUSD = useTokenPriceOutUSD({ tokenAddress: dexeAddress })
 
   if (!sidebarRoot) return null
   return createPortal(
