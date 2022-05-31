@@ -22,7 +22,7 @@ const Open = () => {
   const [, baseData] = useERC20(data?.baseToken)
 
   return (
-    <List>
+    <>
       {(data?.positions || []).map((position) => (
         <PositionCard
           baseSymbol={baseData?.symbol}
@@ -33,7 +33,7 @@ const Open = () => {
           position={position}
         />
       ))}
-    </List>
+    </>
   )
 }
 
@@ -48,7 +48,7 @@ const Proposals = () => {
   }
 
   return (
-    <List>
+    <>
       {proposals.map((position, index) => (
         <RiskyCard
           onClick={() => handleCardClick(index)}
@@ -59,7 +59,7 @@ const Proposals = () => {
           key={position.proposalInfo.token}
         />
       ))}
-    </List>
+    </>
   )
 }
 
@@ -68,7 +68,7 @@ const Closed = () => {
   const data = usePoolPositions(poolAddress, true)
 
   return (
-    <List>
+    <>
       {(data?.positions || []).map((position) => (
         <PositionCard
           baseToken={data?.baseToken}
@@ -78,7 +78,7 @@ const Closed = () => {
           position={position}
         />
       ))}
-    </List>
+    </>
   )
 }
 

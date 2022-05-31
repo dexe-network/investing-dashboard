@@ -95,7 +95,7 @@ export default function Routes() {
                       element={<CreateRiskyProposal />}
                     />
                     <Route
-                      path="invest-risky-proposal/:poolAddress/:index"
+                      path="invest-risky-proposal/:poolAddress/:proposalId"
                       element={<InvestRiskyProposal />}
                     />
                     <Route

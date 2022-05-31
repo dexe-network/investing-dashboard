@@ -2,10 +2,11 @@ import { useMemo, useEffect, useState, useCallback } from "react"
 import { Contract } from "@ethersproject/contracts"
 import {
   IUniswapV2Router02,
-  UniswapExchangeTool,
   PancakeExchangeTool,
   ERC20,
   PancakeFactory,
+  TraderPool,
+  TraderPoolRiskyProposal,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -137,4 +138,32 @@ export function useERC20(
   }, [contract, account, storedAddress, library, init])
 
   return [contract, tokenData, balance, init]
+}
+
+export function useTraderPoolContract(
+  poolAddress: string | undefined
+): Contract | null {
+  return useContract(poolAddress, TraderPool)
+}
+
+export function useRiskyProposalContract(
+  poolAddress: string | undefined
+): [Contract | null, string] {
+  const [riskyProposalAddress, setRiskyProposalAddress] = useState("")
+
+  const traderPool = useTraderPoolContract(poolAddress)
+  const proposalPool = useContract(
+    riskyProposalAddress,
+    TraderPoolRiskyProposal
+  )
+
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      const proposalAddress = await traderPool.proposalPoolAddress()
+      setRiskyProposalAddress(proposalAddress)
+    })()
+  }, [traderPool])
+
+  return [proposalPool, riskyProposalAddress]
 }
