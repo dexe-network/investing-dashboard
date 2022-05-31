@@ -16,6 +16,8 @@ import {
 import useContract from "hooks/useContract"
 import useCopyClipboard from "hooks/useCopyClipboard"
 
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
+
 import { addUserMetadata, parseUserData } from "utils/ipfs"
 import { formatBigNumber, shortenAddress } from "utils"
 
@@ -168,7 +170,7 @@ const useUserSettings = (): [
 }
 
 export default function Wallet() {
-  const { account, deactivate } = useWeb3React()
+  const { account, chainId, deactivate } = useWeb3React()
   const navigate = useNavigate()
 
   const [isCopied, copy] = useCopyClipboard()
@@ -286,7 +288,18 @@ export default function Wallet() {
               BSC <NetworkIcon src={bsc} />
             </Network>
             <TextGray>Current account</TextGray>
-            <Address>{shortenAddress(account, 8)}</Address>
+            {chainId && (
+              <Address
+                removeIcon
+                href={getExplorerLink(
+                  chainId,
+                  account,
+                  ExplorerDataType.ADDRESS
+                )}
+              >
+                {shortenAddress(account, 8)}
+              </Address>
+            )}
             <CardButtons>
               <TextButton color="#9AE2CB">Change</TextButton>
               <TextButton onClick={handleAddressCopy}>Copy</TextButton>

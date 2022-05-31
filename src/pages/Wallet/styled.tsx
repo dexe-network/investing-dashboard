@@ -1,6 +1,7 @@
 import styled from "styled-components"
-import { motion } from "framer-motion"
 import { Flex, GradientBorder } from "theme"
+import ExternalLink from "components/ExternalLink"
+
 import cardBG from "assets/background/wallet-card.svg"
 import insuranceBG from "assets/background/insurance-card.svg"
 import dexePlaceholder from "assets/icons/dexe-placeholder.svg"
@@ -116,11 +117,7 @@ export const Card = styled.div`
   width: 100%;
 `
 
-export const Address = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
+export const Address = styled(ExternalLink)`
   font-size: 14px;
   line-height: 28px;
   letter-spacing: 1px;
