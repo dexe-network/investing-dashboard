@@ -1,28 +1,27 @@
 import styled from "styled-components"
 
-export const Container = styled.a`
+export const Container = styled.a<{ color: string; fw?: string; fz?: string }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
   gap: 3px;
-
-  text-decoration: none;
-`
-
-export const Text = styled.span<{
-  color: string
-  iconPosition: string
-  fw?: string
-  fz?: string
-}>`
   color: ${({ color }) => color ?? "white"};
-  order: ${({ iconPosition }) => (iconPosition === "right" ? "0" : "1")};
+
   font-family: "Gilroy";
   font-style: normal;
   font-weight: ${({ fw }) => fw ?? "400"};
   font-size: ${({ fz }) => fz ?? "12px"};
   line-height: ${({ fz }) => fz ?? "12px"};
   letter-spacing: 0.03em;
+
+  text-decoration: none;
+`
+
+export const Text = styled.span<{
+  iconPosition: string
+}>`
+  color: inherit;
+  order: ${({ iconPosition }) => (iconPosition === "right" ? "0" : "1")};
   margin-top: 3px;
 `
 

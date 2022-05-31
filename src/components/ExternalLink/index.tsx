@@ -6,6 +6,7 @@ interface IProps {
   target?: string
   rel?: string
 
+  className?: string
   color?: string
   iconPosition?: string
   iconSize?: string
@@ -22,6 +23,7 @@ const ExternalLink: React.FC<IProps> = ({
   target = "_blank",
   rel = "noopener noreferrer",
 
+  className,
   color = "white",
   iconPosition = "right",
   iconColor,
@@ -44,10 +46,16 @@ const ExternalLink: React.FC<IProps> = ({
   }, [color, icon, iconColor, iconPosition, removeIcon])
 
   return (
-    <Container href={href} target={target} rel={rel}>
-      <Text color={color} iconPosition={iconPosition} fw={fw} fz={fz}>
-        {children}
-      </Text>
+    <Container
+      href={href}
+      target={target}
+      rel={rel}
+      color={color}
+      className={className}
+      fw={fw}
+      fz={fz}
+    >
+      <Text iconPosition={iconPosition}>{children}</Text>
       {Icon}
     </Container>
   )
