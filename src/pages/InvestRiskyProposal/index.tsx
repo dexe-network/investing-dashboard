@@ -52,6 +52,9 @@ import {
 import { ethers } from "ethers"
 import { parseTransactionError } from "utils"
 
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
@@ -196,6 +199,8 @@ function InvestRiskyProposal() {
 
   const lpUSDPrice = getPriceUSD(poolData?.priceHistory)
 
+  const addTransaction = useTransactionAdder()
+
   const poolIcon = (
     <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />
   )
@@ -297,6 +302,14 @@ function InvestRiskyProposal() {
       invests.positionAmount
     )
 
+    addTransaction(investReceipt, {
+      type: TransactionType.DEPOSIT_RISKY_PROPOSAL,
+      inputCurrencyAmountRaw: invests.lp2Amount.toString(),
+      inputCurrencySymbol: exchangeForm.deposit.to.symbol,
+      expectedOutputCurrencyAmountRaw: amount.toString(),
+      expectedOutputCurrencySymbol: exchangeForm.deposit.from.symbol,
+    })
+
     return investReceipt
   }
 
@@ -311,6 +324,14 @@ function InvestRiskyProposal() {
       invests.receivedAmounts,
       divests.receivedAmounts[0]
     )
+
+    addTransaction(withdrawReceipt, {
+      type: TransactionType.WITHDRAW_RISKY_PROPOSAL,
+      outputCurrencyAmountRaw: amount.toString(),
+      outputCurrencySymbol: exchangeForm.withdraw.from.symbol,
+      expectedInputCurrencyAmountRaw: invests.lpAmount.toString(),
+      expectedInputCurrencySymbol: exchangeForm.withdraw.to.symbol,
+    })
 
     return withdrawReceipt
   }
