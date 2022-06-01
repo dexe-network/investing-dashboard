@@ -50,6 +50,7 @@ import {
   IconsGroup,
 } from "components/Exchange/styled"
 import { ethers } from "ethers"
+import { parseTransactionError } from "utils"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -325,16 +326,8 @@ function InvestRiskyProposal() {
         const withdrawReceipt = await handleWithdraw()
         // TODO: add transaction toast
       } catch (error: any) {
-        if (
-          error.data.message ===
-          "execution reverted: TPRP: divesting with open position"
-        ) {
-          showAlert({
-            type: AlertType.warning,
-            content: "You cannot divest with an open position",
-            hideDuration: 10000,
-          })
-        }
+        const errorMessage = parseTransactionError(error)
+        console.log(errorMessage)
       }
     }
   }

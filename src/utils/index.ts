@@ -281,13 +281,27 @@ export const calcSlippage = (
   }
 }
 
-export const parseTransactionError = (str: string) => {
-  const position = str.search(`"message":`)
+export const parseTransactionError = (str: any) => {
+  try {
+    console.log(Object.keys(str))
+    // parse string error
+    if (typeof str === "string") {
+      const position = str.search(`"message":`)
 
-  const cutString = str.substring(position + 10)
+      const cutString = str.substring(position + 10)
 
-  const matches = cutString.match(/"(.*?)"/)
-  return matches ? matches[1] : ""
+      const matches = cutString.match(/"(.*?)"/)
+      return matches ? matches[1] : ""
+    }
+
+    if (typeof str === "object" && !!str.data && !!str.data.message) {
+      return str.data.message
+    }
+
+    return "Unpredictable transaction error"
+  } catch (e) {
+    return "Unpredictable transaction error"
+  }
 }
 
 export const shortTimestamp = (timestamp: number): number => {
