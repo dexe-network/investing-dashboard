@@ -33,6 +33,9 @@ import Withdraw from "assets/icons/Withdraw"
 import Swap from "assets/icons/Swap"
 import Expand from "assets/icons/Expand"
 import plus from "assets/icons/plus.svg"
+import copyIcon from "assets/icons/copy.svg"
+import logoutIcon from "assets/icons/logout.svg"
+import link from "assets/icons/external-link.svg"
 
 import {
   Container,
@@ -49,6 +52,8 @@ import {
   Address,
   CardButtons,
   TextButton,
+  TextLink,
+  TextIcon,
   Heading,
   TransactionsList,
   TransactionsPlaceholder,
@@ -301,9 +306,27 @@ export default function Wallet() {
               </Address>
             )}
             <CardButtons>
-              <TextButton color="#9AE2CB">Change</TextButton>
-              <TextButton onClick={handleAddressCopy}>Copy</TextButton>
-              <TextButton onClick={handleLogout}>Disconnect</TextButton>
+              {chainId && (
+                <TextLink
+                  iconPosition="left"
+                  iconColor="#636a77"
+                  href={getExplorerLink(
+                    chainId,
+                    account,
+                    ExplorerDataType.ADDRESS
+                  )}
+                >
+                  Bscscan
+                </TextLink>
+              )}
+              <TextButton onClick={handleAddressCopy}>
+                <TextIcon src={copyIcon} />
+                <span>Copy</span>
+              </TextButton>
+              <TextButton onClick={handleLogout}>
+                <TextIcon src={logoutIcon} />
+                <span>Disconnect</span>
+              </TextButton>
             </CardButtons>
           </Card>
         </Cards>

@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import { Flex, GradientBorder } from "theme"
 import ExternalLink from "components/ExternalLink"
 
@@ -150,15 +150,32 @@ export const CardButtons = styled(Flex)`
 `
 
 export const TextButton = styled.div<{ color?: string }>`
+  display: flex;
+  align-items: center;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: ${(props) => (props.color ? "600" : "400")};
   font-size: 12px;
   line-height: 14px;
   text-align: center;
   letter-spacing: 1px;
-
+  font-weight: ${(props) => (props.color ? "600" : "400")};
   color: ${(props) => (props.color ? props.color : "#636A77")};
+
+  span {
+    margin-top: 3px;
+  }
+`
+
+export const TextLink = styled(ExternalLink)`
+  font-weight: 400;
+  color: #636a77;
+  gap: 8px;
+`
+
+export const TextIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
 `
 
 export const Heading = styled.div`
