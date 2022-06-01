@@ -12,6 +12,7 @@ import Button from "components/Button"
 import useContract from "hooks/useContract"
 import { PoolInfo, PoolType } from "constants/interfaces_v2"
 import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import { shortenAddress } from "utils"
 
@@ -64,6 +65,11 @@ const Success: FC<SuccessProps> = () => {
     TraderPoolRegistry
   )
 
+  const [{ poolMetadata }] = usePoolMetadata(
+    poolAddress,
+    poolInfo?.parameters.descriptionURL
+  )
+
   // get pool info
   useEffect(() => {
     if (!traderPool) return
@@ -100,7 +106,7 @@ const Success: FC<SuccessProps> = () => {
         <Body>
           <IconContainer>
             <IpfsIcon
-              hash={poolInfo.parameters.descriptionURL}
+              source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
               m="0"
               size={110}
             />
