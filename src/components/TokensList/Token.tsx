@@ -3,7 +3,7 @@ import { BigNumber, Contract, ethers } from "ethers"
 
 import TokenIcon from "components/TokenIcon"
 import { Token as IToken } from "constants/interfaces"
-import { useERC20 } from "hooks/useContract"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { formatBigNumber, normalizeBigNumber } from "utils"
 
 import {
@@ -17,30 +17,15 @@ import {
 } from "./styled"
 
 const Token: FC<{
-  priceFeed: Contract | null
   tokenData: IToken
   balance?: BigNumber
   onClick: (token: IToken) => void
-}> = ({ tokenData, priceFeed, balance, onClick }) => {
+}> = ({ tokenData, balance, onClick }) => {
   const { symbol, name, address } = tokenData
 
-  const [price, setPrice] = useState(BigNumber.from("0"))
+  const price = useTokenPriceOutUSD({ tokenAddress: address })
 
   const balanceFormated = formatBigNumber(balance || BigNumber.from("0"), 18)
-
-  useEffect(() => {
-    if (!priceFeed || !address) return
-
-    const getPrice = async () => {
-      const baseTokenPrice = await priceFeed.getNormalizedPriceOutUSD(
-        address,
-        ethers.utils.parseUnits("1", 18).toHexString()
-      )
-      setPrice(baseTokenPrice[0])
-    }
-
-    getPrice()
-  }, [priceFeed, address])
 
   return (
     <TokenContainer onClick={() => onClick(tokenData)}>
