@@ -316,19 +316,23 @@ function InvestRiskyProposal() {
   }
 
   const handleSubmit = async () => {
-    if (direction === "deposit") {
-      const investReceipt = await handleDeposit()
-      // TODO: add transaction toast
-    }
+    try {
+      if (direction === "deposit") {
+        const investReceipt = await handleDeposit()
+        // TODO: add transaction toast
+      }
 
-    if (direction === "withdraw") {
-      try {
+      if (direction === "withdraw") {
         const withdrawReceipt = await handleWithdraw()
         // TODO: add transaction toast
-      } catch (error: any) {
-        const errorMessage = parseTransactionError(error)
-        console.log(errorMessage)
       }
+    } catch (error: any) {
+      const errorMessage = parseTransactionError(error)
+      showAlert({
+        content: errorMessage,
+        type: AlertType.warning,
+        hideDuration: 10000,
+      })
     }
   }
 

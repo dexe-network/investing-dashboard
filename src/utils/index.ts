@@ -283,7 +283,6 @@ export const calcSlippage = (
 
 export const parseTransactionError = (str: any) => {
   try {
-    console.log(Object.keys(str))
     // parse string error
     if (typeof str === "string") {
       const position = str.search(`"message":`)
@@ -294,11 +293,22 @@ export const parseTransactionError = (str: any) => {
       return matches ? matches[1] : ""
     }
 
-    if (typeof str === "object" && !!str.data && !!str.data.message) {
-      return str.data.message
+    if (typeof str !== "object") {
+      return "Unpredictable transaction error"
     }
 
-    return "Unpredictable transaction error"
+    if (
+      Object.keys(str).includes("error") &&
+      Object.keys(str.error).includes("message")
+    ) {
+      return str.error.message
+    }
+    if (
+      Object.keys(str).includes("data") &&
+      Object.keys(str.data).includes("message")
+    ) {
+      return str.data.message
+    }
   } catch (e) {
     return "Unpredictable transaction error"
   }
