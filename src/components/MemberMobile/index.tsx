@@ -22,9 +22,10 @@ import {
 import { IPoolQuery } from "constants/interfaces_v2"
 import { useERC20 } from "hooks/useContract"
 import { formatNumber } from "utils"
-import { parsePoolData } from "utils/ipfs"
 import IpfsIcon from "components/IpfsIcon"
 import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
+
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 // @param data - pool data
 // @param index - indicating index in all list of pools
@@ -36,6 +37,8 @@ const MemberMobile: React.FC<{
   const priceLP = getPriceLP(data.priceHistory)
   const pnl = getPNL(priceLP)
   const lastHistoryPoint = getLastInArray(data.priceHistory)
+
+  const [{ poolMetadata }] = usePoolMetadata(data.id, data.descriptionURL)
 
   return (
     <Card
@@ -50,7 +53,10 @@ const MemberMobile: React.FC<{
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <IpfsIcon size={38} hash={data.descriptionURL} />
+          <IpfsIcon
+            size={38}
+            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+          />
           <div>
             <Title>{data.ticker}</Title>
             <Description>{data.name}</Description>

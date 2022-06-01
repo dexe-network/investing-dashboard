@@ -32,15 +32,21 @@ export const Loader = styled.div<{ size?: number; m: string }>`
 interface IProps {
   size?: number
   hash?: string
+  source?: string
   m?: string
 }
 
-const IpfsIcon: React.FC<IProps> = ({ size, hash, m }) => {
+const IpfsIcon: React.FC<IProps> = ({ size, hash, source, m }) => {
   const [src, setSrc] = useState("")
   const [srcImg, setImg] = useState(unknown)
   const [isLoading, setLoadingState] = useState(true)
 
   useEffect(() => {
+    if (!hash) {
+      setSrc(defaultAvatar)
+      return
+    }
+
     ;(async () => {
       const data = await parsePoolData(hash)
       if (
@@ -55,6 +61,11 @@ const IpfsIcon: React.FC<IProps> = ({ size, hash, m }) => {
       }
     })()
   }, [hash])
+
+  useEffect(() => {
+    if (!source || hash) return
+    setSrc(source)
+  }, [source, hash])
 
   useEffect(() => {
     if (!src) return
