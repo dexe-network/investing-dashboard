@@ -1,14 +1,8 @@
-// import React, { useState, useRef } from "react"
-import { useSelector } from "react-redux"
 import { Token as IToken } from "constants/interfaces"
 
 import Search from "components/Search"
 
-import useContract from "hooks/useContract"
-import { selectPriceFeedAddress } from "state/contracts/selectors"
-
 import { BigNumber } from "ethers"
-import { PriceFeed } from "abi"
 
 import Token from "./Token"
 
@@ -29,9 +23,6 @@ const TokensList: React.FC<Props> = ({
   onSelect,
   handleChange,
 }) => {
-  const priceFeedAddress = useSelector(selectPriceFeedAddress)
-  const priceFeed = useContract(priceFeedAddress, PriceFeed)
-
   const withBalance = balances === undefined || !Object.keys(balances).length
 
   const sortedTokens = [...tokens].sort((a, b) => {
@@ -67,7 +58,6 @@ const TokensList: React.FC<Props> = ({
           return (
             <Token
               balance={getBalance(token.address)}
-              priceFeed={priceFeed}
               onClick={onSelect}
               key={token.address}
               tokenData={token}

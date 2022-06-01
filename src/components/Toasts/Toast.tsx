@@ -3,6 +3,7 @@ import { useCallback, useEffect } from "react"
 import { ToastContent } from "state/application/types"
 import { useRemoveToast } from "state/application/hooks"
 
+import ToastBase from "./ToastBase"
 import ToastTransaction from "./ToastTransaction"
 
 interface IProps {
@@ -42,7 +43,11 @@ const Toast: React.FC<IProps> = ({
     } = content
     return <ToastTransaction hash={hash} onClose={remove} visible={visible} />
   } else {
-    return null
+    return (
+      <ToastBase type={content.type} onClose={remove} visible={visible}>
+        {content.content}
+      </ToastBase>
+    )
   }
 }
 
