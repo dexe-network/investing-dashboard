@@ -9,7 +9,6 @@ export const ToastsContainer = styled.div<{ height: string | number }>`
   z-index: 10;
 `
 export const ToastsInner = styled.div`
-  height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
   display: flex;

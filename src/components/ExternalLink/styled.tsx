@@ -19,10 +19,11 @@ export const Container = styled.a<{ color: string; fw?: string; fz?: string }>`
 
 export const Text = styled.span<{
   iconPosition: string
+  removeIcon: boolean
 }>`
   color: inherit;
   order: ${({ iconPosition }) => (iconPosition === "right" ? "0" : "1")};
-  margin-top: 3px;
+  margin-top: ${({ removeIcon }) => (removeIcon ? 0 : "3px")};
 `
 
 const IconContainer = styled.div<{ iconPosition: string }>`

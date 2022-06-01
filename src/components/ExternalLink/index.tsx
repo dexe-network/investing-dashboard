@@ -55,7 +55,9 @@ const ExternalLink: React.FC<IProps> = ({
       fw={fw}
       fz={fz}
     >
-      <Text iconPosition={iconPosition}>{children}</Text>
+      <Text iconPosition={iconPosition} removeIcon={removeIcon}>
+        {children}
+      </Text>
       {Icon}
     </Container>
   )
