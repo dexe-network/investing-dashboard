@@ -427,7 +427,7 @@ function Invest() {
 
     const allowanceInterval = setInterval(() => {
       fetchAndUpdateAllowance().catch(console.error)
-    }, 1000 * 20)
+    }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     fetchAndUpdateAllowance().catch(console.error)
 

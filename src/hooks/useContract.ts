@@ -7,6 +7,7 @@ import {
   PancakeFactory,
   TraderPool,
   TraderPoolRiskyProposal,
+  BasicTraderPool,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -144,6 +145,12 @@ export function useTraderPoolContract(
   poolAddress: string | undefined
 ): Contract | null {
   return useContract(poolAddress, TraderPool)
+}
+
+export function useBasicPoolContract(
+  poolAddress: string | undefined
+): Contract | null {
+  return useContract(poolAddress, BasicTraderPool)
 }
 
 export function useRiskyProposalContract(

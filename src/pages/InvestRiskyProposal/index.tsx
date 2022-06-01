@@ -4,6 +4,7 @@ import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
+import { createClient, Provider as GraphProvider } from "urql"
 
 import IconButton from "components/IconButton"
 import ExchangeTo from "components/Exchange/To"
@@ -14,24 +15,32 @@ import CircularProgress from "components/CircularProgress"
 import TransactionSlippage from "components/TransactionSlippage"
 import Header from "components/Header/Layout"
 import IpfsIcon from "components/IpfsIcon"
-import TransactionError from "modals/TransactionError"
 
+import {
+  IDivestAmounts,
+  IProposalInvestTokens,
+} from "interfaces/ITraderPoolRiskyProposal"
+import {
+  IDivestAmountsAndCommissions,
+  IPoolInvestTokens,
+} from "interfaces/ITraderPool"
+
+import { selectPriceFeedAddress } from "state/contracts/selectors"
+import { useRiskyProposal } from "hooks/useRiskyProposals"
+import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, {
+  useBasicPoolContract,
   useERC20,
   useRiskyProposalContract,
   useTraderPoolContract,
 } from "hooks/useContract"
 
+import useAlert, { AlertType } from "hooks/useAlert"
 import { PriceFeed } from "abi"
-import { getDividedBalance } from "utils/formulas"
+import { getDividedBalance, getPriceUSD } from "utils/formulas"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
-
-import { selectPriceFeedAddress } from "state/contracts/selectors"
-
-import { useRiskyProposal } from "hooks/useRiskyProposals"
-import { usePoolContract } from "hooks/usePool"
 
 import {
   Container,
@@ -40,6 +49,11 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
+import { ethers } from "ethers"
+
+const poolsClient = createClient({
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+})
 
 export const useRiskyInvest = (): [
   {
@@ -155,8 +169,8 @@ function InvestRiskyProposal() {
 
   const { account } = useWeb3React()
 
-  const [fromAddress, setFromAddress] = useState("")
-  const [toAddress, setToAddress] = useState("")
+  const [showAlert, hideAlert] = useAlert()
+
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
   const [fromBalance, setFromBalance] = useState(BigNumber.from("0"))
   const [inPrice, setInPrice] = useState(BigNumber.from("0"))
@@ -167,6 +181,8 @@ function InvestRiskyProposal() {
   const { poolAddress, proposalId } = useParams()
 
   const traderPool = useTraderPoolContract(poolAddress)
+  const basicPool = useBasicPoolContract(poolAddress)
+  const [poolData] = usePoolQuery(poolAddress)
   const [proposalPool] = useRiskyProposalContract(poolAddress)
   const proposal = useRiskyProposal(poolAddress, proposalId)
   const [, poolInfo] = usePoolContract(poolAddress)
@@ -177,13 +193,19 @@ function InvestRiskyProposal() {
 
   const [, toData] = useERC20(proposal?.proposalInfo.token)
 
+  const lpUSDPrice = getPriceUSD(poolData?.priceHistory)
+
+  const poolIcon = (
+    <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />
+  )
+
   const exchangeForm = {
     deposit: {
       from: {
         address: undefined,
         symbol: poolInfo?.ticker,
         decimals: 18,
-        icon: <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />,
+        icon: poolIcon,
       },
       to: {
         address: proposal?.proposalInfo.token,
@@ -203,39 +225,118 @@ function InvestRiskyProposal() {
         address: undefined,
         symbol: poolInfo?.ticker,
         decimals: 18,
-        icon: <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />,
+        icon: poolIcon,
       },
     },
   }
 
-  const getInvestTokens = async (amount: BigNumber) => {
-    const divests = await traderPool?.getDivestAmountsAndCommissions(
+  const getLPBalance = useCallback(async () => {
+    if (!traderPool || !account) return
+
+    const lpAvailable: BigNumber = await traderPool?.balanceOf(account)
+
+    if (direction === "deposit") {
+      setFromBalance(lpAvailable)
+    } else {
+      setToBalance(lpAvailable)
+    }
+  }, [account, direction, traderPool])
+
+  const getLP2Balance = useCallback(async () => {
+    if (!proposalPool || !account) return
+
+    const balance = await proposalPool?.balanceOf(
       account,
-      amount
+      Number(proposalId) + 1
     )
-    const invests = await proposalPool?.getInvestTokens(
+
+    if (direction === "deposit") {
+      setToBalance(balance)
+    } else {
+      setFromBalance(balance)
+    }
+  }, [account, direction, proposalId, proposalPool])
+
+  const getInvestTokens = async (
+    amount: BigNumber
+  ): Promise<[IDivestAmountsAndCommissions, IProposalInvestTokens]> => {
+    const divests: IDivestAmountsAndCommissions =
+      await traderPool?.getDivestAmountsAndCommissions(account, amount)
+
+    const invests: IProposalInvestTokens = await proposalPool?.getInvestTokens(
       Number(proposalId) + 1,
       divests.receptions.baseAmount
     )
-
-    console.log([divests, invests])
     return [divests, invests]
   }
 
-  const handleSubmit = async () => {
+  const getDivestTokens = async (
+    amount: BigNumber
+  ): Promise<[IDivestAmounts, IPoolInvestTokens]> => {
+    const divests: IDivestAmounts = await proposalPool?.getDivestAmounts(
+      [Number(proposalId) + 1],
+      [amount]
+    )
+
+    const invests: IPoolInvestTokens = await traderPool?.getInvestTokens(
+      divests.baseAmount
+    )
+
+    return [divests, invests]
+  }
+
+  const handleDeposit = async () => {
     const amount = BigNumber.from(fromAmount)
     const [divests, invests] = await getInvestTokens(amount)
 
-    const investReceipt = await traderPool?.investProposal(
-      proposalId,
+    const investReceipt = await basicPool?.investProposal(
+      Number(proposalId) + 1,
       amount,
       divests.receptions.receivedAmounts,
-      invests.positionAmount,
-      {
-        from: account,
-      }
+      invests.positionAmount
     )
-    console.log(investReceipt)
+
+    return investReceipt
+  }
+
+  const handleWithdraw = async () => {
+    const amount = BigNumber.from(fromAmount)
+
+    const [divests, invests] = await getDivestTokens(amount)
+
+    const withdrawReceipt = await basicPool?.reinvestProposal(
+      Number(proposalId) + 1,
+      amount,
+      invests.receivedAmounts,
+      divests.receivedAmounts[0]
+    )
+
+    return withdrawReceipt
+  }
+
+  const handleSubmit = async () => {
+    if (direction === "deposit") {
+      const investReceipt = await handleDeposit()
+      // TODO: add transaction toast
+    }
+
+    if (direction === "withdraw") {
+      try {
+        const withdrawReceipt = await handleWithdraw()
+        // TODO: add transaction toast
+      } catch (error: any) {
+        if (
+          error.data.message ===
+          "execution reverted: TPRP: divesting with open position"
+        ) {
+          showAlert({
+            type: AlertType.warning,
+            content: "You cannot divest with an open position",
+            hideDuration: 10000,
+          })
+        }
+      }
+    }
   }
 
   const handlePercentageChange = (percent) => {
@@ -243,13 +344,28 @@ function InvestRiskyProposal() {
     handleFromChange(from)
   }
 
+  const calculateFromPrice = (amount: string) => {
+    const amountNormalized = ethers.utils.formatUnits(amount, 18)
+    const resultNormalized =
+      parseFloat(amountNormalized) * parseFloat(lpUSDPrice)
+
+    if (isNaN(resultNormalized)) {
+      return ethers.utils.parseEther("0")
+    }
+
+    return ethers.utils.parseEther(resultNormalized.toString())
+  }
+
   const handleFromChange = async (v: string) => {
     setFromAmount(v)
     const amount = BigNumber.from(v)
 
+    const fromPrice = calculateFromPrice(v)
+    setInPrice(fromPrice)
+
     try {
-      const invests = await getInvestTokens(amount)
-      // setToAmount(invests.lp2Amount.toString())
+      const [, invests] = await getInvestTokens(amount)
+      setToAmount(invests.lp2Amount.toString())
     } catch (e) {
       console.log(e)
     }
@@ -308,35 +424,23 @@ function InvestRiskyProposal() {
 
   // get LP balance
   useEffect(() => {
-    if (!traderPool || !account) return
-
-    const getLPBalance = async () => {
-      const lpAvailable: BigNumber = await traderPool.balanceOf(account)
-      if (direction === "deposit") {
-        setFromBalance(lpAvailable)
-      } else {
-        setToBalance(lpAvailable)
-      }
-    }
-
     getLPBalance().catch(console.error)
-  }, [traderPool, account, direction])
+  }, [direction, getLPBalance])
 
   // get LP2 balance
   useEffect(() => {
-    if (!proposalPool || !account) return
-    ;(async () => {
-      const balance = await proposalPool.balanceOf(
-        account,
-        Number(proposalId) + 1
-      )
-      if (direction === "deposit") {
-        setToBalance(balance)
-      } else {
-        setFromBalance(balance)
-      }
-    })()
-  }, [proposalPool, account, proposalId, direction])
+    getLP2Balance().catch(console.error)
+  }, [direction, getLP2Balance])
+
+  // balance updater for both LP and LP2
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getLPBalance().catch(console.error)
+      getLP2Balance().catch(console.error)
+    }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
+
+    return () => clearInterval(interval)
+  }, [getLPBalance, getLP2Balance])
 
   const button = getButton()
 
@@ -414,4 +518,12 @@ function InvestRiskyProposal() {
   )
 }
 
-export default InvestRiskyProposal
+const InvestRiskyProposalWithProvider = () => {
+  return (
+    <GraphProvider value={poolsClient}>
+      <InvestRiskyProposal />
+    </GraphProvider>
+  )
+}
+
+export default InvestRiskyProposalWithProvider

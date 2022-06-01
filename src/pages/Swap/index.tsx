@@ -401,7 +401,7 @@ function Swap() {
   useEffect(() => {
     const interval = setInterval(() => {
       refresh()
-    }, 20 * 1000)
+    }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     return () => clearInterval(interval)
   }, [refresh])

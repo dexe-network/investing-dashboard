@@ -51,6 +51,32 @@ export const getPriceLP = (history): string => {
   return (Number(base) / Number(emission)).toString()
 }
 
+export const getPriceUSD = (history): string => {
+  if (!history || !history.length) {
+    return "1.00"
+  }
+
+  const usd = history[0].usdTVL
+  const emission = history[0].supply
+
+  if (
+    !usd ||
+    !emission ||
+    emission.toString() === "0" ||
+    usd.toString() === "0"
+  ) {
+    return "1.00"
+  }
+
+  const result = Number(usd) / Number(emission)
+
+  if (isNaN(result)) {
+    return "1.00"
+  }
+
+  return result.toFixed(2)
+}
+
 export const getPriceStable = (stable: string, emission: string): string => {
   if (
     !stable ||

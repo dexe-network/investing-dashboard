@@ -240,6 +240,7 @@ export const Card = styled(BasicCard)`
   flex-direction: column;
   padding: 20px 16px;
   position: relative;
+  max-width: 400px;
 `
 
 export const CardHeader = styled(Flex)`
