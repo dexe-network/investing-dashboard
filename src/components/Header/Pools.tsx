@@ -8,6 +8,7 @@ import IpfsIcon from "components/IpfsIcon"
 import OwnedPoolsList from "modals/OwnedPoolsList"
 
 import { useOwnedPools } from "state/pools/hooks"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import AddFund from "assets/icons/AddFund"
 
@@ -16,6 +17,19 @@ import { PortraitsPlus, Funds, FundWrapper } from "./styled"
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
+
+const FundItem = ({ pool }) => {
+  const [{ poolMetadata }] = usePoolMetadata(pool.id, pool.descriptionURL)
+
+  return (
+    <FundWrapper>
+      <IpfsIcon
+        size={24}
+        source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+      />
+    </FundWrapper>
+  )
+}
 
 interface IPortaitsProps {}
 const Pools = ({}: IPortaitsProps) => {
@@ -47,9 +61,7 @@ const Pools = ({}: IPortaitsProps) => {
         />
         <Funds onClick={() => setModal(true)}>
           {pools.slice(pools.length - 2).map((pool) => (
-            <FundWrapper key={pool.id}>
-              <IpfsIcon size={24} hash={pool.descriptionURL} />
-            </FundWrapper>
+            <FundItem key={pool.id} pool={pool} />
           ))}
         </Funds>
       </>
