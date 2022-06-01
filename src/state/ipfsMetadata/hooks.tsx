@@ -5,6 +5,7 @@ import { parsePoolData, parseUserData } from "utils/ipfs"
 
 import { selectPoolMetadata, selectUserMetadata } from "./selectors"
 import { addPool, addUser } from "./actions"
+import { IUserMetadata } from "./types"
 
 export function usePoolMetadata(poolId, hash) {
   const dispatch = useDispatch()
@@ -35,7 +36,12 @@ export function usePoolMetadata(poolId, hash) {
   return [{ poolMetadata, loading }, { fetchPoolMetadata }]
 }
 
-export function useUserMetadata(hash) {
+export function useUserMetadata(
+  hash
+): [
+  { userMetadata: IUserMetadata | null; loading: boolean },
+  { fetchUserMetadata: () => void }
+] {
   const dispatch = useDispatch()
   const userMetadata = useSelector(selectUserMetadata(hash))
   const [loading, setLoading] = useState(false)
@@ -55,7 +61,7 @@ export function useUserMetadata(hash) {
   }, [dispatch, hash])
 
   useEffect(() => {
-    if (!poolId || !hash) return
+    if (!hash) return
     else if (userMetadata === null) {
       fetchUserMetadata()
     }
