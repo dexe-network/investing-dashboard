@@ -56,6 +56,7 @@ import {
   SettingsInput,
 } from "./styled"
 import { usePoolContract } from "hooks/usePool"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 export const useInvest = (): [
   {
@@ -222,6 +223,11 @@ function Invest() {
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
   const [fromToken, fromData, fromBalance, updateFromBalance] = useERC20(
     poolInfo?.parameters.baseToken
+  )
+
+  const [{ poolMetadata }] = usePoolMetadata(
+    poolAddress,
+    poolInfo?.parameters.descriptionURL
   )
 
   const addTransaction = useTransactionAdder()
@@ -514,7 +520,10 @@ function Invest() {
   const to = (
     <ExchangeTo
       customIcon={
-        <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />
+        <IpfsIcon
+          size={27}
+          source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+        />
       }
       priceImpact={priceImpact}
       price={outPrice}
