@@ -14,12 +14,16 @@ import {
   selectUserRegistryAddress,
 } from "state/contracts/selectors"
 import useContract from "hooks/useContract"
+import useCopyClipboard from "hooks/useCopyClipboard"
+
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 
 import { addUserMetadata, parseUserData } from "utils/ipfs"
 import { formatBigNumber, shortenAddress } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
+import { useAddToast } from "state/application/hooks"
 
 import pen from "assets/icons/pencil-edit.svg"
 import bsc from "assets/wallets/bsc.svg"
@@ -29,6 +33,9 @@ import Withdraw from "assets/icons/Withdraw"
 import Swap from "assets/icons/Swap"
 import Expand from "assets/icons/Expand"
 import plus from "assets/icons/plus.svg"
+import copyIcon from "assets/icons/copy.svg"
+import logoutIcon from "assets/icons/logout.svg"
+import link from "assets/icons/external-link.svg"
 
 import {
   Container,
@@ -45,6 +52,8 @@ import {
   Address,
   CardButtons,
   TextButton,
+  TextLink,
+  TextIcon,
   Heading,
   TransactionsList,
   TransactionsPlaceholder,
@@ -83,21 +92,39 @@ const useUserSettings = (): [
   const [isLoading, setLoading] = useState(true)
   const [isUserEditing, setUserEditing] = useState(false)
   const [userName, setUserName] = useState("")
+  const [userNameInitial, setUserNameInitial] = useState("")
   const [userAvatar, setUserAvatar] = useState("")
+  const [userAvatarInitial, setUserAvatarInitial] = useState("")
   const [assets, setAssets] = useState<string[]>([])
   const userRegistryAddress = useSelector(selectUserRegistryAddress)
   const userRegistry = useContract(userRegistryAddress, UserRegistry)
 
   const handleUserSubmit = async () => {
     setLoading(true)
-    const ipfsReceipt = await addUserMetadata(
-      userName,
-      [...assets, userAvatar],
-      account
-    )
+    const isAvatarChanged = userAvatar !== userAvatarInitial
+    const isNameChanged = userName !== userNameInitial
+
+    if (!isAvatarChanged && !isNameChanged) {
+      setLoading(false)
+      setUserEditing(false)
+      return
+    }
+
+    const actualAssets = isAvatarChanged ? [...assets, userAvatar] : assets
+
+    const ipfsReceipt = await addUserMetadata(userName, actualAssets, account)
     const trx = await userRegistry?.changeProfile(ipfsReceipt.path)
 
     addTransaction(trx, { type: TransactionType.UPDATE_USER_CREDENTIALS })
+
+    if (isAvatarChanged) {
+      setUserAvatarInitial(userAvatar)
+      setAssets(actualAssets)
+    }
+
+    if (isNameChanged) {
+      setUserNameInitial(userName)
+    }
 
     setLoading(false)
     setUserEditing(false)
@@ -113,10 +140,12 @@ const useUserSettings = (): [
 
       if ("name" in user) {
         setUserName(user.name)
+        setUserNameInitial(user.name)
       }
 
       if ("assets" in user && user.assets.length) {
         setUserAvatar(user.assets[user.assets.length - 1])
+        setUserAvatarInitial(user.assets[user.assets.length - 1])
         setAssets(user.assets)
       }
 
@@ -146,8 +175,11 @@ const useUserSettings = (): [
 }
 
 export default function Wallet() {
-  const { account, deactivate } = useWeb3React()
+  const { account, chainId, deactivate } = useWeb3React()
   const navigate = useNavigate()
+
+  const [isCopied, copy] = useCopyClipboard()
+  const addToast = useAddToast()
 
   const [
     { isUserEditing, userName, userAvatar, isLoading },
@@ -178,6 +210,21 @@ export default function Wallet() {
   const handleInsuranceRedirect = () => {
     navigate("/insurance/management")
   }
+
+  const handleAddressCopy = () => {
+    if (!account) return
+    copy(account)
+  }
+
+  useEffect(() => {
+    if (isCopied && account) {
+      addToast(
+        { type: "success", content: "Address copied to clipboard" },
+        account,
+        2000
+      )
+    }
+  }, [isCopied, addToast, account])
 
   if (!account) return <Navigate to="/welcome" />
 
@@ -246,11 +293,40 @@ export default function Wallet() {
               BSC <NetworkIcon src={bsc} />
             </Network>
             <TextGray>Current account</TextGray>
-            <Address>{shortenAddress(account, 8)}</Address>
+            {chainId && (
+              <Address
+                removeIcon
+                href={getExplorerLink(
+                  chainId,
+                  account,
+                  ExplorerDataType.ADDRESS
+                )}
+              >
+                {shortenAddress(account, 8)}
+              </Address>
+            )}
             <CardButtons>
-              <TextButton color="#9AE2CB">Change</TextButton>
-              <TextButton>Copy</TextButton>
-              <TextButton onClick={handleLogout}>Disconnect</TextButton>
+              {chainId && (
+                <TextLink
+                  iconPosition="left"
+                  iconColor="#636a77"
+                  href={getExplorerLink(
+                    chainId,
+                    account,
+                    ExplorerDataType.ADDRESS
+                  )}
+                >
+                  Bscscan
+                </TextLink>
+              )}
+              <TextButton onClick={handleAddressCopy}>
+                <TextIcon src={copyIcon} />
+                <span>Copy</span>
+              </TextButton>
+              <TextButton onClick={handleLogout}>
+                <TextIcon src={logoutIcon} />
+                <span>Disconnect</span>
+              </TextButton>
             </CardButtons>
           </Card>
         </Cards>
