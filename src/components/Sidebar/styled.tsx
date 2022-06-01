@@ -118,11 +118,12 @@ export const SwitchText = styled.div`
 `
 
 export const BuyContainer = styled.div`
-  padding: 37px 60px 37px 24px;
+  padding: 37px 16px 37px 24px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 6px;
 `
 
 export const MiniLogoDexe = styled.div`
@@ -131,6 +132,7 @@ export const MiniLogoDexe = styled.div`
 `
 
 export const Total = styled.div`
+  margin-left: 4px;
   font-family: "Gilroy";
   font-style: normal;
   font-weight: 600;
