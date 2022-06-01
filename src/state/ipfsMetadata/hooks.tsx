@@ -51,7 +51,7 @@ export function useUserMetadata(
       setLoading(true)
       const data = await parseUserData(hash)
       if (data) {
-        dispatch(addUser({ params: { ...data } }))
+        dispatch(addUser({ params: { hash, ...data } }))
       }
       setLoading(false)
     } catch (error) {

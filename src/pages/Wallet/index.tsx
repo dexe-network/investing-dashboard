@@ -119,6 +119,8 @@ const useUserSettings = (): [
     const ipfsReceipt = await addUserMetadata(userName, actualAssets, account)
     const trx = await userRegistry?.changeProfile(ipfsReceipt.path)
 
+    setProfileURL(ipfsReceipt.path)
+
     addTransaction(trx, { type: TransactionType.UPDATE_USER_CREDENTIALS })
 
     if (isAvatarChanged) {
@@ -141,16 +143,6 @@ const useUserSettings = (): [
       setLoading(true)
       const userData = await userRegistry.userInfos(account)
       setProfileURL(userData.profileURL)
-      // const user = await parseUserData(userData.profileURL)
-
-      // if ("name" in user) {
-      //   setUserName(user.name)
-      // }
-
-      // if ("assets" in user && user.assets.length) {
-      //   setUserAvatar(user.assets[user.assets.length - 1])
-      //   setAssets(user.assets)
-      // }
 
       setLoading(false)
     }

@@ -39,7 +39,7 @@ export default createReducer(initialState, (builder) =>
     .addCase(addUser, (state, { payload: { params } }) => {
       const { hash, ...userMeta } = params
 
-      if (state.user?.hash !== hash) {
+      if (!state.user || state.user?.hash !== hash) {
         state.user = {
           ...userMeta,
           hash,
