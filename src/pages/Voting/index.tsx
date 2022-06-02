@@ -11,7 +11,7 @@ import {
   ButtonsConteiner,
 } from "./styled"
 import Confirm from "components/Confirm"
-import IpfsIcon from "components/IpfsIcon"
+import IpfsIcon from "components/Icon/IpfsIcon"
 import Button, { SecondaryButton } from "components/Button"
 import Payload from "components/Payload"
 import TransactionSent from "modals/TransactionSent"

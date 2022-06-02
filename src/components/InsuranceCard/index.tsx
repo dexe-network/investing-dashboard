@@ -1,5 +1,5 @@
 import Button, { SecondaryButton } from "components/Button"
-import IpfsIcon from "components/IpfsIcon"
+import IpfsIcon from "components/Icon/IpfsIcon"
 import TokenIcon from "components/TokenIcon"
 import VoteProgress from "components/VoteProgress"
 import ArrowForward from "assets/icons/arrow-forward.svg"
