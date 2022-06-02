@@ -28,7 +28,7 @@ export function usePoolMetadata(poolId, hash) {
 
   useEffect(() => {
     if (!poolId || !hash) return
-    else if (poolMetadata === null) {
+    if (poolMetadata === null) {
       fetchPoolMetadata()
     }
   }, [poolId, hash, poolMetadata, dispatch, fetchPoolMetadata])
@@ -62,7 +62,7 @@ export function useUserMetadata(
 
   useEffect(() => {
     if (!hash) return
-    else if (userMetadata === null) {
+    if (userMetadata === null) {
       fetchUserMetadata()
     }
   }, [hash, userMetadata, dispatch, fetchUserMetadata])
