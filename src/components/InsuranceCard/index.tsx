@@ -1,5 +1,5 @@
 import Button, { SecondaryButton } from "components/Button"
-import IpfsIcon from "components/Icon/IpfsIcon"
+import Icon from "components/Icon"
 import TokenIcon from "components/TokenIcon"
 import VoteProgress from "components/VoteProgress"
 import ArrowForward from "assets/icons/arrow-forward.svg"
@@ -49,7 +49,7 @@ const InsuranceCard: FC<InsuranceCardProps> = ({ startvoting }) => {
     <InsuranceCardContainer>
       <TopSideContainer>
         <BigTradeContainer>
-          <IpfsIcon size={42} />
+          <Icon size={42} />
           <BigTradeContentContainer>
             <BigTradeContentTitle>ISDX</BigTradeContentTitle>
             <BigTradeContentSubtitle>
@@ -71,7 +71,7 @@ const InsuranceCard: FC<InsuranceCardProps> = ({ startvoting }) => {
 
       <CenterSideContainer>
         <LastVoted>
-          <IpfsIcon size={42} />
+          <Icon size={42} />
           <LastVotedContent>
             <Date>JAN 12</Date>
             <LastVotedText>Last Voted</LastVotedText>

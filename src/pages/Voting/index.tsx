@@ -11,7 +11,7 @@ import {
   ButtonsConteiner,
 } from "./styled"
 import Confirm from "components/Confirm"
-import IpfsIcon from "components/Icon/IpfsIcon"
+import Icon from "components/Icon"
 import Button, { SecondaryButton } from "components/Button"
 import Payload from "components/Payload"
 import TransactionSent from "modals/TransactionSent"
@@ -85,7 +85,7 @@ const Voting = () => {
           <VoicePoverText>Voice Power</VoicePoverText>
           <Container>
             <Amount>2400 DEXE</Amount>
-            <IpfsIcon size={20} />
+            <Icon size={20} />
           </Container>
         </VoicePoverContainer>
         <BtnContainer>
