@@ -65,3 +65,7 @@ export const Content = styled.div`
 `
 
 export const TransactionBody = styled(Flex)``
+
+export const TransactionErrorContent = styled.div`
+  margin-bottom: 16px;
+`
