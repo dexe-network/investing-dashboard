@@ -55,6 +55,7 @@ const MemberMobile: React.FC<{
         <PoolInfo>
           <Icon
             size={38}
+            m="0 8px 0 0"
             source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
             address={data.id}
           />

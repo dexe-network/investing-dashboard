@@ -386,7 +386,13 @@ const CreateFund: FC = () => {
       <Container>
         <Body>
           <AvatarWrapper>
-            <Avatar m="0 auto" onCrop={handleChange} showUploader size={100}>
+            <Avatar
+              m="0 auto"
+              onCrop={handleChange}
+              showUploader
+              size={100}
+              url={avatarBlobString}
+            >
               <LinkButton>Add fund photo</LinkButton>
             </Avatar>
           </AvatarWrapper>

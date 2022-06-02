@@ -11,12 +11,12 @@ export const Img = styled.img<{ size: number }>`
   box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
 `
 
-export const Overlay = styled.div`
+export const Overlay = styled.div<{ size: number }>`
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: ${(props) => `${props.size}px`};
+  height: ${(props) => `${props.size}px`};
   background: rgba(24, 30, 44, 0.87);
   border-radius: 150px;
 `
@@ -60,7 +60,7 @@ export const CameraIcon = styled.img`
   right: 0;
   bottom: 10px;
   width: 18px;
-  top: 24px;
+  top: 0;
 
   @media only screen and (${device.xs}) {
     bottom: 25px;
@@ -83,4 +83,11 @@ export const Container = styled.div<{ margin: string }>`
       bottom: 25px;
     }
   }
+`
+
+export const JazzContainer = styled.div<{ size: number }>`
+  display: block;
+  width: ${(props) => `${props.size}px`};
+  height: ${(props) => `${props.size}px`};
+  margin: 0 auto;
 `

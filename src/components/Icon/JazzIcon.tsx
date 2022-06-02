@@ -4,15 +4,17 @@ interface IProps {
   size?: number
   address: string
   m?: string
+  paperStyles?: { [key: string]: React.CSSProperties }
 }
 
-const JazzIcon: React.FC<IProps> = ({ size, address, m }) => {
+const JazzIcon: React.FC<IProps> = ({ size, address, m, paperStyles }) => {
   return (
     <Jazzicon
       diameter={size ?? 28}
       seed={jsNumberForAddress(address)}
       paperStyles={{
-        margin: m ?? "0 8px 0 0",
+        margin: m ?? "0",
+        ...(paperStyles !== null ? paperStyles : {}),
       }}
     />
   )

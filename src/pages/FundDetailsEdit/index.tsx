@@ -468,6 +468,7 @@ const FundDetailsEdit: FC = () => {
             onCrop={handleChange}
             showUploader
             size={100}
+            address={poolAddress}
           >
             <LinkButton>Change fund photo</LinkButton>
           </Avatar>
