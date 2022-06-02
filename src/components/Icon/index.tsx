@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import {} from "./styled"
 
 import IconLoader from "./IconLoader"
 import BaseIcon from "./BaseIcon"
