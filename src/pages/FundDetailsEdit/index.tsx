@@ -26,7 +26,7 @@ import Input from "components/Input"
 import AddressChips from "components/AddressChips"
 import Stepper, { Step as IStep } from "components/Stepper"
 import TokenIcon from "components/TokenIcon"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 
 import BasicSettings from "./BasicSettings"
 
@@ -444,7 +444,14 @@ const FundDetailsEdit: FC = () => {
         >
           {baseData?.address && (
             <ModalIcons
-              left={<IpfsIcon m="0" size={28} hash={descriptionURL} />}
+              left={
+                <Icon
+                  m="0"
+                  size={28}
+                  source={avatarBlobString}
+                  address={poolAddress}
+                />
+              }
               right={<TokenIcon m="0" size={28} address={baseData.address} />}
               fund={poolData.ticker}
               base={baseData.symbol}

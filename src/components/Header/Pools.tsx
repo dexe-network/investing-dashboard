@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { CircleSpinner } from "react-spinners-kit"
 import { createClient, Provider as GraphProvider } from "urql"
 
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 import OwnedPoolsList from "modals/OwnedPoolsList"
 
 import { useOwnedPools } from "state/pools/hooks"
@@ -23,9 +23,10 @@ const FundItem = ({ pool }) => {
 
   return (
     <FundWrapper>
-      <IpfsIcon
+      <Icon
         size={24}
         source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+        address={pool.id}
       />
     </FundWrapper>
   )

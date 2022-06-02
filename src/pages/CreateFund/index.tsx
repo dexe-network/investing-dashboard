@@ -17,7 +17,7 @@ import TokenIcon from "components/TokenIcon"
 import Slider from "components/Slider"
 import Stepper, { Step as IStep } from "components/Stepper"
 import SwitchRow, { InputText } from "components/SwitchRow"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 
 import TokenSelect from "modals/TokenSelect"
 
@@ -369,7 +369,7 @@ const CreateFund: FC = () => {
         >
           {baseToken.address && (
             <ModalIcons
-              left={<IpfsIcon m="0" size={28} hash={descriptionURL} />}
+              left={<Icon m="0" size={28} source={avatarBlobString} />}
               right={<TokenIcon m="0" size={28} address={baseToken.address} />}
               fund={fundSymbol}
               base={baseToken.symbol}

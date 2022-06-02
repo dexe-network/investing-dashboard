@@ -6,7 +6,7 @@ import { GuardSpinner } from "react-spinners-kit"
 import { useSelector } from "react-redux"
 
 import Header from "components/Header/Layout"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 import Button from "components/Button"
 
 import useContract from "hooks/useContract"
@@ -105,10 +105,11 @@ const Success: FC<SuccessProps> = () => {
       <SuccessContainer>
         <Body>
           <IconContainer>
-            <IpfsIcon
-              source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+            <Icon
               m="0"
               size={110}
+              address={poolAddress}
+              source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
             />
           </IconContainer>
 

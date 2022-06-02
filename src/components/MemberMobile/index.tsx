@@ -22,7 +22,7 @@ import {
 import { IPoolQuery } from "constants/interfaces_v2"
 import { useERC20 } from "hooks/useContract"
 import { formatNumber } from "utils"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
 
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
@@ -53,9 +53,10 @@ const MemberMobile: React.FC<{
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <IpfsIcon
+          <Icon
             size={38}
             source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+            address={data.id}
           />
           <div>
             <Title>{data.ticker}</Title>

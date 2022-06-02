@@ -5,7 +5,7 @@ import { PriceFeed } from "abi"
 import { BigNumber, ethers } from "ethers"
 
 import TokenIcon from "components/TokenIcon"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
@@ -111,10 +111,11 @@ const PositionCard: React.FC<Props> = ({
         </Flex>
         <Flex>
           <FundSymbol>{ticker}</FundSymbol>
-          <IpfsIcon
-            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+          <Icon
             m="0"
             size={24}
+            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+            address={poolAddress}
           />
         </Flex>
       </Head>

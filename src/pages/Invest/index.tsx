@@ -14,7 +14,7 @@ import IconButton from "components/IconButton"
 import ExchangeTo from "components/Exchange/To"
 import Button, { SecondaryButton } from "components/Button"
 import TransactionSlippage from "components/TransactionSlippage"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
 
@@ -520,8 +520,9 @@ function Invest() {
   const to = (
     <ExchangeTo
       customIcon={
-        <IpfsIcon
+        <Icon
           size={27}
+          address={poolAddress}
           source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
         />
       }
