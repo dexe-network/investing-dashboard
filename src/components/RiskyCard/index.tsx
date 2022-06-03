@@ -2,9 +2,8 @@ import { FC } from "react"
 import { Flex } from "theme"
 
 import TokenIcon from "components/TokenIcon"
-import IpfsIcon from "components/IpfsIcon"
 
-import useContract, { useERC20 } from "hooks/useContract"
+import { useERC20 } from "hooks/useContract"
 
 import {
   Card,
@@ -44,10 +43,6 @@ const RiskyCard: FC<Props> = ({
           <TokenIcon address={positionAddress} m="0" size={24} />
           <Amount>5</Amount>
           <PositionSymbol>{tokenData?.symbol}</PositionSymbol>
-        </Flex>
-        <Flex>
-          <FundSymbol>{fundSymbol}</FundSymbol>
-          <IpfsIcon hash={description} m="0" size={24} />
         </Flex>
       </Head>
       <Body>

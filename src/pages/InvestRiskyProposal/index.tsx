@@ -14,7 +14,7 @@ import Button, { SecondaryButton } from "components/Button"
 import CircularProgress from "components/CircularProgress"
 import TransactionSlippage from "components/TransactionSlippage"
 import Header from "components/Header/Layout"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 
 import {
   IDivestAmounts,
@@ -54,6 +54,7 @@ import { parseTransactionError } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -190,6 +191,10 @@ function InvestRiskyProposal() {
   const [proposalPool] = useRiskyProposalContract(poolAddress)
   const proposal = useRiskyProposal(poolAddress, proposalId)
   const [, poolInfo] = usePoolContract(poolAddress)
+  const [{ poolMetadata }] = usePoolMetadata(
+    poolAddress,
+    poolInfo?.parameters.descriptionURL
+  )
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
@@ -202,7 +207,11 @@ function InvestRiskyProposal() {
   const addTransaction = useTransactionAdder()
 
   const poolIcon = (
-    <IpfsIcon size={27} hash={poolInfo?.parameters.descriptionURL} />
+    <Icon
+      size={27}
+      source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+      address={poolAddress}
+    />
   )
 
   const exchangeForm = {
