@@ -21,6 +21,7 @@ import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { addUserMetadata, parseUserData } from "utils/ipfs"
 import { formatBigNumber, shortenAddress } from "utils"
 
+import { useUserMetadata } from "state/ipfsMetadata/hooks"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 import { useAddToast } from "state/application/hooks"
@@ -96,8 +97,11 @@ const useUserSettings = (): [
   const [userAvatar, setUserAvatar] = useState("")
   const [userAvatarInitial, setUserAvatarInitial] = useState("")
   const [assets, setAssets] = useState<string[]>([])
+  const [profileURL, setProfileURL] = useState<string | null>(null)
   const userRegistryAddress = useSelector(selectUserRegistryAddress)
   const userRegistry = useContract(userRegistryAddress, UserRegistry)
+
+  const [{ userMetadata }] = useUserMetadata(profileURL)
 
   const handleUserSubmit = async () => {
     setLoading(true)
@@ -114,6 +118,8 @@ const useUserSettings = (): [
 
     const ipfsReceipt = await addUserMetadata(userName, actualAssets, account)
     const trx = await userRegistry?.changeProfile(ipfsReceipt.path)
+
+    setProfileURL(ipfsReceipt.path)
 
     addTransaction(trx, { type: TransactionType.UPDATE_USER_CREDENTIALS })
 
@@ -136,18 +142,7 @@ const useUserSettings = (): [
     const getUserInfo = async () => {
       setLoading(true)
       const userData = await userRegistry.userInfos(account)
-      const user = await parseUserData(userData.profileURL)
-
-      if ("name" in user) {
-        setUserName(user.name)
-        setUserNameInitial(user.name)
-      }
-
-      if ("assets" in user && user.assets.length) {
-        setUserAvatar(user.assets[user.assets.length - 1])
-        setUserAvatarInitial(user.assets[user.assets.length - 1])
-        setAssets(user.assets)
-      }
+      setProfileURL(userData.profileURL)
 
       setLoading(false)
     }
@@ -157,6 +152,23 @@ const useUserSettings = (): [
       setLoading(false)
     })
   }, [userRegistry, account])
+
+  useEffect(() => {
+    if (userMetadata !== null) {
+      if ("name" in userMetadata) {
+        setUserName(userMetadata.name)
+        setUserNameInitial(userMetadata.name)
+      }
+
+      if ("assets" in userMetadata && userMetadata.assets.length) {
+        setAssets(userMetadata.assets)
+        setUserAvatar(userMetadata.assets[userMetadata.assets.length - 1])
+        setUserAvatarInitial(
+          userMetadata.assets[userMetadata.assets.length - 1]
+        )
+      }
+    }
+  }, [userMetadata])
 
   return [
     {

@@ -1,6 +1,6 @@
-// import React, { useState, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Flex } from "theme"
-import { ethers } from "ethers"
+import { useWeb3React } from "@web3-react/core"
 
 import Avatar from "components/Avatar"
 import Tooltip from "components/Tooltip"
@@ -21,12 +21,54 @@ import {
   PNL,
   ShareButton,
 } from "./styled"
+import { useSelector } from "react-redux"
+import useContract from "hooks/useContract"
+import { selectUserRegistryAddress } from "state/contracts/selectors"
+import { UserRegistry } from "abi"
+import { useUserMetadata } from "state/ipfsMetadata/hooks"
 
 interface Props {
   account: string | null | undefined
 }
 
+const useInvestorMobile = (): [{ userName: string; userAvatar: string }] => {
+  const { account } = useWeb3React()
+
+  const [userName, setUserName] = useState("")
+  const [userAvatar, setUserAvatar] = useState("")
+  const [profileURL, setProfileURL] = useState<string | null>(null)
+
+  const userRegistryAddress = useSelector(selectUserRegistryAddress)
+  const userRegistry = useContract(userRegistryAddress, UserRegistry)
+
+  const [{ userMetadata }] = useUserMetadata(profileURL)
+
+  useEffect(() => {
+    if (!userRegistry || !account) return
+    ;(async () => {
+      const userData = await userRegistry.userInfos(account)
+      setProfileURL(userData.profileURL)
+    })()
+  }, [userRegistry, account])
+
+  useEffect(() => {
+    if (userMetadata !== null) {
+      if ("name" in userMetadata) {
+        setUserName(userMetadata.name)
+      }
+
+      if ("assets" in userMetadata && userMetadata.assets.length) {
+        setUserAvatar(userMetadata.assets[userMetadata.assets.length - 1])
+      }
+    }
+  }, [userMetadata])
+
+  return [{ userName, userAvatar }]
+}
+
 const InvestorMobile: React.FC<Props> = ({ account, children }) => {
+  const [{ userName, userAvatar }] = useInvestorMobile()
+
   return (
     <Card
       initial={{ opacity: 1, y: 0 }}
@@ -39,9 +81,9 @@ const InvestorMobile: React.FC<Props> = ({ account, children }) => {
     >
       <PoolInfoContainer>
         <PoolInfo>
-          <Avatar size={38} />
+          <Avatar size={38} url={userAvatar} address={account!} />
           <Flex p="0 0 0 10px" dir="column" ai="flex-start">
-            <Title>{shortenAddress(account)}</Title>
+            <Title>{userName ?? shortenAddress(account)}</Title>
             <Description>Investing</Description>
           </Flex>
         </PoolInfo>

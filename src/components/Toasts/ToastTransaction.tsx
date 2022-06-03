@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 import ToastBase from "./ToastBase"
-import { TransactionBody } from "./styled"
+import { TransactionBody, TransactionErrorContent } from "./styled"
 
 import { ToastType } from "./types"
 
@@ -47,7 +47,11 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
       case ToastType.Success:
         return <TransactionSummary info={tx.info} />
       case ToastType.Warning:
-        return <>Your transaction donU+2019t sent to the network</>
+        return (
+          <TransactionErrorContent>
+            Your transaction don&apos;t sent to the network
+          </TransactionErrorContent>
+        )
       default:
         return null
     }
