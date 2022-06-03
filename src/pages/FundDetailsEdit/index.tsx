@@ -112,7 +112,6 @@ const FundDetailsEdit: FC = () => {
   const [stepsFormating, setStepsFormating] = useState(false)
   const [isCreating, setCreating] = useState(false)
   const [transactionFail, setTransactionFail] = useState(false)
-  const [descriptionURL, setDescriptionURL] = useState("")
 
   const addTransaction = useTransactionAdder()
 
@@ -138,17 +137,13 @@ const FundDetailsEdit: FC = () => {
       ipfsReceipt = poolData.descriptionURL
     }
 
-    setDescriptionURL(ipfsReceipt.path)
-
     const descriptionURL = ipfsChanged ? ipfsReceipt.path : ipfsReceipt
-    // investors.length > 0, // - TODO: info about privacy rule
-    const privatePool = Number(poolData.investorsCount) > 0
     const totalEmission = bigify(totalLPEmission, 18).toHexString()
     const minInvest = bigify(minimalInvestment, 18).toHexString()
 
     const receipt = await traderPool.changePoolParameters(
       descriptionURL,
-      privatePool,
+      poolInfoData?.parameters.privatePool,
       totalEmission,
       minInvest
     )
@@ -163,6 +158,7 @@ const FundDetailsEdit: FC = () => {
   }, [
     traderPool,
     poolData,
+    poolInfoData,
     account,
     assets,
     avatarBlobString,
