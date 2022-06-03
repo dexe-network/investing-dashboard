@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useMemo, MouseEventHandler, useCallback } from "react"
 import { Container, Text, BaseIcon } from "./styled"
 
 interface IProps {
@@ -15,7 +15,8 @@ interface IProps {
   removeIcon?: boolean
   fw?: string
   fz?: string
-  children: React.ReactNode
+  children?: React.ReactNode
+  onClick?: (e: MouseEventHandler) => void
 }
 
 const ExternalLink: React.FC<IProps> = ({
@@ -31,8 +32,19 @@ const ExternalLink: React.FC<IProps> = ({
   removeIcon = false,
   fw,
   fz,
-  children,
+  children = null,
+  onClick,
 }) => {
+  const click = useCallback(
+    (e) => {
+      e.stopPropagation()
+      if (onClick) {
+        onClick(e)
+      }
+    },
+    [onClick]
+  )
+
   const Icon = useMemo(() => {
     if (removeIcon) {
       return null
@@ -54,10 +66,13 @@ const ExternalLink: React.FC<IProps> = ({
       className={className}
       fw={fw}
       fz={fz}
+      onClick={click}
     >
-      <Text iconPosition={iconPosition} removeIcon={removeIcon}>
-        {children}
-      </Text>
+      {children !== null && (
+        <Text iconPosition={iconPosition} removeIcon={removeIcon}>
+          {children}
+        </Text>
+      )}
       {Icon}
     </Container>
   )
