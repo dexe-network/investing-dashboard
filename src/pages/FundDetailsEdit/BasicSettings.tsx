@@ -1,5 +1,4 @@
-import { FC, MouseEventHandler, useMemo } from "react"
-import { useWeb3React } from "@web3-react/core"
+import { FC, useMemo } from "react"
 import { format } from "date-fns"
 import { BigNumber } from "@ethersproject/bignumber"
 
@@ -8,14 +7,14 @@ import {
   BasicItem,
   BasicTitle,
   BasicValue,
-  BasicValueIcon,
   BasicValueText,
 } from "./styled"
 import Tooltip from "components/Tooltip"
+import ExternalLink from "components/ExternalLink"
 
-import link from "assets/icons/link.svg"
-
+import { useActiveWeb3React } from "hooks"
 import { expandTimestamp, shortenAddress, formatBigNumber } from "utils"
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { IPoolQuery } from "constants/interfaces_v2"
 
 const fundTypes = {
@@ -28,7 +27,7 @@ const BasicSettings: FC<{
   symbol: string | undefined
   commissionPercentage: BigNumber | undefined
 }> = ({ poolData, symbol, commissionPercentage }) => {
-  const { account } = useWeb3React()
+  const { chainId, account } = useActiveWeb3React()
 
   const address = useMemo(() => {
     if (!!poolData) {
@@ -78,21 +77,19 @@ const BasicSettings: FC<{
     return ""
   }, [commissionPercentage])
 
-  const handleTokenRedirect = (address: string) =>
-    window.open(`https://bscscan.com/address/${address}`, "_blank")
-
-  const handleTokenLinkClick: MouseEventHandler = (e) => {
-    e.stopPropagation()
-    handleTokenRedirect(account!)
-  }
-
   return (
     <BasicContainer>
       <BasicItem>
         <BasicTitle>Owner</BasicTitle>
-        <BasicValue onClick={handleTokenLinkClick}>
-          <BasicValueText>{address}</BasicValueText>
-          <BasicValueIcon src={link}></BasicValueIcon>
+        <BasicValue>
+          {chainId && account && (
+            <ExternalLink
+              href={getExplorerLink(chainId, account, ExplorerDataType.ADDRESS)}
+              iconColor="#0065c2"
+            >
+              {address}
+            </ExternalLink>
+          )}
         </BasicValue>
       </BasicItem>
       <BasicItem>

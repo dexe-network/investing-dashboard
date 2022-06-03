@@ -1,5 +1,11 @@
 import { useSideBarContext } from "context/SideBarContext"
 import { createPortal } from "react-dom"
+import { useSelector } from "react-redux"
+
+import { selectDexeAddress } from "state/contracts/selectors"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
+import { normalizeBigNumber } from "utils"
+
 import {
   Container,
   Overlay,
@@ -52,6 +58,9 @@ const Sidebar: React.FC = () => {
   const { toggleSideBar, isSideBarOpen } = useSideBarContext()
   const isOpen = isSideBarOpen ? "visible" : "hidden"
 
+  const dexeAddress = useSelector(selectDexeAddress)
+  const markPriceUSD = useTokenPriceOutUSD({ tokenAddress: dexeAddress })
+
   if (!sidebarRoot) return null
   return createPortal(
     <>
@@ -76,8 +85,8 @@ const Sidebar: React.FC = () => {
           </Close>
         </HeaderBar>
         <MenuList>
-          {list.map(({ label, icon, path }) => (
-            <MenuItem key={path}>
+          {list.map(({ label, icon, path }, index) => (
+            <MenuItem key={path + index}>
               <MenuIcon>{icon}</MenuIcon>
               <MenuText>{label}</MenuText>
             </MenuItem>
@@ -94,7 +103,7 @@ const Sidebar: React.FC = () => {
             <MiniLogoDexe>
               <img src={MiniLogo} alt="dexe-logo" />
             </MiniLogoDexe>
-            <Total>$ 100</Total>
+            <Total>$ {normalizeBigNumber(markPriceUSD, 18, 2)}</Total>
             <BuyText>Buy DEXE</BuyText>
             <ArrowSymbol>
               <img src={Arrow} alt="arrow" />

@@ -32,7 +32,6 @@ export const ShareButton = styled.img`
 `
 
 export const PoolInfo = styled(Flex)`
-  width: 50%;
   justify-content: flex-start;
   padding-left: 16px;
 `
