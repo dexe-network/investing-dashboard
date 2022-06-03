@@ -45,6 +45,7 @@ const Closed = () => {
           baseToken={data?.baseToken}
           ticker={data?.ticker}
           description={data?.descriptionURL}
+          poolAddress={poolAddress}
           key={position.id}
           position={position}
         />

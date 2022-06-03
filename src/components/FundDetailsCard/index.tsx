@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from "react"
-// import styled from "styled-components"
-// import { motion } from "framer-motion"
+import React, { useState, useEffect } from "react"
+
 import {
   Label,
   DescriptionText,
@@ -8,11 +7,10 @@ import {
   InfoRow,
   EmptyDescription,
 } from "./styled"
-import { parsePoolData } from "utils/ipfs"
 import { useERC20 } from "hooks/useContract"
-import { ethers } from "ethers"
 import { IPoolQuery, PoolInfo } from "constants/interfaces_v2"
 import { formatBigNumber } from "utils"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 const fundTypes = {
   BASIC_POOL: "Basic",
@@ -29,17 +27,14 @@ const FundDetailsCard: React.FC<Props> = ({ data, poolInfo }) => {
   const [strategy, setStrategy] = useState("")
   const [, baseData] = useERC20(data.baseToken)
 
-  useEffect(() => {
-    if (!data) return
-    ;(async () => {
-      const parsed = await parsePoolData(data.descriptionURL)
+  const [{ poolMetadata }] = usePoolMetadata(data.id, data.descriptionURL)
 
-      if (!!parsed) {
-        setDescription(parsed.description)
-        setStrategy(parsed.strategy)
-      }
-    })()
-  }, [data])
+  useEffect(() => {
+    if (!poolMetadata) return
+
+    setDescription(poolMetadata.description)
+    setStrategy(poolMetadata.strategy)
+  }, [poolMetadata])
 
   return (
     <Container>

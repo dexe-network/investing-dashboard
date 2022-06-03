@@ -5,7 +5,7 @@ import { PriceFeed } from "abi"
 import { BigNumber, ethers } from "ethers"
 
 import TokenIcon from "components/TokenIcon"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
@@ -26,12 +26,14 @@ import {
   StablePrice,
   PNL,
 } from "./styled"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 interface Props {
   baseToken?: string
   baseSymbol?: string
   ticker?: string
   description?: string
+  poolAddress?: string
   position: IPosition
 }
 
@@ -40,6 +42,7 @@ const PositionCard: React.FC<Props> = ({
   baseSymbol,
   ticker,
   description,
+  poolAddress,
   position,
 }) => {
   const [, tokenData] = useERC20(position.positionToken)
@@ -52,6 +55,8 @@ const PositionCard: React.FC<Props> = ({
   const markPriceUSD = useTokenPriceOutUSD({
     tokenAddress: position.positionToken,
   })
+
+  const [{ poolMetadata }] = usePoolMetadata(poolAddress, description)
 
   useEffect(() => {
     if (!tokenData) return
@@ -106,7 +111,12 @@ const PositionCard: React.FC<Props> = ({
         </Flex>
         <Flex>
           <FundSymbol>{ticker}</FundSymbol>
-          <IpfsIcon hash={description} m="0" size={24} />
+          <Icon
+            m="0"
+            size={24}
+            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+            address={poolAddress}
+          />
         </Flex>
       </Head>
       <Body>
