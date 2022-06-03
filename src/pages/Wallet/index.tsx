@@ -266,6 +266,7 @@ export default function Wallet() {
               <AvatarWrapper>
                 <Avatar
                   url={userAvatar}
+                  address={account}
                   onCrop={(_, value) => setUserAvatar(value)}
                   showUploader={isUserEditing}
                   size={44}
