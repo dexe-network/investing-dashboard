@@ -14,13 +14,13 @@ export const Container = styled.label`
   padding-left: 16px;
 `
 
-export const Checkmark = styled.span`
+export const Checkmark = styled.span<{ error: boolean }>`
   position: absolute;
   left: 0;
   height: 16px;
   width: 16px;
   background-color: transparent;
-  border: 2px solid #7fffd4;
+  border: 2px solid ${({ error }) => (error ? "#DB6D6D" : "#7fffd4")};
   box-sizing: border-box;
   border-radius: 2px;
   transition: all 0.15s ease-in-out;
@@ -31,7 +31,7 @@ export const Checkmark = styled.span`
     display: none;
 
     transition: all 0.15s ease-in-out;
-    border: solid #7fffd4;
+    border: solid ${({ error }) => (error ? "#DB6D6D" : "#7fffd4")};
     -webkit-transform: rotate(45deg);
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
