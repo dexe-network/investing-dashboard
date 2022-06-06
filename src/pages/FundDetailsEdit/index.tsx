@@ -4,6 +4,7 @@ import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner, PulseSpinner } from "react-spinners-kit"
 import { ethers } from "ethers"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 import {
   Container,
@@ -40,6 +41,7 @@ import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
+import useTransactionWaiter from "hooks/useTransactionWaiter"
 import { TraderPool } from "abi"
 
 import { useTransactionAdder } from "state/transactions/hooks"
@@ -50,9 +52,13 @@ const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
+function txIsMined(tx: TransactionReceipt | undefined) {
+  return !!tx && !!tx.logs.length && !!tx.logs[0].address
+}
+
 const FundDetailsEdit: FC = () => {
   const { poolAddress } = useParams()
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
 
   const [poolData] = usePoolQuery(poolAddress)
   const [, poolInfoData] = usePoolContract(poolAddress)
@@ -114,6 +120,7 @@ const FundDetailsEdit: FC = () => {
   const [transactionFail, setTransactionFail] = useState(false)
 
   const addTransaction = useTransactionAdder()
+  const waitTransaction = useTransactionWaiter(library)
 
   const handleParametersUpdate = useCallback(async () => {
     if (!traderPool || !poolData || !account) return
@@ -154,7 +161,11 @@ const FundDetailsEdit: FC = () => {
       fundName: poolData.name,
     })
 
-    return await receipt.wait()
+    const { promise } = waitTransaction(receipt.hash)
+
+    return promise.then((txReceipt) => {
+      return txReceipt as TransactionReceipt
+    })
   }, [
     traderPool,
     poolData,
@@ -168,6 +179,7 @@ const FundDetailsEdit: FC = () => {
     strategy,
     totalLPEmission,
     addTransaction,
+    waitTransaction,
   ])
 
   const handleManagersRemove = useCallback(async () => {
@@ -179,8 +191,18 @@ const FundDetailsEdit: FC = () => {
       poolId: poolAddress,
     })
 
-    return await receipt.wait()
-  }, [managersRemoved, traderPool, addTransaction, poolAddress])
+    const { promise } = waitTransaction(receipt.hash)
+
+    return promise.then((txReceipt) => {
+      return txReceipt as TransactionReceipt
+    })
+  }, [
+    traderPool,
+    managersRemoved,
+    addTransaction,
+    poolAddress,
+    waitTransaction,
+  ])
 
   const handleManagersAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersAdded, true)
@@ -191,8 +213,12 @@ const FundDetailsEdit: FC = () => {
       poolId: poolAddress,
     })
 
-    return await receipt.wait()
-  }, [managersAdded, traderPool, addTransaction, poolAddress])
+    const { promise } = waitTransaction(receipt.hash)
+
+    return promise.then((txReceipt) => {
+      return txReceipt as TransactionReceipt
+    })
+  }, [traderPool, managersAdded, addTransaction, poolAddress, waitTransaction])
 
   const handleInvestorsRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -206,8 +232,18 @@ const FundDetailsEdit: FC = () => {
       poolId: poolAddress,
     })
 
-    return await receipt.wait()
-  }, [investorsRemoved, traderPool, addTransaction, poolAddress])
+    const { promise } = waitTransaction(receipt.hash)
+
+    return promise.then((txReceipt) => {
+      return txReceipt as TransactionReceipt
+    })
+  }, [
+    traderPool,
+    investorsRemoved,
+    addTransaction,
+    poolAddress,
+    waitTransaction,
+  ])
 
   const handleInvestorsAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -221,8 +257,12 @@ const FundDetailsEdit: FC = () => {
       poolId: poolAddress,
     })
 
-    return await receipt.wait()
-  }, [investorsAdded, traderPool, addTransaction, poolAddress])
+    const { promise } = waitTransaction(receipt.hash)
+
+    return promise.then((txReceipt) => {
+      return txReceipt as TransactionReceipt
+    })
+  }, [traderPool, investorsAdded, addTransaction, poolAddress, waitTransaction])
 
   const handleSubmit = async () => {
     if (stepsFormating) return
@@ -290,8 +330,7 @@ const FundDetailsEdit: FC = () => {
         setStepPending(true)
         const data = await handleParametersUpdate()
 
-        // check if transaction is mined
-        if (!!data && data.logs.length && data.logs[0].address) {
+        if (txIsMined(data)) {
           setStep(step + 1)
           setStepPending(false)
           poolParametersSaveCallback()
@@ -300,33 +339,53 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Managers") {
         setStepPending(true)
 
+        const txs: Promise<TransactionReceipt>[] = []
+
         if (!!managersRemoved.length) {
-          await handleManagersRemove()
-          managersRemoveCallback()
+          txs.push(handleManagersRemove())
         }
         if (!!managersAdded.length) {
-          await handleManagersAdd()
-          managersAddCallback()
+          txs.push(handleManagersAdd())
         }
 
-        setStep(step + 1)
-        setStepPending(false)
+        Promise.all(txs).then((res) => {
+          if (res.every(txIsMined)) {
+            if (!!managersRemoved.length) {
+              managersRemoveCallback()
+            }
+            if (!!managersAdded.length) {
+              managersAddCallback()
+            }
+            setStep(step + 1)
+            setStepPending(false)
+          }
+        })
       }
 
       if (steps[step].title === "Investors") {
         setStepPending(true)
 
+        const txs: Promise<TransactionReceipt>[] = []
+
         if (!!investorsRemoved.length) {
-          await handleInvestorsRemove()
-          investorsRemoveCallback()
+          txs.push(handleInvestorsRemove())
         }
         if (!!investorsAdded.length) {
-          await handleInvestorsAdd()
-          investorsAddCallback()
+          txs.push(handleInvestorsAdd())
         }
 
-        setStep(step + 1)
-        setStepPending(false)
+        Promise.all(txs).then((res) => {
+          if (res.every(txIsMined)) {
+            if (!!investorsRemoved.length) {
+              investorsRemoveCallback()
+            }
+            if (!!investorsAdded.length) {
+              investorsAddCallback()
+            }
+            setStep(step + 1)
+            setStepPending(false)
+          }
+        })
       }
 
       if (steps[step].title === "Success") {
