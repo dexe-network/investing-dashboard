@@ -1,7 +1,9 @@
-import React from "react"
+import { useCallback, useState } from "react"
+
 import Modal from "components/Modal"
 import Checkbox from "components/Checkbox"
 import Button from "components/Button"
+
 import {
   ModalText,
   CheckBoxContent,
@@ -10,9 +12,32 @@ import {
   ButtonContainer,
 } from "./styled"
 
-const TermsAndConditions = () => {
+interface Props {
+  isOpen: boolean
+  toggle: () => void
+  onAgree: () => void
+}
+
+const TermsAndConditions: React.FC<Props> = ({ isOpen, toggle, onAgree }) => {
+  const [agree, setAgree] = useState(false)
+  const [agreeError, setAgreeError] = useState(false)
+
+  const handleCheckbox = (value) => {
+    setAgreeError(false)
+    setAgree(value)
+  }
+
+  const handleAgree = useCallback(() => {
+    setAgreeError(false)
+    if (agree) {
+      onAgree()
+    } else {
+      setAgreeError(true)
+    }
+  }, [agree, onAgree])
+
   return (
-    <Modal title="Terms & Conditions agreement" isOpen toggle={() => {}}>
+    <Modal title="Terms & Conditions agreement" isOpen={isOpen} toggle={toggle}>
       <ModalText>
         <ul>
           <li>
@@ -45,8 +70,13 @@ const TermsAndConditions = () => {
         </ul>
       </ModalText>
       <CheckBoxContent>
-        <Checkbox name="agree-terms" onChange={() => {}} />
-        <CheckboxText>
+        <Checkbox
+          name="agree-terms"
+          checked={agree}
+          onChange={handleCheckbox}
+          error={agreeError}
+        />
+        <CheckboxText color={agreeError ? "#DB6D6D" : "#e4f2ff"}>
           I agree to the
           <CheckboxLink>
             <a> Tearms of Use </a>
@@ -58,7 +88,9 @@ const TermsAndConditions = () => {
         </CheckboxText>
       </CheckBoxContent>
       <ButtonContainer>
-        <Button full>Sing and proceed</Button>
+        <Button full onClick={handleAgree}>
+          Sing and proceed
+        </Button>
       </ButtonContainer>
     </Modal>
   )

@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 import { useSelector } from "react-redux"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 import Payload from "components/Payload"
 import ExchangeFrom from "components/Exchange/From"
@@ -17,9 +18,11 @@ import TransactionSlippage from "components/TransactionSlippage"
 import Icon from "components/Icon"
 import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
+import TermsAndConditions from "modals/TermsAndConditions"
 
 import { PriceFeed, TraderPool } from "abi"
 import useContract, { useERC20 } from "hooks/useContract"
+import usePrivacyPolicyAgreed from "hooks/usePrivacyPolicyAgreed"
 import { PoolType } from "constants/interfaces_v2"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
@@ -184,6 +187,10 @@ export const useInvest = (): [
   ]
 }
 
+function txIsMined(tx: TransactionReceipt | undefined) {
+  return !!tx && !!tx.logs.length && !!tx.logs[0].address
+}
+
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
@@ -211,6 +218,11 @@ function Invest() {
   const [inPrice, setInPrice] = useState(BigNumber.from("0"))
   const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
 
+  const [showPrivacyAgreement, setShowPrivacyAgreement] = useState(false)
+  const onShowPrivacyAgreement = () => {
+    setShowPrivacyAgreement(true)
+  }
+
   const { poolAddress } = useParams<{
     poolAddress: string
     poolType: PoolType
@@ -229,6 +241,8 @@ function Invest() {
     poolAddress,
     poolInfo?.parameters.descriptionURL
   )
+
+  const [privacyPolicyAgreed, agreePrivacyPolicy] = usePrivacyPolicyAgreed()
 
   const addTransaction = useTransactionAdder()
 
@@ -420,6 +434,15 @@ function Invest() {
     approveToken().catch(console.error)
   }
 
+  const handleAgreePrivacyPolicy = async () => {
+    const data = await agreePrivacyPolicy()
+
+    if (txIsMined(data)) {
+      setShowPrivacyAgreement(false)
+      approve()
+    }
+  }
+
   // allowance watcher
   useEffect(() => {
     if (
@@ -480,7 +503,12 @@ function Invest() {
 
     if (direction === "deposit" && BigNumber.from(allowance).lt(fromAmount)) {
       return (
-        <SecondaryButton size="large" onClick={approve} fz={22} full>
+        <SecondaryButton
+          size="large"
+          onClick={privacyPolicyAgreed ? approve : onShowPrivacyAgreement}
+          fz={22}
+          full
+        >
           <Flex>
             Unlock token <LockedIcon />
           </Flex>
@@ -588,6 +616,13 @@ function Invest() {
       <TransactionError isOpen={!!error.length} toggle={() => setError("")}>
         {error}
       </TransactionError>
+      <TermsAndConditions
+        isOpen={showPrivacyAgreement}
+        toggle={() => {
+          setShowPrivacyAgreement(false)
+        }}
+        onAgree={handleAgreePrivacyPolicy}
+      />
     </>
   )
 }

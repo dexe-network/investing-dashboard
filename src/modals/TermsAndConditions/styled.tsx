@@ -29,7 +29,7 @@ export const CheckBoxContent = styled.div`
   box-sizing: border-box;
 `
 
-export const CheckboxText = styled.div`
+export const CheckboxText = styled.div<{ color: string }>`
   padding-left: 10px;
   box-sizing: border-box;
   font-family: "Gilroy";
@@ -38,7 +38,7 @@ export const CheckboxText = styled.div`
   font-size: 12px;
   line-height: 12px;
   letter-spacing: 0.03em;
-  color: #e4f2ff;
+  color: ${({ color }) => color};
 `
 
 export const CheckboxLink = styled.a`
