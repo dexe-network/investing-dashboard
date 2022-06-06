@@ -250,18 +250,22 @@ export const stableCoins = {
 
 export const EXCHANGE_DEFAULT_PERCENTS = [
   {
+    id: "010",
     label: "10%",
     percent: "0x016345785d8a0000",
   },
   {
+    id: "025",
     label: "25%",
     percent: "0x03782dace9d90000",
   },
   {
+    id: "050",
     label: "50%",
     percent: "0x06f05b59d3b20000",
   },
   {
+    id: "075",
     label: "75%",
     percent: "0x0a688906bd8b0000",
   },

@@ -1,6 +1,6 @@
 import { getAddress } from "@ethersproject/address"
 import { Contract } from "@ethersproject/contracts"
-import { BigNumber } from "@ethersproject/bignumber"
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import { poolTypes, stableCoins } from "constants/index"
 import { ethers } from "ethers"
 import { ERC20 } from "abi"
@@ -227,7 +227,12 @@ export function checkMetamask() {
   //
 }
 
-export function getAllowance(address, tokenAddress, contractAddress, lib) {
+export function getAllowance(
+  address,
+  tokenAddress,
+  contractAddress,
+  lib
+): BigNumber {
   const signer = lib.getSigner(address).connectUnchecked()
 
   const erc20Contract = new Contract(tokenAddress, ERC20, signer)
@@ -303,4 +308,12 @@ export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
   const minutes = setMinutes(hours, m)
 
   return shortTimestamp(getTime(minutes))
+}
+
+export const cutDecimalPlaces = (value: BigNumberish, decimals = 18) => {
+  const number = ethers.utils.formatUnits(value, decimals)
+
+  const parsed = Math.round(parseFloat(number) * 10 ** 6) / 10 ** 6
+
+  return ethers.utils.parseUnits(parsed.toString(), decimals)
 }

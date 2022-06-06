@@ -148,7 +148,7 @@ const Profile: React.FC<Props> = () => {
   const [leverageInfo, poolInfoData] = usePoolContract(poolAddress)
 
   const handleBuyRedirect = () => {
-    navigate(`/pool/invest/${poolType}/${poolData?.id}`)
+    navigate(`/pool/invest/${poolData?.id}`)
   }
 
   const back = () => navigate(-1)

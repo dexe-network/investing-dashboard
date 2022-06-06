@@ -1,6 +1,5 @@
 import React from "react"
-import { Flex, Text } from "theme"
-import { ethers } from "ethers"
+import { Flex } from "theme"
 import { BigNumber } from "@ethersproject/bignumber"
 import TokenIcon from "components/TokenIcon"
 import Ripple from "components/Ripple"
@@ -19,7 +18,7 @@ import {
   Tokens,
   Icon,
 } from "./styled"
-import { formatBigNumber, calcPrice } from "utils"
+import { formatBigNumber, cutDecimalPlaces } from "utils"
 
 interface IFromProps {
   price: BigNumber
@@ -51,7 +50,8 @@ const ExchangeFrom: React.FC<IFromProps> = ({
   }
 
   const handleInputChange = (value) => {
-    onChange(value || "0")
+    const fixedAmount = cutDecimalPlaces(value, decimal)
+    onChange(fixedAmount.toString() || "0")
   }
 
   if (!onSelect && noData) {
@@ -83,7 +83,7 @@ const ExchangeFrom: React.FC<IFromProps> = ({
             <Max>Max</Max>
           </Balance>
         </Flex>
-        <Flex full ai="center">
+        <Flex full ai="center" p="21px 0 0">
           <BigNumberInput
             decimals={18}
             onChange={handleInputChange}

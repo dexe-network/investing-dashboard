@@ -7,11 +7,10 @@ import { BigNumber } from "@ethersproject/bignumber"
 import { useSelector } from "react-redux"
 
 import Payload from "components/Payload"
-import ExchangeFrom from "components/Exchange/From"
+import ExchangeInput from "components/Exchange/ExchangeInput"
 import ExchangeDivider from "components/Exchange/Divider"
 import CircularProgress from "components/CircularProgress"
 import IconButton from "components/IconButton"
-import ExchangeTo from "components/Exchange/To"
 import Button, { SecondaryButton } from "components/Button"
 import TransactionSlippage from "components/TransactionSlippage"
 import Icon from "components/Icon"
@@ -24,7 +23,12 @@ import { PoolType } from "constants/interfaces_v2"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { createClient, Provider as GraphProvider } from "urql"
-import { calcSlippage, getAllowance, parseTransactionError } from "utils"
+import {
+  calcSlippage,
+  cutDecimalPlaces,
+  getAllowance,
+  parseTransactionError,
+} from "utils"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
 import getReceipt from "utils/getReceipt"
 
@@ -43,20 +47,10 @@ import {
   IconsGroup,
 } from "components/Exchange/styled"
 
-import {
-  ErrorText,
-  PriceContainer,
-  InfoRow,
-  SettingsIcon,
-  SettingsLabel,
-  SettingsCard,
-  SettingsTitle,
-  SettingsDescription,
-  SettingsButton,
-  SettingsInput,
-} from "./styled"
 import { usePoolContract } from "hooks/usePool"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
+
+import useCustomInvest from "./useInvest"
 
 export const useInvest = (): [
   {
@@ -206,7 +200,6 @@ function Invest() {
   const [isSubmiting, setSubmiting] = useState(false)
   const [isSlippageOpen, setSlippageOpen] = useState(false)
   const [allowance, setAllowance] = useState("-1")
-  const [priceImpact, setPriceImpact] = useState("0")
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
   const [inPrice, setInPrice] = useState(BigNumber.from("0"))
   const [outPrice, setOutPrice] = useState(BigNumber.from("0"))
@@ -231,14 +224,6 @@ function Invest() {
   )
 
   const addTransaction = useTransactionAdder()
-
-  const updatePriceImpact = (from: BigNumber, to: BigNumber) => {
-    const f = ethers.utils.formatUnits(from, 18)
-    const t = ethers.utils.formatUnits(to, 18)
-
-    const result = getPriceImpact(parseFloat(f), parseFloat(t))
-    setPriceImpact(result.toFixed(4))
-  }
 
   const updateToBalance = async () => {
     const balance: BigNumber = await traderPool?.balanceOf(account)
@@ -345,13 +330,13 @@ function Invest() {
   }
 
   const handleFromChange = (v: string) => {
-    setFromAmount(v)
+    const amount = cutDecimalPlaces(v, fromData?.decimals)
+    setFromAmount(amount.toString())
 
     const fetchAndUpdateTo = async () => {
-      const amount = BigNumber.from(v)
-
       const tokens = await traderPool?.getInvestTokens(amount.toHexString())
-      setToAmount(tokens.lpAmount.toString())
+      const receivedAmounts = cutDecimalPlaces(tokens.lpAmount)
+      setToAmount(receivedAmounts.toString())
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         poolInfo?.parameters.baseToken,
@@ -359,38 +344,34 @@ function Invest() {
       )
       setInPrice(fromPrice[0])
 
-      const priceOut = fromPrice[0].div(amount).mul(tokens.lpAmount)
+      const priceOut = fromPrice[0].div(amount).mul(receivedAmounts)
       setOutPrice(priceOut)
-
-      updatePriceImpact(fromPrice[0], priceOut)
     }
 
     fetchAndUpdateTo().catch(console.error)
   }
 
   const handleToChange = (v) => {
-    setToAmount(v)
+    const amount = cutDecimalPlaces(v)
+    setToAmount(amount.toString())
 
     const fetchAndUpdateFrom = async () => {
-      const amount = BigNumber.from(v)
-
       const tokens = await traderPool?.getDivestAmountsAndCommissions(
         account,
         amount.toHexString()
       )
-      setFromAmount(tokens.receptions.baseAmount)
+      const neededAmounts = cutDecimalPlaces(tokens.receptions.baseAmount)
+      setFromAmount(neededAmounts.toString())
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         poolInfo?.parameters.baseToken,
-        tokens.receptions.baseAmount.toHexString()
+        neededAmounts.toHexString()
       )
       setOutPrice(fromPrice[0])
 
-      const priceIn = fromPrice[0].div(tokens.receptions.baseAmount).mul(amount)
+      const priceIn = fromPrice[0].div(neededAmounts).mul(amount)
 
       setInPrice(priceIn)
-
-      updatePriceImpact(fromPrice[0], priceIn)
     }
 
     fetchAndUpdateFrom().catch(console.error)
@@ -506,7 +487,7 @@ function Invest() {
   const button = getButton()
 
   const from = (
-    <ExchangeFrom
+    <ExchangeInput
       price={inPrice}
       amount={fromAmount}
       balance={fromBalance}
@@ -518,7 +499,7 @@ function Invest() {
   )
 
   const to = (
-    <ExchangeTo
+    <ExchangeInput
       customIcon={
         <Icon
           size={27}
@@ -526,7 +507,6 @@ function Invest() {
           source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
         />
       }
-      priceImpact={priceImpact}
       price={outPrice}
       amount={toAmount}
       balance={toBalance}
@@ -544,10 +524,12 @@ function Invest() {
         <IconsGroup>
           <CircularProgress />
           <IconButton
+            size={12}
+            filled
             media={settings}
             onClick={() => setSlippageOpen(!isSlippageOpen)}
           />
-          <IconButton media={close} onClick={() => {}} />
+          <IconButton size={10} filled media={close} onClick={() => {}} />
         </IconsGroup>
       </CardHeader>
       {direction === "deposit" ? from : to}
@@ -600,4 +582,16 @@ const InvestWithProvider = () => {
   )
 }
 
-export default InvestWithProvider
+const InvestV2 = () => {
+  const { poolAddress } = useParams<{
+    poolAddress: string
+    poolType: PoolType
+  }>()
+  const [{ allowance }] = useCustomInvest(poolAddress, "deposit")
+
+  console.log(allowance)
+
+  return <></>
+}
+
+export default InvestV2

@@ -13,7 +13,6 @@ export const Icon = styled.img<{ size?: number; m: string }>`
   min-width: ${(props) => (props.size ? props.size : 28)}px;
   border-radius: 50px;
   margin: ${(props) => props.m};
-  border: 2px solid #171b1f;
 `
 
 export const Loader = styled.div<{ size?: number; m: string }>`

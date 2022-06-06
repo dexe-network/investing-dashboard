@@ -61,6 +61,10 @@ export const GradientBorderButton = styled(GradientBorder)<{
   margin: ${(props) => props.m || "0 auto"};
   min-width: fit-content;
 
+  &:after {
+    background: #121928;
+  }
+
   ${Text} {
     font-family: "Gilroy";
     font-style: normal;

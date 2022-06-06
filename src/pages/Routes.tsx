@@ -81,7 +81,7 @@ export default function Routes() {
                     />
 
                     <Route
-                      path="pool/invest/:poolType/:poolAddress"
+                      path="pool/invest/:poolAddress"
                       element={<Invest />}
                     />
                     <Route
