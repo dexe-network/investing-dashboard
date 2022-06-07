@@ -36,12 +36,14 @@ import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
 
-import { bigify } from "utils"
+import { bigify, formatBigNumber, shortenAddress } from "utils"
+import { arrayDifference } from "utils/array"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
 import useTransactionWaiter from "hooks/useTransactionWaiter"
+import { useAddToast } from "state/application/hooks"
 import { TraderPool } from "abi"
 
 import { useTransactionAdder } from "state/transactions/hooks"
@@ -121,6 +123,8 @@ const FundDetailsEdit: FC = () => {
 
   const addTransaction = useTransactionAdder()
   const waitTransaction = useTransactionWaiter(library)
+
+  const addToast = useAddToast()
 
   const handleParametersUpdate = useCallback(async () => {
     if (!traderPool || !poolData || !account) return
@@ -425,6 +429,33 @@ const FundDetailsEdit: FC = () => {
     }
   }
 
+  const handleInvestorsRowChange = async (state: string[]) => {
+    if (state.length > investors.length) {
+      handleChange("investors", state)
+    } else {
+      // Prevent removing investor if he claimed some LP's
+      const removedAddress = arrayDifference(investors, state)[0]
+      const claimedAmountBigNumber = await traderPool?.balanceOf(removedAddress)
+      const claimedAmount = formatBigNumber(claimedAmountBigNumber, 18, 6)
+
+      if (Number(claimedAmount) >= 0) {
+        addToast(
+          {
+            type: "warning",
+            content: `Can't remove ${shortenAddress(
+              removedAddress,
+              3
+            )}. Claimed: ${claimedAmount} ${poolData!.ticker}.`,
+          },
+          removedAddress,
+          5000
+        )
+      } else {
+        handleChange("investors", state)
+      }
+    }
+  }
+
   // update initial value context
   useEffect(() => {
     if (!poolData || !poolInfoData) return
@@ -652,7 +683,7 @@ const FundDetailsEdit: FC = () => {
               >
                 <AddressChips
                   items={investors}
-                  onChange={(v) => handleChange("investors", v)}
+                  onChange={(v) => handleInvestorsRowChange(v)}
                   limit={100}
                   label="0x..."
                 />
