@@ -1,4 +1,5 @@
 import React from "react"
+import { arrayDifference, arrayIntersection, arrayIncludes } from "utils/array"
 
 interface IState {
   loading: boolean
@@ -98,12 +99,6 @@ export const FundContext = React.createContext<IContext>(defaultContext)
 
 export const useUpdateFundContext = () => React.useContext(FundContext)
 
-const arrayDifference = (a1: string[], a2: string[]): string[] =>
-  a1.filter((x) => !a2.includes(x))
-const arrayIntersection = (a1: string[], a2: string[]): string[] =>
-  a1.filter((x) => a2.includes(x))
-const arrayIncludes = (a: string[], value: string): boolean => a.includes(value)
-
 const propertiesMapping = {
   managers: {
     initial: "managersInitial",
@@ -170,8 +165,8 @@ class UpdateFundContext extends React.Component {
   updateRemovedList = (name: string, value: any) => {
     const { initial, removed, added } = propertiesMapping[name]
     // Who removed
-    const removedAddress = arrayDifference(this.state[name], value)[0]
-    const inInitial = arrayIncludes(this.state[initial], removedAddress)
+    const removedAddress = arrayDifference<string>(this.state[name], value)[0]
+    const inInitial = arrayIncludes<string>(this.state[initial], removedAddress)
 
     // Add in list for removing if address has been in initial list
     if (inInitial) {
@@ -182,15 +177,15 @@ class UpdateFundContext extends React.Component {
 
     // Clear added list from removed address
     this.setState({
-      [added]: arrayIntersection(this.state[added], value),
+      [added]: arrayIntersection<string>(this.state[added], value),
     })
   }
 
   updateAddingList = (name: string, value: any) => {
     const { initial, removed, added } = propertiesMapping[name]
     // Who added
-    const addedAddress = arrayDifference(value, this.state[name])[0]
-    const inInitial = arrayIncludes(this.state[initial], addedAddress)
+    const addedAddress = arrayDifference<string>(value, this.state[name])[0]
+    const inInitial = arrayIncludes<string>(this.state[initial], addedAddress)
 
     // Add in list for adding if address doesnt been in initial list
     if (!inInitial) {
