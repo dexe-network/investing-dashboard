@@ -26,7 +26,7 @@ import {
   formatBigNumber,
   getAllowance,
   parseTransactionError,
-  txIsMined,
+  isTxMined,
 } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
@@ -248,7 +248,7 @@ function Management() {
         type: TransactionType.STAKE_INSURANCE,
         amount: fromAmount,
       })
-      if (txIsMined(receipt)) {
+      if (isTxMined(receipt)) {
         refetchBalance()
         await fetchInsuranceBalance()
       }
@@ -262,7 +262,7 @@ function Management() {
         type: TransactionType.UNSTAKE_INSURANCE,
         amount: toAmount,
       })
-      if (txIsMined(receipt)) {
+      if (isTxMined(receipt)) {
         refetchBalance()
         await fetchInsuranceBalance()
       }
@@ -295,7 +295,7 @@ function Management() {
         spender: account,
       })
 
-      if (txIsMined(receipt) && receipt!.logs.length) {
+      if (isTxMined(receipt) && receipt!.logs.length) {
         await fetchAndUpdateAllowance()
       }
     }

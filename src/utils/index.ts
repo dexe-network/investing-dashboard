@@ -313,6 +313,6 @@ export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
  * @param tx transaction receipt
  * @returns true if transaction is mined otherwise false
  */
-export const txIsMined = (tx: TransactionReceipt | undefined): boolean => {
+export const isTxMined = (tx: TransactionReceipt | undefined): boolean => {
   return !!tx && tx.status === 1
 }

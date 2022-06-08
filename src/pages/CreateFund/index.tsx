@@ -31,7 +31,7 @@ import { TraderPool, PoolFactory } from "abi"
 
 import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { addFundMetadata } from "utils/ipfs"
-import { bigify, txIsMined } from "utils"
+import { bigify, isTxMined } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -258,7 +258,7 @@ const CreateFund: FC = () => {
         setStepPending(true)
         const tx = await handlePoolCreate()
 
-        if (txIsMined(tx) && !!tx!.logs.length && !!tx!.logs[0].address) {
+        if (isTxMined(tx) && !!tx!.logs.length && !!tx!.logs[0].address) {
           setCreactedAddress(tx!.logs[0].address)
           setStep(step + 1)
           setStepPending(false)
@@ -269,7 +269,7 @@ const CreateFund: FC = () => {
         setStepPending(true)
         const tx = await handleManagersAdd()
 
-        if (txIsMined(tx)) {
+        if (isTxMined(tx)) {
           setStep(step + 1)
           setStepPending(false)
         }
@@ -279,7 +279,7 @@ const CreateFund: FC = () => {
         setStepPending(true)
         const tx = await handleInvestorsAdd()
 
-        if (txIsMined(tx)) {
+        if (isTxMined(tx)) {
           setStep(step + 1)
           setStepPending(false)
         }
