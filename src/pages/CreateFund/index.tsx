@@ -1,10 +1,9 @@
-import { FC, MouseEventHandler, useState, useCallback } from "react"
+import { FC, useState, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import { useSelector } from "react-redux"
 import { PulseSpinner } from "react-spinners-kit"
-import { ethers } from "ethers"
 
 import Button from "components/Button"
 import Avatar from "components/Avatar"
@@ -18,6 +17,7 @@ import Slider from "components/Slider"
 import Stepper, { Step as IStep } from "components/Stepper"
 import SwitchRow, { InputText } from "components/SwitchRow"
 import Icon from "components/Icon"
+import ExternalLink from "components/ExternalLink"
 
 import TokenSelect from "modals/TokenSelect"
 
@@ -28,6 +28,7 @@ import { sliderPropsByPeriodType, performanceFees } from "constants/index"
 import useContract from "hooks/useContract"
 import { TraderPool, PoolFactory } from "abi"
 
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { addFundMetadata } from "utils/ipfs"
 import { bigify } from "utils"
 
@@ -38,8 +39,8 @@ import ManagersIcon from "assets/icons/Managers"
 import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
-import link from "assets/icons/link-grey.svg"
 import plus from "assets/icons/button-plus.svg"
+import defaultAvatar from "assets/icons/default-avatar.svg"
 
 import HeaderStep from "./Header"
 import FundTypeCard from "./FundTypeCard"
@@ -86,7 +87,7 @@ const CreateFund: FC = () => {
   } = useCreateFundContext()
 
   const navigate = useNavigate()
-  const { account } = useWeb3React()
+  const { chainId, account } = useWeb3React()
 
   const addTransaction = useTransactionAdder()
 
@@ -102,7 +103,6 @@ const CreateFund: FC = () => {
   const [isCreating, setCreating] = useState(false)
   const [transactionFail, setTransactionFail] = useState(false)
   const [stepsFormating, setStepsFormating] = useState(false)
-  const [descriptionURL, setDescriptionURL] = useState("")
   const [contractAddress, setCreactedAddress] = useState("")
 
   const poolFactoryAddress = useSelector(selectPoolFactoryAddress)
@@ -120,15 +120,6 @@ const CreateFund: FC = () => {
     setModalState(false)
   }
 
-  const handleTokenRedirect = (address: string) => {
-    window.open(`https://bscscan.com/address/${address}`, "_blank")
-  }
-
-  const handleTokenLinkClick: MouseEventHandler = (e) => {
-    e.stopPropagation()
-    handleTokenRedirect(baseToken.address)
-  }
-
   const handlePoolCreate = useCallback(async () => {
     if (!account || !traderPoolFactory) return
 
@@ -138,8 +129,6 @@ const CreateFund: FC = () => {
       strategy,
       account
     )
-
-    setDescriptionURL(ipfsReceipt.path)
 
     const totalEmission = bigify(totalLPEmission, 18).toHexString()
     const minInvest = bigify(minimalInvestment, 18).toHexString()
@@ -351,7 +340,14 @@ const CreateFund: FC = () => {
   const baseTokenLink = !baseToken.address ? (
     <IconButton onClick={handleTokenSelectOpen} media={plus} />
   ) : (
-    <IconButton onClick={handleTokenLinkClick} media={link} />
+    <ExternalLink
+      href={getExplorerLink(
+        chainId!,
+        baseToken.address,
+        ExplorerDataType.ADDRESS
+      )}
+      iconColor="#616D8B"
+    />
   )
 
   return (
@@ -369,7 +365,17 @@ const CreateFund: FC = () => {
         >
           {baseToken.address && (
             <ModalIcons
-              left={<Icon m="0" size={28} source={avatarBlobString} />}
+              left={
+                <Icon
+                  m="0"
+                  size={28}
+                  source={
+                    avatarBlobString.length > 0
+                      ? avatarBlobString
+                      : defaultAvatar
+                  }
+                />
+              }
               right={<TokenIcon m="0" size={28} address={baseToken.address} />}
               fund={fundSymbol}
               base={baseToken.symbol}

@@ -1,4 +1,4 @@
-import { TradeType } from "constants/types"
+import { TradeType, UpdateListType } from "constants/types"
 
 interface SerializableTransactionReceipt {
   to: string
@@ -89,6 +89,16 @@ export interface FundEditTransactionInfo {
   baseCurrencyId: string
   fundName: string
 }
+export interface FundUpdateManagersTransactionInfo {
+  type: TransactionType.FUND_UPDATE_MANAGERS
+  editType: UpdateListType
+  poolId: string
+}
+export interface FundUpdateInvestorsTransactionInfo {
+  type: TransactionType.FUND_UPDATE_INVESTORS
+  editType: UpdateListType
+  poolId: string
+}
 
 export interface UpdateCredentialsTransactionInfo {
   type: TransactionType.UPDATE_USER_CREDENTIALS
@@ -132,6 +142,8 @@ export type TransactionInfo =
   | ExactOutputSwapTransactionInfo
   | FundCreateTransactionInfo
   | FundEditTransactionInfo
+  | FundUpdateManagersTransactionInfo
+  | FundUpdateInvestorsTransactionInfo
   | UpdateCredentialsTransactionInfo
   | CreateRiskyProposalTransactionInfo
   | EditRiskyProposalTransactionInfo

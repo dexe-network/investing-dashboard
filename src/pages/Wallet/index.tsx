@@ -18,7 +18,7 @@ import useCopyClipboard from "hooks/useCopyClipboard"
 
 import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 
-import { addUserMetadata, parseUserData } from "utils/ipfs"
+import { addUserMetadata } from "utils/ipfs"
 import { formatBigNumber, shortenAddress } from "utils"
 
 import { useUserMetadata } from "state/ipfsMetadata/hooks"
@@ -36,7 +36,6 @@ import Expand from "assets/icons/Expand"
 import plus from "assets/icons/plus.svg"
 import copyIcon from "assets/icons/copy.svg"
 import logoutIcon from "assets/icons/logout.svg"
-import link from "assets/icons/external-link.svg"
 
 import {
   Container,
@@ -266,6 +265,7 @@ export default function Wallet() {
               <AvatarWrapper>
                 <Avatar
                   url={userAvatar}
+                  address={account}
                   onCrop={(_, value) => setUserAvatar(value)}
                   showUploader={isUserEditing}
                   size={44}

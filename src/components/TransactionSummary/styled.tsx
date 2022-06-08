@@ -3,11 +3,6 @@ import styled from "styled-components"
 import { Flex } from "theme"
 import CircularProgress from "components/CircularProgress"
 
-export const Container = styled.div`
-  padding: 0;
-  margin-top: 0;
-`
-
 export const TransactionWaitContainer = styled.div`
   padding: 0;
   margin-top: 0;
