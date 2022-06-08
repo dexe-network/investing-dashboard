@@ -63,7 +63,7 @@ const ExchangeInput: React.FC<IToProps> = ({
     !!onChange && onChange(value || "0")
   }
 
-  if (noData) {
+  if (!onSelect && noData) {
     return (
       <InputContainer>
         <InputTop>
