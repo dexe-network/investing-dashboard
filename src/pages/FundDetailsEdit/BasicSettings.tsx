@@ -24,9 +24,9 @@ const fundTypes = {
 
 const BasicSettings: FC<{
   poolData: IPoolQuery | undefined
-  symbol: string | undefined
+  baseToken: any | undefined
   commissionPercentage: BigNumber | undefined
-}> = ({ poolData, symbol, commissionPercentage }) => {
+}> = ({ poolData, baseToken, commissionPercentage }) => {
   const { chainId, account } = useActiveWeb3React()
 
   const address = useMemo(() => {
@@ -106,7 +106,20 @@ const BasicSettings: FC<{
       </BasicItem>
       <BasicItem>
         <BasicTitle>Basic token</BasicTitle>
-        <BasicValue>{symbol}</BasicValue>
+        <BasicValue>
+          {chainId && !!baseToken && (
+            <ExternalLink
+              href={getExplorerLink(
+                chainId,
+                baseToken.address,
+                ExplorerDataType.TOKEN
+              )}
+              iconColor="#0065c2"
+            >
+              {baseToken.symbol}
+            </ExternalLink>
+          )}
+        </BasicValue>
       </BasicItem>
       <BasicItem>
         <BasicTitle>Fund Type</BasicTitle>

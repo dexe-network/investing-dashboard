@@ -566,7 +566,7 @@ const FundDetailsEdit: FC = () => {
             <StepBody>
               <BasicSettings
                 poolData={poolData}
-                symbol={baseData?.symbol}
+                baseToken={baseData}
                 commissionPercentage={
                   poolInfoData?.parameters.commissionPercentage
                 }
