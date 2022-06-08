@@ -43,7 +43,6 @@ import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
-import useTransactionWaiter from "hooks/useTransactionWaiter"
 import { useAddToast } from "state/application/hooks"
 import { TraderPool } from "abi"
 
@@ -63,7 +62,7 @@ function txIsMined(tx: TransactionReceipt | undefined) {
 const FundDetailsEdit: FC = () => {
   const dispatch = useDispatch()
   const { poolAddress } = useParams()
-  const { account, library } = useWeb3React()
+  const { account } = useWeb3React()
 
   const [poolData] = usePoolQuery(poolAddress)
   const [, poolInfoData] = usePoolContract(poolAddress)
@@ -125,7 +124,6 @@ const FundDetailsEdit: FC = () => {
   const [transactionFail, setTransactionFail] = useState(false)
 
   const addTransaction = useTransactionAdder()
-  const waitTransaction = useTransactionWaiter(library)
 
   const addToast = useAddToast()
 
@@ -176,16 +174,10 @@ const FundDetailsEdit: FC = () => {
       })
     )
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_EDIT,
       baseCurrencyId: poolData.baseToken,
       fundName: poolData.name,
-    })
-
-    const { promise } = waitTransaction(receipt.hash)
-
-    return promise.then((txReceipt) => {
-      return txReceipt as TransactionReceipt
     })
   }, [
     traderPool,
@@ -200,7 +192,6 @@ const FundDetailsEdit: FC = () => {
     strategy,
     totalLPEmission,
     addTransaction,
-    waitTransaction,
     dispatch,
     poolAddress,
   ])
@@ -208,40 +199,22 @@ const FundDetailsEdit: FC = () => {
   const handleManagersRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersRemoved, false)
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_UPDATE_MANAGERS,
       editType: UpdateListType.REMOVE,
       poolId: poolAddress,
     })
-
-    const { promise } = waitTransaction(receipt.hash)
-
-    return promise.then((txReceipt) => {
-      return txReceipt as TransactionReceipt
-    })
-  }, [
-    traderPool,
-    managersRemoved,
-    addTransaction,
-    poolAddress,
-    waitTransaction,
-  ])
+  }, [traderPool, managersRemoved, addTransaction, poolAddress])
 
   const handleManagersAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersAdded, true)
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_UPDATE_MANAGERS,
       editType: UpdateListType.ADD,
       poolId: poolAddress,
     })
-
-    const { promise } = waitTransaction(receipt.hash)
-
-    return promise.then((txReceipt) => {
-      return txReceipt as TransactionReceipt
-    })
-  }, [traderPool, managersAdded, addTransaction, poolAddress, waitTransaction])
+  }, [traderPool, managersAdded, addTransaction, poolAddress])
 
   const handleInvestorsRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -249,24 +222,12 @@ const FundDetailsEdit: FC = () => {
       false
     )
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_UPDATE_INVESTORS,
       editType: UpdateListType.REMOVE,
       poolId: poolAddress,
     })
-
-    const { promise } = waitTransaction(receipt.hash)
-
-    return promise.then((txReceipt) => {
-      return txReceipt as TransactionReceipt
-    })
-  }, [
-    traderPool,
-    investorsRemoved,
-    addTransaction,
-    poolAddress,
-    waitTransaction,
-  ])
+  }, [traderPool, investorsRemoved, addTransaction, poolAddress])
 
   const handleInvestorsAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -274,18 +235,12 @@ const FundDetailsEdit: FC = () => {
       true
     )
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_UPDATE_INVESTORS,
       editType: UpdateListType.ADD,
       poolId: poolAddress,
     })
-
-    const { promise } = waitTransaction(receipt.hash)
-
-    return promise.then((txReceipt) => {
-      return txReceipt as TransactionReceipt
-    })
-  }, [traderPool, investorsAdded, addTransaction, poolAddress, waitTransaction])
+  }, [traderPool, investorsAdded, addTransaction, poolAddress])
 
   const handleSubmit = async () => {
     if (stepsFormating) return
@@ -362,7 +317,7 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Managers") {
         setStepPending(true)
 
-        const txs: Promise<TransactionReceipt>[] = []
+        const txs: Promise<TransactionReceipt | undefined>[] = []
 
         if (!!managersRemoved.length) {
           txs.push(handleManagersRemove())
@@ -388,7 +343,7 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Investors") {
         setStepPending(true)
 
-        const txs: Promise<TransactionReceipt>[] = []
+        const txs: Promise<TransactionReceipt | undefined>[] = []
 
         if (!!investorsRemoved.length) {
           txs.push(handleInvestorsRemove())
