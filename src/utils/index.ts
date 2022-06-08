@@ -1,6 +1,6 @@
 import { getAddress } from "@ethersproject/address"
 import { Contract } from "@ethersproject/contracts"
-import { BigNumber } from "@ethersproject/bignumber"
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import { poolTypes, stableCoins } from "constants/index"
 import { ethers } from "ethers"
 import { ERC20 } from "abi"
@@ -227,7 +227,12 @@ export function checkMetamask() {
   //
 }
 
-export function getAllowance(address, tokenAddress, contractAddress, lib) {
+export function getAllowance(
+  address,
+  tokenAddress,
+  contractAddress,
+  lib
+): BigNumber {
   const signer = lib.getSigner(address).connectUnchecked()
 
   const erc20Contract = new Contract(tokenAddress, ERC20, signer)
@@ -281,13 +286,37 @@ export const calcSlippage = (
   }
 }
 
-export const parseTransactionError = (str: string) => {
-  const position = str.search(`"message":`)
+export const parseTransactionError = (str: any) => {
+  try {
+    // parse string error
+    if (typeof str === "string") {
+      const position = str.search(`"message":`)
 
-  const cutString = str.substring(position + 10)
+      const cutString = str.substring(position + 10)
 
-  const matches = cutString.match(/"(.*?)"/)
-  return matches ? matches[1] : ""
+      const matches = cutString.match(/"(.*?)"/)
+      return matches ? matches[1] : ""
+    }
+
+    if (typeof str !== "object") {
+      return "Unpredictable transaction error"
+    }
+
+    if (
+      Object.keys(str).includes("error") &&
+      Object.keys(str.error).includes("message")
+    ) {
+      return str.error.message
+    }
+    if (
+      Object.keys(str).includes("data") &&
+      Object.keys(str.data).includes("message")
+    ) {
+      return str.data.message
+    }
+  } catch (e) {
+    return "Unpredictable transaction error"
+  }
 }
 
 export const shortTimestamp = (timestamp: number): number => {
@@ -303,4 +332,19 @@ export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
   const minutes = setMinutes(hours, m)
 
   return shortTimestamp(getTime(minutes))
+}
+
+export const cutDecimalPlaces = (
+  value: BigNumberish,
+  decimals = 18,
+  roundUp = true
+) => {
+  const number = ethers.utils.formatUnits(value, decimals)
+
+  const pow = Math.pow(10, 6)
+
+  const parsed =
+    Math[roundUp ? "round" : "floor"](parseFloat(number) * pow) / pow
+
+  return ethers.utils.parseUnits(parsed.toString(), decimals)
 }

@@ -1,6 +1,6 @@
-import { ethers } from "ethers"
+import { ReactNode } from "react"
 import { Flex } from "theme"
-import { BigNumber } from "@ethersproject/bignumber"
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import { BigNumberInput } from "big-number-input"
 
 import TokenIcon from "components/TokenIcon"
@@ -12,7 +12,9 @@ import locker from "assets/icons/locker.svg"
 import { formatBigNumber } from "utils"
 
 import {
-  ToContainer,
+  InputContainer,
+  InputTop,
+  InputBottom,
   Price,
   Balance,
   Input,
@@ -23,7 +25,6 @@ import {
   SymbolLabel,
   Icon,
 } from "./styled"
-import { ReactNode } from "react"
 
 interface IToProps {
   price: BigNumber
@@ -34,11 +35,12 @@ interface IToProps {
   decimal?: number
   priceImpact?: string
   customIcon?: ReactNode
-  onChange: (amount: string) => void
+  isLocked?: boolean
+  onChange?: (amount: string) => void
   onSelect?: () => void
 }
 
-const ExchangeTo: React.FC<IToProps> = ({
+const ExchangeInput: React.FC<IToProps> = ({
   price,
   amount,
   balance,
@@ -47,76 +49,82 @@ const ExchangeTo: React.FC<IToProps> = ({
   decimal,
   priceImpact,
   customIcon,
+  isLocked,
   onChange,
   onSelect,
 }) => {
   const noData = !decimal || !symbol
 
   const setMaxAmount = () => {
-    onChange(balance.toString())
+    !!onChange && onChange(balance.toString())
   }
 
   const handleInputChange = (value) => {
-    onChange(value || "0")
+    !!onChange && onChange(value || "0")
   }
 
-  if (!onSelect && noData) {
+  if (noData) {
     return (
-      <ToContainer dir="column" full>
-        <Flex p="0 0 5px" full>
+      <InputContainer>
+        <InputTop>
           <Price>
             <Ripple width="67px" />
           </Price>
           <Balance>
             <Ripple width="80px" />
           </Balance>
-        </Flex>
-        <Flex full ai="center">
+        </InputTop>
+        <InputBottom>
           <Ripple width="120px" />
           <Ripple width="60px" />
-        </Flex>
-      </ToContainer>
+        </InputBottom>
+      </InputContainer>
     )
   }
 
   const icon = customIcon ? (
     customIcon
   ) : (
-    <TokenIcon address={address} size={27} />
+    <TokenIcon m="0" address={address} size={26} />
   )
 
   return (
-    <ToContainer dir="column" full>
-      <Flex p="0 0 2px" full>
+    <InputContainer>
+      <InputTop>
         <Price>
           ≈${formatBigNumber(price, 18, 2)}{" "}
           {priceImpact && <>({priceImpact}%)</>}
         </Price>
+
         <Balance onClick={setMaxAmount}>
-          <Tokens>{formatBigNumber(balance, decimal, 8)}</Tokens>
-          <Max>Max</Max>
+          <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
+          {!!onChange && <Max>Max</Max>}
         </Balance>
-      </Flex>
-      <Flex full ai="center">
+      </InputTop>
+
+      <InputBottom>
         <BigNumberInput
           decimals={decimal || 18}
           onChange={handleInputChange}
           value={amount}
-          renderInput={(props: any) => <Input {...props} />}
+          renderInput={(props: any) => (
+            <Input disabled={!onChange} {...props} />
+          )}
         />
+
         <ActiveSymbol onClick={onSelect}>
-          {/* // TODO: create FundIcon component */}
           {!noData && icon}
           {noData ? (
             <SelectToken>Select Token</SelectToken>
           ) : (
             <SymbolLabel>{symbol}</SymbolLabel>
           )}
-          <Icon src={onSelect ? angleIcon : locker} />
+          {!!onSelect && !isLocked && <Icon src={angleIcon} />}
+          {isLocked && <Icon src={locker} />}
         </ActiveSymbol>
-      </Flex>
-    </ToContainer>
+      </InputBottom>
+    </InputContainer>
   )
 }
 
-export default ExchangeTo
+export default ExchangeInput
