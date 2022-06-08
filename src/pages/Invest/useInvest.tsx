@@ -180,8 +180,6 @@ const useInvest = ({
         spender: account,
       })
 
-      console.log("approve receipt", receipt)
-
       if (isTxMined(receipt)) {
         fetchAndUpdateAllowance()
       }
@@ -336,7 +334,6 @@ const useInvest = ({
       amount: amount.toHexString(),
     })
 
-    console.log("deposit receipt", receipt)
     if (isTxMined(receipt)) {
       runUpdate()
     }
@@ -370,7 +367,6 @@ const useInvest = ({
       currencyId: poolInfo?.parameters.baseToken,
       amount: amount.toHexString(),
     })
-    console.log("withdraw receipt", receipt)
 
     if (isTxMined(receipt)) {
       runUpdate()
