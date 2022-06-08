@@ -113,8 +113,6 @@ export function usePoolPrice(address: string | undefined) {
       // const result = usd.divUnsafe(supply)
       // TODO: wait for fix of totalPoolUSD in TraderPoolRegistry
       // calc and store in state
-      console.log(poolInfo)
-      console.log("total pool USD: ", poolInfo.totalPoolUSD.toString())
     })()
   }, [traderPool])
 

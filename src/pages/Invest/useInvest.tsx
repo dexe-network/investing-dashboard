@@ -23,6 +23,7 @@ import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import { getDividedBalance } from "utils/formulas"
 import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
+import useStoreTransactionWaiter from "hooks/useStoreTransactionWaiter"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -80,7 +81,8 @@ const useInvest = ({
     poolInfo?.parameters.descriptionURL
   )
   const priceFeed = usePriceFeedContract()
-  // getPoolInfo()
+  const transactionWaiter = useStoreTransactionWaiter()
+
   const poolPrice = usePoolPrice(poolAddress)
   const [fromAmount, setFromAmount] = useState("0")
   const [toAmount, setToAmount] = useState("0")
@@ -178,10 +180,21 @@ const useInvest = ({
         tokenAddress: baseToken.address,
         spender: account,
       })
+
+      const { promise } = transactionWaiter(approveResponse.hash)
+      promise.then(fetchAndUpdateAllowance)
     } catch (e) {
       setWalletPrompting(false)
     }
-  }, [account, addTransaction, fromAmount, baseToken, poolAddress])
+  }, [
+    account,
+    poolAddress,
+    baseToken,
+    fromAmount,
+    addTransaction,
+    transactionWaiter,
+    fetchAndUpdateAllowance,
+  ])
 
   const updateBasePrice = useCallback(
     async (amount: BigNumber) => {
@@ -291,6 +304,12 @@ const useInvest = ({
     ]
   )
 
+  const runUpdate = useCallback(() => {
+    fetchAndUpdateAllowance().catch(console.error)
+    fetchAndUpdateBalance().catch(console.error)
+    updateBaseToken()
+  }, [fetchAndUpdateAllowance, fetchAndUpdateBalance, updateBaseToken])
+
   const handleDeposit = useCallback(async () => {
     if (!poolAddress || !poolInfo || !traderPool) return
 
@@ -308,6 +327,7 @@ const useInvest = ({
       amountsWithSlippage
     )
     setWalletPrompting(false)
+    const { promise } = transactionWaiter(depositResponse.hash)
 
     addTransaction(depositResponse, {
       type: TransactionType.DEPOSIT_LIQUIDITY_STAKING,
@@ -315,7 +335,18 @@ const useInvest = ({
       currencyId: poolInfo?.parameters.baseToken,
       amount: amount.toHexString(),
     })
-  }, [addTransaction, fromAmount, poolAddress, poolInfo, slippage, traderPool])
+
+    promise.then(runUpdate)
+  }, [
+    fromAmount,
+    poolAddress,
+    poolInfo,
+    slippage,
+    traderPool,
+    runUpdate,
+    addTransaction,
+    transactionWaiter,
+  ])
 
   const handleWithdraw = useCallback(async () => {
     if (!account || !poolAddress || !poolInfo || !traderPool) return
@@ -331,6 +362,7 @@ const useInvest = ({
       divest.commissions.dexeDexeCommission
     )
     setWalletPrompting(false)
+    const { promise } = transactionWaiter(withdrawResponse.hash)
 
     addTransaction(withdrawResponse, {
       type: TransactionType.WITHDRAW_LIQUIDITY_STAKING,
@@ -338,7 +370,18 @@ const useInvest = ({
       currencyId: poolInfo?.parameters.baseToken,
       amount: amount.toHexString(),
     })
-  }, [account, addTransaction, poolAddress, poolInfo, fromAmount, traderPool])
+
+    promise.then(runUpdate)
+  }, [
+    account,
+    poolAddress,
+    poolInfo,
+    traderPool,
+    fromAmount,
+    transactionWaiter,
+    addTransaction,
+    runUpdate,
+  ])
 
   const handleSubmit = useCallback(async () => {
     setWalletPrompting(true)
@@ -374,13 +417,11 @@ const useInvest = ({
   // global updater
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchAndUpdateAllowance().catch(console.error)
-      fetchAndUpdateBalance().catch(console.error)
-      updateBaseToken()
+      runUpdate()
     }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     return () => clearInterval(interval)
-  }, [fetchAndUpdateAllowance, fetchAndUpdateBalance, updateBaseToken])
+  }, [runUpdate])
 
   // update from tokens amount on direction change
   useEffect(() => {
