@@ -314,5 +314,5 @@ export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
  * @returns true if transaction is mined otherwise false
  */
 export const txIsMined = (tx: TransactionReceipt | undefined): boolean => {
-  return !!tx && tx.status === 1 && !!tx.logs.length && !!tx.logs[0].address
+  return !!tx && tx.status === 1
 }
