@@ -5,6 +5,7 @@ import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner, PulseSpinner } from "react-spinners-kit"
 import { ethers } from "ethers"
 import { TransactionReceipt } from "@ethersproject/providers"
+import { useDispatch } from "react-redux"
 
 import {
   Container,
@@ -49,6 +50,7 @@ import { TraderPool } from "abi"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 import { UpdateListType } from "constants/types"
+import { addPool } from "state/ipfsMetadata/actions"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -59,6 +61,7 @@ function txIsMined(tx: TransactionReceipt | undefined) {
 }
 
 const FundDetailsEdit: FC = () => {
+  const dispatch = useDispatch()
   const { poolAddress } = useParams()
   const { account, library } = useWeb3React()
 
@@ -132,9 +135,9 @@ const FundDetailsEdit: FC = () => {
     const ipfsChanged = isIpfsDataUpdated()
 
     let ipfsReceipt
+    const assetsParam = assets
     if (ipfsChanged) {
       // Avatar Blob string must be array with previous avatars
-      const assetsParam = assets
       if (avatarBlobString !== "") {
         assetsParam.push(avatarBlobString)
       }
@@ -157,6 +160,20 @@ const FundDetailsEdit: FC = () => {
       poolInfoData?.parameters.privatePool,
       totalEmission,
       minInvest
+    )
+
+    // Save new pool data to store
+    dispatch(
+      addPool({
+        params: {
+          poolId: poolAddress!,
+          hash: receipt.hash,
+          assets: assetsParam,
+          description,
+          strategy,
+          account,
+        },
+      })
     )
 
     addTransaction(receipt, {
@@ -184,6 +201,8 @@ const FundDetailsEdit: FC = () => {
     totalLPEmission,
     addTransaction,
     waitTransaction,
+    dispatch,
+    poolAddress,
   ])
 
   const handleManagersRemove = useCallback(async () => {
