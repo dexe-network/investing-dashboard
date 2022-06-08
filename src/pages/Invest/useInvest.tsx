@@ -14,6 +14,7 @@ import {
   cutDecimalPlaces,
   getAllowance,
   parseTransactionError,
+  isTxMined,
 } from "utils"
 import { useWeb3React } from "@web3-react/core"
 import { useERC20, usePriceFeedContract } from "hooks/useContract"
@@ -23,7 +24,6 @@ import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import { getDividedBalance } from "utils/formulas"
 import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
-import useStoreTransactionWaiter from "hooks/useStoreTransactionWaiter"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -81,7 +81,6 @@ const useInvest = ({
     poolInfo?.parameters.descriptionURL
   )
   const priceFeed = usePriceFeedContract()
-  const transactionWaiter = useStoreTransactionWaiter()
 
   const poolPrice = usePoolPrice(poolAddress)
   const [fromAmount, setFromAmount] = useState("0")
@@ -175,14 +174,17 @@ const useInvest = ({
       const approveResponse = await baseToken.approve(poolAddress, amount)
       setWalletPrompting(false)
 
-      addTransaction(approveResponse, {
+      const receipt = await addTransaction(approveResponse, {
         type: TransactionType.APPROVAL,
         tokenAddress: baseToken.address,
         spender: account,
       })
 
-      const { promise } = transactionWaiter(approveResponse.hash)
-      promise.then(fetchAndUpdateAllowance)
+      console.log("approve receipt", receipt)
+
+      if (isTxMined(receipt)) {
+        fetchAndUpdateAllowance()
+      }
     } catch (e) {
       setWalletPrompting(false)
     }
@@ -192,7 +194,6 @@ const useInvest = ({
     baseToken,
     fromAmount,
     addTransaction,
-    transactionWaiter,
     fetchAndUpdateAllowance,
   ])
 
@@ -327,16 +328,18 @@ const useInvest = ({
       amountsWithSlippage
     )
     setWalletPrompting(false)
-    const { promise } = transactionWaiter(depositResponse.hash)
 
-    addTransaction(depositResponse, {
+    const receipt = await addTransaction(depositResponse, {
       type: TransactionType.DEPOSIT_LIQUIDITY_STAKING,
       poolAddress: poolAddress,
       currencyId: poolInfo?.parameters.baseToken,
       amount: amount.toHexString(),
     })
 
-    promise.then(runUpdate)
+    console.log("deposit receipt", receipt)
+    if (isTxMined(receipt)) {
+      runUpdate()
+    }
   }, [
     fromAmount,
     poolAddress,
@@ -345,7 +348,6 @@ const useInvest = ({
     traderPool,
     runUpdate,
     addTransaction,
-    transactionWaiter,
   ])
 
   const handleWithdraw = useCallback(async () => {
@@ -362,23 +364,23 @@ const useInvest = ({
       divest.commissions.dexeDexeCommission
     )
     setWalletPrompting(false)
-    const { promise } = transactionWaiter(withdrawResponse.hash)
-
-    addTransaction(withdrawResponse, {
+    const receipt = await addTransaction(withdrawResponse, {
       type: TransactionType.WITHDRAW_LIQUIDITY_STAKING,
       poolAddress: poolAddress,
       currencyId: poolInfo?.parameters.baseToken,
       amount: amount.toHexString(),
     })
+    console.log("withdraw receipt", receipt)
 
-    promise.then(runUpdate)
+    if (isTxMined(receipt)) {
+      runUpdate()
+    }
   }, [
     account,
     poolAddress,
     poolInfo,
     traderPool,
     fromAmount,
-    transactionWaiter,
     addTransaction,
     runUpdate,
   ])
