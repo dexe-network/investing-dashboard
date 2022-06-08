@@ -1,4 +1,4 @@
-import { FC, MouseEventHandler, useState, useCallback } from "react"
+import { FC, MouseEventHandler, useState, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
@@ -89,6 +89,7 @@ const CreateFund: FC = () => {
   const { account } = useWeb3React()
 
   const addTransaction = useTransactionAdder()
+  const firstErrorRef = useRef<HTMLDivElement | null>(null)
 
   const [isEmissionLimited, setEmission] = useState(totalLPEmission !== "")
   const [isMinimalInvest, setMinimalInvest] = useState(minimalInvestment !== "")
@@ -206,7 +207,12 @@ const CreateFund: FC = () => {
   const handleSubmit = async () => {
     if (stepsFormating) return
 
-    if (!handleValidate()) return
+    if (!handleValidate()) {
+      if (firstErrorRef.current) {
+        firstErrorRef.current.scrollIntoView({ behavior: "smooth" })
+      }
+      return
+    }
 
     setStepsFormating(true)
 
@@ -308,7 +314,12 @@ const CreateFund: FC = () => {
     return validationErrors
       .filter((error) => error.field === name)
       .map((error) => (
-        <ValidationError key={error.field}>{error.message}</ValidationError>
+        <ValidationError
+          ref={validationErrors[0].field === name ? firstErrorRef : null}
+          key={error.field}
+        >
+          {error.message}
+        </ValidationError>
       ))
   }
 

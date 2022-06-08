@@ -12,6 +12,8 @@ import {
   FundEditTransactionInfo,
   CreateRiskyProposalTransactionInfo,
   EditRiskyProposalTransactionInfo,
+  DepositRiskyProposalTransactionInfo,
+  WithdrawRiskyProposalTransactionInfo,
   CreateInvestProposalTransactionInfo,
   EditInvestProposalTransactionInfo,
   StakeInsuranceTransactionInfo,
@@ -21,7 +23,9 @@ import {
 import { TradeType } from "constants/types"
 
 import { Container } from "./styled"
-import FormattedCurrencyAmount from "./FormattedCurrencyAmount"
+import FormattedCurrencyAmount, {
+  FormattedAmount,
+} from "./FormattedCurrencyAmount"
 
 import { selectWhitelistItem } from "state/pricefeed/selectors"
 import { formatBigNumber } from "utils"
@@ -147,6 +151,44 @@ const EditRiskyProposalSummary: React.FC<{
 }> = ({ info }) => {
   return <>Update Risky Proposal</>
 }
+const DepositRiskyProposalSummary: React.FC<{
+  info: DepositRiskyProposalTransactionInfo
+}> = ({
+  info: {
+    inputCurrencyAmountRaw,
+    inputCurrencySymbol,
+    expectedOutputCurrencyAmountRaw,
+    expectedOutputCurrencySymbol,
+  },
+}) => {
+  return (
+    <>
+      Buy <FormattedAmount rawAmount={inputCurrencyAmountRaw} />{" "}
+      {inputCurrencySymbol + "-LP2"} tokens for{" "}
+      <FormattedAmount rawAmount={expectedOutputCurrencyAmountRaw} />{" "}
+      {expectedOutputCurrencySymbol}
+    </>
+  )
+}
+const WithdrawRiskyProposalSummary: React.FC<{
+  info: WithdrawRiskyProposalTransactionInfo
+}> = ({
+  info: {
+    outputCurrencyAmountRaw,
+    outputCurrencySymbol,
+    expectedInputCurrencyAmountRaw,
+    expectedInputCurrencySymbol,
+  },
+}) => {
+  return (
+    <>
+      Sell <FormattedAmount rawAmount={outputCurrencyAmountRaw} />{" "}
+      {outputCurrencySymbol + "-LP2"} tokens for{" "}
+      <FormattedAmount rawAmount={expectedInputCurrencyAmountRaw} />{" "}
+      {expectedInputCurrencySymbol}
+    </>
+  )
+}
 
 const CreateInvestProposalSummary: React.FC<{
   info: CreateInvestProposalTransactionInfo
@@ -197,6 +239,10 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <CreateRiskyProposalSummary info={info} />
     case TransactionType.EDIT_RISKY_PROPOSAL:
       return <EditRiskyProposalSummary info={info} />
+    case TransactionType.DEPOSIT_RISKY_PROPOSAL:
+      return <DepositRiskyProposalSummary info={info} />
+    case TransactionType.WITHDRAW_RISKY_PROPOSAL:
+      return <WithdrawRiskyProposalSummary info={info} />
     case TransactionType.CREATE_INVEST_PROPOSAL:
       return <CreateInvestProposalSummary info={info} />
     case TransactionType.EDIT_INVEST_PROPOSAL:

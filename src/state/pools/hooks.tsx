@@ -27,6 +27,8 @@ import {
   BasicPositionsQuery,
   getPoolsQueryVariables,
 } from "queries"
+import { BigNumber, ethers, FixedNumber } from "ethers"
+import { usePoolContract, useTraderPool } from "hooks/usePool"
 
 /**
  * Returns top members filter state variables and setter
@@ -94,6 +96,29 @@ export function usePriceHistory(
   }, [pool])
 
   return history
+}
+
+export function usePoolPrice(address: string | undefined) {
+  const traderPool = useTraderPool(address)
+  const [price, setPrice] = useState(BigNumber.from("0"))
+
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      const poolInfo = await traderPool.getPoolInfo()
+
+      const usd = FixedNumber.fromValue(poolInfo.totalPoolUSD, 18)
+      const supply = FixedNumber.fromValue(poolInfo.lpSupply, 18)
+
+      // const result = usd.divUnsafe(supply)
+      // TODO: wait for fix of totalPoolUSD in TraderPoolRegistry
+      // calc and store in state
+      console.log(poolInfo)
+      console.log("total pool USD: ", poolInfo.totalPoolUSD.toString())
+    })()
+  }, [traderPool])
+
+  return price
 }
 
 // Hook that handles fetching and storing pools

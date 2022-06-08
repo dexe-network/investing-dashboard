@@ -286,13 +286,37 @@ export const calcSlippage = (
   }
 }
 
-export const parseTransactionError = (str: string) => {
-  const position = str.search(`"message":`)
+export const parseTransactionError = (str: any) => {
+  try {
+    // parse string error
+    if (typeof str === "string") {
+      const position = str.search(`"message":`)
 
-  const cutString = str.substring(position + 10)
+      const cutString = str.substring(position + 10)
 
-  const matches = cutString.match(/"(.*?)"/)
-  return matches ? matches[1] : ""
+      const matches = cutString.match(/"(.*?)"/)
+      return matches ? matches[1] : ""
+    }
+
+    if (typeof str !== "object") {
+      return "Unpredictable transaction error"
+    }
+
+    if (
+      Object.keys(str).includes("error") &&
+      Object.keys(str.error).includes("message")
+    ) {
+      return str.error.message
+    }
+    if (
+      Object.keys(str).includes("data") &&
+      Object.keys(str.data).includes("message")
+    ) {
+      return str.data.message
+    }
+  } catch (e) {
+    return "Unpredictable transaction error"
+  }
 }
 
 export const shortTimestamp = (timestamp: number): number => {
@@ -310,10 +334,17 @@ export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
   return shortTimestamp(getTime(minutes))
 }
 
-export const cutDecimalPlaces = (value: BigNumberish, decimals = 18) => {
+export const cutDecimalPlaces = (
+  value: BigNumberish,
+  decimals = 18,
+  roundUp = true
+) => {
   const number = ethers.utils.formatUnits(value, decimals)
 
-  const parsed = Math.round(parseFloat(number) * 10 ** 6) / 10 ** 6
+  const pow = Math.pow(10, 6)
+
+  const parsed =
+    Math[roundUp ? "round" : "floor"](parseFloat(number) * pow) / pow
 
   return ethers.utils.parseUnits(parsed.toString(), decimals)
 }

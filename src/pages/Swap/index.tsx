@@ -8,8 +8,7 @@ import { BigNumber } from "@ethersproject/bignumber"
 
 import SwapPrice from "components/SwapPrice"
 import IconButton from "components/IconButton"
-import ExchangeTo from "components/Exchange/To"
-import ExchangeFrom from "components/Exchange/From"
+import ExchangeInput from "components/Exchange/ExchangeInput"
 import ExchangeDivider from "components/Exchange/Divider"
 import Button, { SecondaryButton } from "components/Button"
 import CircularProgress from "components/CircularProgress"
@@ -41,7 +40,7 @@ import {
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
-import { TradeType } from "constants/types"
+import { TradeType, SwapDirection } from "constants/types"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -57,7 +56,7 @@ export const useSwap = (): [
     toSelectorOpened: boolean
     fromSelectorOpened: boolean
     pending: boolean
-    direction: "deposit" | "withdraw"
+    direction: SwapDirection
   },
   {
     setFromAmount: (amount: string) => void
@@ -80,7 +79,7 @@ export const useSwap = (): [
   const [pending, setPending] = useState(false)
   const [toSelectorOpened, setToSelector] = useState(false)
   const [fromSelectorOpened, setFromSelector] = useState(false)
-  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+  const [direction, setDirection] = useState<SwapDirection>("deposit")
 
   const [toAddress, setToAddress] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -323,7 +322,7 @@ function Swap() {
 
   const handlePercentageChange = (percent) => {
     const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
-    handleFromChange(from)
+    handleFromChange(from.toString())
   }
 
   const handleFromChange = useCallback(
@@ -401,7 +400,7 @@ function Swap() {
   useEffect(() => {
     const interval = setInterval(() => {
       refresh()
-    }, 20 * 1000)
+    }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     return () => clearInterval(interval)
   }, [refresh])
@@ -567,7 +566,7 @@ function Swap() {
         </IconsGroup>
       </CardHeader>
 
-      <ExchangeFrom
+      <ExchangeInput
         price={inPrice}
         amount={fromAmount}
         balance={fromBalance}
@@ -588,7 +587,7 @@ function Swap() {
         changeDirection={setDirection}
       />
 
-      <ExchangeTo
+      <ExchangeInput
         price={outPrice}
         amount={toAmount}
         priceImpact={priceImpact}

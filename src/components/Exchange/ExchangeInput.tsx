@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 import { Flex } from "theme"
-import { BigNumber } from "@ethersproject/bignumber"
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import { BigNumberInput } from "big-number-input"
 
 import TokenIcon from "components/TokenIcon"
@@ -35,7 +35,8 @@ interface IToProps {
   decimal?: number
   priceImpact?: string
   customIcon?: ReactNode
-  onChange: (amount: string) => void
+  isLocked?: boolean
+  onChange?: (amount: string) => void
   onSelect?: () => void
 }
 
@@ -48,17 +49,18 @@ const ExchangeInput: React.FC<IToProps> = ({
   decimal,
   priceImpact,
   customIcon,
+  isLocked,
   onChange,
   onSelect,
 }) => {
   const noData = !decimal || !symbol
 
   const setMaxAmount = () => {
-    onChange(balance.toString())
+    !!onChange && onChange(balance.toString())
   }
 
   const handleInputChange = (value) => {
-    onChange(value || "0")
+    !!onChange && onChange(value || "0")
   }
 
   if (noData) {
@@ -83,7 +85,7 @@ const ExchangeInput: React.FC<IToProps> = ({
   const icon = customIcon ? (
     customIcon
   ) : (
-    <TokenIcon m="0" address={address} size={27} />
+    <TokenIcon m="0" address={address} size={26} />
   )
 
   return (
@@ -95,8 +97,8 @@ const ExchangeInput: React.FC<IToProps> = ({
         </Price>
 
         <Balance onClick={setMaxAmount}>
-          <Tokens>{formatBigNumber(balance, decimal, 8)}</Tokens>
-          <Max>Max</Max>
+          <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
+          {!!onChange && <Max>Max</Max>}
         </Balance>
       </InputTop>
 
@@ -105,7 +107,9 @@ const ExchangeInput: React.FC<IToProps> = ({
           decimals={decimal || 18}
           onChange={handleInputChange}
           value={amount}
-          renderInput={(props: any) => <Input {...props} />}
+          renderInput={(props: any) => (
+            <Input disabled={!onChange} {...props} />
+          )}
         />
 
         <ActiveSymbol onClick={onSelect}>
@@ -115,7 +119,8 @@ const ExchangeInput: React.FC<IToProps> = ({
           ) : (
             <SymbolLabel>{symbol}</SymbolLabel>
           )}
-          <Icon src={onSelect ? angleIcon : locker} />
+          {!!onSelect && !isLocked && <Icon src={angleIcon} />}
+          {isLocked && <Icon src={locker} />}
         </ActiveSymbol>
       </InputBottom>
     </InputContainer>

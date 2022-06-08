@@ -62,7 +62,7 @@ export const GradientBorderButton = styled(GradientBorder)<{
   min-width: fit-content;
 
   &:after {
-    background: #121928;
+    background: #141926;
   }
 
   ${Text} {

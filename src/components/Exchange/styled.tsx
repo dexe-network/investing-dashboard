@@ -101,6 +101,14 @@ export const Input = styled.input`
     font-size: 20px;
     line-height: 20px;
   }
+
+  &:disabled {
+    color: #788ab4 !important;
+
+    &::placeholder {
+      color: #788ab4 !important;
+    }
+  }
 `
 
 export const ActiveSymbol = styled(GradientBorder)`
@@ -256,6 +264,7 @@ export const Card = styled(BasicCard)`
   position: relative;
   border-radius: 20px;
   background: #181e2c;
+  max-width: 400px;
 `
 
 export const CardHeader = styled(Flex)`

@@ -28,6 +28,7 @@ import {
   cutDecimalPlaces,
   getAllowance,
   parseTransactionError,
+  shortenAddress,
 } from "utils"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
 import getReceipt from "utils/getReceipt"
@@ -312,12 +313,12 @@ function Invest() {
   const handlePercentageChange = (percent) => {
     if (direction === "deposit") {
       const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
-      handleFromChange(from)
+      handleFromChange(from.toString())
     }
 
     if (direction === "withdraw") {
       const to = getDividedBalance(toBalance, 18, percent)
-      handleToChange(to)
+      handleToChange(to.toString())
     }
   }
 
@@ -414,7 +415,7 @@ function Invest() {
 
     const allowanceInterval = setInterval(() => {
       fetchAndUpdateAllowance().catch(console.error)
-    }, 1000 * 20)
+    }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     fetchAndUpdateAllowance().catch(console.error)
 
@@ -574,24 +575,171 @@ function Invest() {
   )
 }
 
+const InvestV2 = () => {
+  const { poolAddress } = useParams<{
+    poolAddress: string
+  }>()
+
+  const [
+    { from, to },
+    {
+      allowance,
+      isWalletPrompting,
+      isSlippageOpen,
+      slippage,
+      error,
+      direction,
+      updateAllowance,
+      setSlippageOpen,
+      setSlippage,
+      setError,
+      setWalletPrompting,
+      handleDirectionChange,
+      handlePercentageChange,
+      handleFromChange,
+      handleSubmit,
+    },
+  ] = useCustomInvest({
+    poolAddress,
+    initialDirection: "deposit",
+  })
+
+  const isAllowanceNeeded =
+    direction === "deposit" && !!allowance && allowance.lt(from.amount)
+
+  const getButton = () => {
+    if (from.amount === "0") {
+      return (
+        <SecondaryButton
+          theme="disabled"
+          size="large"
+          onClick={() => {}}
+          fz={22}
+          full
+        >
+          Enter amount to swap
+        </SecondaryButton>
+      )
+    }
+
+    if (from.balance.lt(from.amount)) {
+      return (
+        <SecondaryButton theme="disabled" size="large" fz={22} full>
+          Insufficient balance
+        </SecondaryButton>
+      )
+    }
+
+    if (isAllowanceNeeded) {
+      return (
+        <SecondaryButton size="large" onClick={updateAllowance} fz={22} full>
+          <Flex>
+            Unlock token <LockedIcon />
+          </Flex>
+        </SecondaryButton>
+      )
+    }
+
+    return (
+      <Button
+        size="large"
+        theme={direction === "deposit" ? "primary" : "warn"}
+        onClick={handleSubmit}
+        fz={22}
+        full
+      >
+        {`Swap ${to.symbol}`}
+      </Button>
+    )
+  }
+
+  const button = getButton()
+
+  const form = (
+    <Card>
+      <CardHeader>
+        <Title>Swap</Title>
+        <IconsGroup>
+          <CircularProgress />
+          <IconButton
+            size={12}
+            filled
+            media={settings}
+            onClick={() => setSlippageOpen(!isSlippageOpen)}
+          />
+          <IconButton size={10} filled media={close} onClick={() => {}} />
+        </IconsGroup>
+      </CardHeader>
+
+      <ExchangeInput
+        price={from.price}
+        amount={from.amount}
+        balance={from.balance}
+        address={from.address}
+        symbol={from.symbol}
+        decimal={from.decimals}
+        customIcon={from.icon}
+        onChange={handleFromChange}
+        isLocked={isAllowanceNeeded}
+      />
+
+      <ExchangeDivider
+        direction={direction}
+        changeAmount={handlePercentageChange}
+        changeDirection={handleDirectionChange}
+      />
+
+      <ExchangeInput
+        price={to.price}
+        amount={to.amount}
+        balance={to.balance}
+        address={to.address}
+        symbol={to.symbol}
+        decimal={to.decimals}
+        customIcon={to.icon}
+      />
+
+      <Flex p="16px 0 0" full>
+        {button}
+      </Flex>
+
+      <TransactionSlippage
+        slippage={slippage}
+        onChange={setSlippage}
+        isOpen={isSlippageOpen}
+        toggle={(v) => setSlippageOpen(v)}
+      />
+    </Card>
+  )
+
+  return (
+    <>
+      <Header>{shortenAddress(poolAddress)}</Header>
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Payload
+          isOpen={isWalletPrompting}
+          toggle={() => setWalletPrompting(false)}
+        />
+        <TransactionError isOpen={!!error.length} toggle={() => setError("")}>
+          {error}
+        </TransactionError>
+        {form}
+      </Container>
+    </>
+  )
+}
+
 const InvestWithProvider = () => {
   return (
     <GraphProvider value={poolsClient}>
-      <Invest />
+      <InvestV2 />
     </GraphProvider>
   )
 }
 
-const InvestV2 = () => {
-  const { poolAddress } = useParams<{
-    poolAddress: string
-    poolType: PoolType
-  }>()
-  const [{ allowance }] = useCustomInvest(poolAddress, "deposit")
-
-  console.log(allowance)
-
-  return <></>
-}
-
-export default InvestV2
+export default InvestWithProvider
