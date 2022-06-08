@@ -82,7 +82,7 @@ const Success: FC<SuccessProps> = () => {
   useEffect(() => {
     if (!traderPoolRegistry) return
     ;(async () => {
-      const isBase = await traderPoolRegistry.isBasePool(poolAddress)
+      const isBase = await traderPoolRegistry.isBasicPool(poolAddress)
       setPoolType(isBase ? "BASIC_POOL" : "INVEST_POOL")
     })()
   }, [traderPoolRegistry, poolAddress])

@@ -10,7 +10,9 @@ import { shortenAddress } from "utils"
 
 export const TapBar = () => {
   const { account } = useWeb3React()
-  const lastVisitedProfile = localStorage.getItem("last-visited-profile")
+  const lastVisitedProfile = localStorage.getItem(
+    `last-visited-profile-${account}`
+  )
 
   const isBarHidden = !account ? "hidden" : "visible"
 

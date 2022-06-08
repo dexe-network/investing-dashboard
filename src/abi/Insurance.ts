@@ -190,25 +190,6 @@ export default [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "lastProposal",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "uint256",
         name: "offset",
         type: "uint256",
@@ -408,11 +389,21 @@ export default [
         type: "address",
       },
     ],
-    name: "userStakes",
+    name: "userInfos",
     outputs: [
       {
         internalType: "uint256",
-        name: "",
+        name: "stake",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "lastDepositTimestamp",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "lastProposalTimestamp",
         type: "uint256",
       },
     ],

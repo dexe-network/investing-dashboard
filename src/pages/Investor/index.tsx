@@ -142,8 +142,8 @@ function Investor(props: Props) {
   const noPools = !ownedPools.basic.length && !ownedPools.invest.length
 
   useEffect(() => {
-    localStorage.setItem("last-visited-profile", pathname)
-  }, [pathname])
+    localStorage.setItem(`last-visited-profile-${account}`, pathname)
+  }, [pathname, account])
 
   const redirectToTrader = () => {
     const redirectPath = getRedirectedPoolAddress(ownedPools)
