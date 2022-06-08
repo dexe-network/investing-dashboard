@@ -6,8 +6,7 @@ import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Insurance, PriceFeed } from "abi"
 
-import ExchangeTo from "components/Exchange/To"
-import ExchangeFrom from "components/Exchange/From"
+import ExchangeInput from "components/Exchange/ExchangeInput"
 import ExchangeDivider from "components/Exchange/Divider"
 import Button, { SecondaryButton } from "components/Button"
 import Payload from "components/Payload"
@@ -35,6 +34,7 @@ import { TransactionType } from "state/transactions/types"
 import LockedIcon from "assets/icons/LockedIcon"
 
 import { Card, CardHeader, Title } from "components/Exchange/styled"
+import { SwapDirection } from "constants/types"
 import { Container, PriceCard, Row, Label, Amount } from "./styled"
 
 const poolsClient = createClient({
@@ -51,7 +51,7 @@ export const useInsurance = (): [
     toSelectorOpened: boolean
     fromSelectorOpened: boolean
     pending: boolean
-    direction: "deposit" | "withdraw"
+    direction: SwapDirection
   },
   {
     setFromAmount: (amount: string) => void
@@ -74,7 +74,7 @@ export const useInsurance = (): [
   const [pending, setPending] = useState(false)
   const [toSelectorOpened, setToSelector] = useState(false)
   const [fromSelectorOpened, setFromSelector] = useState(false)
-  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+  const [direction, setDirection] = useState<SwapDirection>("deposit")
 
   const [toAddress, setToAddress] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -305,7 +305,7 @@ function Management() {
 
   const handlePercentageChange = (percent) => {
     const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
-    handleFromChange(from)
+    handleFromChange(from.toString())
   }
 
   const handleFromChange = (v: string) => {
@@ -376,7 +376,7 @@ function Management() {
   const button = getButton()
 
   const from = (
-    <ExchangeFrom
+    <ExchangeInput
       price={inPrice}
       amount={fromAmount}
       balance={fromBalance}
@@ -388,7 +388,7 @@ function Management() {
   )
 
   const to = (
-    <ExchangeTo
+    <ExchangeInput
       price={outPrice}
       amount={toAmount}
       balance={insuranceAmount}

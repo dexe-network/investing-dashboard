@@ -88,7 +88,7 @@ const Success: FC<SuccessProps> = () => {
   }, [traderPoolRegistry, poolAddress])
 
   const handleDepositRedirect = () => {
-    navigate(`/pool/invest/${poolType}/${poolAddress}`)
+    navigate(`/pool/invest/${poolAddress}`)
   }
 
   if (!poolInfo) {

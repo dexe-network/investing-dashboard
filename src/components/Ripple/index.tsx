@@ -11,11 +11,11 @@ const RippleContainer = styled.div<{
   border-radius: 2px;
   background: linear-gradient(
     90deg,
-    #171b1f 0%,
-    #5a6071 30%,
-    #171b1f 55%,
-    #5a6071 72%,
-    #171b1f 100%
+    #141926 0%,
+    rgba(44, 59, 84, 0.5) 30%,
+    #181e2c 55%,
+    rgba(44, 59, 84, 0.5) 72%,
+    #141926 100%
   );
   background-size: 200%;
   background-position: 0% 0%;

@@ -9,7 +9,7 @@ export const Container = styled(Flex)<{ withBackground: boolean }>`
   border-radius: 9px;
 
   background: ${({ withBackground }) =>
-    withBackground ? "#1C2230" : "transparent"};
+    withBackground ? "rgba(20, 25, 38, 0.6)" : "transparent"};
 `
 
 export const Icon = styled.img<{ size: number }>`
