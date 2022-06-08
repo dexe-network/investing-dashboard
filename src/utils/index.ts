@@ -20,7 +20,9 @@ export const useUpdate = (ms: number) => {
   return updator
 }
 
-export const delay = (ms) => new Promise((res) => setTimeout(res, ms))
+export const delay = (ms: number): Promise<void> => {
+  return new Promise((res) => setTimeout(res, ms))
+}
 
 export function isAddress(value: any): boolean {
   if (!value || value.length !== 42 || value === "" || value === "0x") {
