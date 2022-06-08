@@ -457,7 +457,7 @@ const FundDetailsEdit: FC = () => {
       const claimedAmountBigNumber = await traderPool?.balanceOf(removedAddress)
       const claimedAmount = formatBigNumber(claimedAmountBigNumber, 18, 6)
 
-      if (Number(claimedAmount) >= 0) {
+      if (Number(claimedAmount) > 0) {
         addToast(
           {
             type: "warning",
