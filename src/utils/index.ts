@@ -7,6 +7,7 @@ import { ERC20 } from "abi"
 import { useEffect, useState } from "react"
 import { OwnedPools } from "constants/interfaces_v2"
 import { getTime, setHours, setMinutes } from "date-fns"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 export const useUpdate = (ms: number) => {
   const [updator, setUpdate] = useState(0)
@@ -305,4 +306,13 @@ export const keepHoursAndMinutes = (timestamp: Date | number, h, m): number => {
   const minutes = setMinutes(hours, m)
 
   return shortTimestamp(getTime(minutes))
+}
+
+/**
+ * Check that transaction is mined by the given receipt
+ * @param tx transaction receipt
+ * @returns true if transaction is mined otherwise false
+ */
+export const txIsMined = (tx: TransactionReceipt | undefined): boolean => {
+  return !!tx && tx.status === 1 && !!tx.logs.length && !!tx.logs[0].address
 }

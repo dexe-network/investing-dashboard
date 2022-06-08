@@ -37,7 +37,7 @@ import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
 
-import { bigify, formatBigNumber, shortenAddress } from "utils"
+import { bigify, formatBigNumber, shortenAddress, txIsMined } from "utils"
 import { arrayDifference } from "utils/array"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
@@ -54,10 +54,6 @@ import { addPool } from "state/ipfsMetadata/actions"
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
-
-function txIsMined(tx: TransactionReceipt | undefined) {
-  return !!tx && !!tx.logs.length && !!tx.logs[0].address
-}
 
 const FundDetailsEdit: FC = () => {
   const dispatch = useDispatch()
