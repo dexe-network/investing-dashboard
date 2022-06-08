@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Flex, Center } from "theme"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { GuardSpinner } from "react-spinners-kit"
@@ -101,32 +101,161 @@ function Trader(props: Props) {
   }>()
 
   useEffect(() => {
-    localStorage.setItem("last-visited-profile", pathname)
-  }, [pathname])
+    localStorage.setItem(`last-visited-profile-${account}`, pathname)
+  }, [pathname, account])
 
   const traderPool = useTraderPool(poolAddress)
   const [poolData] = usePoolQuery(poolAddress)
   const [leverageInfo, poolInfoData] = usePoolContract(poolAddress)
   const navigate = useNavigate()
 
-  const redirectToInvestor = () => {
+  const redirectToInvestor = useCallback(() => {
     navigate("/me/investor")
-  }
+  }, [navigate])
 
   useEffect(() => {
     if (!traderPool || !account) return
     ;(async () => {
       const isAdmin = await traderPool?.isTraderAdmin(account)
+      if (!isAdmin) redirectToInvestor()
     })()
-  }, [traderPool, account])
+  }, [traderPool, account, redirectToInvestor])
 
-  if (!poolData) {
-    return (
-      <Center>
-        <GuardSpinner size={20} loading />
-      </Center>
-    )
-  }
+  const body = !poolData ? (
+    <Center>
+      <GuardSpinner size={20} loading />
+    </Center>
+  ) : (
+    <Container
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+    >
+      <MemberMobile data={poolData}>
+        <ButtonContainer>
+          <SecondaryButton
+            fz={14}
+            full
+            onClick={() => navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)}
+          >
+            Open new trade
+          </SecondaryButton>
+          <Button
+            fz={14}
+            onClick={() => navigate(`/fund-positions/${poolData.id}/open`)}
+            full
+          >
+            Positions
+          </Button>
+        </ButtonContainer>
+      </MemberMobile>
+
+      <TabCard>
+        <TabsLight
+          tabs={[
+            {
+              name: "Profit & Loss",
+              child: (
+                <>
+                  <ProfitLossChart address={poolAddress} />
+                  <ChartPeriods>
+                    <Period active>D</Period>
+                    <Period>W</Period>
+                    <Period>M</Period>
+                    <Period>3M</Period>
+                    <Period>6M</Period>
+                    <Period>1Y</Period>
+                    <Period>ALL</Period>
+                  </ChartPeriods>
+                  <BarChart />
+                  <Row>
+                    <TextGrey>P&L LP - $ETH</TextGrey>
+                    <MainValue>0% (0 ETH)</MainValue>
+                  </Row>
+                  <Row>
+                    <TextGrey>P&L LP - USD% - USD</TextGrey>
+                    <MainValue>0% - 0 USD </MainValue>
+                  </Row>
+                </>
+              ),
+            },
+            {
+              name: "Locked funds",
+              child: (
+                <>
+                  <AreaChart
+                    multiple
+                    tooltipSize="sm"
+                    height={163}
+                    data={pnlNew}
+                  />
+                  <ChartPeriods>
+                    <Period active>D</Period>
+                    <Period>W</Period>
+                    <Period>M</Period>
+                    <Period>3M</Period>
+                    <Period>6M</Period>
+                    <Period>1Y</Period>
+                    <Period>ALL</Period>
+                  </ChartPeriods>
+                  <Flex full p="15px 0 0">
+                    <Row>
+                      <MainText>Locked out of investor funds</MainText>
+                      <MainValue>$32.12k</MainValue>
+                    </Row>
+                  </Flex>
+                  <Row>
+                    <MainText>Your funds locked</MainText>
+                    <TextWhiteBig>$32.12k</TextWhiteBig>
+                  </Row>
+                  <Row>
+                    <FundsUsed
+                      current={"$61.15k / $101.92k"}
+                      total={"Fund used (60%)"}
+                    />
+                  </Row>
+                </>
+              ),
+            },
+          ]}
+        />
+      </TabCard>
+
+      <Details>
+        <DetailsEditLinkFrame>
+          <IconButton
+            filled
+            media={pencil}
+            onClick={() => {
+              navigate(`/fund-details/${poolData.id}/edit`)
+            }}
+            size={10}
+          />
+        </DetailsEditLinkFrame>
+        <TabsLight
+          tabs={[
+            {
+              name: "Statistic",
+              child: (
+                <FundStatisticsCard
+                  data={poolData}
+                  leverage={leverageInfo}
+                  info={poolInfoData}
+                />
+              ),
+            },
+            {
+              name: "Details",
+              child: (
+                <FundDetailsCard poolInfo={poolInfoData} data={poolData} />
+              ),
+            },
+          ]}
+        />
+      </Details>
+    </Container>
+  )
 
   return (
     <>
@@ -134,137 +263,7 @@ function Trader(props: Props) {
         My trader profile
         <Pools />
       </Header>
-      <Container
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
-      >
-        <MemberMobile data={poolData}>
-          <ButtonContainer>
-            <SecondaryButton
-              fz={14}
-              full
-              onClick={() =>
-                navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)
-              }
-            >
-              Open new trade
-            </SecondaryButton>
-            <Button
-              fz={14}
-              onClick={() => navigate(`/fund-positions/${poolData.id}/open`)}
-              full
-            >
-              Positions
-            </Button>
-          </ButtonContainer>
-        </MemberMobile>
-
-        <TabCard>
-          <TabsLight
-            tabs={[
-              {
-                name: "Profit & Loss",
-                child: (
-                  <>
-                    <ProfitLossChart address={poolAddress} />
-                    <ChartPeriods>
-                      <Period active>D</Period>
-                      <Period>W</Period>
-                      <Period>M</Period>
-                      <Period>3M</Period>
-                      <Period>6M</Period>
-                      <Period>1Y</Period>
-                      <Period>ALL</Period>
-                    </ChartPeriods>
-                    <BarChart />
-                    <Row>
-                      <TextGrey>P&L LP - $ETH</TextGrey>
-                      <MainValue>0% (0 ETH)</MainValue>
-                    </Row>
-                    <Row>
-                      <TextGrey>P&L LP - USD% - USD</TextGrey>
-                      <MainValue>0% - 0 USD </MainValue>
-                    </Row>
-                  </>
-                ),
-              },
-              {
-                name: "Locked funds",
-                child: (
-                  <>
-                    <AreaChart
-                      multiple
-                      tooltipSize="sm"
-                      height={163}
-                      data={pnlNew}
-                    />
-                    <ChartPeriods>
-                      <Period active>D</Period>
-                      <Period>W</Period>
-                      <Period>M</Period>
-                      <Period>3M</Period>
-                      <Period>6M</Period>
-                      <Period>1Y</Period>
-                      <Period>ALL</Period>
-                    </ChartPeriods>
-                    <Flex full p="15px 0 0">
-                      <Row>
-                        <MainText>Locked out of investor funds</MainText>
-                        <MainValue>$32.12k</MainValue>
-                      </Row>
-                    </Flex>
-                    <Row>
-                      <MainText>Your funds locked</MainText>
-                      <TextWhiteBig>$32.12k</TextWhiteBig>
-                    </Row>
-                    <Row>
-                      <FundsUsed
-                        current={"$61.15k / $101.92k"}
-                        total={"Fund used (60%)"}
-                      />
-                    </Row>
-                  </>
-                ),
-              },
-            ]}
-          />
-        </TabCard>
-
-        <Details>
-          <DetailsEditLinkFrame>
-            <IconButton
-              filled
-              media={pencil}
-              onClick={() => {
-                navigate(`/fund-details/${poolData.id}/edit`)
-              }}
-              size={10}
-            />
-          </DetailsEditLinkFrame>
-          <TabsLight
-            tabs={[
-              {
-                name: "Statistic",
-                child: (
-                  <FundStatisticsCard
-                    data={poolData}
-                    leverage={leverageInfo}
-                    info={poolInfoData}
-                  />
-                ),
-              },
-              {
-                name: "Details",
-                child: (
-                  <FundDetailsCard poolInfo={poolInfoData} data={poolData} />
-                ),
-              },
-            ]}
-          />
-        </Details>
-      </Container>
+      {body}
     </>
   )
 }
