@@ -5,6 +5,8 @@ import defaultAvatar from "assets/icons/default-avatar.svg"
 import picture from "assets/icons/picture.svg"
 import { blobToBase64 } from "utils/ipfs"
 
+import JazzIcon from "components/Icon/JazzIcon"
+
 import {
   Img,
   Overlay,
@@ -12,6 +14,7 @@ import {
   FileUpload,
   CameraIcon,
   Container,
+  JazzContainer,
 } from "./styled"
 
 const getNormalizedFile = (file) => {
@@ -31,6 +34,7 @@ const getNormalizedFile = (file) => {
 
 interface Props {
   url?: string
+  address?: string
   size?: number
   m?: string
   showUploader?: boolean
@@ -39,6 +43,7 @@ interface Props {
 
 const Avatar: React.FC<Props> = ({
   url,
+  address,
   size = 28,
   m = "0",
   showUploader = false,
@@ -78,20 +83,30 @@ const Avatar: React.FC<Props> = ({
     })()
   }, [croppedImg, onCrop])
 
-  if (!url || !url.length) {
-    url = defaultAvatar
-  } else {
-    url = `${url}`
+  const Image = () => {
+    if (url && url.length && url !== defaultAvatar) {
+      return (
+        <Img
+          src={croppedImg ? URL.createObjectURL(croppedImg) : url}
+          size={size}
+        />
+      )
+    } else if (address) {
+      return (
+        <JazzContainer size={size}>
+          <JazzIcon size={size} address={address} />
+        </JazzContainer>
+      )
+    } else {
+      return <Img src={defaultAvatar} size={size} />
+    }
   }
 
   return (
     <Container margin={m}>
-      <Img
-        src={croppedImg ? URL.createObjectURL(croppedImg) : url}
-        size={size}
-      />
-      {showUploader && !url && <Overlay />}
-      {showUploader && !url && <CameraIcon src={picture} />}
+      <Image />
+      {showUploader && !url && !address && <Overlay size={size} />}
+      {showUploader && !url && !address && <CameraIcon src={picture} />}
       {showUploader && (
         <>
           <FileUpload

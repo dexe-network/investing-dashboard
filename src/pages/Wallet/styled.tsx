@@ -1,6 +1,7 @@
-import styled from "styled-components"
-import { motion } from "framer-motion"
+import styled, { css } from "styled-components"
 import { Flex, GradientBorder } from "theme"
+import ExternalLink from "components/ExternalLink"
+
 import cardBG from "assets/background/wallet-card.svg"
 import insuranceBG from "assets/background/insurance-card.svg"
 import dexePlaceholder from "assets/icons/dexe-placeholder.svg"
@@ -116,11 +117,7 @@ export const Card = styled.div`
   width: 100%;
 `
 
-export const Address = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-family: Gilroy;
-  font-weight: 400;
+export const Address = styled(ExternalLink)`
   font-size: 14px;
   line-height: 28px;
   letter-spacing: 1px;
@@ -153,15 +150,32 @@ export const CardButtons = styled(Flex)`
 `
 
 export const TextButton = styled.div<{ color?: string }>`
+  display: flex;
+  align-items: center;
   font-family: Gilroy;
   font-style: normal;
-  font-weight: ${(props) => (props.color ? "600" : "400")};
   font-size: 12px;
   line-height: 14px;
   text-align: center;
   letter-spacing: 1px;
-
+  font-weight: ${(props) => (props.color ? "600" : "400")};
   color: ${(props) => (props.color ? props.color : "#636A77")};
+
+  span {
+    margin-top: 3px;
+  }
+`
+
+export const TextLink = styled(ExternalLink)`
+  font-weight: 400;
+  color: #636a77;
+  gap: 8px;
+`
+
+export const TextIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
 `
 
 export const Heading = styled.div`

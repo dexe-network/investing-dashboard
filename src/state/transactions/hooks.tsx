@@ -1,16 +1,23 @@
 import { useCallback } from "react"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 import { useActiveWeb3React } from "hooks"
+import useStoreTransactionWaiter from "hooks/useStoreTransactionWaiter"
+
 import { useAddToast } from "state/application/hooks"
 import { useAppDispatch, useAppSelector } from "state/hooks"
+
 import { addTransation } from "./actions"
 import { TransactionDetails } from "./types"
+
 import { DEFAULT_TXN_DISMISS_MS } from "constants/misc"
 
 export function useTransactionAdder() {
   const { chainId, account } = useActiveWeb3React()
   const dispatch = useAppDispatch()
   const addToast = useAddToast()
+
+  const waitTransaction = useStoreTransactionWaiter()
 
   return useCallback(
     (response, info) => {
@@ -22,12 +29,20 @@ export function useTransactionAdder() {
         throw Error("No transaction hash found.")
       }
 
-      dispatch(
-        addTransation({ params: { hash, from: account, info, chainId } })
-      )
-      addToast({ wait: true, txn: { hash } }, hash, DEFAULT_TXN_DISMISS_MS)
+      return new Promise((resolve) => {
+        dispatch(
+          addTransation({ params: { hash, from: account, info, chainId } })
+        )
+        addToast({ wait: true, txn: { hash } }, hash, DEFAULT_TXN_DISMISS_MS)
+        resolve(hash)
+      }).then(async (txHash) => {
+        const { promise } = waitTransaction(txHash)
+        const receipt = await promise.then((res) => res)
+
+        return receipt as TransactionReceipt
+      })
     },
-    [chainId, account, dispatch, addToast]
+    [chainId, account, dispatch, addToast, waitTransaction]
   )
 }
 

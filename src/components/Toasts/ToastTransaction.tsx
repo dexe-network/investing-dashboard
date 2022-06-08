@@ -1,11 +1,15 @@
 import { useMemo } from "react"
 import ToastBase from "./ToastBase"
-import { TransactionBody, TransactionLink } from "./styled"
+import { TransactionBody, TransactionErrorContent } from "./styled"
 
 import { ToastType } from "./types"
 
 import TransactionSummary from "components/TransactionSummary"
 import TransactionWait from "components/TransactionSummary/TransactionWait"
+import ExternalLink from "components/ExternalLink"
+
+import { useActiveWeb3React } from "hooks"
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { useTransaction } from "state/transactions/hooks"
 
 interface IProps {
@@ -15,6 +19,7 @@ interface IProps {
 }
 
 const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
+  const { chainId } = useActiveWeb3React()
   const tx = useTransaction(hash)
 
   const type = useMemo<ToastType>(() => {
@@ -42,7 +47,11 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
       case ToastType.Success:
         return <TransactionSummary info={tx.info} />
       case ToastType.Warning:
-        return <>Your transaction donU+2019t sent to the network</>
+        return (
+          <TransactionErrorContent>
+            Your transaction don&apos;t sent to the network
+          </TransactionErrorContent>
+        )
       default:
         return null
     }
@@ -58,8 +67,20 @@ const ToastTransaction: React.FC<IProps> = ({ hash, onClose, visible }) => {
     <>
       <ToastBase type={type} onClose={onClose} visible={visible}>
         <TransactionBody>{body}</TransactionBody>
-        {type !== ToastType.Waiting && (
-          <TransactionLink hash={hash} type={type} />
+        {type !== ToastType.Waiting && chainId && (
+          <>
+            <ExternalLink
+              color={type === ToastType.Success ? "#9AE2CB" : "#e4f2ff"}
+              iconColor={type === ToastType.Success ? "#9AE2CB" : "#e4f2ff"}
+              href={getExplorerLink(
+                chainId,
+                hash,
+                ExplorerDataType.TRANSACTION
+              )}
+            >
+              View on bscscan
+            </ExternalLink>
+          </>
         )}
       </ToastBase>
     </>

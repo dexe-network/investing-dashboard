@@ -5,8 +5,9 @@ import { PriceFeed } from "abi"
 import { BigNumber, ethers } from "ethers"
 
 import TokenIcon from "components/TokenIcon"
-import IpfsIcon from "components/IpfsIcon"
+import Icon from "components/Icon"
 
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { IPosition } from "constants/interfaces_v2"
@@ -25,12 +26,14 @@ import {
   StablePrice,
   PNL,
 } from "./styled"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 interface Props {
   baseToken?: string
   baseSymbol?: string
   ticker?: string
   description?: string
+  poolAddress?: string
   position: IPosition
 }
 
@@ -39,6 +42,7 @@ const PositionCard: React.FC<Props> = ({
   baseSymbol,
   ticker,
   description,
+  poolAddress,
   position,
 }) => {
   const [, tokenData] = useERC20(position.positionToken)
@@ -47,7 +51,12 @@ const PositionCard: React.FC<Props> = ({
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
-  const [markPriceUSD, setMarkPriceUSD] = useState(BigNumber.from(0))
+
+  const markPriceUSD = useTokenPriceOutUSD({
+    tokenAddress: position.positionToken,
+  })
+
+  const [{ poolMetadata }] = usePoolMetadata(poolAddress, description)
 
   useEffect(() => {
     if (!tokenData) return
@@ -88,24 +97,6 @@ const PositionCard: React.FC<Props> = ({
     getMarkPrice().catch(console.error)
   }, [priceFeed, baseToken, position.positionToken])
 
-  // get mark price in USD
-  useEffect(() => {
-    if (!priceFeed) return
-
-    const amount = ethers.utils.parseUnits("1", 18)
-
-    const getMarkPriceUSD = async () => {
-      const priceUSD = await priceFeed.getNormalizedPriceOutUSD(
-        position.positionToken,
-        amount
-      )
-
-      setMarkPriceUSD(priceUSD[0].toString())
-    }
-
-    getMarkPriceUSD().catch(console.error)
-  }, [priceFeed, position.positionToken])
-
   if (baseToken === position.positionToken) {
     return null
   }
@@ -120,7 +111,12 @@ const PositionCard: React.FC<Props> = ({
         </Flex>
         <Flex>
           <FundSymbol>{ticker}</FundSymbol>
-          <IpfsIcon hash={description} m="0" size={24} />
+          <Icon
+            m="0"
+            size={24}
+            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+            address={poolAddress}
+          />
         </Flex>
       </Head>
       <Body>

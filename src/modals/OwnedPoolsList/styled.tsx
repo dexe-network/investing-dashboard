@@ -1,10 +1,12 @@
 import styled from "styled-components"
-import TokenIcon from "components/TokenIcon"
 import { motion } from "framer-motion"
-import { Flex, To } from "theme"
-import actionIcon from "assets/icons/stats-action.svg"
+
 import { PoolType } from "constants/interfaces_v2"
-import IpfsIcon from "components/IpfsIcon"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
+
+import { Flex, To } from "theme"
+import TokenIcon from "components/TokenIcon"
+import Icon from "components/Icon"
 
 export const Container = styled.div`
   padding: 16px 0 60px;
@@ -171,12 +173,17 @@ export const Token: React.FC<{
   descriptionURL,
   onClick,
 }) => {
+  const [{ poolMetadata }] = usePoolMetadata(address, descriptionURL)
   return (
     <To onClick={onClick} to={`/me/trader/profile/${poolType}/${address}`}>
       <Row>
         <Info>
           <Avatar>
-            <IpfsIcon size={40} hash={descriptionURL} />
+            <Icon
+              size={40}
+              source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+              address={address}
+            />
             <BaseWrapper>
               <TokenIcon size={20} address={baseAddress} />
             </BaseWrapper>

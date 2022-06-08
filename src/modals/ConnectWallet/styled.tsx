@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 import { Text, Flex } from "theme"
 import styled from "styled-components"
 import { motion } from "framer-motion"
@@ -112,7 +114,7 @@ export const PrivacyText = styled.p`
   width: 100%;
 `
 
-export const LinkText = styled.a`
+export const LinkText = styled(Link)`
   text-decoration: none;
   font-family: Gilroy;
   font-style: normal;

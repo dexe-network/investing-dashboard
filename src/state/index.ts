@@ -7,8 +7,14 @@ import pools from "./pools/reducer"
 import contracts from "./contracts/reducer"
 import pricefeed from "./pricefeed/reducer"
 import application from "./application/reducer"
+import ipfsMetadata from "./ipfsMetadata/reducer"
 
-const PERSISTED_KEYS: string[] = ["user", "transactions", "pools"]
+const PERSISTED_KEYS: string[] = [
+  "user",
+  "transactions",
+  "pools",
+  "ipfsMetadata",
+]
 
 const shouldReset = () => {
   const isReseted =
@@ -34,6 +40,7 @@ const store = configureStore({
     pools,
     contracts,
     pricefeed,
+    ipfsMetadata,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),
