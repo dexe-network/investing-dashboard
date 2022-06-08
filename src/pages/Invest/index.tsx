@@ -24,9 +24,13 @@ import { PoolType } from "constants/interfaces_v2"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { createClient, Provider as GraphProvider } from "urql"
-import { calcSlippage, getAllowance, parseTransactionError } from "utils"
+import {
+  calcSlippage,
+  getAllowance,
+  parseTransactionError,
+  isTxMined,
+} from "utils"
 import { getDividedBalance, getPriceImpact } from "utils/formulas"
-import getReceipt from "utils/getReceipt"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -273,7 +277,7 @@ function Invest() {
           amountsWithSlippage
         )
 
-        addTransaction(depositResponse, {
+        const receipt = await addTransaction(depositResponse, {
           type: TransactionType.DEPOSIT_LIQUIDITY_STAKING,
           poolAddress: poolAddress,
           currencyId: poolInfo?.parameters.baseToken,
@@ -281,10 +285,10 @@ function Invest() {
         })
 
         setSubmiting(false)
-        await getReceipt(library, depositResponse.hash)
-
-        updateFromBalance()
-        await updateToBalance()
+        if (isTxMined(receipt)) {
+          updateFromBalance()
+          await updateToBalance()
+        }
       }
 
       deposit().catch((error) => {
@@ -310,14 +314,16 @@ function Invest() {
           divest.commissions.dexeDexeCommission
         )
 
-        addTransaction(withdrawResponse, {
+        const receipt = await addTransaction(withdrawResponse, {
           type: TransactionType.WITHDRAW_LIQUIDITY_STAKING,
           poolAddress: poolAddress,
           currencyId: poolInfo?.parameters.baseToken,
           amount: amount.toHexString(),
         })
 
-        setSubmiting(false)
+        if (isTxMined(receipt)) {
+          setSubmiting(false)
+        }
       }
 
       withdraw().catch(console.error)
@@ -402,17 +408,16 @@ function Invest() {
 
     const approveToken = async () => {
       const amount = BigNumber.from(fromAmount)
-      const approveResponse = await fromToken.approve(poolAddress, amount)
+      const tx = await fromToken.approve(poolAddress, amount)
       setSubmiting(false)
 
-      addTransaction(approveResponse, {
+      const receipt = await addTransaction(tx, {
         type: TransactionType.APPROVAL,
         tokenAddress: fromToken.address,
         spender: account,
       })
 
-      const receipt = await getReceipt(library, approveResponse.hash)
-      if (receipt !== null && receipt.logs.length) {
+      if (isTxMined(receipt) && receipt!.logs.length) {
         await fetchAndUpdateAllowance()
       }
     }
