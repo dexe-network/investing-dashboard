@@ -21,9 +21,13 @@ import {
   selectPriceFeedAddress,
 } from "state/contracts/selectors"
 
-import getReceipt from "utils/getReceipt"
 import { getDividedBalance } from "utils/formulas"
-import { formatBigNumber, getAllowance, parseTransactionError } from "utils"
+import {
+  formatBigNumber,
+  getAllowance,
+  parseTransactionError,
+  txIsMined,
+} from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -240,26 +244,28 @@ function Management() {
     const handleBuy = async () => {
       const amount = BigNumber.from(fromAmount)
       const response = await insurance?.buyInsurance(amount)
-      addTransaction(response, {
+      const receipt = await addTransaction(response, {
         type: TransactionType.STAKE_INSURANCE,
         amount: fromAmount,
       })
-      await getReceipt(library, response.hash)
-      refetchBalance()
-      await fetchInsuranceBalance()
+      if (txIsMined(receipt)) {
+        refetchBalance()
+        await fetchInsuranceBalance()
+      }
       setLoading(false)
     }
 
     const handleSell = async () => {
       const amount = BigNumber.from(toAmount)
       const response = await insurance?.withdraw(amount)
-      addTransaction(response, {
+      const receipt = await addTransaction(response, {
         type: TransactionType.UNSTAKE_INSURANCE,
         amount: toAmount,
       })
-      await getReceipt(library, response.hash)
-      refetchBalance()
-      await fetchInsuranceBalance()
+      if (txIsMined(receipt)) {
+        refetchBalance()
+        await fetchInsuranceBalance()
+      }
       setLoading(false)
     }
 
@@ -283,14 +289,13 @@ function Management() {
       const approveResponse = await fromToken.approve(insuranceAddress, amount)
       setLoading(false)
 
-      addTransaction(approveResponse, {
+      const receipt = await addTransaction(approveResponse, {
         type: TransactionType.APPROVAL,
         tokenAddress: dexeAddress,
         spender: account,
       })
 
-      const receipt = await getReceipt(library, approveResponse.hash)
-      if (receipt !== null && receipt.logs.length) {
+      if (txIsMined(receipt) && receipt!.logs.length) {
         await fetchAndUpdateAllowance()
       }
     }
