@@ -12,4 +12,10 @@ export enum TradeType {
   EXACT_OUTPUT = 1,
 }
 
+
 export type SwapDirection = "deposit" | "withdraw"
+
+export enum UpdateListType {
+  REMOVE = 0,
+  ADD = 1,
+}

@@ -1,10 +1,7 @@
 import { useMemo, useEffect, useState, useCallback } from "react"
 import { Contract } from "@ethersproject/contracts"
 import {
-  IUniswapV2Router02,
-  PancakeExchangeTool,
   ERC20,
-  PancakeFactory,
   TraderPool,
   TraderPoolRiskyProposal,
   BasicTraderPool,
@@ -45,27 +42,6 @@ export default function useContract(
       return null
     }
   }, [address, ABI, library, withSignerIfPossible, account])
-}
-
-export function useUniswapExchangeTool(): Contract | null {
-  return useContract(
-    process.env.REACT_APP_UNISWAP_EXCHANGE_TOOL,
-    IUniswapV2Router02
-  )
-}
-
-export function usePancakeExchangeTool(): Contract | null {
-  return useContract(
-    process.env.REACT_APP_PANCAKE_EXCHANGE_TOOL,
-    PancakeExchangeTool
-  )
-}
-
-export function usePancakeFactory(): Contract | null {
-  return useContract(
-    "0x6725F303b657a9451d8BA641348b6761A6CC7a17",
-    PancakeFactory
-  )
 }
 
 export function useERC20(

@@ -225,7 +225,7 @@ export default [
         type: "address",
       },
     ],
-    name: "isBasePool",
+    name: "isBasicPool",
     outputs: [
       {
         internalType: "bool",
@@ -404,6 +404,11 @@ export default [
           },
           {
             internalType: "uint256",
+            name: "totalBlacklistedPositions",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "totalInvestors",
             type: "uint256",
           },
@@ -425,6 +430,21 @@ export default [
           {
             internalType: "uint256",
             name: "lpLockedInProposals",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderUSD",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderBase",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderLPBalance",
             type: "uint256",
           },
         ],

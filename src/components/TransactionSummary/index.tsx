@@ -10,22 +10,19 @@ import {
   WithdrawLiquidityTransactionInfo,
   FundCreateTransactionInfo,
   FundEditTransactionInfo,
+  FundUpdateInvestorsTransactionInfo,
+  FundUpdateManagersTransactionInfo,
   CreateRiskyProposalTransactionInfo,
   EditRiskyProposalTransactionInfo,
-  DepositRiskyProposalTransactionInfo,
-  WithdrawRiskyProposalTransactionInfo,
   CreateInvestProposalTransactionInfo,
   EditInvestProposalTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
   TransactionInfo,
 } from "state/transactions/types"
-import { TradeType } from "constants/types"
+import { TradeType, UpdateListType } from "constants/types"
 
-import { Container } from "./styled"
-import FormattedCurrencyAmount, {
-  FormattedAmount,
-} from "./FormattedCurrencyAmount"
+import FormattedCurrencyAmount from "./FormattedCurrencyAmount"
 
 import { selectWhitelistItem } from "state/pricefeed/selectors"
 import { formatBigNumber } from "utils"
@@ -137,6 +134,20 @@ const FundEditSummary: React.FC<{ info: FundEditTransactionInfo }> = ({
   )
 }
 
+const FundUpdateUnvestorsSummary: React.FC<{
+  info: FundUpdateInvestorsTransactionInfo
+}> = ({ info }) => {
+  const action = info.editType === UpdateListType.ADD ? "add" : "remove"
+  return <>Successlully {action} investors</>
+}
+
+const FundUpdateManagersSummary: React.FC<{
+  info: FundUpdateManagersTransactionInfo
+}> = ({ info }) => {
+  const action = info.editType === UpdateListType.ADD ? "add" : "remove"
+  return <>Successlully {action} managers</>
+}
+
 const CredentialsUpdateSummary: React.FC = () => {
   return <>Successfully update Credentials</>
 }
@@ -150,44 +161,6 @@ const EditRiskyProposalSummary: React.FC<{
   info: EditRiskyProposalTransactionInfo
 }> = ({ info }) => {
   return <>Update Risky Proposal</>
-}
-const DepositRiskyProposalSummary: React.FC<{
-  info: DepositRiskyProposalTransactionInfo
-}> = ({
-  info: {
-    inputCurrencyAmountRaw,
-    inputCurrencySymbol,
-    expectedOutputCurrencyAmountRaw,
-    expectedOutputCurrencySymbol,
-  },
-}) => {
-  return (
-    <>
-      Buy <FormattedAmount rawAmount={inputCurrencyAmountRaw} />{" "}
-      {inputCurrencySymbol + "-LP2"} tokens for{" "}
-      <FormattedAmount rawAmount={expectedOutputCurrencyAmountRaw} />{" "}
-      {expectedOutputCurrencySymbol}
-    </>
-  )
-}
-const WithdrawRiskyProposalSummary: React.FC<{
-  info: WithdrawRiskyProposalTransactionInfo
-}> = ({
-  info: {
-    outputCurrencyAmountRaw,
-    outputCurrencySymbol,
-    expectedInputCurrencyAmountRaw,
-    expectedInputCurrencySymbol,
-  },
-}) => {
-  return (
-    <>
-      Sell <FormattedAmount rawAmount={outputCurrencyAmountRaw} />{" "}
-      {outputCurrencySymbol + "-LP2"} tokens for{" "}
-      <FormattedAmount rawAmount={expectedInputCurrencyAmountRaw} />{" "}
-      {expectedInputCurrencySymbol}
-    </>
-  )
 }
 
 const CreateInvestProposalSummary: React.FC<{
@@ -233,16 +206,16 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <FundCreateSummary info={info} />
     case TransactionType.FUND_EDIT:
       return <FundEditSummary info={info} />
+    case TransactionType.FUND_UPDATE_INVESTORS:
+      return <FundUpdateUnvestorsSummary info={info} />
+    case TransactionType.FUND_UPDATE_MANAGERS:
+      return <FundUpdateManagersSummary info={info} />
     case TransactionType.UPDATE_USER_CREDENTIALS:
       return <CredentialsUpdateSummary />
     case TransactionType.CREATE_RISKY_PROPOSAL:
       return <CreateRiskyProposalSummary info={info} />
     case TransactionType.EDIT_RISKY_PROPOSAL:
       return <EditRiskyProposalSummary info={info} />
-    case TransactionType.DEPOSIT_RISKY_PROPOSAL:
-      return <DepositRiskyProposalSummary info={info} />
-    case TransactionType.WITHDRAW_RISKY_PROPOSAL:
-      return <WithdrawRiskyProposalSummary info={info} />
     case TransactionType.CREATE_INVEST_PROPOSAL:
       return <CreateInvestProposalSummary info={info} />
     case TransactionType.EDIT_INVEST_PROPOSAL:
@@ -253,7 +226,7 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <UnstakeInsuranceSummary info={info} />
 
     default:
-      return <Container>Default</Container>
+      return null
   }
 }
 

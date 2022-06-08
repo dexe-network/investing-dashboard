@@ -31,11 +31,13 @@ interface Props {
   account: string | null | undefined
 }
 
-const useInvestorMobile = (): [{ userName: string; userAvatar: string }] => {
+const useInvestorMobile = (): [
+  { userName: string | null; userAvatar: string }
+] => {
   const { account } = useWeb3React()
 
-  const [userName, setUserName] = useState("")
-  const [userAvatar, setUserAvatar] = useState("")
+  const [userName, setUserName] = useState<string | null>(null)
+  const [userAvatar, setUserAvatar] = useState<string>("")
   const [profileURL, setProfileURL] = useState<string | null>(null)
 
   const userRegistryAddress = useSelector(selectUserRegistryAddress)
