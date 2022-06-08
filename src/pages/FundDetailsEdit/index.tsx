@@ -37,7 +37,7 @@ import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
 
-import { bigify, formatBigNumber, shortenAddress } from "utils"
+import { bigify, formatBigNumber, shortenAddress, isTxMined } from "utils"
 import { arrayDifference } from "utils/array"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
@@ -54,10 +54,6 @@ import { addPool } from "state/ipfsMetadata/actions"
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
-
-function txIsMined(tx: TransactionReceipt | undefined) {
-  return !!tx && !!tx.logs.length && !!tx.logs[0].address
-}
 
 const FundDetailsEdit: FC = () => {
   const dispatch = useDispatch()
@@ -308,7 +304,7 @@ const FundDetailsEdit: FC = () => {
         setStepPending(true)
         const data = await handleParametersUpdate()
 
-        if (txIsMined(data)) {
+        if (isTxMined(data)) {
           setStep(step + 1)
           setStepPending(false)
           poolParametersSaveCallback()
@@ -327,7 +323,7 @@ const FundDetailsEdit: FC = () => {
         }
 
         Promise.all(txs).then((res) => {
-          if (res.every(txIsMined)) {
+          if (res.every(isTxMined)) {
             if (!!managersRemoved.length) {
               managersRemoveCallback()
             }
@@ -353,7 +349,7 @@ const FundDetailsEdit: FC = () => {
         }
 
         Promise.all(txs).then((res) => {
-          if (res.every(txIsMined)) {
+          if (res.every(isTxMined)) {
             if (!!investorsRemoved.length) {
               investorsRemoveCallback()
             }

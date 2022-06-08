@@ -1,9 +1,7 @@
-function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
+import { delay } from "utils"
 
 function waitRandom(min: number, max: number): Promise<void> {
-  return wait(min + Math.round(Math.random() * Math.max(0, max - min)))
+  return delay(min + Math.round(Math.random() * Math.max(0, max - min)))
 }
 
 /**
