@@ -20,7 +20,7 @@ export function useTransactionAdder() {
   const waitTransaction = useStoreTransactionWaiter()
 
   return useCallback(
-    (response, info) => {
+    (response, info): Promise<TransactionReceipt> | undefined => {
       if (!chainId) return
       if (!account) return
 
