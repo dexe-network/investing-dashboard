@@ -2,7 +2,7 @@ import { getAddress } from "@ethersproject/address"
 import { Contract } from "@ethersproject/contracts"
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import { poolTypes, stableCoins } from "constants/index"
-import { ethers } from "ethers"
+import { ethers, FixedNumber } from "ethers"
 import { ERC20 } from "abi"
 import { useEffect, useState } from "react"
 import { OwnedPools } from "constants/interfaces_v2"
@@ -359,4 +359,16 @@ export const cutDecimalPlaces = (
     Math[roundUp ? "round" : "floor"](parseFloat(number) * pow) / pow
 
   return ethers.utils.parseUnits(parsed.toString(), decimals)
+}
+
+export const getMaxLPInvestAmount = (
+  supply: BigNumber,
+  emission: BigNumber
+) => {
+  const supplyFixed = FixedNumber.fromValue(supply, 18)
+  const emissionFixed = FixedNumber.fromValue(emission, 18)
+
+  const result = emissionFixed.subUnsafe(supplyFixed)
+
+  return BigNumber.from(result._hex)
 }

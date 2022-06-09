@@ -15,6 +15,8 @@ import {
   getAllowance,
   parseTransactionError,
   isTxMined,
+  formatBigNumber,
+  getMaxLPInvestAmount,
 } from "utils"
 import { useWeb3React } from "@web3-react/core"
 import { useERC20, usePriceFeedContract } from "hooks/useContract"
@@ -24,6 +26,7 @@ import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import { getDividedBalance } from "utils/formulas"
 import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
+import useAlert, { AlertType } from "hooks/useAlert"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -72,7 +75,7 @@ const useInvest = ({
 }: UseInvestProps): [Form, UseInvestResponse] => {
   const { account, library } = useWeb3React()
   const traderPool = useTraderPool(poolAddress)
-  const [, poolInfo] = usePoolContract(poolAddress)
+  const [leverageInfo, poolInfo] = usePoolContract(poolAddress)
   const addTransaction = useTransactionAdder()
   const [baseToken, baseTokenData, baseTokenBalance, updateBaseToken] =
     useERC20(poolInfo?.parameters.baseToken)
@@ -81,8 +84,10 @@ const useInvest = ({
     poolInfo?.parameters.descriptionURL
   )
   const priceFeed = usePriceFeedContract()
+  const [showAlert, hideAlert] = useAlert()
 
   const poolPrice = usePoolPrice(poolAddress)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [fromAmount, setFromAmount] = useState("0")
   const [toAmount, setToAmount] = useState("0")
   const [slippage, setSlippage] = useState("0.10")
@@ -93,10 +98,12 @@ const useInvest = ({
   const [allowance, setAllowance] = useState<BigNumber | undefined>()
   const [isWalletPrompting, setWalletPrompting] = useState(false)
   const [isSlippageOpen, setSlippageOpen] = useState(false)
+  const [positions, setPositions] = useState<string[]>([])
   const [error, setError] = useState("")
 
   const poolIcon = (
     <Icon
+      m="0"
       size={27}
       address={poolAddress}
       source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
@@ -120,7 +127,7 @@ const useInvest = ({
         symbol: poolInfo?.ticker,
         decimals: 18,
         icon: poolIcon,
-        price: lpTokenPrice,
+        price: poolPrice.eq("0") ? baseTokenPrice : lpTokenPrice,
       },
     },
     withdraw: {
@@ -131,7 +138,7 @@ const useInvest = ({
         symbol: poolInfo?.ticker,
         decimals: 18,
         icon: poolIcon,
-        price: lpTokenPrice,
+        price: poolPrice.eq("0") ? baseTokenPrice : lpTokenPrice,
       },
       to: {
         address: poolInfo?.parameters.baseToken || "",
@@ -145,6 +152,92 @@ const useInvest = ({
   }
 
   const formWithDirection = form[direction]
+
+  const handleValidate = useCallback(() => {
+    if (!poolInfo || !baseTokenData || !leverageInfo) return false
+
+    const amountIn = BigNumber.from(fromAmount)
+    const amountOut = BigNumber.from(toAmount)
+
+    // check if min invest amount valid
+    if (
+      direction === "deposit" &&
+      amountIn.lt(poolInfo.parameters.minimalInvestment)
+    ) {
+      showAlert({
+        type: AlertType.warning,
+        content: `Minimum investment amount is ${formatBigNumber(
+          poolInfo.parameters.minimalInvestment
+        )} ${baseTokenData.symbol}, please increase your investment amount.`,
+      })
+      return false
+    }
+
+    // check if trader and has positions (close positions before divest)
+    if (direction === "withdraw" && isAdmin && !!positions.length) {
+      showAlert({
+        type: AlertType.warning,
+        content:
+          "To withdraw funds from the pool, you must close all positions",
+      })
+      return false
+    }
+    // check if leverage enought to deposit
+    if (
+      direction === "deposit" &&
+      !isAdmin &&
+      amountIn.gt(leverageInfo.freeLeverageBase)
+    ) {
+      showAlert({
+        type: AlertType.warning,
+        content: (
+          <>
+            {`Amount of invested tokens exceeds trader leverage. Maximum invest amount is:`}
+            <br />
+            {`${formatBigNumber(leverageInfo.freeLeverageBase)} ${
+              baseTokenData.symbol
+            }`}
+          </>
+        ),
+      })
+      return false
+    }
+    // check if emission is enought to deposit
+    if (
+      direction === "deposit" &&
+      poolInfo.parameters.totalLPEmission.gt("0")
+    ) {
+      const maxLPInvestAmount = getMaxLPInvestAmount(
+        poolInfo.lpSupply,
+        poolInfo.parameters.totalLPEmission
+      )
+
+      if (maxLPInvestAmount.lt(amountOut)) {
+        showAlert({
+          type: AlertType.warning,
+          content: (
+            <>
+              {`Amount of received LP tokens exceeds total Emission. Maximum LP amount is:`}
+              <br />
+              {`${formatBigNumber(maxLPInvestAmount)} ${poolInfo.ticker}`}
+            </>
+          ),
+        })
+        return false
+      }
+    }
+    return true
+  }, [
+    poolInfo,
+    baseTokenData,
+    leverageInfo,
+    fromAmount,
+    toAmount,
+    direction,
+    isAdmin,
+    positions,
+    showAlert,
+  ])
 
   const fetchAndUpdateAllowance = useCallback(async () => {
     if (!account || !library || !poolAddress || !poolInfo) return
@@ -167,6 +260,8 @@ const useInvest = ({
 
   const updateAllowance = useCallback(async () => {
     if (!account || !poolAddress || !baseToken) return
+
+    if (!handleValidate()) return
 
     try {
       setWalletPrompting(true)
@@ -191,6 +286,7 @@ const useInvest = ({
     poolAddress,
     baseToken,
     fromAmount,
+    handleValidate,
     addTransaction,
     fetchAndUpdateAllowance,
   ])
@@ -210,8 +306,6 @@ const useInvest = ({
 
   const updateLpPrice = useCallback(
     async (amount: BigNumber) => {
-      if (!poolPrice) return
-
       const lpPrice = getDividedBalance(amount, 18, poolPrice.toString())
       setLpPrice(lpPrice)
     },
@@ -229,6 +323,7 @@ const useInvest = ({
         const tokens = await traderPool.getInvestTokens(amount.toHexString())
         const receivedAmounts = cutDecimalPlaces(tokens.lpAmount)
 
+        setPositions(tokens.positions)
         setToAmount(receivedAmounts.toString())
         updateBasePrice(amount)
         updateLpPrice(receivedAmounts)
@@ -239,6 +334,7 @@ const useInvest = ({
           account,
           amount.toHexString()
         )
+        setPositions(divest.receptions.positions)
         const receivedAmounts = cutDecimalPlaces(divest.receptions.baseAmount)
 
         setToAmount(receivedAmounts.toString())
@@ -382,6 +478,8 @@ const useInvest = ({
   ])
 
   const handleSubmit = useCallback(async () => {
+    if (!handleValidate()) return
+
     setWalletPrompting(true)
 
     const handleError = (error) => {
@@ -400,7 +498,7 @@ const useInvest = ({
     } else {
       handleWithdraw().catch(handleError)
     }
-  }, [direction, handleDeposit, handleWithdraw])
+  }, [direction, handleDeposit, handleValidate, handleWithdraw])
 
   // fetch allowance on mount
   useEffect(() => {
@@ -425,6 +523,15 @@ const useInvest = ({
   useEffect(() => {
     updateFrom()
   }, [direction])
+
+  // fetch is account have admin permission
+  useEffect(() => {
+    if (!traderPool || !account) return
+    ;(async () => {
+      const isAdmin = await traderPool.isTraderAdmin(account)
+      setIsAdmin(isAdmin)
+    })()
+  }, [traderPool, account])
 
   return [
     formWithDirection,
