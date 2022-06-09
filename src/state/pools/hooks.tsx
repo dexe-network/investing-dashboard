@@ -107,12 +107,13 @@ export function usePoolPrice(address: string | undefined) {
     ;(async () => {
       const poolInfo = await traderPool.getPoolInfo()
 
-      const usd = FixedNumber.fromValue(poolInfo.totalPoolUSD, 18)
-      const supply = FixedNumber.fromValue(poolInfo.lpSupply, 18)
+      if (poolInfo.lpSupply.gt("0")) {
+        const usd = FixedNumber.fromValue(poolInfo.totalPoolUSD, 18)
+        const supply = FixedNumber.fromValue(poolInfo.lpSupply, 18)
 
-      // const result = usd.divUnsafe(supply)
-      // TODO: wait for fix of totalPoolUSD in TraderPoolRegistry
-      // calc and store in state
+        const result = usd.divUnsafe(supply)
+        setPrice(BigNumber.from(result._hex))
+      }
     })()
   }, [traderPool])
 
