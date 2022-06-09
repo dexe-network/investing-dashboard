@@ -72,3 +72,32 @@ export default function usePrivacyPolicyAgreed(): IResponce {
     agreePrivacyPolicy,
   }
 }
+
+// TODO: refactor this to return one function instead of multiple
+export function usePrivacyPolicyAdder() {
+  const addTransaction = useTransactionAdder()
+
+  const userRegistryAddress = useSelector(selectUserRegistryAddress)
+  const userRegistry = useContract(userRegistryAddress, UserRegistry)
+
+  const [signedHash, setSignedHash] = useState<string | null>(null)
+
+  const signPrivacyPolicy = useCallback(async (data1, data2) => {
+    //TODO: Sign some data in hash by wallet
+    const hash = "0x" + data1 + data2
+
+    setSignedHash(hash)
+  }, [])
+
+  const setPrivacyPolicyDocumentHash = useCallback(async () => {
+    if (signedHash && userRegistry) {
+      const tx = userRegistry?.setPrivacyPolicyDocumentHash(signedHash)
+
+      addTransaction(tx, {
+        type: "SET_PRIVACY_POLICY_HASH",
+      })
+    }
+  }, [addTransaction, signedHash, userRegistry])
+
+  return [signPrivacyPolicy, setPrivacyPolicyDocumentHash]
+}
