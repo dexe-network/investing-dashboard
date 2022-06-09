@@ -18,8 +18,8 @@ import useCopyClipboard from "hooks/useCopyClipboard"
 
 import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 
-import { addUserMetadata, parseUserData } from "utils/ipfs"
-import { formatBigNumber, shortenAddress } from "utils"
+import { addUserMetadata } from "utils/ipfs"
+import { formatBigNumber, shortenAddress, isTxMined } from "utils"
 
 import { useUserMetadata } from "state/ipfsMetadata/hooks"
 import { useTransactionAdder } from "state/transactions/hooks"
@@ -36,7 +36,6 @@ import Expand from "assets/icons/Expand"
 import plus from "assets/icons/plus.svg"
 import copyIcon from "assets/icons/copy.svg"
 import logoutIcon from "assets/icons/logout.svg"
-import link from "assets/icons/external-link.svg"
 
 import {
   Container,
@@ -121,19 +120,23 @@ const useUserSettings = (): [
 
     setProfileURL(ipfsReceipt.path)
 
-    addTransaction(trx, { type: TransactionType.UPDATE_USER_CREDENTIALS })
+    const receipt = await addTransaction(trx, {
+      type: TransactionType.UPDATE_USER_CREDENTIALS,
+    })
 
-    if (isAvatarChanged) {
-      setUserAvatarInitial(userAvatar)
-      setAssets(actualAssets)
+    if (isTxMined(receipt)) {
+      if (isAvatarChanged) {
+        setUserAvatarInitial(userAvatar)
+        setAssets(actualAssets)
+      }
+
+      if (isNameChanged) {
+        setUserNameInitial(userName)
+      }
+
+      setLoading(false)
+      setUserEditing(false)
     }
-
-    if (isNameChanged) {
-      setUserNameInitial(userName)
-    }
-
-    setLoading(false)
-    setUserEditing(false)
   }
 
   useEffect(() => {
@@ -266,6 +269,7 @@ export default function Wallet() {
               <AvatarWrapper>
                 <Avatar
                   url={userAvatar}
+                  address={account}
                   onCrop={(_, value) => setUserAvatar(value)}
                   showUploader={isUserEditing}
                   size={44}

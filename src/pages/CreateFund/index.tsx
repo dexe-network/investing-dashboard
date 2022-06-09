@@ -1,10 +1,9 @@
-import { FC, MouseEventHandler, useState, useCallback } from "react"
+import { FC, useState, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { Flex } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import { useSelector } from "react-redux"
 import { PulseSpinner } from "react-spinners-kit"
-import { ethers } from "ethers"
 
 import Button from "components/Button"
 import Avatar from "components/Avatar"
@@ -18,6 +17,7 @@ import Slider from "components/Slider"
 import Stepper, { Step as IStep } from "components/Stepper"
 import SwitchRow, { InputText } from "components/SwitchRow"
 import Icon from "components/Icon"
+import ExternalLink from "components/ExternalLink"
 
 import TokenSelect from "modals/TokenSelect"
 
@@ -25,11 +25,13 @@ import { useCreateFundContext } from "context/CreateFundContext"
 import { selectPoolFactoryAddress } from "state/contracts/selectors"
 import { Token } from "constants/interfaces"
 import { sliderPropsByPeriodType, performanceFees } from "constants/index"
+import { UpdateListType } from "constants/types"
 import useContract from "hooks/useContract"
 import { TraderPool, PoolFactory } from "abi"
 
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { addFundMetadata } from "utils/ipfs"
-import { bigify } from "utils"
+import { bigify, isTxMined } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -38,8 +40,8 @@ import ManagersIcon from "assets/icons/Managers"
 import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
-import link from "assets/icons/link-grey.svg"
 import plus from "assets/icons/button-plus.svg"
+import defaultAvatar from "assets/icons/default-avatar.svg"
 
 import HeaderStep from "./Header"
 import FundTypeCard from "./FundTypeCard"
@@ -86,7 +88,7 @@ const CreateFund: FC = () => {
   } = useCreateFundContext()
 
   const navigate = useNavigate()
-  const { account } = useWeb3React()
+  const { chainId, account } = useWeb3React()
 
   const addTransaction = useTransactionAdder()
 
@@ -102,7 +104,6 @@ const CreateFund: FC = () => {
   const [isCreating, setCreating] = useState(false)
   const [transactionFail, setTransactionFail] = useState(false)
   const [stepsFormating, setStepsFormating] = useState(false)
-  const [descriptionURL, setDescriptionURL] = useState("")
   const [contractAddress, setCreactedAddress] = useState("")
 
   const poolFactoryAddress = useSelector(selectPoolFactoryAddress)
@@ -120,15 +121,6 @@ const CreateFund: FC = () => {
     setModalState(false)
   }
 
-  const handleTokenRedirect = (address: string) => {
-    window.open(`https://bscscan.com/address/${address}`, "_blank")
-  }
-
-  const handleTokenLinkClick: MouseEventHandler = (e) => {
-    e.stopPropagation()
-    handleTokenRedirect(baseToken.address)
-  }
-
   const handlePoolCreate = useCallback(async () => {
     if (!account || !traderPoolFactory) return
 
@@ -138,8 +130,6 @@ const CreateFund: FC = () => {
       strategy,
       account
     )
-
-    setDescriptionURL(ipfsReceipt.path)
 
     const totalEmission = bigify(totalLPEmission, 18).toHexString()
     const minInvest = bigify(minimalInvestment, 18).toHexString()
@@ -165,13 +155,11 @@ const CreateFund: FC = () => {
       poolParameters
     )
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_CREATE,
       baseCurrencyId: baseToken.address,
       fundName,
     })
-
-    return await receipt.wait()
   }, [
     account,
     avatarBlobString,
@@ -194,14 +182,22 @@ const CreateFund: FC = () => {
   const handleManagersAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managers, true)
 
-    return await receipt.wait()
-  }, [managers, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_MANAGERS,
+      editType: UpdateListType.ADD,
+      poolId: contractAddress,
+    })
+  }, [addTransaction, contractAddress, managers, traderPool])
 
   const handleInvestorsAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(investors, true)
 
-    return await receipt.wait()
-  }, [investors, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_INVESTORS,
+      editType: UpdateListType.ADD,
+      poolId: contractAddress,
+    })
+  }, [addTransaction, contractAddress, investors, traderPool])
 
   const handleSubmit = async () => {
     if (stepsFormating) return
@@ -260,17 +256,10 @@ const CreateFund: FC = () => {
       setTransactionFail(false)
       if (steps[step].title === "Create") {
         setStepPending(true)
-        const data = await handlePoolCreate()
+        const tx = await handlePoolCreate()
 
-        // check if transaction is mined
-        if (
-          !!data &&
-          ((data.logs.length && data.logs[0].address) || data.address)
-        ) {
-          const createdAddress = data.address
-            ? data.address
-            : data.logs[0].address
-          setCreactedAddress(createdAddress)
+        if (isTxMined(tx) && !!tx!.logs.length && !!tx!.logs[0].address) {
+          setCreactedAddress(tx!.logs[0].address)
           setStep(step + 1)
           setStepPending(false)
         }
@@ -278,18 +267,22 @@ const CreateFund: FC = () => {
 
       if (steps[step].title === "Managers") {
         setStepPending(true)
-        await handleManagersAdd()
+        const tx = await handleManagersAdd()
 
-        setStep(step + 1)
-        setStepPending(false)
+        if (isTxMined(tx)) {
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
       if (steps[step].title === "Investors") {
         setStepPending(true)
-        await handleInvestorsAdd()
+        const tx = await handleInvestorsAdd()
 
-        setStep(step + 1)
-        setStepPending(false)
+        if (isTxMined(tx)) {
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
       if (steps[step].title === "Success") {
@@ -351,7 +344,14 @@ const CreateFund: FC = () => {
   const baseTokenLink = !baseToken.address ? (
     <IconButton onClick={handleTokenSelectOpen} media={plus} />
   ) : (
-    <IconButton onClick={handleTokenLinkClick} media={link} />
+    <ExternalLink
+      href={getExplorerLink(
+        chainId!,
+        baseToken.address,
+        ExplorerDataType.ADDRESS
+      )}
+      iconColor="#616D8B"
+    />
   )
 
   return (
@@ -369,7 +369,17 @@ const CreateFund: FC = () => {
         >
           {baseToken.address && (
             <ModalIcons
-              left={<Icon m="0" size={28} source={avatarBlobString} />}
+              left={
+                <Icon
+                  m="0"
+                  size={28}
+                  source={
+                    avatarBlobString.length > 0
+                      ? avatarBlobString
+                      : defaultAvatar
+                  }
+                />
+              }
               right={<TokenIcon m="0" size={28} address={baseToken.address} />}
               fund={fundSymbol}
               base={baseToken.symbol}

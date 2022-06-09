@@ -148,7 +148,11 @@ const Profile: React.FC<Props> = () => {
   const [leverageInfo, poolInfoData] = usePoolContract(poolAddress)
 
   const handleBuyRedirect = () => {
-    navigate(`/pool/invest/${poolType}/${poolData?.id}`)
+    navigate(`/pool/invest/${poolData?.id}`)
+  }
+
+  const handlePositionsRedirect = () => {
+    navigate(`/fund-positions/${poolData?.id}/open`)
   }
 
   const back = () => navigate(-1)
@@ -172,7 +176,12 @@ const Profile: React.FC<Props> = () => {
       >
         <MemberMobile data={poolData}>
           <ButtonContainer>
-            <SecondaryButton onClick={handleBuyRedirect} m="0" fz={14} full>
+            <SecondaryButton
+              onClick={handlePositionsRedirect}
+              m="0"
+              fz={14}
+              full
+            >
               Fund positions
             </SecondaryButton>
             <Button onClick={handleBuyRedirect} m="0" fz={14} full>

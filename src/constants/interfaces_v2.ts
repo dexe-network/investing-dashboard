@@ -1,4 +1,32 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { BigNumber } from "@ethersproject/bignumber"
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      REACT_APP_NAMESPACE: string
+      REACT_APP_UPDATE_INTERVAL: string
+
+      REACT_APP_INFURA_ID: string
+      REACT_APP_ETHERSCAN_API_KEY: string
+
+      REACT_APP_PANCAKE_EXCHANGE_TOOL: string
+      REACT_APP_UNISWAP_EXCHANGE_TOOL: string
+
+      REACT_APP_CONTRACTS_REGISTRY_ADDRESS: string
+
+      REACT_APP_STATS_API_URL: string
+      REACT_APP_NOTIFICATIONS_API_URL: string
+
+      REACT_APP_ALL_POOLS_API_URL: string
+      REACT_APP_BASIC_POOLS_API_URL: string
+      REACT_APP_INVEST_POOLS_API_URL: string
+
+      REACT_APP_IPFS_PROJECT_ID: string
+      REACT_APP_IPFS_PROJECT_SECRET: string
+    }
+  }
+}
 
 export interface User {
   avatar_url: string
@@ -7,6 +35,14 @@ export interface User {
   pools_list: string[]
   created_at: number
   updated_at: number
+}
+
+export interface Investor {
+  id: string
+  insurance: BigNumber
+  claimedAmount: BigNumber
+  activePools: string[]
+  allPools: string[]
 }
 
 export type PoolType = "ALL_POOL" | "INVEST_POOL" | "BASIC_POOL"
@@ -35,8 +71,9 @@ export interface IPoolQuery {
   averageTrades: number
   investorsCount: number
   averagePositionTime: number
-  admins: string[]
   priceHistory: IPriceHistory[]
+  privateInvestors: Investor[]
+  admins: string[]
 }
 
 export interface IPriceHistoryQuery {
@@ -82,6 +119,28 @@ interface PoolParameters {
   minimalInvestment: BigNumber
   privatePool: boolean
   totalLPEmission: BigNumber
+}
+
+interface RiskyProposalLimits {
+  investLPLimit: BigNumber
+  maxTokenPriceLimit: BigNumber
+  timestampLimit: BigNumber
+}
+
+interface RiskyProposalInfo {
+  balanceBase: BigNumber
+  balancePosition: BigNumber
+  lpLocked: BigNumber
+  propoosalLimits: RiskyProposalLimits
+  token: string
+  tokenDecimals: BigNumber
+}
+
+export interface RiskyProposal {
+  lp2Supply: BigNumber
+  proposalInfo: RiskyProposalInfo
+  totalProposalBase: BigNumber
+  totalProposalUSD
 }
 
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage

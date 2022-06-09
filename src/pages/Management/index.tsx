@@ -6,8 +6,7 @@ import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Insurance, PriceFeed } from "abi"
 
-import ExchangeTo from "components/Exchange/To"
-import ExchangeFrom from "components/Exchange/From"
+import ExchangeInput from "components/Exchange/ExchangeInput"
 import ExchangeDivider from "components/Exchange/Divider"
 import Button, { SecondaryButton } from "components/Button"
 import Payload from "components/Payload"
@@ -21,9 +20,13 @@ import {
   selectPriceFeedAddress,
 } from "state/contracts/selectors"
 
-import getReceipt from "utils/getReceipt"
 import { getDividedBalance } from "utils/formulas"
-import { formatBigNumber, getAllowance, parseTransactionError } from "utils"
+import {
+  formatBigNumber,
+  getAllowance,
+  parseTransactionError,
+  isTxMined,
+} from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -31,6 +34,7 @@ import { TransactionType } from "state/transactions/types"
 import LockedIcon from "assets/icons/LockedIcon"
 
 import { Card, CardHeader, Title } from "components/Exchange/styled"
+import { SwapDirection } from "constants/types"
 import { Container, PriceCard, Row, Label, Amount } from "./styled"
 
 const poolsClient = createClient({
@@ -47,7 +51,7 @@ export const useInsurance = (): [
     toSelectorOpened: boolean
     fromSelectorOpened: boolean
     pending: boolean
-    direction: "deposit" | "withdraw"
+    direction: SwapDirection
   },
   {
     setFromAmount: (amount: string) => void
@@ -70,7 +74,7 @@ export const useInsurance = (): [
   const [pending, setPending] = useState(false)
   const [toSelectorOpened, setToSelector] = useState(false)
   const [fromSelectorOpened, setFromSelector] = useState(false)
-  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+  const [direction, setDirection] = useState<SwapDirection>("deposit")
 
   const [toAddress, setToAddress] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -240,26 +244,28 @@ function Management() {
     const handleBuy = async () => {
       const amount = BigNumber.from(fromAmount)
       const response = await insurance?.buyInsurance(amount)
-      addTransaction(response, {
+      const receipt = await addTransaction(response, {
         type: TransactionType.STAKE_INSURANCE,
         amount: fromAmount,
       })
-      await getReceipt(library, response.hash)
-      refetchBalance()
-      await fetchInsuranceBalance()
+      if (isTxMined(receipt)) {
+        refetchBalance()
+        await fetchInsuranceBalance()
+      }
       setLoading(false)
     }
 
     const handleSell = async () => {
       const amount = BigNumber.from(toAmount)
       const response = await insurance?.withdraw(amount)
-      addTransaction(response, {
+      const receipt = await addTransaction(response, {
         type: TransactionType.UNSTAKE_INSURANCE,
         amount: toAmount,
       })
-      await getReceipt(library, response.hash)
-      refetchBalance()
-      await fetchInsuranceBalance()
+      if (isTxMined(receipt)) {
+        refetchBalance()
+        await fetchInsuranceBalance()
+      }
       setLoading(false)
     }
 
@@ -283,14 +289,13 @@ function Management() {
       const approveResponse = await fromToken.approve(insuranceAddress, amount)
       setLoading(false)
 
-      addTransaction(approveResponse, {
+      const receipt = await addTransaction(approveResponse, {
         type: TransactionType.APPROVAL,
         tokenAddress: dexeAddress,
         spender: account,
       })
 
-      const receipt = await getReceipt(library, approveResponse.hash)
-      if (receipt !== null && receipt.logs.length) {
+      if (isTxMined(receipt) && receipt!.logs.length) {
         await fetchAndUpdateAllowance()
       }
     }
@@ -300,7 +305,7 @@ function Management() {
 
   const handlePercentageChange = (percent) => {
     const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
-    handleFromChange(from)
+    handleFromChange(from.toString())
   }
 
   const handleFromChange = (v: string) => {
@@ -371,7 +376,7 @@ function Management() {
   const button = getButton()
 
   const from = (
-    <ExchangeFrom
+    <ExchangeInput
       price={inPrice}
       amount={fromAmount}
       balance={fromBalance}
@@ -383,7 +388,7 @@ function Management() {
   )
 
   const to = (
-    <ExchangeTo
+    <ExchangeInput
       price={outPrice}
       amount={toAmount}
       balance={insuranceAmount}

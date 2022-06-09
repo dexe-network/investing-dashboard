@@ -1,9 +1,11 @@
 import { FC, useState, useEffect, useMemo, useCallback } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner, PulseSpinner } from "react-spinners-kit"
 import { ethers } from "ethers"
+import { TransactionReceipt } from "@ethersproject/providers"
+import { useDispatch } from "react-redux"
 
 import {
   Container,
@@ -35,23 +37,27 @@ import InvestorsIcon from "assets/icons/Investors"
 import EmissionIcon from "assets/icons/Emission"
 import MinInvestIcon from "assets/icons/MinInvestAmount"
 
-import { bigify } from "utils"
+import { bigify, formatBigNumber, shortenAddress, isTxMined } from "utils"
+import { arrayDifference } from "utils/array"
 import { parsePoolData, addFundMetadata } from "utils/ipfs"
 import { useUpdateFundContext } from "context/UpdateFundContext"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
+import { useAddToast } from "state/application/hooks"
 import { TraderPool } from "abi"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
+import { UpdateListType } from "constants/types"
+import { addPool } from "state/ipfsMetadata/actions"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
 const FundDetailsEdit: FC = () => {
+  const dispatch = useDispatch()
   const { poolAddress } = useParams()
-  const navigate = useNavigate()
   const { account } = useWeb3React()
 
   const [poolData] = usePoolQuery(poolAddress)
@@ -112,9 +118,10 @@ const FundDetailsEdit: FC = () => {
   const [stepsFormating, setStepsFormating] = useState(false)
   const [isCreating, setCreating] = useState(false)
   const [transactionFail, setTransactionFail] = useState(false)
-  const [descriptionURL, setDescriptionURL] = useState("")
 
   const addTransaction = useTransactionAdder()
+
+  const addToast = useAddToast()
 
   const handleParametersUpdate = useCallback(async () => {
     if (!traderPool || !poolData || !account) return
@@ -122,9 +129,9 @@ const FundDetailsEdit: FC = () => {
     const ipfsChanged = isIpfsDataUpdated()
 
     let ipfsReceipt
+    const assetsParam = assets
     if (ipfsChanged) {
       // Avatar Blob string must be array with previous avatars
-      const assetsParam = assets
       if (avatarBlobString !== "") {
         assetsParam.push(avatarBlobString)
       }
@@ -138,31 +145,40 @@ const FundDetailsEdit: FC = () => {
       ipfsReceipt = poolData.descriptionURL
     }
 
-    setDescriptionURL(ipfsReceipt.path)
-
     const descriptionURL = ipfsChanged ? ipfsReceipt.path : ipfsReceipt
-    // investors.length > 0, // - TODO: info about privacy rule
-    const privatePool = Number(poolData.investorsCount) > 0
     const totalEmission = bigify(totalLPEmission, 18).toHexString()
     const minInvest = bigify(minimalInvestment, 18).toHexString()
 
     const receipt = await traderPool.changePoolParameters(
       descriptionURL,
-      privatePool,
+      poolInfoData?.parameters.privatePool,
       totalEmission,
       minInvest
     )
 
-    addTransaction(receipt, {
+    // Save new pool data to store
+    dispatch(
+      addPool({
+        params: {
+          poolId: poolAddress!,
+          hash: receipt.hash,
+          assets: assetsParam,
+          description,
+          strategy,
+          account,
+        },
+      })
+    )
+
+    return addTransaction(receipt, {
       type: TransactionType.FUND_EDIT,
       baseCurrencyId: poolData.baseToken,
       fundName: poolData.name,
     })
-
-    return await receipt.wait()
   }, [
     traderPool,
     poolData,
+    poolInfoData,
     account,
     assets,
     avatarBlobString,
@@ -172,19 +188,29 @@ const FundDetailsEdit: FC = () => {
     strategy,
     totalLPEmission,
     addTransaction,
+    dispatch,
+    poolAddress,
   ])
 
   const handleManagersRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersRemoved, false)
 
-    return await receipt.wait()
-  }, [managersRemoved, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_MANAGERS,
+      editType: UpdateListType.REMOVE,
+      poolId: poolAddress,
+    })
+  }, [traderPool, managersRemoved, addTransaction, poolAddress])
 
   const handleManagersAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managersAdded, true)
 
-    return await receipt.wait()
-  }, [managersAdded, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_MANAGERS,
+      editType: UpdateListType.ADD,
+      poolId: poolAddress,
+    })
+  }, [traderPool, managersAdded, addTransaction, poolAddress])
 
   const handleInvestorsRemove = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -192,8 +218,12 @@ const FundDetailsEdit: FC = () => {
       false
     )
 
-    return await receipt.wait()
-  }, [investorsRemoved, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_INVESTORS,
+      editType: UpdateListType.REMOVE,
+      poolId: poolAddress,
+    })
+  }, [traderPool, investorsRemoved, addTransaction, poolAddress])
 
   const handleInvestorsAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(
@@ -201,8 +231,12 @@ const FundDetailsEdit: FC = () => {
       true
     )
 
-    return await receipt.wait()
-  }, [investorsAdded, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_INVESTORS,
+      editType: UpdateListType.ADD,
+      poolId: poolAddress,
+    })
+  }, [traderPool, investorsAdded, addTransaction, poolAddress])
 
   const handleSubmit = async () => {
     if (stepsFormating) return
@@ -270,8 +304,7 @@ const FundDetailsEdit: FC = () => {
         setStepPending(true)
         const data = await handleParametersUpdate()
 
-        // check if transaction is mined
-        if (!!data && data.logs.length && data.logs[0].address) {
+        if (isTxMined(data)) {
           setStep(step + 1)
           setStepPending(false)
           poolParametersSaveCallback()
@@ -280,33 +313,53 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Managers") {
         setStepPending(true)
 
+        const txs: Promise<TransactionReceipt | undefined>[] = []
+
         if (!!managersRemoved.length) {
-          await handleManagersRemove()
-          managersRemoveCallback()
+          txs.push(handleManagersRemove())
         }
         if (!!managersAdded.length) {
-          await handleManagersAdd()
-          managersAddCallback()
+          txs.push(handleManagersAdd())
         }
 
-        setStep(step + 1)
-        setStepPending(false)
+        Promise.all(txs).then((res) => {
+          if (res.every(isTxMined)) {
+            if (!!managersRemoved.length) {
+              managersRemoveCallback()
+            }
+            if (!!managersAdded.length) {
+              managersAddCallback()
+            }
+            setStep(step + 1)
+            setStepPending(false)
+          }
+        })
       }
 
       if (steps[step].title === "Investors") {
         setStepPending(true)
 
+        const txs: Promise<TransactionReceipt | undefined>[] = []
+
         if (!!investorsRemoved.length) {
-          await handleInvestorsRemove()
-          investorsRemoveCallback()
+          txs.push(handleInvestorsRemove())
         }
         if (!!investorsAdded.length) {
-          await handleInvestorsAdd()
-          investorsAddCallback()
+          txs.push(handleInvestorsAdd())
         }
 
-        setStep(step + 1)
-        setStepPending(false)
+        Promise.all(txs).then((res) => {
+          if (res.every(isTxMined)) {
+            if (!!investorsRemoved.length) {
+              investorsRemoveCallback()
+            }
+            if (!!investorsAdded.length) {
+              investorsAddCallback()
+            }
+            setStep(step + 1)
+            setStepPending(false)
+          }
+        })
       }
 
       if (steps[step].title === "Success") {
@@ -346,6 +399,33 @@ const FundDetailsEdit: FC = () => {
     }
   }
 
+  const handleInvestorsRowChange = async (state: string[]) => {
+    if (state.length > investors.length) {
+      handleChange("investors", state)
+    } else {
+      // Prevent removing investor if he claimed some LP's
+      const removedAddress = arrayDifference(investors, state)[0]
+      const claimedAmountBigNumber = await traderPool?.balanceOf(removedAddress)
+      const claimedAmount = formatBigNumber(claimedAmountBigNumber, 18, 6)
+
+      if (Number(claimedAmount) > 0) {
+        addToast(
+          {
+            type: "warning",
+            content: `Can't remove ${shortenAddress(
+              removedAddress,
+              3
+            )}. Claimed: ${claimedAmount} ${poolData!.ticker}.`,
+          },
+          removedAddress,
+          5000
+        )
+      } else {
+        handleChange("investors", state)
+      }
+    }
+  }
+
   // update initial value context
   useEffect(() => {
     if (!poolData || !poolInfoData) return
@@ -367,11 +447,14 @@ const FundDetailsEdit: FC = () => {
         poolInfoData &&
         ethers.utils.formatEther(poolInfoData.parameters.minimalInvestment)
 
+      const investors = poolData?.privateInvestors.map((m) => m.id)
+      const managers = poolData?.admins
+
       setInitial({
         totalLPEmission: totalEmission,
         minimalInvestment: minInvestment,
-        investors: [],
-        managers: [],
+        investors: investors,
+        managers: managers,
       })
     })()
   }, [poolData, poolInfoData, setInitialIpfs, setInitial])
@@ -479,7 +562,7 @@ const FundDetailsEdit: FC = () => {
             <StepBody>
               <BasicSettings
                 poolData={poolData}
-                symbol={baseData?.symbol}
+                baseToken={baseData}
                 commissionPercentage={
                   poolInfoData?.parameters.commissionPercentage
                 }
@@ -570,7 +653,7 @@ const FundDetailsEdit: FC = () => {
               >
                 <AddressChips
                   items={investors}
-                  onChange={(v) => handleChange("investors", v)}
+                  onChange={(v) => handleInvestorsRowChange(v)}
                   limit={100}
                   label="0x..."
                 />

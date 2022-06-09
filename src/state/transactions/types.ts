@@ -1,4 +1,4 @@
-import { TradeType } from "constants/types"
+import { TradeType, UpdateListType } from "constants/types"
 
 interface SerializableTransactionReceipt {
   to: string
@@ -26,15 +26,17 @@ export enum TransactionType {
 
   CREATE_RISKY_PROPOSAL = 9,
   EDIT_RISKY_PROPOSAL = 10,
+  DEPOSIT_RISKY_PROPOSAL = 11,
+  WITHDRAW_RISKY_PROPOSAL = 12,
 
-  CREATE_INVEST_PROPOSAL = 11,
-  EDIT_INVEST_PROPOSAL = 12,
+  CREATE_INVEST_PROPOSAL = 13,
+  EDIT_INVEST_PROPOSAL = 14,
 
-  STAKE_INSURANCE = 13,
-  UNSTAKE_INSURANCE = 14,
+  STAKE_INSURANCE = 15,
+  UNSTAKE_INSURANCE = 16,
 
-  CREATE_INSURANCE_PROPOSAL = 15,
-  VOTE_INSURANCE_PROPOSAL = 16,
+  CREATE_INSURANCE_PROPOSAL = 17,
+  VOTE_INSURANCE_PROPOSAL = 18,
 }
 
 export interface ApproveTransactionInfo {
@@ -89,6 +91,16 @@ export interface FundEditTransactionInfo {
   baseCurrencyId: string
   fundName: string
 }
+export interface FundUpdateManagersTransactionInfo {
+  type: TransactionType.FUND_UPDATE_MANAGERS
+  editType: UpdateListType
+  poolId: string
+}
+export interface FundUpdateInvestorsTransactionInfo {
+  type: TransactionType.FUND_UPDATE_INVESTORS
+  editType: UpdateListType
+  poolId: string
+}
 
 export interface UpdateCredentialsTransactionInfo {
   type: TransactionType.UPDATE_USER_CREDENTIALS
@@ -99,6 +111,20 @@ export interface CreateRiskyProposalTransactionInfo {
 }
 export interface EditRiskyProposalTransactionInfo {
   type: TransactionType.EDIT_RISKY_PROPOSAL
+}
+export interface DepositRiskyProposalTransactionInfo {
+  type: TransactionType.DEPOSIT_RISKY_PROPOSAL
+  inputCurrencyAmountRaw: string
+  inputCurrencySymbol: string
+  expectedOutputCurrencyAmountRaw: string
+  expectedOutputCurrencySymbol: string
+}
+export interface WithdrawRiskyProposalTransactionInfo {
+  type: TransactionType.WITHDRAW_RISKY_PROPOSAL
+  outputCurrencyAmountRaw: string
+  outputCurrencySymbol: string
+  expectedInputCurrencyAmountRaw: string
+  expectedInputCurrencySymbol: string
 }
 
 export interface CreateInvestProposalTransactionInfo {
@@ -132,9 +158,13 @@ export type TransactionInfo =
   | ExactOutputSwapTransactionInfo
   | FundCreateTransactionInfo
   | FundEditTransactionInfo
+  | FundUpdateManagersTransactionInfo
+  | FundUpdateInvestorsTransactionInfo
   | UpdateCredentialsTransactionInfo
   | CreateRiskyProposalTransactionInfo
   | EditRiskyProposalTransactionInfo
+  | DepositRiskyProposalTransactionInfo
+  | WithdrawRiskyProposalTransactionInfo
   | CreateInvestProposalTransactionInfo
   | EditInvestProposalTransactionInfo
   | StakeInsuranceTransactionInfo

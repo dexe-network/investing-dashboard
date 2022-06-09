@@ -51,6 +51,32 @@ export const getPriceLP = (history): string => {
   return (Number(base) / Number(emission)).toString()
 }
 
+export const getPriceUSD = (history): string => {
+  if (!history || !history.length) {
+    return "1.00"
+  }
+
+  const usd = history[0].usdTVL
+  const emission = history[0].supply
+
+  if (
+    !usd ||
+    !emission ||
+    emission.toString() === "0" ||
+    usd.toString() === "0"
+  ) {
+    return "1.00"
+  }
+
+  const result = Number(usd) / Number(emission)
+
+  if (isNaN(result)) {
+    return "1.00"
+  }
+
+  return result.toFixed(2)
+}
+
 export const getPriceStable = (stable: string, emission: string): string => {
   if (
     !stable ||
@@ -73,11 +99,11 @@ export const getDividedBalance = (
   balance: BigNumber,
   decimals: number | undefined = 18,
   percent: string
-): string => {
+): BigNumber => {
   const fn = FixedNumber.fromValue(balance, decimals).mulUnsafe(
     FixedNumber.fromValue(BigNumber.from(percent), 18)
   )
-  return BigNumber.from(fn._hex).toString()
+  return BigNumber.from(fn._hex)
 }
 
 export const getLP = (baseTVL: string, supply: string): string => {

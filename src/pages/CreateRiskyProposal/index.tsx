@@ -413,7 +413,7 @@ const CreateRiskyProposal: FC = () => {
                 theme="grey"
                 placeholder="---"
                 onChange={setMaxTokenPriceLimit}
-                value=""
+                value={maxTokenPriceLimit}
                 rightIcon={
                   <Flex>
                     <White>
@@ -442,7 +442,7 @@ const CreateRiskyProposal: FC = () => {
               <Input
                 type="number"
                 theme="grey"
-                value=""
+                value={lpAmount}
                 placeholder="---"
                 onChange={setLpAmount}
                 rightIcon={

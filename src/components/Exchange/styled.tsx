@@ -2,17 +2,30 @@ import styled from "styled-components"
 import { motion } from "framer-motion"
 import { Flex, Text, GradientBorder, BasicCard } from "theme"
 
-export const FromContainer = styled(GradientBorder)`
+export const InputContainer = styled(GradientBorder)`
+  flex-direction: column;
+  justify-content: space-between;
   padding: 16px 16px 16px 16px;
-  border-radius: 15px;
+  border-radius: 20px;
+  width: 100%;
+  height: 100px;
+
+  &:after {
+    background: #141926;
+  }
+`
+
+export const InputTop = styled(Flex)`
   width: 100%;
 `
 
-export const ToContainer = styled(GradientBorder)`
-  padding: 16px 16px 16px 16px;
-  border-radius: 15px;
+export const InputBottom = styled(Flex)`
   width: 100%;
 `
+
+export const FromContainer = styled(InputContainer)``
+
+export const ToContainer = styled(InputContainer)``
 
 export const InfoContainer = styled(Flex)`
   width: 100%;
@@ -23,10 +36,10 @@ export const Price = styled(Text)`
   font-family: "Gilroy";
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 10px;
+  font-size: 13px;
+  line-height: 13px;
   letter-spacing: 0.3px;
-  color: #666f87;
+  color: #788ab4;
   user-select: none;
 `
 export const Balance = styled(Flex)`
@@ -40,11 +53,11 @@ export const Tokens = styled.span`
   font-family: "Gilroy";
   font-style: normal;
   font-weight: 400;
-  font-size: 12px;
-  line-height: 10px;
+  font-size: 13px;
+  line-height: 13px;
   text-align: right;
   letter-spacing: 0.3px;
-  color: #666f87;
+  color: #788ab4;
   margin-right: 3px;
 `
 
@@ -63,8 +76,8 @@ export const Symbol = styled.span`
 export const Max = styled(Text)`
   font-family: "Gilroy";
   font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
+  font-weight: 500;
+  font-size: 13px;
   line-height: 10px;
   text-align: right;
   letter-spacing: 0.3px;
@@ -75,7 +88,7 @@ export const Input = styled.input`
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 22px;
   color: #e4f2ff;
   outline: none;
   background: transparent;
@@ -88,6 +101,14 @@ export const Input = styled.input`
     font-size: 20px;
     line-height: 20px;
   }
+
+  &:disabled {
+    color: #788ab4 !important;
+
+    &::placeholder {
+      color: #788ab4 !important;
+    }
+  }
 `
 
 export const ActiveSymbol = styled(GradientBorder)`
@@ -97,14 +118,12 @@ export const ActiveSymbol = styled(GradientBorder)`
   align-items: center;
   padding: 5px 9px 5px 5px;
   min-height: 37px;
-  background: linear-gradient(
-    85.11deg,
-    rgba(255, 255, 255, 0.005) 0.73%,
-    rgba(188, 215, 255, 0.03) 101.29%
-  );
   box-shadow: inset -44px 7px 11px rgba(0, 0, 0, 0.03);
   border-radius: 19px;
-  margin-top: 13px;
+
+  &:after {
+    background: #121928;
+  }
 `
 
 export const SymbolLabel = styled.span`
@@ -118,6 +137,7 @@ export const SymbolLabel = styled.span`
   margin-right: 7px;
   white-space: nowrap;
   margin-top: 4px;
+  margin: 4px 7px 0 4px;
 `
 
 export const SelectToken = styled(SymbolLabel)`
@@ -174,8 +194,8 @@ export const PriceText = styled(Text)`
 // DIVIDER
 
 export const DividerContainer = styled(Flex)`
-  margin-top: 3px;
-  margin-bottom: 3px;
+  margin-top: 2px;
+  margin-bottom: 2px;
   user-select: none;
   height: 24px;
   position: relative;
@@ -194,7 +214,7 @@ export const PercentButton = styled.div<{ active?: boolean }>`
   line-height: 14px;
   letter-spacing: 0.5px;
 
-  color: ${(props) => (props.active ? "#E4F2FF" : "#666f87")};
+  color: ${(props) => (props.active ? "#E4F2FF" : "#788ab4")};
 
   border-radius: 3px;
 
@@ -218,7 +238,9 @@ export const SwapButton = styled.div`
   justify-content: center;
 `
 
-export const Icon = styled(motion.img)``
+export const Icon = styled(motion.img)`
+  z-index: 20;
+`
 
 // FORM CARD
 
@@ -240,6 +262,9 @@ export const Card = styled(BasicCard)`
   flex-direction: column;
   padding: 20px 16px;
   position: relative;
+  border-radius: 20px;
+  background: #181e2c;
+  max-width: 400px;
 `
 
 export const CardHeader = styled(Flex)`
@@ -262,4 +287,6 @@ export const Title = styled.div`
 
 export const IconsGroup = styled(Flex)`
   width: 152px;
+  justify-content: flex-end;
+  gap: 16px;
 `
