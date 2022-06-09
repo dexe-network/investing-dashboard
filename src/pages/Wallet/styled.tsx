@@ -192,35 +192,6 @@ export const Heading = styled.div`
   color: #cfdce8;
 `
 
-export const TransactionsList = styled.div`
-  position: relative;
-  max-height: 200px;
-  overflow-y: scroll;
-  margin-top: 15px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-`
-
-export const TransactionsPlaceholder = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 14px;
-  text-align: center;
-  letter-spacing: 0.1px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  /* icons */
-  width: 100%;
-  flex: 1;
-
-  color: #5a6071;
-  min-height: 300px;
-`
-
 export const InsuranceCard = styled(Flex)`
   overflow: hidden;
   position: relative;
@@ -300,27 +271,4 @@ export const InsuranceButton = styled.button`
   text-align: right;
   color: #9ae2cb;
   z-index: 100;
-`
-
-export const Tabs = styled(Flex)`
-  width: 100%;
-  justify-content: space-around;
-`
-
-export const NavButton = styled(GradientBorder)`
-  border-radius: 16px;
-  font-family: "Gilroy";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 12px;
-  text-align: center;
-  letter-spacing: 0.3px;
-  color: #616d8b;
-  height: 25px;
-  padding: 0 10px;
-
-  &:after {
-    background: #0d121c;
-  }
 `
