@@ -74,9 +74,8 @@ const TermsAndConditions: React.FC<Props> = ({ isOpen, toggle, onAgree }) => {
           name="agree-terms"
           checked={agree}
           onChange={handleCheckbox}
-          error={agreeError}
         />
-        <CheckboxText color={agreeError ? "#DB6D6D" : "#e4f2ff"}>
+        <CheckboxText>
           I agree to the
           <CheckboxLink>
             <a> Tearms of Use </a>

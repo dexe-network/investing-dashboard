@@ -9,17 +9,10 @@ interface IProps {
   name: string
   label?: ReactElement
   checked?: boolean
-  error?: boolean
   onChange: (res: boolean) => void
 }
 
-const Checkbox: React.FC<IProps> = ({
-  name,
-  label,
-  checked,
-  error = false,
-  onChange,
-}) => {
+const Checkbox: React.FC<IProps> = ({ name, label, checked, onChange }) => {
   return (
     <Container htmlFor={name}>
       <Input
@@ -29,7 +22,7 @@ const Checkbox: React.FC<IProps> = ({
         defaultChecked={checked}
         onChange={() => onChange(!checked)}
       />
-      <Checkmark error={error} />
+      <Checkmark />
       {!!label && label}
     </Container>
   )
