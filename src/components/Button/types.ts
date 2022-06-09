@@ -10,4 +10,5 @@ export interface MainButtonProps extends ButtonBaseProps {
   m?: string
   fz?: number
   full?: boolean
+  disabled?: boolean
 }

@@ -21,6 +21,7 @@ const Button: React.FC<MainButtonProps> = ({
   theme = "primary",
   children,
   onClick,
+  disabled,
 }) => {
   return (
     <GradientButton
@@ -30,6 +31,7 @@ const Button: React.FC<MainButtonProps> = ({
       fz={fz}
       full={full}
       color={theme}
+      disabled={disabled}
     >
       <GradientButtonText>{children}</GradientButtonText>
     </GradientButton>
@@ -45,6 +47,7 @@ export const SecondaryButton: React.FC<MainButtonProps> = ({
   full,
   theme = "primary",
   children,
+  disabled,
   onClick,
 }) => {
   const handleClick = () => {
@@ -62,6 +65,7 @@ export const SecondaryButton: React.FC<MainButtonProps> = ({
       fz={fz}
       full={full}
       color={theme}
+      disabled={disabled}
     >
       <GradientButtonText>{children}</GradientButtonText>
     </GradientBorderButton>
