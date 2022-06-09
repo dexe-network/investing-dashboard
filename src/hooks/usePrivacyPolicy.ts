@@ -1,36 +1,52 @@
-import { useEffect, useState } from "react"
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react"
 import { useSelector } from "react-redux"
 import { useWeb3React } from "@web3-react/core"
-import { TransactionReceipt } from "@ethersproject/providers"
 
-import useContract from "hooks/useContract"
-import useTransactionWaiter from "hooks/useTransactionWaiter"
-import { selectUserRegistryAddress } from "state/contracts/selectors"
+import { isTxMined } from "utils"
 import { UserRegistry } from "abi"
+import useContract from "hooks/useContract"
+import { useTransactionAdder } from "state/transactions/hooks"
+import { selectUserRegistryAddress } from "state/contracts/selectors"
 
-export default function usePrivacyPolicyAgreed(): [boolean, () => any] {
-  const { account, library } = useWeb3React()
+interface IResponce {
+  privacyPolicyAgreed: boolean
+  showPrivacyAgreement: boolean
+  setShowPrivacyAgreement: Dispatch<SetStateAction<boolean>>
+  agreePrivacyPolicy: (cb?: () => void) => any
+}
+
+export default function usePrivacyPolicyAgreed(): IResponce {
+  const { account } = useWeb3React()
+
+  const addTransaction = useTransactionAdder()
 
   const [privacyPolicyAgreed, setPrivacyPolicyAgreed] = useState<boolean>(false)
   const [privacySignatureHash, setPrivacySignatureHash] = useState<
     string | null
   >(null)
+  const [showPrivacyAgreement, setShowPrivacyAgreement] = useState(false)
 
   const userRegistryAddress = useSelector(selectUserRegistryAddress)
   const userRegistry = useContract(userRegistryAddress, UserRegistry)
 
-  const waitTx = useTransactionWaiter(library)
-
-  const agreePrivacyPolicy = async () => {
+  const agreePrivacyPolicy = async (cb?: () => any) => {
     if (!userRegistry || !privacySignatureHash) return
 
     setPrivacyPolicyAgreed(true)
     const tx = await userRegistry.agreeToPrivacyPolicy(privacySignatureHash)
-    const { promise } = waitTx(tx.hash)
-
-    return promise.then((txReceipt) => {
-      return txReceipt as TransactionReceipt
+    const receipt = await addTransaction(tx, {
+      type: "AGREE_TO_PRIVACY_POLICY",
     })
+
+    if (isTxMined(receipt)) {
+      cb && cb()
+    }
   }
 
   useEffect(() => {
@@ -49,5 +65,10 @@ export default function usePrivacyPolicyAgreed(): [boolean, () => any] {
     })()
   }, [userRegistry, account])
 
-  return [privacyPolicyAgreed, agreePrivacyPolicy]
+  return {
+    privacyPolicyAgreed,
+    showPrivacyAgreement,
+    setShowPrivacyAgreement,
+    agreePrivacyPolicy,
+  }
 }

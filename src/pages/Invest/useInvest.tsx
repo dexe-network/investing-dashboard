@@ -17,7 +17,6 @@ import {
   isTxMined,
 } from "utils"
 import { useWeb3React } from "@web3-react/core"
-import usePrivacyPolicyAgreed from "hooks/usePrivacyPolicyAgreed"
 import { useERC20, usePriceFeedContract } from "hooks/useContract"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -38,8 +37,6 @@ interface UseInvestResponse {
   allowance?: BigNumber
   slippage: string
   direction: SwapDirection
-  privacyPolicyAgreed: boolean
-  showPrivacyAgreement: boolean
   updateAllowance: () => void
   setWalletPrompting: Dispatch<SetStateAction<boolean>>
   setSlippageOpen: Dispatch<SetStateAction<boolean>>
@@ -49,8 +46,6 @@ interface UseInvestResponse {
   handlePercentageChange: (percent: any) => void
   handleFromChange: (v: string) => void
   handleSubmit: () => void
-  setShowPrivacyAgreement: Dispatch<SetStateAction<boolean>>
-  handleAgreePrivacyPolicy: () => void
 }
 
 interface FormElement {
@@ -86,7 +81,6 @@ const useInvest = ({
     poolInfo?.parameters.descriptionURL
   )
   const priceFeed = usePriceFeedContract()
-  const [privacyPolicyAgreed, agreePrivacyPolicy] = usePrivacyPolicyAgreed()
 
   const poolPrice = usePoolPrice(poolAddress)
   const [fromAmount, setFromAmount] = useState("0")
@@ -100,7 +94,6 @@ const useInvest = ({
   const [isWalletPrompting, setWalletPrompting] = useState(false)
   const [isSlippageOpen, setSlippageOpen] = useState(false)
   const [error, setError] = useState("")
-  const [showPrivacyAgreement, setShowPrivacyAgreement] = useState(false)
 
   const poolIcon = (
     <Icon
@@ -409,15 +402,6 @@ const useInvest = ({
     }
   }, [direction, handleDeposit, handleWithdraw])
 
-  const handleAgreePrivacyPolicy = useCallback(async () => {
-    const receipt = await agreePrivacyPolicy()
-
-    if (isTxMined(receipt)) {
-      setShowPrivacyAgreement(false)
-      updateAllowance()
-    }
-  }, [agreePrivacyPolicy, updateAllowance])
-
   // fetch allowance on mount
   useEffect(() => {
     fetchAndUpdateAllowance().catch(console.error)
@@ -451,8 +435,6 @@ const useInvest = ({
       allowance,
       slippage,
       direction,
-      privacyPolicyAgreed,
-      showPrivacyAgreement,
       updateAllowance,
       setWalletPrompting,
       setSlippageOpen,
@@ -462,8 +444,6 @@ const useInvest = ({
       handlePercentageChange,
       handleFromChange,
       handleSubmit,
-      setShowPrivacyAgreement,
-      handleAgreePrivacyPolicy,
     },
   ]
 }

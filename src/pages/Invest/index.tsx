@@ -28,6 +28,7 @@ import {
 } from "components/Exchange/styled"
 
 import useInvest from "./useInvest"
+import usePrivacyPolicyAgreed from "hooks/usePrivacyPolicy"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -47,9 +48,6 @@ const Invest = () => {
       slippage,
       error,
       direction,
-      privacyPolicyAgreed,
-      showPrivacyAgreement,
-
       updateAllowance,
       setSlippageOpen,
       setSlippage,
@@ -59,13 +57,18 @@ const Invest = () => {
       handlePercentageChange,
       handleFromChange,
       handleSubmit,
-      setShowPrivacyAgreement,
-      handleAgreePrivacyPolicy,
     },
   ] = useInvest({
     poolAddress,
     initialDirection: "deposit",
   })
+
+  const {
+    privacyPolicyAgreed,
+    showPrivacyAgreement,
+    setShowPrivacyAgreement,
+    agreePrivacyPolicy,
+  } = usePrivacyPolicyAgreed()
 
   const isAllowanceNeeded =
     direction === "deposit" && !!allowance && allowance.lt(from.amount)
@@ -204,10 +207,8 @@ const Invest = () => {
       </Container>
       <TermsAndConditions
         isOpen={showPrivacyAgreement}
-        toggle={() => {
-          setShowPrivacyAgreement(false)
-        }}
-        onAgree={handleAgreePrivacyPolicy}
+        toggle={() => setShowPrivacyAgreement(false)}
+        onAgree={() => agreePrivacyPolicy(updateAllowance)}
       />
     </>
   )
