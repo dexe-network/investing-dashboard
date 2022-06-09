@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react"
+import { useMemo, useState } from "react"
 
 import Modal from "components/Modal"
 import Checkbox from "components/Checkbox"
-import Button from "components/Button"
+import Button, { SecondaryButton } from "components/Button"
 
 import {
   ModalText,
@@ -20,20 +20,25 @@ interface Props {
 
 const TermsAndConditions: React.FC<Props> = ({ isOpen, toggle, onAgree }) => {
   const [agree, setAgree] = useState(false)
-  const [agreeError, setAgreeError] = useState(false)
 
   const handleCheckbox = (value) => {
-    setAgreeError(false)
     setAgree(value)
   }
 
-  const handleAgree = useCallback(() => {
-    setAgreeError(false)
+  const button = useMemo(() => {
     if (agree) {
-      onAgree()
-    } else {
-      setAgreeError(true)
+      return (
+        <Button full onClick={onAgree}>
+          Sing and proceed
+        </Button>
+      )
     }
+
+    return (
+      <SecondaryButton full disabled>
+        Sing and proceed
+      </SecondaryButton>
+    )
   }, [agree, onAgree])
 
   return (
@@ -86,11 +91,7 @@ const TermsAndConditions: React.FC<Props> = ({ isOpen, toggle, onAgree }) => {
           </CheckboxLink>
         </CheckboxText>
       </CheckBoxContent>
-      <ButtonContainer>
-        <Button full onClick={handleAgree}>
-          Sing and proceed
-        </Button>
-      </ButtonContainer>
+      <ButtonContainer>{button}</ButtonContainer>
     </Modal>
   )
 }
