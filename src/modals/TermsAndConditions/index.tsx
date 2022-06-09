@@ -83,11 +83,11 @@ const TermsAndConditions: React.FC<Props> = ({ isOpen, toggle, onAgree }) => {
         <CheckboxText>
           I agree to the
           <CheckboxLink>
-            <a> Tearms of Use </a>
+            <span> Terms of Use </span>
           </CheckboxLink>
           and
           <CheckboxLink>
-            <a> Privacy Police</a>
+            <span> Privacy Police</span>
           </CheckboxLink>
         </CheckboxText>
       </CheckBoxContent>
