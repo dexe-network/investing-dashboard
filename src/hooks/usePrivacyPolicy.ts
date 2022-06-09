@@ -11,6 +11,7 @@ import { useWeb3React } from "@web3-react/core"
 import { isTxMined } from "utils"
 import { UserRegistry } from "abi"
 import useContract from "hooks/useContract"
+import { TransactionType } from "state/transactions/types"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { selectUserRegistryAddress } from "state/contracts/selectors"
 
@@ -41,7 +42,7 @@ export default function usePrivacyPolicyAgreed(): IResponce {
     setPrivacyPolicyAgreed(true)
     const tx = await userRegistry.agreeToPrivacyPolicy(privacySignatureHash)
     const receipt = await addTransaction(tx, {
-      type: "AGREE_TO_PRIVACY_POLICY",
+      type: TransactionType.PRIVACY_POLICY_AGREE,
     })
 
     if (isTxMined(receipt)) {
@@ -94,7 +95,7 @@ export function usePrivacyPolicyAdder() {
       const tx = userRegistry?.setPrivacyPolicyDocumentHash(signedHash)
 
       addTransaction(tx, {
-        type: "SET_PRIVACY_POLICY_HASH",
+        type: TransactionType.PRIVACY_POLICY_SET_HASH,
       })
     }
   }, [addTransaction, signedHash, userRegistry])

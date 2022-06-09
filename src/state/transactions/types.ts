@@ -37,6 +37,9 @@ export enum TransactionType {
 
   CREATE_INSURANCE_PROPOSAL = 17,
   VOTE_INSURANCE_PROPOSAL = 18,
+
+  PRIVACY_POLICY_SET_HASH = 19,
+  PRIVACY_POLICY_AGREE = 20,
 }
 
 export interface ApproveTransactionInfo {
@@ -150,6 +153,13 @@ export interface UnstakeInsuranceTransactionInfo {
   amount: number
 }
 
+export interface PrivacyPolicySetHashTransactionInfo {
+  type: TransactionType.PRIVACY_POLICY_SET_HASH
+}
+export interface PrivacyPolicyAgreeTransactionInfo {
+  type: TransactionType.PRIVACY_POLICY_AGREE
+}
+
 export type TransactionInfo =
   | ApproveTransactionInfo
   | DepositLiquidityTransactionInfo
@@ -169,6 +179,8 @@ export type TransactionInfo =
   | EditInvestProposalTransactionInfo
   | StakeInsuranceTransactionInfo
   | UnstakeInsuranceTransactionInfo
+  | PrivacyPolicySetHashTransactionInfo
+  | PrivacyPolicyAgreeTransactionInfo
 
 export interface TransactionDetails {
   hash: string

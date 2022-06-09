@@ -18,6 +18,8 @@ import {
   EditInvestProposalTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
+  PrivacyPolicySetHashTransactionInfo,
+  PrivacyPolicyAgreeTransactionInfo,
   TransactionInfo,
 } from "state/transactions/types"
 import { TradeType, UpdateListType } from "constants/types"
@@ -192,6 +194,17 @@ const UnstakeInsuranceSummary: React.FC<{
   return <>Unstake insurance {toAmount} DEXE-LP</>
 }
 
+const PrivacyPolicySetHashSummary: React.FC<{
+  info: PrivacyPolicySetHashTransactionInfo
+}> = () => {
+  return <>Successfully set privacy policy hash.</>
+}
+const PrivacyPolicyAgreeSummary: React.FC<{
+  info: PrivacyPolicyAgreeTransactionInfo
+}> = () => {
+  return <>Successfully sign privacy policy.</>
+}
+
 const TransactionSummary: React.FC<IProps> = ({ info }) => {
   switch (info.type) {
     case TransactionType.APPROVAL:
@@ -224,6 +237,10 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
       return <StakeInsuranceSummary info={info} />
     case TransactionType.UNSTAKE_INSURANCE:
       return <UnstakeInsuranceSummary info={info} />
+    case TransactionType.PRIVACY_POLICY_SET_HASH:
+      return <PrivacyPolicySetHashSummary info={info} />
+    case TransactionType.PRIVACY_POLICY_AGREE:
+      return <PrivacyPolicyAgreeSummary info={info} />
 
     default:
       return null
