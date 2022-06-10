@@ -8,7 +8,14 @@ const FilterTypes = {
   WITHDRAW: TransactionType.WITHDRAW_LIQUIDITY_STAKING,
 }
 
-export default function useTransactionHistory() {
+interface IResult {
+  txList: any[]
+  txFilter: number
+  FilterTypes: typeof FilterTypes
+  txListExpanded: boolean
+}
+
+export default function useTransactionHistory(): [IResult, any] {
   const transactions = useAllTransactions()
 
   const [filter, setFiler] = useState(FilterTypes.SWAP)

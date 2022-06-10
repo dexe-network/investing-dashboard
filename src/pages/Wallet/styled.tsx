@@ -24,6 +24,7 @@ export const Cards = styled(Flex)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
+  margin-bottom: 57px;
 `
 
 export const List = styled(Flex)`

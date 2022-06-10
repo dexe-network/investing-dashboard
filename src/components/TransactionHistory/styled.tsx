@@ -1,8 +1,9 @@
 import styled from "styled-components"
+import { motion } from "framer-motion"
 
 import { Flex, GradientBorder } from "theme"
 
-export const Container = styled.div`
+export const Container = styled(motion.div)`
   width: 100%;
 `
 
@@ -31,11 +32,8 @@ export const HeaderButton = styled(GradientBorder)`
 
 export const List = styled.div`
   width: 100%;
-  position: relative;
-  max-height: 200px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-top: 15px;
-  margin-bottom: 30px;
   padding-bottom: 20px;
 `
 
@@ -50,13 +48,10 @@ export const ListPlaceholder = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* icons */
   width: 100%;
+  height: inherit;
   flex: 1;
-
   color: #5a6071;
-  min-height: 300px;
 `
 
 // CARD

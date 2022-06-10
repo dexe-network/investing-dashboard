@@ -352,16 +352,14 @@ export default function Wallet() {
         <List>
           {!txListExpanded && <Heading>Transactions History</Heading>}
 
-          {txList && txList.length && (
-            <TransactionHistory
-              list={txList}
-              filterTypes={FilterTypes}
-              filter={txFilter!}
-              setFilter={setTxFiler!}
-              expanded={txListExpanded!}
-              setExpanded={setTxListExpanded!}
-            />
-          )}
+          <TransactionHistory
+            list={txList}
+            filterTypes={FilterTypes}
+            filter={txFilter}
+            setFilter={setTxFiler}
+            expanded={txListExpanded}
+            setExpanded={setTxListExpanded}
+          />
         </List>
       </Container>
     </>
