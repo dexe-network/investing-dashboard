@@ -91,7 +91,10 @@ const Invest = () => {
       return (
         <SecondaryButton size="large" onClick={updateAllowance} fz={22} full>
           <Flex>
-            Unlock token <LockedIcon />
+            <Flex ai="center">Unlock Token {from.symbol}</Flex>
+            <Flex m="-3px 0 0 4px">
+              <LockedIcon />
+            </Flex>
           </Flex>
         </SecondaryButton>
       )
@@ -105,7 +108,7 @@ const Invest = () => {
         fz={22}
         full
       >
-        {`Swap ${to.symbol}`}
+        {direction === "deposit" ? `Buy ${to.symbol}` : `Sell ${from.symbol}`}
       </Button>
     )
   }

@@ -1,11 +1,13 @@
-import React, { useEffect, useState, useRef } from "react"
-import { format, formatDistance, formatRelative, subDays } from "date-fns"
-import { Flex, To } from "theme"
-import styled from "styled-components"
-import { Link } from "react-router-dom"
-import Avatar from "components/Avatar"
+import React from "react"
 import TokenIcon from "components/TokenIcon"
-import { BuyButton } from "components/Button"
+
+import { IPoolQuery } from "constants/interfaces_v2"
+import { useERC20 } from "hooks/useContract"
+import { formatNumber } from "utils"
+import Icon from "components/Icon"
+import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
+
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import {
   Card,
@@ -19,13 +21,6 @@ import {
   Statistic,
   PNL,
 } from "./styled"
-import { IPoolQuery } from "constants/interfaces_v2"
-import { useERC20 } from "hooks/useContract"
-import { formatNumber } from "utils"
-import Icon from "components/Icon"
-import { getLastInArray, getPNL, getPriceLP, getUSDPrice } from "utils/formulas"
-
-import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 // @param data - pool data
 // @param index - indicating index in all list of pools
@@ -33,7 +28,7 @@ const MemberMobile: React.FC<{
   data: IPoolQuery
   index?: number
 }> = ({ data, index = 0, children }) => {
-  const [baseContract, baseData] = useERC20(data.baseToken)
+  const [, baseData] = useERC20(data.baseToken)
   const priceLP = getPriceLP(data.priceHistory)
   const pnl = getPNL(priceLP)
   const lastHistoryPoint = getLastInArray(data.priceHistory)

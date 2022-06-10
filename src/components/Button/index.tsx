@@ -1,15 +1,5 @@
-import { Text } from "theme"
-import arrow from "assets/icons/buy-button-arrow.svg"
-import { ButtonBaseProps, MainButtonProps } from "./types"
-import {
-  GradientButton,
-  GradientButtonText,
-  SecondaryContainer,
-  BuyButtonContainer,
-  BuyArrow,
-  BorderedContainer,
-  GradientBorderButton,
-} from "./styled"
+import { MainButtonProps } from "./types"
+import { Primary, ButtonText, Secondary } from "./styled"
 
 // MAIN, DEFAULT BUTTON
 
@@ -23,7 +13,7 @@ const Button: React.FC<MainButtonProps> = ({
   onClick,
 }) => {
   return (
-    <GradientButton
+    <Primary
       size={size}
       m={m}
       onClick={onClick}
@@ -31,8 +21,8 @@ const Button: React.FC<MainButtonProps> = ({
       full={full}
       color={theme}
     >
-      <GradientButtonText>{children}</GradientButtonText>
-    </GradientButton>
+      <ButtonText>{children}</ButtonText>
+    </Primary>
   )
 }
 
@@ -55,7 +45,7 @@ export const SecondaryButton: React.FC<MainButtonProps> = ({
     onClick && onClick()
   }
   return (
-    <GradientBorderButton
+    <Secondary
       size={size}
       m={m}
       onClick={handleClick}
@@ -63,30 +53,7 @@ export const SecondaryButton: React.FC<MainButtonProps> = ({
       full={full}
       color={theme}
     >
-      <GradientButtonText>{children}</GradientButtonText>
-    </GradientBorderButton>
-  )
-}
-
-// BUY BUTTON placed on pool card component
-
-export const BuyButton: React.FC<ButtonBaseProps> = ({ onClick }) => {
-  return (
-    <BuyButtonContainer onClick={onClick}>
-      <BuyArrow src={arrow} alt="" />
-    </BuyButtonContainer>
-  )
-}
-
-// BORDERED BUTTON
-
-export const BorderedButton: React.FC<{
-  size?: string
-  onClick?: () => void
-}> = ({ children, onClick, size }) => {
-  return (
-    <BorderedContainer onClick={onClick} size={size}>
-      {children}
-    </BorderedContainer>
+      <ButtonText>{children}</ButtonText>
+    </Secondary>
   )
 }

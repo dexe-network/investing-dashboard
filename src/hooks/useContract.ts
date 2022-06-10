@@ -6,6 +6,7 @@ import {
   TraderPoolRiskyProposal,
   BasicTraderPool,
   PriceFeed,
+  TraderPoolRegistry,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -14,7 +15,10 @@ import { ITokenBase } from "constants/interfaces"
 import { isAddress } from "utils"
 import { ethers } from "ethers"
 import { useSelector } from "react-redux"
-import { selectPriceFeedAddress } from "state/contracts/selectors"
+import {
+  selectPriceFeedAddress,
+  selectTraderPoolRegistryAddress,
+} from "state/contracts/selectors"
 
 const provider = new ethers.providers.JsonRpcProvider(
   "https://data-seed-prebsc-1-s1.binance.org:8545/"
@@ -136,6 +140,12 @@ export function usePriceFeedContract(): Contract | null {
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
   return useContract(priceFeedAddress, PriceFeed)
+}
+
+export function useTraderPoolRegistryContract(): Contract | null {
+  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
+
+  return useContract(traderPoolRegistryAddress, TraderPoolRegistry)
 }
 
 export function useRiskyProposalContract(
