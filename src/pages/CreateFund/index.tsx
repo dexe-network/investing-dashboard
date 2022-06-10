@@ -258,8 +258,8 @@ const CreateFund: FC = () => {
         setStepPending(true)
         const tx = await handlePoolCreate()
 
-        if (isTxMined(tx) && !!tx!.logs.length && !!tx!.logs[0].address) {
-          setCreactedAddress(tx!.logs[0].address)
+        if (isTxMined(tx) && !!tx!.logs.length && !!tx!.logs[1].address) {
+          setCreactedAddress(tx!.logs[1].address)
           setStep(step + 1)
           setStepPending(false)
         }
