@@ -8,6 +8,7 @@ import Invest from "assets/icons/Invest"
 import Withdraw from "assets/icons/Withdraw"
 import Swap from "assets/icons/Swap"
 import Expand from "assets/icons/Expand"
+import Shrink from "assets/icons/Shrink"
 
 import {
   Container,
@@ -81,7 +82,7 @@ const TransactionHistory: React.FC<IProps> = ({
             Withdraw <Withdraw active={filter === filterTypes.WITHDRAW} />
           </HeaderButton>
           <HeaderButton focused={expanded} onClick={toggleExpanded}>
-            <Expand />
+            {expanded ? <Shrink active /> : <Expand />}
           </HeaderButton>
         </Header>
         <List ref={scrollRef} style={{ height: scrollH }}>
