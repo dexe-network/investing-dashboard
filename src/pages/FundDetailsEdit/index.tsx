@@ -617,8 +617,11 @@ const FundDetailsEdit: FC = () => {
               >
                 <InputRow>
                   <Input
-                    label="LP tokens emission"
+                    type="number"
+                    inputmode="decimal"
                     value={totalLPEmission}
+                    placeholder="---"
+                    label="LP tokens emission"
                     onChange={(value) => handleChange("totalLPEmission", value)}
                     rightIcon={<InputText>LP</InputText>}
                   />
@@ -634,10 +637,12 @@ const FundDetailsEdit: FC = () => {
               >
                 <InputRow>
                   <Input
+                    type="number"
+                    inputmode="decimal"
+                    value={minimalInvestment}
                     placeholder="---"
                     onChange={(v) => handleChange("minimalInvestment", v)}
                     label="Minimum investment amount"
-                    value={minimalInvestment}
                     rightIcon={<InputText>{baseData?.symbol}</InputText>}
                   />
                   {getFieldErrors("minimalInvestment")}
