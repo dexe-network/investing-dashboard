@@ -31,6 +31,16 @@ const inputVariants = {
 
 interface Props {
   type?: string
+  inputmode?:
+    | "text"
+    | "none"
+    | "search"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | undefined
   label?: string
   placeholder?: string
   disabled?: boolean
@@ -45,6 +55,7 @@ interface Props {
 
 const Input: FC<Props> = ({
   type = "text",
+  inputmode = "text",
   label,
   placeholder,
   value,
@@ -109,6 +120,7 @@ const Input: FC<Props> = ({
 
       <InputField
         type={type}
+        inputMode={inputmode}
         disabled={disabled}
         value={value || ""}
         onChange={handleChange}
