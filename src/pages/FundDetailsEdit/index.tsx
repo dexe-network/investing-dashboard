@@ -313,53 +313,59 @@ const FundDetailsEdit: FC = () => {
       if (steps[step].title === "Managers") {
         setStepPending(true)
 
-        const txs: Promise<TransactionReceipt | undefined>[] = []
+        let managersSuccess = false
 
         if (!!managersRemoved.length) {
-          txs.push(handleManagersRemove())
+          const removeReceipt = await handleManagersRemove()
+
+          if (isTxMined(removeReceipt)) {
+            managersRemoveCallback()
+            managersSuccess = true
+          }
         }
         if (!!managersAdded.length) {
-          txs.push(handleManagersAdd())
+          managersSuccess = false
+          const addReceipt = await handleManagersAdd()
+
+          if (isTxMined(addReceipt)) {
+            managersAddCallback()
+            managersSuccess = true
+          }
         }
 
-        Promise.all(txs).then((res) => {
-          if (res.every(isTxMined)) {
-            if (!!managersRemoved.length) {
-              managersRemoveCallback()
-            }
-            if (!!managersAdded.length) {
-              managersAddCallback()
-            }
-            setStep(step + 1)
-            setStepPending(false)
-          }
-        })
+        if (managersSuccess) {
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
       if (steps[step].title === "Investors") {
         setStepPending(true)
 
-        const txs: Promise<TransactionReceipt | undefined>[] = []
+        let investorsSuccess = false
 
         if (!!investorsRemoved.length) {
-          txs.push(handleInvestorsRemove())
+          const removeReceipt = await handleInvestorsRemove()
+
+          if (isTxMined(removeReceipt)) {
+            investorsRemoveCallback()
+            investorsSuccess = true
+          }
         }
         if (!!investorsAdded.length) {
-          txs.push(handleInvestorsAdd())
+          investorsSuccess = false
+          const addReceipt = await handleInvestorsAdd()
+
+          if (isTxMined(addReceipt)) {
+            investorsRemoveCallback()
+            investorsSuccess = true
+          }
         }
 
-        Promise.all(txs).then((res) => {
-          if (res.every(isTxMined)) {
-            if (!!investorsRemoved.length) {
-              investorsRemoveCallback()
-            }
-            if (!!investorsAdded.length) {
-              investorsAddCallback()
-            }
-            setStep(step + 1)
-            setStepPending(false)
-          }
-        })
+        if (investorsSuccess) {
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
       if (steps[step].title === "Success") {
@@ -424,6 +430,13 @@ const FundDetailsEdit: FC = () => {
         handleChange("investors", state)
       }
     }
+  }
+
+  const onStepperClose = async () => {
+    setCreating(false)
+    setStepPending(false)
+    setStep(0)
+    setSteps([])
   }
 
   // update initial value context
@@ -518,7 +531,7 @@ const FundDetailsEdit: FC = () => {
         <Stepper
           failed={transactionFail}
           isOpen={isCreating}
-          onClose={() => setCreating(false)}
+          onClose={onStepperClose}
           onSubmit={handleNextStep}
           current={step}
           pending={stepPending}
@@ -604,8 +617,11 @@ const FundDetailsEdit: FC = () => {
               >
                 <InputRow>
                   <Input
-                    label="LP tokens emission"
+                    type="number"
+                    inputmode="decimal"
                     value={totalLPEmission}
+                    placeholder="---"
+                    label="LP tokens emission"
                     onChange={(value) => handleChange("totalLPEmission", value)}
                     rightIcon={<InputText>LP</InputText>}
                   />
@@ -621,10 +637,12 @@ const FundDetailsEdit: FC = () => {
               >
                 <InputRow>
                   <Input
+                    type="number"
+                    inputmode="decimal"
+                    value={minimalInvestment}
                     placeholder="---"
                     onChange={(v) => handleChange("minimalInvestment", v)}
                     label="Minimum investment amount"
-                    value={minimalInvestment}
                     rightIcon={<InputText>{baseData?.symbol}</InputText>}
                   />
                   {getFieldErrors("minimalInvestment")}
