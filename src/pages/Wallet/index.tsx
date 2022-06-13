@@ -38,7 +38,6 @@ import logoutIcon from "assets/icons/logout.svg"
 import {
   Container,
   Cards,
-  List,
   Info,
   FloatingButtons,
   TextGray,
@@ -52,7 +51,6 @@ import {
   TextButton,
   TextLink,
   TextIcon,
-  Heading,
   InsuranceCard,
   InsuranceInfo,
   InsuranceTitle,
@@ -264,103 +262,98 @@ export default function Wallet() {
         exit={{ opacity: 0, y: -15 }}
         transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        {!txListExpanded && (
-          <Cards>
-            <User>
-              <Info>
-                <AvatarWrapper>
-                  <Avatar
-                    url={userAvatar}
-                    address={account}
-                    onCrop={(_, value) => setUserAvatar(value)}
-                    showUploader={isUserEditing}
-                    size={44}
-                  />
-                </AvatarWrapper>
-                <UserInfo>
-                  <TextGray>Welcome!</TextGray>
-                  <Name
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    disabled={!isUserEditing}
-                    placeholder="User Name"
-                  />
-                </UserInfo>
-              </Info>
-              {isLoading ? (
-                <PulseSpinner size={20} loading />
-              ) : (
-                <FloatingButtons>{userIcon}</FloatingButtons>
-              )}
-            </User>
+        <Cards>
+          <User>
+            <Info>
+              <AvatarWrapper>
+                <Avatar
+                  url={userAvatar}
+                  address={account}
+                  onCrop={(_, value) => setUserAvatar(value)}
+                  showUploader={isUserEditing}
+                  size={44}
+                />
+              </AvatarWrapper>
+              <UserInfo>
+                <TextGray>Welcome!</TextGray>
+                <Name
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  disabled={!isUserEditing}
+                  placeholder="User Name"
+                />
+              </UserInfo>
+            </Info>
+            {isLoading ? (
+              <PulseSpinner size={20} loading />
+            ) : (
+              <FloatingButtons>{userIcon}</FloatingButtons>
+            )}
+          </User>
 
-            <InsuranceCard>
-              <InsuranceInfo>
-                <InsuranceTitle>
-                  Total Amount Insured:{" "}
-                  {formatBigNumber(insuranceAmount, 18, 2)} DEXE
-                </InsuranceTitle>
-              </InsuranceInfo>
-              <InsuranceButton onClick={handleInsuranceRedirect}>
-                <InsuranceIcon src={add} alt="add" /> Add insurance
-              </InsuranceButton>
-            </InsuranceCard>
+          <InsuranceCard>
+            <InsuranceInfo>
+              <InsuranceTitle>
+                Total Amount Insured: {formatBigNumber(insuranceAmount, 18, 2)}{" "}
+                DEXE
+              </InsuranceTitle>
+            </InsuranceInfo>
+            <InsuranceButton onClick={handleInsuranceRedirect}>
+              <InsuranceIcon src={add} alt="add" /> Add insurance
+            </InsuranceButton>
+          </InsuranceCard>
 
-            <Card>
-              <Network>
-                BSC <NetworkIcon src={bsc} />
-              </Network>
-              <TextGray>Current account</TextGray>
+          <Card>
+            <Network>
+              BSC <NetworkIcon src={bsc} />
+            </Network>
+            <TextGray>Current account</TextGray>
+            {chainId && (
+              <Address
+                removeIcon
+                href={getExplorerLink(
+                  chainId,
+                  account,
+                  ExplorerDataType.ADDRESS
+                )}
+              >
+                {shortenAddress(account, 8)}
+              </Address>
+            )}
+            <CardButtons>
               {chainId && (
-                <Address
-                  removeIcon
+                <TextLink
+                  iconPosition="left"
+                  iconColor="#636a77"
                   href={getExplorerLink(
                     chainId,
                     account,
                     ExplorerDataType.ADDRESS
                   )}
                 >
-                  {shortenAddress(account, 8)}
-                </Address>
+                  Bscscan
+                </TextLink>
               )}
-              <CardButtons>
-                {chainId && (
-                  <TextLink
-                    iconPosition="left"
-                    iconColor="#636a77"
-                    href={getExplorerLink(
-                      chainId,
-                      account,
-                      ExplorerDataType.ADDRESS
-                    )}
-                  >
-                    Bscscan
-                  </TextLink>
-                )}
-                <TextButton onClick={handleAddressCopy}>
-                  <TextIcon src={copyIcon} />
-                  <span>Copy</span>
-                </TextButton>
-                <TextButton onClick={handleLogout}>
-                  <TextIcon src={logoutIcon} />
-                  <span>Disconnect</span>
-                </TextButton>
-              </CardButtons>
-            </Card>
-          </Cards>
-        )}
-        <List>
-          {!txListExpanded && <Heading>Transactions History</Heading>}
+              <TextButton onClick={handleAddressCopy}>
+                <TextIcon src={copyIcon} />
+                <span>Copy</span>
+              </TextButton>
+              <TextButton onClick={handleLogout}>
+                <TextIcon src={logoutIcon} />
+                <span>Disconnect</span>
+              </TextButton>
+            </CardButtons>
+          </Card>
+        </Cards>
 
-          <TransactionHistory
-            list={txList}
-            filterTypes={FilterTypes}
-            filter={txFilter}
-            setFilter={setTxFiler}
-            expanded={txListExpanded}
-            setExpanded={setTxListExpanded}
-          />
-        </List>
+        <TransactionHistory
+          list={txList}
+          filterTypes={FilterTypes}
+          filter={txFilter}
+          setFilter={setTxFiler}
+          expanded={txListExpanded}
+          setExpanded={setTxListExpanded}
+        />
       </Container>
     </>
   )

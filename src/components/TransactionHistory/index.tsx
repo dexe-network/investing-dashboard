@@ -12,6 +12,8 @@ import Shrink from "assets/icons/Shrink"
 
 import {
   Container,
+  Heading,
+  Content,
   Header,
   HeaderButton,
   List,
@@ -29,6 +31,9 @@ interface IProps {
   setExpanded: Dispatch<SetStateAction<boolean>>
 }
 
+const barH = 52
+const titleMB = 24
+
 const TransactionHistory: React.FC<IProps> = ({
   list,
   filter,
@@ -40,7 +45,10 @@ const TransactionHistory: React.FC<IProps> = ({
   const { chainId } = useActiveWeb3React()
 
   const scrollRef = useRef<any>(null)
-  const [scrollH, setScrollH] = useState<string | number>("initial")
+  const titleRef = useRef<any>(null)
+
+  const [scrollH, setScrollH] = useState<number>(0)
+  const [initialTop, setInitialTop] = useState<number>(0)
   const toggleExpanded = () => setExpanded(!expanded)
 
   useEffect(() => {
@@ -51,17 +59,46 @@ const TransactionHistory: React.FC<IProps> = ({
   }, [])
 
   useEffect(() => {
-    if (!scrollRef.current) return
+    if (!titleRef.current) return
 
-    const listRect = scrollRef.current.getBoundingClientRect()
-    const bottomBarH = 49
+    const titleRect = titleRef.current.getBoundingClientRect()
+    setInitialTop(titleRect.bottom + titleMB)
+  }, [titleRef])
 
-    setScrollH(window.innerHeight - listRect.top - bottomBarH)
-  }, [expanded])
+  useEffect(() => {
+    if (expanded) {
+      setScrollH(window.innerHeight - barH * 2)
+    } else {
+      const t = setTimeout(() => {
+        setScrollH(window.innerHeight - initialTop - barH * 2)
+        clearTimeout(t)
+      }, 400)
+    }
+  }, [expanded, initialTop])
 
   return (
-    <>
-      <Container>
+    <Container>
+      <Heading ref={titleRef}>Transactions History</Heading>
+      <Content
+        style={{
+          background: "linear-gradient(64.44deg, #0c1017 32.35%, #181d26 100%)",
+        }}
+        animate={expanded ? "visible" : "hidden"}
+        initial="hidden"
+        transition={{ duration: 0.4 }}
+        variants={{
+          visible: {
+            top: 55,
+            height: "100vh",
+          },
+          hidden: {
+            top: "initial",
+            height: window.innerHeight - initialTop,
+
+            transitionEnd: { background: "transparent" },
+          },
+        }}
+      >
         <Header>
           <HeaderButton
             onClick={() => setFilter(filterTypes.DEPOSIT)}
@@ -81,11 +118,16 @@ const TransactionHistory: React.FC<IProps> = ({
           >
             Withdraw <Withdraw active={filter === filterTypes.WITHDRAW} />
           </HeaderButton>
-          <HeaderButton focused={expanded} onClick={toggleExpanded}>
-            {expanded ? <Shrink active /> : <Expand />}
+          <HeaderButton onClick={toggleExpanded}>
+            {expanded ? <Shrink /> : <Expand />}
           </HeaderButton>
         </Header>
-        <List ref={scrollRef} style={{ height: scrollH }}>
+        <List
+          ref={scrollRef}
+          style={{
+            height: scrollH,
+          }}
+        >
           {list.length ? (
             list.map((tx) => (
               <Card key={tx.hash} payload={tx} chainId={chainId} />
@@ -96,8 +138,8 @@ const TransactionHistory: React.FC<IProps> = ({
             </ListPlaceholder>
           )}
         </List>
-      </Container>
-    </>
+      </Content>
+    </Container>
   )
 }
 

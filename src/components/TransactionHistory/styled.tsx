@@ -1,10 +1,33 @@
 import styled from "styled-components"
 import { motion } from "framer-motion"
 
-import { Flex, GradientBorder } from "theme"
+import { Flex, GradientBorderLightGreen } from "theme"
 
-export const Container = styled(motion.div)`
+export const Container = styled.div`
   width: 100%;
+  flex: 1;
+`
+
+export const Heading = styled.div`
+  font-family: Gilroy;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 28px;
+  margin-bottom: 24px;
+
+  text-align: center;
+  letter-spacing: 0.35px;
+  width: 100%;
+  color: #cfdce8;
+`
+
+export const Content = styled(motion.div)`
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  background: linear-gradient(64.44deg, #0c1017 32.35%, #181d26 100%);
 `
 
 export const Header = styled(Flex)`
@@ -12,7 +35,7 @@ export const Header = styled(Flex)`
   justify-content: space-around;
 `
 
-export const HeaderButton = styled(GradientBorder)`
+export const HeaderButton = styled(GradientBorderLightGreen)`
   border-radius: 16px;
   font-family: "Gilroy";
   font-style: normal;
@@ -34,7 +57,7 @@ export const List = styled.div`
   width: 100%;
   overflow-y: auto;
   margin-top: 15px;
-  padding-bottom: 20px;
+  padding: 0 16px;
 `
 
 export const ListPlaceholder = styled.div`

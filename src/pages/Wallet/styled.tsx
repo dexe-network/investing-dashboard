@@ -1,5 +1,5 @@
-import styled, { css } from "styled-components"
-import { Flex, GradientBorder } from "theme"
+import styled from "styled-components"
+import { Flex } from "theme"
 import ExternalLink from "components/ExternalLink"
 
 import cardBG from "assets/background/wallet-card.svg"
@@ -25,14 +25,6 @@ export const Cards = styled(Flex)`
   align-items: flex-start;
   justify-content: flex-start;
   margin-bottom: 57px;
-`
-
-export const List = styled(Flex)`
-  width: 100%;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
 `
 
 export const Header = styled(Flex)`
@@ -177,20 +169,6 @@ export const TextIcon = styled.img`
   width: 16px;
   height: 16px;
   margin-right: 8px;
-`
-
-export const Heading = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 28px;
-  margin-bottom: 24px;
-
-  text-align: center;
-  letter-spacing: 0.35px;
-  width: 100%;
-  color: #cfdce8;
 `
 
 export const InsuranceCard = styled(Flex)`
