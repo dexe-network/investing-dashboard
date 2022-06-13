@@ -495,6 +495,8 @@ const CreateFund: FC = () => {
                 >
                   <InputRow>
                     <Input
+                      type="number"
+                      inputmode="decimal"
                       placeholder="---"
                       value={totalLPEmission}
                       onChange={(value) =>
@@ -542,9 +544,11 @@ const CreateFund: FC = () => {
                 >
                   <InputRow>
                     <Input
+                      type="number"
+                      inputmode="decimal"
                       placeholder="---"
-                      onChange={(v) => handleChange("minimalInvestment", v)}
                       value={minimalInvestment}
+                      onChange={(v) => handleChange("minimalInvestment", v)}
                       rightIcon={<InputText>{baseToken.symbol}</InputText>}
                     />
                     {getFieldErrors("minimalInvestment")}
