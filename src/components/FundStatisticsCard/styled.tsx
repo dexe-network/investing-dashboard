@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Flex, Text } from "theme"
+import { Flex } from "theme"
 
 export const Container = styled.div`
   width: 100%;
@@ -54,77 +54,3 @@ export const Icon = styled.img`
   height: 21px;
   transform: translateY(-4px);
 `
-
-// EMMISSION
-
-export const EmissionGreen = styled.div`
-  color: #62cdb1;
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 130%;
-  margin-left: 5px;
-`
-
-const BarContainer = styled.div`
-  background: #252a35;
-  border-radius: 4px;
-  height: 10px;
-  width: 100%;
-`
-
-const BarProgress = styled.div<{ w: string }>`
-  height: 10px;
-  background: linear-gradient(90deg, #a4ebd4 0%, rgba(164, 235, 212, 0) 80.82%);
-  border-radius: 6px;
-  width: ${(props) => props.w || "0%"};
-`
-
-const EmissionContainer = styled.div`
-  width: 100%;
-`
-
-const CurrentEmission = ({ value }) => {
-  return (
-    <Flex>
-      <SecondaryLabel>current</SecondaryLabel>
-      <EmissionGreen>{value}</EmissionGreen>
-    </Flex>
-  )
-}
-
-const TotalEmission = ({ value }) => {
-  return (
-    <Flex>
-      <ValueLabel>Emission</ValueLabel>
-      <EmissionGreen>{value}</EmissionGreen>
-    </Flex>
-  )
-}
-
-const EmissionBar = ({ progress }) => {
-  return (
-    <BarContainer>
-      <BarProgress w={`${progress}%`} />
-    </BarContainer>
-  )
-}
-
-export const Emission: React.FC<{
-  total: any
-  current: string
-  percent: number
-}> = ({ total, current, percent }) => {
-  return (
-    <EmissionContainer>
-      <Flex full>
-        <TotalEmission value={total} />
-        <CurrentEmission value={current} />
-      </Flex>
-      <Flex p="7px 0 6px" full>
-        <EmissionBar progress={percent} />
-      </Flex>
-    </EmissionContainer>
-  )
-}
