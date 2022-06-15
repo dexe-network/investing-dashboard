@@ -7,27 +7,31 @@ enum LABEL_TYPE {
 }
 
 const LabelColor = {
-  [LABEL_TYPE.LIGHT]: "#c5d1dc",
-  [LABEL_TYPE.DARK]: "#5a6071",
+  [LABEL_TYPE.LIGHT]: "#E4F2FF",
+  [LABEL_TYPE.DARK]: "#616D8B",
+}
+const LabelWeight = {
+  [LABEL_TYPE.LIGHT]: 600,
+  [LABEL_TYPE.DARK]: 400,
 }
 
 const Label = styled.div<{ type: LABEL_TYPE }>`
   font-family: Gilroy;
   font-style: normal;
-  font-weight: 600;
+  font-weight: ${({ type }) => LabelWeight[type]};
   font-size: 13px;
   line-height: 130%;
   color: ${({ type }) => LabelColor[type]};
 `
 
 export const EmissionGreen = styled.div`
-  color: #62cdb1;
+  color: #9ae2cb;
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
   font-size: 13px;
   line-height: 130%;
-  margin-left: 5px;
+  margin-left: 4px;
 `
 
 const BarContainer = styled.div`
@@ -54,7 +58,7 @@ export const EmissionContainer = styled.div`
 export const CurrentEmission = ({ value }) => {
   return (
     <Flex>
-      <Label type={LABEL_TYPE.DARK}>current</Label>
+      <Label type={LABEL_TYPE.DARK}>Left</Label>
       <EmissionGreen>{value}</EmissionGreen>
     </Flex>
   )
