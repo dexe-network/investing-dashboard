@@ -26,6 +26,7 @@ import useContract from "hooks/useContract"
 import { selectUserRegistryAddress } from "state/contracts/selectors"
 import { UserRegistry } from "abi"
 import { useUserMetadata } from "state/ipfsMetadata/hooks"
+import { FacebookShareButton } from "react-share"
 
 interface Props {
   account: string | null | undefined
@@ -89,7 +90,13 @@ const InvestorMobile: React.FC<Props> = ({ account, children }) => {
             <Description>Investing</Description>
           </Flex>
         </PoolInfo>
-        <ShareButton src={shareIcon} />
+        <FacebookShareButton
+          quote="DEXE"
+          hashtag="dexe"
+          url="https://dexe.network"
+        >
+          <ShareButton src={shareIcon} />
+        </FacebookShareButton>
       </PoolInfoContainer>
       <Divider />
       <PoolStatisticContainer>

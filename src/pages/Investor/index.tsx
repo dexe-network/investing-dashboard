@@ -2,6 +2,7 @@ import { Flex, To } from "theme"
 import { useWeb3React } from "@web3-react/core"
 import { useLocation, useNavigate } from "react-router-dom"
 
+import HelmetMeta from "components/HelmetMeta"
 import Button, { SecondaryButton } from "components/Button"
 import InvestorMobile from "components/InvestorMobile"
 import { useSelector } from "react-redux"
@@ -159,6 +160,7 @@ function Investor(props: Props) {
 
   return (
     <>
+      <HelmetMeta />
       <Header left={leftIcon}>My investor profile</Header>
       <Container
         initial={{ opacity: 0 }}
