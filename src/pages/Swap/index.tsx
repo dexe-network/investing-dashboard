@@ -42,6 +42,9 @@ import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 import { TradeType, SwapDirection } from "constants/types"
 
+import useSwapV2 from "./useSwap"
+import Payload from "components/Payload"
+
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
@@ -194,26 +197,26 @@ function Swap() {
   const [priceImpact, setPriceImpact] = useState("0")
   const [isSlippageOpen, setSlippageOpen] = useState(false)
 
-  const { poolType, poolAddress, outputTokenAddress } = useParams()
+  const { poolType, poolToken, inputToken, outputToken } = useParams()
 
-  const traderPool = useTraderPool(poolAddress)
-  const [, poolInfoData, refresh] = usePoolContract(poolAddress)
+  const traderPool = useTraderPool(poolToken)
+  const [, poolInfoData, refresh] = usePoolContract(poolToken)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
   const [, fromToken] = useERC20(poolInfoData?.parameters.baseToken)
-  const [, toToken] = useERC20(outputTokenAddress)
+  const [, toToken] = useERC20(outputToken)
 
   const fromData = direction === "deposit" ? fromToken : toToken
   const toData = direction === "deposit" ? toToken : fromToken
 
   const handleProposalRedirect = () => {
     if (poolType === "INVEST_POOL") {
-      navigate(`/create-invest-proposal/${poolAddress}`)
+      navigate(`/create-invest-proposal/${poolToken}`)
     } else {
-      navigate(`/create-risky-proposal/${poolAddress}/0x/1`)
+      navigate(`/create-risky-proposal/${poolToken}/0x/1`)
     }
   }
 
@@ -223,7 +226,7 @@ function Swap() {
       ;(async () => {
         try {
           const from = poolInfoData?.parameters.baseToken
-          const to = outputTokenAddress
+          const to = outputToken
           const amount = BigNumber.from(fromAmount)
 
           const exchange = await traderPool?.getExchangeAmount(
@@ -267,7 +270,7 @@ function Swap() {
     } else {
       ;(async () => {
         try {
-          const from = outputTokenAddress
+          const from = outputToken
           const to = poolInfoData?.parameters.baseToken
           const amount = BigNumber.from(fromAmount)
 
@@ -407,27 +410,27 @@ function Swap() {
 
   // watch and update from/to addresses
   useEffect(() => {
-    if (!outputTokenAddress || !poolInfoData) return
+    if (!outputToken || !poolInfoData) return
 
     if (
       direction === "deposit" &&
       fromAddress !== poolInfoData.parameters.baseToken
     ) {
       setFromAddress(poolInfoData.parameters.baseToken)
-      setToAddress(outputTokenAddress)
+      setToAddress(outputToken)
       setFromAmount(toAmount)
       setToAmount(fromAmount)
     }
 
-    if (direction === "withdraw" && fromAddress !== outputTokenAddress) {
+    if (direction === "withdraw" && fromAddress !== outputToken) {
       setToAddress(poolInfoData.parameters.baseToken)
-      setFromAddress(outputTokenAddress)
+      setFromAddress(outputToken)
       setFromAmount(toAmount)
       setToAmount(fromAmount)
     }
   }, [
     direction,
-    outputTokenAddress,
+    outputToken,
     poolInfoData,
     fromAddress,
     fromAmount,
@@ -454,7 +457,7 @@ function Swap() {
     if (direction === "withdraw") {
       setToBalance(baseTokenBalance)
     }
-  }, [poolInfoData, outputTokenAddress, direction])
+  }, [poolInfoData, outputToken, direction])
 
   // read and update position balance
   useEffect(() => {
@@ -468,7 +471,7 @@ function Swap() {
     // find position index
     const positionIndex = poolInfoData.openPositions
       .map((address) => address.toLocaleLowerCase())
-      .indexOf((outputTokenAddress || "").toLocaleLowerCase())
+      .indexOf((outputToken || "").toLocaleLowerCase())
 
     const positionTokenBalance =
       positionIndex !== -1
@@ -482,7 +485,7 @@ function Swap() {
     if (direction === "withdraw") {
       setFromBalance(positionTokenBalance)
     }
-  }, [poolInfoData, outputTokenAddress, direction])
+  }, [poolInfoData, outputToken, direction])
 
   // read and update prices
   useEffect(() => {
@@ -573,10 +576,8 @@ function Swap() {
         address={fromAddress}
         symbol={fromData?.symbol}
         decimal={fromData?.decimals}
-        onSelect={
-          direction === "withdraw"
-            ? () => navigate(`/select-token/${poolType}/${poolAddress}`)
-            : undefined
+        onSelect={() =>
+          navigate(`/select-token/${poolType}/${poolToken}/from/${outputToken}`)
         }
         onChange={handleFromChange}
       />
@@ -595,10 +596,8 @@ function Swap() {
         address={toAddress}
         symbol={toData?.symbol}
         decimal={toData?.decimals}
-        onSelect={
-          direction === "deposit"
-            ? () => navigate(`/select-token/${poolType}/${poolAddress}`)
-            : undefined
+        onSelect={() =>
+          navigate(`/select-token/${poolType}/${poolToken}/to/${inputToken}`)
         }
         onChange={handleToChange}
       />
@@ -641,10 +640,173 @@ function Swap() {
   )
 }
 
+const SwapV2 = () => {
+  const navigate = useNavigate()
+  const { poolType, poolToken, inputToken, outputToken } = useParams()
+  const [
+    { from, to },
+    {
+      error,
+      oneTokenCost,
+      oneUSDCost,
+      isSlippageOpen,
+      isWalletPrompting,
+      slippage,
+      setError,
+      setWalletPrompting,
+      setSlippage,
+      setSlippageOpen,
+      handleFromChange,
+      handleToChange,
+      handleSubmit,
+      handlePercentageChange,
+    },
+  ] = useSwapV2({
+    pool: poolToken,
+    from: inputToken,
+    to: outputToken,
+  })
+
+  const handleDirectionChange = useCallback(() => {
+    navigate(
+      `/pool/swap/${poolType}/${poolToken}/${to.address}/${from.address}`
+    )
+  }, [from, navigate, poolToken, poolType, to])
+
+  const handleProposalRedirect = () => {
+    if (poolType === "INVEST_POOL") {
+      navigate(`/create-invest-proposal/${poolToken}`)
+    } else {
+      navigate(`/create-risky-proposal/${poolToken}/0x/1`)
+    }
+  }
+
+  const getButton = () => {
+    if (from.amount === "0" || to.amount === "0") {
+      return (
+        <SecondaryButton
+          theme="disabled"
+          size="large"
+          onClick={handleSubmit}
+          fz={22}
+          full
+        >
+          Enter amount to swap
+        </SecondaryButton>
+      )
+    }
+
+    return (
+      <Button size="large" theme="primary" onClick={handleSubmit} fz={22} full>
+        Swap
+      </Button>
+    )
+  }
+
+  const button = getButton()
+
+  const form = (
+    <Card>
+      <CardHeader>
+        <Flex>
+          <Title>Swap</Title>
+        </Flex>
+        <IconsGroup>
+          <IconButton
+            size={9}
+            filled
+            media={plus}
+            onClick={handleProposalRedirect}
+          />
+          <CircularProgress />
+          <IconButton
+            size={12}
+            filled
+            media={settings}
+            onClick={() => setSlippageOpen(!isSlippageOpen)}
+          />
+          <IconButton size={10} filled media={close} onClick={() => {}} />
+        </IconsGroup>
+      </CardHeader>
+
+      <ExchangeInput
+        price={from.price}
+        amount={from.amount}
+        balance={from.balance}
+        address={from.address}
+        symbol={from.symbol}
+        decimal={from.decimals}
+        onSelect={() =>
+          navigate(`/select-token/${poolType}/${poolToken}/from/${outputToken}`)
+        }
+        onChange={handleFromChange}
+      />
+
+      <ExchangeDivider
+        direction="deposit"
+        changeAmount={handlePercentageChange}
+        changeDirection={handleDirectionChange}
+      />
+
+      <ExchangeInput
+        price={to.price}
+        amount={to.amount}
+        balance={to.balance}
+        address={to.address}
+        symbol={to.symbol}
+        decimal={to.decimals}
+        onSelect={() =>
+          navigate(`/select-token/${poolType}/${poolToken}/to/${inputToken}`)
+        }
+        onChange={handleToChange}
+      />
+
+      <SwapPrice
+        fromSymbol={from.symbol}
+        toSymbol={to.symbol}
+        tokensCost={oneTokenCost}
+        usdCost={oneUSDCost}
+      />
+
+      <Flex full p="16px 0 0">
+        {button}
+      </Flex>
+
+      <TransactionSlippage
+        slippage={slippage}
+        onChange={setSlippage}
+        isOpen={isSlippageOpen}
+        toggle={(v) => setSlippageOpen(v)}
+      />
+    </Card>
+  )
+
+  return (
+    <>
+      <Header>Swap</Header>
+      <Container
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Payload
+          isOpen={isWalletPrompting}
+          toggle={() => setWalletPrompting(false)}
+        />
+        <TransactionError isOpen={!!error.length} toggle={() => setError("")}>
+          {error}
+        </TransactionError>
+        {form}
+      </Container>
+    </>
+  )
+}
+
 export default function SwapWithProvider() {
   return (
     <GraphProvider value={poolsClient}>
-      <Swap />
+      <SwapV2 />
     </GraphProvider>
   )
 }

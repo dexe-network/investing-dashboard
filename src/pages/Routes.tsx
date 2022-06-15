@@ -72,12 +72,12 @@ export default function Routes() {
                     {/* <Route path="insurance" element={<Insurance />} /> */}
 
                     <Route
-                      path="select-token/:type/:poolAddress"
+                      path="select-token/:type/:poolAddress/:field/:address"
                       element={<TokenSelect />}
                     />
 
                     <Route
-                      path="pool/swap/:poolType/:poolAddress/:outputTokenAddress"
+                      path="pool/swap/:poolType/:poolToken/:inputToken/:outputToken"
                       element={<Swap />}
                     />
 

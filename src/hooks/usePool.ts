@@ -48,10 +48,15 @@ export function usePoolContract(
   useEffect(() => {
     if (!traderPool) return
     ;(async () => {
-      const leverage = await traderPool?.getLeverageInfo()
-      const poolInfo = await traderPool?.getPoolInfo()
-      setPoolInfo(poolInfo)
-      setLeverageInfo(leverage)
+      try {
+        const leverage = await traderPool?.getLeverageInfo()
+        const poolInfo = await traderPool?.getPoolInfo()
+
+        setPoolInfo(poolInfo)
+        setLeverageInfo(leverage)
+      } catch (e) {
+        console.log(e)
+      }
     })()
   }, [traderPool, update])
 

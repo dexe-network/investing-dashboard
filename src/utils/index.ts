@@ -290,6 +290,8 @@ export const calcSlippage = (
 }
 
 export const parseTransactionError = (str: any) => {
+  const DEFAULT_TRANSACTION_ERROR = "Unpredictable transaction error"
+
   try {
     // parse string error
     if (typeof str === "string") {
@@ -298,11 +300,11 @@ export const parseTransactionError = (str: any) => {
       const cutString = str.substring(position + 10)
 
       const matches = cutString.match(/"(.*?)"/)
-      return matches ? matches[1] : ""
+      return matches ? matches[1] : DEFAULT_TRANSACTION_ERROR
     }
 
     if (typeof str !== "object") {
-      return "Unpredictable transaction error"
+      return DEFAULT_TRANSACTION_ERROR
     }
 
     if (
@@ -318,7 +320,7 @@ export const parseTransactionError = (str: any) => {
       return str.data.message
     }
   } catch (e) {
-    return "Unpredictable transaction error"
+    return DEFAULT_TRANSACTION_ERROR
   }
 }
 

@@ -9,6 +9,11 @@ export const Container = styled(GradientBorder)`
   align-items: center;
   height: fit-content;
   border-radius: 15px;
+  margin-top: 16px;
+
+  &:after {
+    background: #181e2c;
+  }
 `
 
 export const WhiteText = styled.div`

@@ -1,6 +1,5 @@
 import {
   Dispatch,
-  ReactNode,
   SetStateAction,
   useCallback,
   useEffect,
@@ -27,6 +26,7 @@ import { getDividedBalance } from "utils/formulas"
 import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
 import useAlert, { AlertType } from "hooks/useAlert"
+import { ExchangeForm } from "constants/interfaces_v2"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -51,28 +51,13 @@ interface UseInvestResponse {
   handleSubmit: () => void
 }
 
-interface FormElement {
-  address: string | undefined
-  amount: string
-  balance: BigNumber
-  symbol?: string
-  decimals?: number
-  icon?: ReactNode
-  price: BigNumber
-}
-
-interface Form {
-  from: FormElement
-  to: FormElement
-}
-
 // useInvest hook posibilities
 // @param poolAddress: string
 // @param direction: deposit | withdraw
 const useInvest = ({
   poolAddress,
   initialDirection,
-}: UseInvestProps): [Form, UseInvestResponse] => {
+}: UseInvestProps): [ExchangeForm, UseInvestResponse] => {
   const { account, library } = useWeb3React()
   const traderPool = useTraderPool(poolAddress)
   const [leverageInfo, poolInfo] = usePoolContract(poolAddress)
