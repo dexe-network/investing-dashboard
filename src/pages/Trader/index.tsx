@@ -159,15 +159,6 @@ function Trader(props: Props) {
               child: (
                 <>
                   <ProfitLossChart address={poolAddress} />
-                  <ChartPeriods>
-                    <Period active>D</Period>
-                    <Period>W</Period>
-                    <Period>M</Period>
-                    <Period>3M</Period>
-                    <Period>6M</Period>
-                    <Period>1Y</Period>
-                    <Period>ALL</Period>
-                  </ChartPeriods>
                   <BarChart />
                   <Row>
                     <TextGrey>P&L LP - $ETH</TextGrey>
