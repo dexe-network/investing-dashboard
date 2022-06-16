@@ -79,7 +79,7 @@ const FundDetailsCard: FC<Props> = ({ data, poolInfo }) => {
     const dif = total.sub(used)
 
     const percent = percentage(
-      Number(ethers.utils.formatEther(dif)).toFixed(2),
+      Number(ethers.utils.formatEther(used)).toFixed(2),
       Number(ethers.utils.formatEther(total)).toFixed(2)
     )
 
