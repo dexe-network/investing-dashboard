@@ -8,6 +8,7 @@ import { expandTimestamp, formatBigNumber } from "utils"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import Emission from "components/Emission"
+import ReadMore from "components/ReadMore"
 
 import {
   Label,
@@ -115,7 +116,9 @@ const FundDetailsCard: FC<Props> = ({ data, poolInfo, children = null }) => {
           Add a description of your fund for investors.
         </EmptyDescription>
       ) : (
-        <DescriptionText>{description}</DescriptionText>
+        <DescriptionText>
+          <ReadMore content={description} />
+        </DescriptionText>
       )}
       <Label>Fund strategy</Label>
       {!strategy ? (
@@ -123,7 +126,9 @@ const FundDetailsCard: FC<Props> = ({ data, poolInfo, children = null }) => {
           Add a strategy of your fund for investors.
         </EmptyDescription>
       ) : (
-        <DescriptionText>{strategy}</DescriptionText>
+        <DescriptionText>
+          <ReadMore content={strategy} />
+        </DescriptionText>
       )}
 
       {!emission.unlimited && (
