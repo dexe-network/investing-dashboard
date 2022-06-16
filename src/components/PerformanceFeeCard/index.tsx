@@ -17,7 +17,7 @@ interface Props {
   p?: string
 }
 
-const FundDetailsCard: FC<Props> = ({
+const PerformanceFeeCard: FC<Props> = ({
   performanceFeePercent,
   commisionUnlockTime,
   isPerformanceFeeExist,
@@ -67,4 +67,4 @@ const FundDetailsCard: FC<Props> = ({
   )
 }
 
-export default FundDetailsCard
+export default PerformanceFeeCard
