@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react"
-import { Flex, Center } from "theme"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { GuardSpinner } from "react-spinners-kit"
 import { useWeb3React } from "@web3-react/core"
 import { createClient, Provider as GraphProvider } from "urql"
+import { ethers } from "ethers"
 
+import { Flex, Center } from "theme"
 import Button, { SecondaryButton } from "components/Button"
 import MemberMobile from "components/MemberMobile"
 import FundDetailsCard from "components/FundDetailsCard"
@@ -15,10 +16,12 @@ import Header from "components/Header/Layout"
 import { Profiles } from "components/Header/Components"
 import Pools from "components/Header/Pools"
 import AreaChart from "components/AreaChart"
+import PerformanceFeeCard from "components/PerformanceFeeCard"
 import BarChart from "pages/Investor/Bar"
 import IconButton from "components/IconButton"
 import pencil from "assets/icons/pencil.svg"
 
+import { formatBigNumber } from "utils"
 import { IDetailedChart } from "constants/interfaces"
 import { usePoolQuery, usePoolContract, useTraderPool } from "hooks/usePool"
 
@@ -100,6 +103,10 @@ function Trader(props: Props) {
     poolType: string
   }>()
 
+  const [commisionUnlockTime, setCommisionUnlockTime] = useState<number>(0)
+  const [isPerformanceFeeExist, setPerformanceFeeExist] =
+    useState<boolean>(false)
+
   useEffect(() => {
     localStorage.setItem(`last-visited-profile-${account}`, pathname)
   }, [pathname, account])
@@ -113,6 +120,12 @@ function Trader(props: Props) {
     navigate("/me/investor")
   }, [navigate])
 
+  const commissionPercentage = useMemo((): number | string => {
+    if (!poolInfoData) return "0"
+
+    return formatBigNumber(poolInfoData?.parameters.commissionPercentage, 25, 0)
+  }, [poolInfoData])
+
   useEffect(() => {
     if (!traderPool || !account) return
     ;(async () => {
@@ -120,6 +133,35 @@ function Trader(props: Props) {
       if (!isAdmin) redirectToInvestor()
     })()
   }, [traderPool, account, redirectToInvestor])
+
+  useEffect((): void => {
+    if (!traderPool) return
+    ;(async () => {
+      const investors = await traderPool?.totalInvestors()
+
+      const limit = +ethers.utils.formatEther(investors) + 1
+      const res = await traderPool?.getUsersInfo(0, limit)
+
+      const commisionTime = ethers.utils.formatEther(
+        res[0].commissionUnlockTimestamp
+      )
+      setCommisionUnlockTime(Number(commisionTime))
+    })()
+  }, [traderPool])
+
+  useEffect((): void => {
+    if (!traderPool) return
+    ;(async () => {
+      setPerformanceFeeExist
+      const investors = await traderPool?.totalInvestors()
+
+      const limit = +ethers.utils.formatEther(investors) + 1
+      const fees = await traderPool?.getReinvestCommissions(0, limit)
+
+      const commission = formatBigNumber(fees.traderBaseCommission, 18, 0)
+      setPerformanceFeeExist(Number(commission) > 0)
+    })()
+  }, [traderPool])
 
   const body = !poolData ? (
     <Center>
@@ -239,7 +281,16 @@ function Trader(props: Props) {
             {
               name: "Details",
               child: (
-                <FundDetailsCard poolInfo={poolInfoData} data={poolData} />
+                <FundDetailsCard poolInfo={poolInfoData} data={poolData}>
+                  <PerformanceFeeCard
+                    performanceFeePercent={commissionPercentage}
+                    commisionUnlockTime={commisionUnlockTime}
+                    isPerformanceFeeExist={isPerformanceFeeExist}
+                    poolAddress={poolAddress}
+                    poolType={poolType}
+                    p="15px 0 0"
+                  />
+                </FundDetailsCard>
               ),
             },
           ]}

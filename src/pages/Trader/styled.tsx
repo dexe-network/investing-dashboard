@@ -1,12 +1,11 @@
 import styled from "styled-components"
 import { Flex, GradientBorder, Text } from "theme"
-import IconButton from "components/IconButton"
 
 export const Container = styled(Flex)`
   width: 100%;
   padding: 16px 16px 80px;
   flex-direction: column;
-  justify-cotnent: flex-start;
+  justify-content: flex-start;
   max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;

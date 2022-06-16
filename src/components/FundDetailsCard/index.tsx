@@ -1,5 +1,6 @@
-import { FC, useState, useEffect, useMemo } from "react"
+import { FC, ReactNode, useState, useEffect, useMemo } from "react"
 import { ethers } from "ethers"
+import { format } from "date-fns"
 
 import { useERC20 } from "hooks/useContract"
 import { IPoolQuery, PoolInfo } from "constants/interfaces_v2"
@@ -15,7 +16,6 @@ import {
   InfoRow,
   EmptyDescription,
 } from "./styled"
-import { format } from "date-fns"
 
 function percentage(used, total) {
   return (used / total) * 100
@@ -29,9 +29,10 @@ const fundTypes = {
 interface Props {
   data: IPoolQuery
   poolInfo: PoolInfo | null
+  children?: ReactNode | null
 }
 
-const FundDetailsCard: FC<Props> = ({ data, poolInfo }) => {
+const FundDetailsCard: FC<Props> = ({ data, poolInfo, children = null }) => {
   const [description, setDescription] = useState("")
   const [strategy, setStrategy] = useState("")
   const [, baseData] = useERC20(data.baseToken)
@@ -140,15 +141,7 @@ const FundDetailsCard: FC<Props> = ({ data, poolInfo }) => {
       {emission.unlimited && (
         <InfoRow label={"Emission"} value={emission.value} />
       )}
-
-      <InfoRow
-        label={"Performance Fee"}
-        value={`${formatBigNumber(
-          poolInfo?.parameters.commissionPercentage,
-          25,
-          0
-        )}%`}
-      />
+      {children}
     </Container>
   )
 }
