@@ -1,4 +1,4 @@
-import { FC, useMemo, useCallback } from "react"
+import { FC, useMemo } from "react"
 import { format } from "date-fns"
 
 import { expandTimestamp } from "utils"
@@ -13,7 +13,6 @@ interface Props {
   commisionUnlockTime?: number
   isPerformanceFeeExist: boolean
   poolAddress?: string
-  poolType?: string
   p?: string
 }
 
@@ -22,7 +21,6 @@ const PerformanceFeeCard: FC<Props> = ({
   commisionUnlockTime,
   isPerformanceFeeExist,
   poolAddress,
-  poolType,
   p = "0",
 }) => {
   const navigate = useNavigate()
@@ -35,13 +33,11 @@ const PerformanceFeeCard: FC<Props> = ({
     return "-"
   }, [commisionUnlockTime])
 
-  const handleCommissionRedirect = useCallback(() => {
-    if (isPerformanceFeeExist && poolType && poolAddress) {
-      navigate(`/commission/${poolType}/${poolAddress}`)
-    }
-  }, [isPerformanceFeeExist, navigate, poolAddress, poolType])
+  const handleCommissionRedirect = () => {
+    navigate(`/fund-details/${poolAddress}/fee`)
+  }
 
-  const button = useMemo(() => {
+  const button = () => {
     if (isPerformanceFeeExist) {
       return (
         <Button onClick={handleCommissionRedirect} m="0" size="small">
@@ -57,11 +53,11 @@ const PerformanceFeeCard: FC<Props> = ({
         </SecondaryButton>
       )
     }
-  }, [handleCommissionRedirect, isPerformanceFeeExist, performanceFeePercent])
+  }
 
   return (
     <Container full p={p}>
-      {button}
+      {button()}
       <ValueLabel>{commisionUnlockDate}</ValueLabel>
     </Container>
   )
