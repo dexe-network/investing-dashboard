@@ -1,5 +1,6 @@
 import styled from "styled-components"
 import { Flex, GradientBorder, Text } from "theme"
+import ArrowOutlineRight from "assets/icons/ArrowOutlineRight"
 
 export const Container = styled(Flex)`
   width: 100%;
@@ -193,3 +194,48 @@ export const DetailsEditLinkFrame = styled(Flex)`
   right: 8px;
   z-index: 2;
 `
+
+export const OwnInvesting = styled(GradientBorder)`
+  padding: 16px;
+  border-radius: 10px;
+  width: 100%;
+
+  &:after {
+    background: #181e2c;
+  }
+`
+export const OwnInvestingLabel = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #788ab4;
+`
+export const OwnInvestingValue = styled.div`
+  margin-top: 8px;
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 19px;
+  color: #e4f2ff;
+`
+export const OwnInvestingLinkContainer = styled(Flex)`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+  color: #e4f2ff;
+`
+export const OwnInvestingLinkText = styled.span`
+  display: inline-block;
+  margin-right: 9px;
+`
+export const OwnInvestingLink = (props) => (
+  <OwnInvestingLinkContainer {...props}>
+    <OwnInvestingLinkText>Invest in my fund</OwnInvestingLinkText>
+    <ArrowOutlineRight color="#e4f2ff" width="4.7px" height="8px" />
+  </OwnInvestingLinkContainer>
+)
