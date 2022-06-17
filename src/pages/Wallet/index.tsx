@@ -262,7 +262,12 @@ export default function Wallet() {
         exit={{ opacity: 0, y: -15 }}
         transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        <Cards>
+        <Cards
+          animate={{
+            opacity: txListExpanded ? 0 : 1,
+            transition: { duration: txListExpanded ? 0.2 : 0.4 },
+          }}
+        >
           <User>
             <Info>
               <AvatarWrapper>

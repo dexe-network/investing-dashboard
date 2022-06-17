@@ -1,9 +1,17 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react"
 import { disableBodyScroll, clearAllBodyScrollLocks } from "body-scroll-lock"
 
 import { useActiveWeb3React } from "hooks"
 import { TransactionDetails, TransactionType } from "state/transactions/types"
 
+import { getSlideTopVariants } from "motion/variants"
 import Invest from "assets/icons/Invest"
 import Withdraw from "assets/icons/Withdraw"
 import Swap from "assets/icons/Swap"
@@ -51,6 +59,10 @@ const TransactionHistory: React.FC<IProps> = ({
   const [initialTop, setInitialTop] = useState<number>(0)
   const toggleExpanded = () => setExpanded(!expanded)
 
+  const variants = useMemo(() => {
+    return getSlideTopVariants(window.innerHeight - initialTop)
+  }, [initialTop])
+
   useEffect(() => {
     if (!scrollRef.current) return
     disableBodyScroll(scrollRef.current)
@@ -78,26 +90,20 @@ const TransactionHistory: React.FC<IProps> = ({
 
   return (
     <Container>
-      <Heading ref={titleRef}>Transactions History</Heading>
-      <Content
-        style={{
-          background: "linear-gradient(64.44deg, #0c1017 32.35%, #181d26 100%)",
+      <Heading
+        animate={{
+          opacity: expanded ? 0 : 1,
+          transition: { duration: expanded ? 0.1 : 0.4 },
         }}
+        ref={titleRef}
+      >
+        Transactions History
+      </Heading>
+      <Content
         animate={expanded ? "visible" : "hidden"}
         initial="hidden"
-        transition={{ duration: 0.4 }}
-        variants={{
-          visible: {
-            top: 55,
-            height: "100vh",
-          },
-          hidden: {
-            top: "initial",
-            height: window.innerHeight - initialTop,
-
-            transitionEnd: { background: "transparent" },
-          },
-        }}
+        transition={{ duration: 0.2 }}
+        variants={variants}
       >
         <Header>
           <HeaderButton

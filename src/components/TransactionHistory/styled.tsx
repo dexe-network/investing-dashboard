@@ -8,7 +8,7 @@ export const Container = styled.div`
   flex: 1;
 `
 
-export const Heading = styled.div`
+export const Heading = styled(motion.div)`
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
@@ -27,7 +27,6 @@ export const Content = styled(motion.div)`
   left: 0;
   right: 0;
   z-index: 90;
-  background: linear-gradient(64.44deg, #0c1017 32.35%, #181d26 100%);
 `
 
 export const Header = styled(Flex)`
