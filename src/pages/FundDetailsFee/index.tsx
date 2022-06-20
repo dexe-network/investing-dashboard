@@ -18,6 +18,9 @@ import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import Icon from "components/Icon"
 import Button from "components/Button"
 import ProfitLossChart from "components/ProfitLossChart"
+import Accordion from "components/Accordion"
+import Amount from "components/Amount"
+import AmountRow from "components/Amount/Row"
 
 import { Flex } from "theme"
 import {
@@ -94,8 +97,7 @@ const FundDetailsFee: FC = () => {
       <Container>
         <FeeDateCard>
           <FeeDateText>
-            Performance Fee {commissionPercentage}% are available from Jun
-            12,2022
+            Performance Fee {commissionPercentage}% are available from -
           </FeeDateText>
         </FeeDateCard>
 
@@ -124,6 +126,58 @@ const FundDetailsFee: FC = () => {
           </Flex>
 
           <ProfitLossChart address={poolAddress} />
+
+          <Flex full dir="column">
+            <AmountRow
+              title="Funds under management"
+              value="1,000"
+              symbol="DEXE"
+            />
+            <Accordion
+              title="Fund Profit (Without your funds)"
+              value="11.870"
+              symbol="USD"
+              m="8px 0 0"
+            >
+              <Flex full dir="column" ai="flex-end">
+                <Amount value={"1,187.4"} symbol={"DEXE"} />
+                <Amount value={"118,74 %"} m="4px 0 0" />
+              </Flex>
+            </Accordion>
+            <Accordion
+              title="Platform Fee"
+              value="1,068.66"
+              symbol="USD"
+              m="8px 0 0"
+            >
+              <Flex full dir="column" ai="flex-end">
+                <Amount value={"106,86"} symbol={"ISDX"} />
+                <Amount value={"30 %"} m="4px 0 0" />
+              </Flex>
+            </Accordion>
+            <Accordion
+              title="Perfomance Fee"
+              value="2,493.54"
+              symbol="USD"
+              m="8px 0 0"
+            >
+              <Flex full dir="column" ai="flex-end">
+                <Amount value={"249.36"} symbol={"ISDX"} />
+                <Amount value={"30 %"} m="4px 0 0" />
+              </Flex>
+            </Accordion>
+            <Accordion
+              title="Net Investor Profit"
+              value="8,309"
+              symbol="USD"
+              m="8px 0 0"
+            >
+              <Flex full dir="column" ai="flex-end">
+                <Amount value={"839"} symbol={"DEXE"} />
+                <Amount value={"53,11 %"} m="4px 0 0" />
+              </Flex>
+            </Accordion>
+          </Flex>
 
           <Flex full m="24px 0 0">
             <Button onClick={onPerformanceFeeRequest} full size="large">

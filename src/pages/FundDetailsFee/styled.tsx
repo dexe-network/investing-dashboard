@@ -12,10 +12,10 @@ export const Container = styled.div`
   width: fill-available;
   background: #0e121b;
 
-  height: calc(100vh - 94px);
+  height: calc(100vh - 128px);
 
   @media all and (display-mode: standalone) {
-    height: calc(100vh - 115px);
+    height: calc(100vh - 149px);
   }
 `
 
