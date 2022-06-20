@@ -35,6 +35,7 @@ interface IToProps {
   decimal?: number
   priceImpact?: string
   customIcon?: ReactNode
+  customPrice?: ReactNode
   isLocked?: boolean
   onChange?: (amount: string) => void
   onSelect?: () => void
@@ -49,6 +50,7 @@ const ExchangeInput: React.FC<IToProps> = ({
   decimal,
   priceImpact,
   customIcon,
+  customPrice,
   isLocked,
   onChange,
   onSelect,
@@ -91,10 +93,14 @@ const ExchangeInput: React.FC<IToProps> = ({
   return (
     <InputContainer>
       <InputTop>
-        <Price>
-          ≈${formatBigNumber(price, 18, 2)}{" "}
-          {priceImpact && <>({priceImpact}%)</>}
-        </Price>
+        {customPrice ? (
+          customPrice
+        ) : (
+          <Price>
+            ≈${formatBigNumber(price, 18, 2)}{" "}
+            {priceImpact && <>({priceImpact}%)</>}
+          </Price>
+        )}
 
         <Balance onClick={setMaxAmount}>
           <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>

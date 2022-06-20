@@ -34,7 +34,7 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
             {point.label}
           </PercentButton>
           {index + 1 === buttonsList.length / 2 && (
-            <SwapButton onClick={changeDirection}>
+            <SwapButton onClick={() => changeDirection()}>
               <Icon
                 variants={rotateVariants}
                 animate={direction === "deposit" ? "hidden" : "visible"}

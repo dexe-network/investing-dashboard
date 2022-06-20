@@ -475,7 +475,7 @@ function InvestRiskyProposal() {
     <Card>
       <CardHeader>
         <Flex>
-          <Title>Swap</Title>
+          <Title active>Swap</Title>
         </Flex>
         <IconsGroup>
           <CircularProgress />

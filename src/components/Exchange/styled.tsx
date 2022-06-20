@@ -272,16 +272,16 @@ export const CardHeader = styled(Flex)`
   padding: 4px 0 24px;
 `
 
-export const Title = styled.div`
+export const Title = styled.div<{ active?: boolean }>`
   font-family: "Gilroy";
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 16px;
-  color: #e4f2ff;
+  color: ${(props) => (props.active ? "#e4f2ff" : "#788AB4")};
 
   &:nth-child(2) {
-    margin-left: 19px;
+    margin-left: 24px;
   }
 `
 

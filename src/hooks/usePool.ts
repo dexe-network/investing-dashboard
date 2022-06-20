@@ -52,6 +52,7 @@ export function usePoolContract(
         const leverage = await traderPool?.getLeverageInfo()
         const poolInfo = await traderPool?.getPoolInfo()
 
+        console.log(poolInfo.traderUSD.toString())
         setPoolInfo(poolInfo)
         setLeverageInfo(leverage)
       } catch (e) {

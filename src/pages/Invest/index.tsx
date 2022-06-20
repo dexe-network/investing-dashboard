@@ -118,7 +118,7 @@ const Invest = () => {
   const form = (
     <Card>
       <CardHeader>
-        <Title>Swap</Title>
+        <Title active>Swap</Title>
         <IconsGroup>
           <CircularProgress />
           <IconButton

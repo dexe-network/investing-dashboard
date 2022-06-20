@@ -15,6 +15,10 @@ export const PriceCard = styled(GradientBorder)`
   width: 100%;
   border-radius: 15px;
   margin: 16px 0;
+
+  &:after {
+    background: #181e2c;
+  }
 `
 
 export const Label = styled.div`
@@ -47,4 +51,19 @@ export const Row = styled(Flex)`
     margin-bottom: 0;
     padding-right: 6px;
   }
+`
+
+export const InsuranceAmount = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 13px;
+  color: #788ab4;
+  padding-right: 4px;
+`
+
+export const MultiplierIcon = styled.img`
+  width: 35px;
+  height: 16px;
 `
