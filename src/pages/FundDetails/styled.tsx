@@ -15,11 +15,12 @@ export const Container = styled(motion.div).attrs(() => ({
 }))`
   margin: 0 auto;
   width: fill-available;
-  height: calc(100vh - 94px);
   overflow-y: auto;
   background-color: #040a0f;
 
+  height: calc(100vh - 128px);
+
   @media all and (display-mode: standalone) {
-    height: calc(100vh - 115px);
+    height: calc(100vh - 149px);
   }
 `

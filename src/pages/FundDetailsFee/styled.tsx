@@ -8,14 +8,13 @@ import dexePlaceholder from "assets/icons/dexe-placeholder.svg"
 
 export const Container = styled.div`
   position: relative;
-  padding: 16px 16px 0;
+  padding: 16px;
   width: fill-available;
   background: #0e121b;
 
-  height: calc(100vh - 128px);
-
+  height: initial;
   @media all and (display-mode: standalone) {
-    height: calc(100vh - 149px);
+    height: initial;
   }
 `
 
@@ -25,7 +24,7 @@ export const FeeDateCard = styled(Flex)`
   position: relative;
   width: 100%;
   padding: 24px 15px;
-  margin: 16px 0;
+  margin: 0 0 16px 0;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
   border: 1px solid #2f3c3a;
