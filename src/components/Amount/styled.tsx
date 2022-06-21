@@ -9,6 +9,7 @@ export const Container = styled(Flex)<IAmountStyle>`
   font-style: normal;
   font-size: ${(props) => props.fz ?? "13px"};
   line-height: ${(props) => props.lh ?? "16px"};
+  justify-content: ${(props) => props.jc ?? "initial"};
 `
 
 export const Value = styled.div`
