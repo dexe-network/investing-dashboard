@@ -3,16 +3,11 @@ import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { ethers } from "ethers"
-import { useDispatch } from "react-redux"
 
-import { expandTimestamp, formatBigNumber } from "utils"
-import { parsePoolData } from "utils/ipfs"
+import { formatBigNumber } from "utils"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
-import { useAddToast } from "state/application/hooks"
 import { TraderPool } from "abi"
-import { useTransactionAdder } from "state/transactions/hooks"
-import { TransactionType } from "state/transactions/types"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import Icon from "components/Icon"
@@ -39,13 +34,13 @@ const poolsClient = createClient({
 })
 
 const FundDetailsFee: FC = () => {
-  const dispatch = useDispatch()
   const { poolAddress } = useParams()
   const { account } = useWeb3React()
 
   const [poolData] = usePoolQuery(poolAddress)
   const [, poolInfoData] = usePoolContract(poolAddress)
-  const [, baseData] = useERC20(poolData?.baseToken)
+  const [, baseToken] = useERC20(poolData?.baseToken)
+
   const traderPool = useContract(poolData?.id, TraderPool)
 
   const [{ poolMetadata }] = usePoolMetadata(
@@ -53,12 +48,26 @@ const FundDetailsFee: FC = () => {
     poolInfoData?.parameters.descriptionURL
   )
 
-  console.log("poolData", poolData)
-  console.log("poolInfoData", poolInfoData)
-  console.log("baseData", baseData)
+  const [platformCommissionBase, setPlatformCommissionBase] = useState("0")
+  const [traderCommissionBase, setTraderCommissionBase] = useState("0")
 
-  const addTransaction = useTransactionAdder()
-  const addToast = useAddToast()
+  console.groupCollapsed("poolData")
+  console.log("Subgraph poolData", poolData)
+  console.log("Contranct getPoolInfo", poolInfoData)
+  console.groupEnd()
+
+  const fundsUnderManagement = useMemo(() => {
+    if (!poolInfoData) return "0"
+
+    const { totalPoolBase, traderBase } = poolInfoData
+
+    const _totalPoolBase = ethers.FixedNumber.fromValue(totalPoolBase, 18)
+    const _traderBase = ethers.FixedNumber.fromValue(traderBase, 18)
+
+    const result = _totalPoolBase.subUnsafe(_traderBase)
+
+    return formatBigNumber(ethers.BigNumber.from(result), 18, 6)
+  }, [poolInfoData])
 
   const commissionPercentage = useMemo(() => {
     if (!poolInfoData) return "0"
@@ -79,14 +88,47 @@ const FundDetailsFee: FC = () => {
   }, [poolInfoData])
 
   const baseTokenSymbol = useMemo(() => {
-    if (!baseData) return ""
+    if (!baseToken) return ""
 
-    return baseData.symbol
-  }, [baseData])
+    return baseToken.symbol
+  }, [baseToken])
 
+  /**
+   * Get the trader commission for the pool
+   */
   const onPerformanceFeeRequest = () => {
     console.log("Request Performance Fee")
   }
+
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      try {
+        const commissions = await traderPool.getReinvestCommissions(0, 1)
+
+        if (commissions.dexeBaseCommission) {
+          const platformCommission = formatBigNumber(
+            commissions.dexeBaseCommission,
+            18,
+            6
+          )
+          setPlatformCommissionBase(platformCommission)
+        }
+
+        if (commissions.traderBaseCommission) {
+          const traderCommission = formatBigNumber(
+            commissions.traderBaseCommission,
+            18,
+            6
+          )
+
+          setTraderCommissionBase(traderCommission)
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [traderPool])
 
   if (!poolData || !poolInfoData || !poolMetadata) {
     return <PageLoading />
@@ -130,8 +172,8 @@ const FundDetailsFee: FC = () => {
           <Flex full dir="column">
             <AmountRow
               title="Funds under management"
-              value="1,000"
-              symbol="DEXE"
+              value={fundsUnderManagement}
+              symbol={baseTokenSymbol}
             />
             <Accordion
               title="Fund Profit (Without your funds)"
@@ -151,7 +193,10 @@ const FundDetailsFee: FC = () => {
               m="8px 0 0"
             >
               <Flex full dir="column" ai="flex-end">
-                <Amount value={"106,86"} symbol={"ISDX"} />
+                <Amount
+                  value={platformCommissionBase}
+                  symbol={baseTokenSymbol}
+                />
                 <Amount value={"30 %"} m="4px 0 0" />
               </Flex>
             </Accordion>
@@ -162,8 +207,8 @@ const FundDetailsFee: FC = () => {
               m="8px 0 0"
             >
               <Flex full dir="column" ai="flex-end">
-                <Amount value={"249.36"} symbol={"ISDX"} />
-                <Amount value={"30 %"} m="4px 0 0" />
+                <Amount value={traderCommissionBase} symbol={baseTokenSymbol} />
+                <Amount value={`${commissionPercentage} %`} m="4px 0 0" />
               </Flex>
             </Accordion>
             <Accordion
