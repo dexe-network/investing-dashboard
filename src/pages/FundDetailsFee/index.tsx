@@ -1,14 +1,16 @@
-import { FC, useState, useEffect, useMemo, useCallback } from "react"
+import { FC, useState, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { ethers } from "ethers"
+import { useSelector } from "react-redux"
 
 import { formatBigNumber } from "utils"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 import useContract, { useERC20 } from "hooks/useContract"
-import { TraderPool } from "abi"
+import { TraderPool, PriceFeed } from "abi"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
+import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import Icon from "components/Icon"
 import Button from "components/Button"
@@ -43,6 +45,9 @@ const FundDetailsFee: FC = () => {
 
   const traderPool = useContract(poolData?.id, TraderPool)
 
+  const priceFeedAddress = useSelector(selectPriceFeedAddress)
+  const priceFeed = useContract(priceFeedAddress, PriceFeed)
+
   const [{ poolMetadata }] = usePoolMetadata(
     poolAddress,
     poolInfoData?.parameters.descriptionURL
@@ -50,13 +55,14 @@ const FundDetailsFee: FC = () => {
 
   const [platformCommissionBase, setPlatformCommissionBase] = useState("0")
   const [traderCommissionBase, setTraderCommissionBase] = useState("0")
+  const [fundsUnderManagementDexe, setFundsUnderManagementDexe] = useState("0")
 
   console.groupCollapsed("poolData")
   console.log("Subgraph poolData", poolData)
   console.log("Contranct getPoolInfo", poolInfoData)
   console.groupEnd()
 
-  const fundsUnderManagement = useMemo(() => {
+  const fundsUnderManagementBase = useMemo(() => {
     if (!poolInfoData) return "0"
 
     const { totalPoolBase, traderBase } = poolInfoData
@@ -66,7 +72,7 @@ const FundDetailsFee: FC = () => {
 
     const result = _totalPoolBase.subUnsafe(_traderBase)
 
-    return formatBigNumber(ethers.BigNumber.from(result), 18, 6)
+    return ethers.BigNumber.from(result)
   }, [poolInfoData])
 
   const commissionPercentage = useMemo(() => {
@@ -130,6 +136,29 @@ const FundDetailsFee: FC = () => {
     })()
   }, [traderPool])
 
+  useEffect(() => {
+    if (!priceFeed) return
+    if (!baseToken || !baseToken.address) return
+    if (fundsUnderManagementBase === "0") return
+    ;(async () => {
+      try {
+        const _fundsUnderManagementDexe =
+          await priceFeed.getNormalizedPriceOutDEXE(
+            baseToken.address,
+            fundsUnderManagementBase.toString()
+          )
+
+        if (_fundsUnderManagementDexe && _fundsUnderManagementDexe.amountOut) {
+          setFundsUnderManagementDexe(
+            formatBigNumber(_fundsUnderManagementDexe.amountOut, 18, 3)
+          )
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [baseToken, fundsUnderManagementBase, priceFeed])
+
   if (!poolData || !poolInfoData || !poolMetadata) {
     return <PageLoading />
   }
@@ -172,8 +201,8 @@ const FundDetailsFee: FC = () => {
           <Flex full dir="column">
             <AmountRow
               title="Funds under management"
-              value={fundsUnderManagement}
-              symbol={baseTokenSymbol}
+              value={fundsUnderManagementDexe}
+              symbol="DEXE"
             />
             <Accordion
               title="Fund Profit (Without your funds)"
