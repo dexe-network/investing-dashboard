@@ -11,6 +11,9 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { TraderPool, PriceFeed } from "abi"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
+import useWithdrawalHistory from "hooks/useWithdrawalHistory"
+
+import { Flex } from "theme"
 
 import Icon from "components/Icon"
 import Button from "components/Button"
@@ -19,7 +22,8 @@ import Accordion from "components/Accordion"
 import Amount from "components/Amount"
 import AmountRow from "components/Amount/Row"
 
-import { Flex } from "theme"
+import WithdrawalHistory from "./WithdrawalHistory"
+
 import {
   PageLoading,
   Container,
@@ -56,6 +60,8 @@ const FundDetailsFee: FC = () => {
   const [platformCommissionBase, setPlatformCommissionBase] = useState("0")
   const [traderCommissionBase, setTraderCommissionBase] = useState("0")
   const [fundsUnderManagementDexe, setFundsUnderManagementDexe] = useState("0")
+
+  const withdrawalHistory = useWithdrawalHistory()
 
   console.groupCollapsed("poolData")
   console.log("Subgraph poolData", poolData)
@@ -259,6 +265,10 @@ const FundDetailsFee: FC = () => {
             </Button>
           </Flex>
         </MainCard>
+
+        <Flex dir="column" full m="40px 0 0">
+          <WithdrawalHistory payload={withdrawalHistory} />
+        </Flex>
       </Container>
     </>
   )

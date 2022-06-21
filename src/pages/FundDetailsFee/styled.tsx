@@ -2,19 +2,21 @@ import styled from "styled-components"
 import { RotateSpinner } from "react-spinners-kit"
 
 import { Flex, GradientBorder } from "theme"
-
 import insuranceBG from "assets/background/insurance-card.svg"
 import dexePlaceholder from "assets/icons/dexe-placeholder.svg"
 
-export const Container = styled.div`
+export const Container = styled.div<{ loading?: boolean }>`
   position: relative;
   padding: 16px;
   width: fill-available;
   background: #0e121b;
 
-  height: initial;
+  height: ${({ loading = false }) =>
+    loading ? "calc(100vh - 128px)" : "initial"};
+
   @media all and (display-mode: standalone) {
-    height: initial;
+    height: ${({ loading = false }) =>
+      loading ? "calc(100vh - 149px)" : "initial"};
   }
 `
 
@@ -69,7 +71,7 @@ export const LoadingContent = styled(Flex)`
 `
 
 export const PageLoading = () => (
-  <Container>
+  <Container loading>
     <LoadingContent full ai="center" jc="center" m="auto">
       <RotateSpinner />
     </LoadingContent>
@@ -110,3 +112,52 @@ export const MainCardDescription = styled.div<{ m?: string }>`
 export const MainCardHeaderRight = styled.div`
   text-align: right;
 `
+
+// WITHDRAWAL HISTORY
+
+export const WithdrawalHistoryStyled = {
+  Title: styled.div`
+    width: 100%;
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    text-align: center;
+    color: #e4f2ff;
+  `,
+  List: styled(GradientBorder)`
+    width: 100%;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 15px;
+    flex-direction: column;
+
+    &:after {
+      background: #0f1421;
+    }
+  `,
+
+  ListHeader: styled.div`
+    display: grid;
+    grid-template-columns: 33% 35.7% 1fr;
+    width: 100%;
+    margin-bottom: 2px;
+  `,
+  ListHeaderItem: styled(Flex)`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: #788ab4;
+
+    /* &:nth-child(1) {
+      width: 28%;
+    } */
+
+    &:nth-child(2) {
+      text-align: center;
+    }
+  `,
+}
