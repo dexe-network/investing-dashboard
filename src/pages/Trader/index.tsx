@@ -42,6 +42,10 @@ import {
   TextGrey,
   FundsUsed,
   DetailsEditLinkFrame,
+  OwnInvesting,
+  OwnInvestingLabel,
+  OwnInvestingValue,
+  OwnInvestingLink,
 } from "./styled"
 
 const pnlNew: IDetailedChart[] = [
@@ -106,6 +110,7 @@ function Trader(props: Props) {
   const [commisionUnlockTime, setCommisionUnlockTime] = useState<number>(0)
   const [isPerformanceFeeExist, setPerformanceFeeExist] =
     useState<boolean>(false)
+  const [ownInvestUsd, setOwnInvestUsd] = useState<string>("0")
 
   useEffect(() => {
     localStorage.setItem(`last-visited-profile-${account}`, pathname)
@@ -119,6 +124,10 @@ function Trader(props: Props) {
   const redirectToInvestor = useCallback(() => {
     navigate("/me/investor")
   }, [navigate])
+
+  const handleBuyRedirect = () => {
+    navigate(`/pool/invest/${poolData?.id}`)
+  }
 
   const commissionPercentage = useMemo((): number | string => {
     if (!poolInfoData) return "0"
@@ -160,6 +169,15 @@ function Trader(props: Props) {
 
       const commission = formatBigNumber(fees.traderBaseCommission, 18, 0)
       setPerformanceFeeExist(Number(commission) > 0)
+    })()
+  }, [traderPool])
+
+  useEffect((): void => {
+    if (!traderPool) return
+    ;(async () => {
+      const poolInfo = await traderPool?.getPoolInfo()
+
+      setOwnInvestUsd(formatBigNumber(poolInfo.traderUSD, 18, 3))
     })()
   }, [traderPool])
 
@@ -254,6 +272,14 @@ function Trader(props: Props) {
           ]}
         />
       </TabCard>
+
+      <OwnInvesting>
+        <Flex dir="column" ai="flex-start">
+          <OwnInvestingLabel>My own investing</OwnInvestingLabel>
+          <OwnInvestingValue>$ {ownInvestUsd}</OwnInvestingValue>
+        </Flex>
+        <OwnInvestingLink onClick={handleBuyRedirect} />
+      </OwnInvesting>
 
       <Details>
         <DetailsEditLinkFrame>
