@@ -53,6 +53,17 @@ export const overlayVariants = {
   },
 }
 
+export const getSlideTopVariants = (hiddenH) => ({
+  visible: {
+    top: 55,
+    height: "100vh",
+  },
+  hidden: {
+    top: "initial",
+    height: hiddenH,
+  },
+})
+
 export default {
   opacityVariants,
   titleVariants,
