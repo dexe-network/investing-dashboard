@@ -36,7 +36,7 @@ import useContract, {
 
 import useAlert, { AlertType } from "hooks/useAlert"
 import { PriceFeed } from "abi"
-import { getDividedBalance, getPriceUSD } from "utils/formulas"
+import { multiplyBignumbers, getPriceUSD } from "utils/formulas"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
@@ -366,8 +366,8 @@ function InvestRiskyProposal() {
     }
   }
 
-  const handlePercentageChange = (percent) => {
-    const from = getDividedBalance(fromBalance, 18, percent)
+  const handlePercentageChange = (percent: BigNumber) => {
+    const from = multiplyBignumbers([fromBalance, 18], [percent, 18])
     handleFromChange(from.toString())
   }
 

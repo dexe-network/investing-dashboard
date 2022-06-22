@@ -20,7 +20,7 @@ import {
   selectPriceFeedAddress,
 } from "state/contracts/selectors"
 
-import { getDividedBalance } from "utils/formulas"
+import { multiplyBignumbers } from "utils/formulas"
 import {
   formatBigNumber,
   getAllowance,
@@ -319,8 +319,13 @@ function Management() {
     approveToken().catch(console.error)
   }
 
-  const handlePercentageChange = (percent) => {
-    const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
+  const handlePercentageChange = (percent: BigNumber) => {
+    if (!fromData) return
+
+    const from = multiplyBignumbers(
+      [fromBalance, fromData.decimals],
+      [percent, 18]
+    )
     handleFromChange(from.toString())
   }
 

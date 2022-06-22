@@ -22,7 +22,7 @@ import {
   isTxMined,
   parseTransactionError,
 } from "utils"
-import { getDividedBalance } from "utils/formulas"
+import { multiplyBignumbers } from "utils/formulas"
 import { TradeType } from "constants/types"
 
 interface UseSwapProps {
@@ -46,7 +46,7 @@ interface UseSwapResponse {
   handleFromChange: (v: string) => void
   handleToChange: (v: string) => void
   handleSubmit: () => void
-  handlePercentageChange: (p: string) => void
+  handlePercentageChange: (p: BigNumber) => void
 }
 
 const useSwap = ({
@@ -166,8 +166,13 @@ const useSwap = ({
   )
 
   const handlePercentageChange = useCallback(
-    (percent) => {
-      const from = getDividedBalance(fromBalance, form.from.decimals, percent)
+    (percent: BigNumber) => {
+      if (!form.from.decimals) return
+
+      const from = multiplyBignumbers(
+        [fromBalance, form.from.decimals],
+        [percent, 18]
+      )
       handleFromChange(from.toString())
     },
     [form.from.decimals, fromBalance, handleFromChange]

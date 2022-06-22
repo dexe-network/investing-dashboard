@@ -228,20 +228,13 @@ export const calcSlippage = (
   decimals: number,
   slippage: number
 ) => {
-  try {
-    const normalizedAmount = ethers.utils.formatUnits(amount, decimals)
-    const normalizedWithSlippage = parseFloat(normalizedAmount) * slippage
+  const a = FixedNumber.fromValue(amount, decimals)
+  const sl = FixedNumber.fromValue(
+    ethers.utils.parseEther(slippage.toString()),
+    18
+  )
 
-    const result = ethers.utils.parseUnits(
-      fixFractionalDecimals(normalizedWithSlippage.toString(), decimals),
-      decimals
-    )
-
-    return result
-  } catch (e) {
-    console.log(e)
-    return amount
-  }
+  return BigNumber.from(a.mulUnsafe(sl)._hex)
 }
 
 export const parseTransactionError = (str: any) => {

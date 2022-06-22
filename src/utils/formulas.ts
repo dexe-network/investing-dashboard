@@ -96,13 +96,22 @@ export const getUSDPrice = (value) => {
 export const getLastInArray = (array) =>
   array.length ? array[array.length - 1] : false
 
-export const getDividedBalance = (
-  balance: BigNumber,
-  decimals: number | undefined = 18,
-  percent: string
+export const multiplyBignumbers = (
+  bn1: [BigNumber, number],
+  bn2: [BigNumber, number]
 ): BigNumber => {
-  const fn = FixedNumber.fromValue(balance, decimals).mulUnsafe(
-    FixedNumber.fromValue(BigNumber.from(percent), 18)
+  const fn = FixedNumber.fromValue(bn1[0], bn1[1]).mulUnsafe(
+    FixedNumber.fromValue(bn2[0], bn2[1])
+  )
+  return BigNumber.from(fn._hex)
+}
+
+export const divideBignumbers = (
+  bn1: [BigNumber, number],
+  bn2: [BigNumber, number]
+): BigNumber => {
+  const fn = FixedNumber.fromValue(bn1[0], bn1[1]).divUnsafe(
+    FixedNumber.fromValue(bn2[0], bn2[1])
   )
   return BigNumber.from(fn._hex)
 }

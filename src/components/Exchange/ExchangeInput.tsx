@@ -114,7 +114,7 @@ const ExchangeInput: React.FC<IToProps> = ({
           onChange={handleInputChange}
           value={amount}
           renderInput={(props: any) => (
-            <Input disabled={!onChange} {...props} />
+            <Input disabled={!onChange} inputMode="decimal" {...props} />
           )}
         />
 

@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { Flex } from "theme"
 import { useParams } from "react-router-dom"
 
@@ -11,6 +12,9 @@ import TransactionSlippage from "components/TransactionSlippage"
 import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
 import TokenIcon from "components/TokenIcon"
+import SwapPrice from "components/SwapPrice"
+
+import { useERC20 } from "hooks/useContract"
 
 import { createClient, Provider as GraphProvider } from "urql"
 import { cutDecimalPlaces, fromBig, shortenAddress } from "utils"
@@ -33,8 +37,6 @@ import {
 } from "components/Exchange/styled"
 
 import useInvest from "./useInvest"
-import { useMemo } from "react"
-import { useERC20 } from "hooks/useContract"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -70,6 +72,9 @@ const Invest = () => {
       isWalletPrompting,
       isSlippageOpen,
       slippage,
+      gasPrice,
+      swapPrice,
+      swapPriceUSD,
       error,
       direction,
       updateAllowance,
@@ -242,6 +247,14 @@ const Invest = () => {
         symbol={to.symbol}
         decimal={to.decimals}
         customIcon={to.icon}
+      />
+
+      <SwapPrice
+        fromSymbol={from.symbol}
+        toSymbol={to.symbol}
+        tokensCost={swapPrice}
+        usdCost={swapPriceUSD}
+        gasPrice={gasPrice}
       />
 
       <Flex p="16px 0 0" full>

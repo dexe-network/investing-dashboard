@@ -159,6 +159,7 @@ const Swap = () => {
         toSymbol={to.symbol}
         tokensCost={oneTokenCost}
         usdCost={oneUSDCost}
+        gasPrice="0"
       />
 
       <Flex full p="16px 0 0">

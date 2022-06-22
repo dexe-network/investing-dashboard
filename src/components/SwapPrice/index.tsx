@@ -23,6 +23,8 @@ interface Props {
   toSymbol: string | undefined
   tokensCost: BigNumber
   usdCost: BigNumber
+  gasPrice: string
+  isExpandable?: boolean
 }
 
 const SwapPrice: React.FC<Props> = ({
@@ -30,6 +32,8 @@ const SwapPrice: React.FC<Props> = ({
   toSymbol,
   tokensCost,
   usdCost,
+  gasPrice,
+  isExpandable = false,
 }) => {
   const [loading, setLoading] = useState(true)
   const [full, setFull] = useState(false)
@@ -65,7 +69,7 @@ const SwapPrice: React.FC<Props> = ({
       <Flex ai="center">
         <WhiteText>Fetching best price...</WhiteText>
       </Flex>
-      <Flex ai="center">{icon}</Flex>
+      {isExpandable && <Flex ai="center">{icon}</Flex>}
     </>
   )
 
@@ -73,7 +77,7 @@ const SwapPrice: React.FC<Props> = ({
     <>
       <Flex ai="center">
         <TokenPrice>
-          1 {toSymbol} = {formatNumber(ethers.utils.formatUnits(tokensCost), 6)}{" "}
+          1 {toSymbol} = {formatNumber(ethers.utils.formatUnits(tokensCost), 4)}{" "}
           {fromSymbol}
         </TokenPrice>
         <UsdPrice>
@@ -82,8 +86,8 @@ const SwapPrice: React.FC<Props> = ({
       </Flex>
       <Flex ai="center">
         <GasIcon src={gas} />
-        <GasPrice>$20.18</GasPrice>
-        {icon}
+        <GasPrice>${gasPrice}</GasPrice>
+        {isExpandable && icon}
       </Flex>
     </>
   )

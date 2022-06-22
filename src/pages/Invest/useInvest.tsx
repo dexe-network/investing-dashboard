@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { usePoolContract, useTraderPool } from "hooks/usePool"
 import Icon from "components/Icon"
 import {
@@ -24,15 +24,17 @@ import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import {
-  getDividedBalance,
+  multiplyBignumbers,
   getFreeLiquidity,
   getSumOfBignumbersArray,
   percentageOfBignumbers,
+  divideBignumbers,
 } from "utils/formulas"
 import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
 import useAlert, { AlertType } from "hooks/useAlert"
 import { ExchangeForm } from "constants/interfaces_v2"
+import useGasTracker from "hooks/useGasTracker"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -63,6 +65,9 @@ interface UseInvestResponse {
   isWalletPrompting: boolean
   isSlippageOpen: boolean
   allowance?: BigNumber
+  gasPrice: string
+  swapPrice: BigNumber
+  swapPriceUSD: BigNumber
   slippage: string
   direction: SwapDirection
   updateAllowance: () => void
@@ -95,8 +100,12 @@ const useInvest = ({
   )
   const priceFeed = usePriceFeedContract()
   const [showAlert] = useAlert()
+  const getGasPrice = useGasTracker()
 
-  const poolPrice = usePoolPrice(poolAddress)
+  const { priceBase, priceUSD } = usePoolPrice(poolAddress)
+  const [gasPrice, setGasPrice] = useState("0")
+  const [swapPriceUSD, setSwapPriceUSD] = useState(BigNumber.from("0"))
+  const [swapPrice, setSwapPrice] = useState(BigNumber.from("0"))
   const [isAdmin, setIsAdmin] = useState(false)
   const [fromAmount, setFromAmount] = useState("0")
   const [toAmount, setToAmount] = useState("0")
@@ -140,7 +149,7 @@ const useInvest = ({
         symbol: poolInfo?.ticker,
         decimals: 18,
         icon: poolIcon,
-        price: poolPrice.eq("0") ? baseTokenPrice : lpTokenPrice,
+        price: priceUSD.eq("0") ? baseTokenPrice : lpTokenPrice,
       },
     },
     withdraw: {
@@ -151,7 +160,7 @@ const useInvest = ({
         symbol: poolInfo?.ticker,
         decimals: 18,
         icon: poolIcon,
-        price: poolPrice.eq("0") ? baseTokenPrice : lpTokenPrice,
+        price: priceUSD.eq("0") ? baseTokenPrice : lpTokenPrice,
       },
       to: {
         address: poolInfo?.parameters.baseToken || "",
@@ -352,25 +361,33 @@ const useInvest = ({
     fetchAndUpdateAllowance,
   ])
 
+  const getPriceUSD = useCallback(
+    async (token: string, amount: BigNumber) => {
+      if (!priceFeed) return
+
+      return (
+        await priceFeed.getNormalizedPriceOutUSD(token, amount.toHexString())
+      )[0]
+    },
+    [priceFeed]
+  )
+
   const updateBasePrice = useCallback(
     async (amount: BigNumber) => {
       if (!priceFeed || !poolInfo) return
 
-      const basePrice = await priceFeed.getNormalizedPriceOutUSD(
-        poolInfo?.parameters.baseToken,
-        amount.toHexString()
-      )
-      setBasePrice(basePrice[0])
+      const basePrice = await getPriceUSD(poolInfo.parameters.baseToken, amount)
+      setBasePrice(basePrice)
     },
-    [priceFeed, poolInfo]
+    [priceFeed, poolInfo, getPriceUSD]
   )
 
   const updateLpPrice = useCallback(
     async (amount: BigNumber) => {
-      const lpPrice = getDividedBalance(amount, 18, poolPrice.toString())
+      const lpPrice = multiplyBignumbers([amount, 18], [priceUSD, 18])
       setLpPrice(lpPrice)
     },
-    [poolPrice]
+    [priceUSD]
   )
 
   const handleFromChange = useCallback(
@@ -434,6 +451,7 @@ const useInvest = ({
   const handleDirectionChange = useCallback(() => {
     setPositions([])
     setTotalPosition(BigNumber.from("0"))
+
     if (direction === "deposit") {
       setDirection("withdraw")
     } else {
@@ -446,16 +464,15 @@ const useInvest = ({
       if (!baseTokenBalance || !baseTokenData) return
 
       if (direction === "deposit") {
-        const from = getDividedBalance(
-          baseTokenBalance,
-          baseTokenData?.decimals,
-          percent
+        const from = multiplyBignumbers(
+          [baseTokenBalance, baseTokenData.decimals],
+          [percent, 18]
         )
         handleFromChange(from.toString())
       }
 
       if (direction === "withdraw") {
-        const to = getDividedBalance(lpTokenBalance, 18, percent)
+        const to = multiplyBignumbers([lpTokenBalance, 18], [percent, 18])
         handleFromChange(to.toString())
       }
     },
@@ -474,17 +491,29 @@ const useInvest = ({
     updateBaseToken()
   }, [fetchAndUpdateAllowance, fetchAndUpdateBalance, updateBaseToken])
 
+  const getInvestTokensWithSlippage = useCallback(
+    async (amount: BigNumber) => {
+      if (!traderPool) return []
+
+      const invest = await traderPool.getInvestTokens(amount.toHexString())
+
+      const sl = 1 - parseFloat(slippage) / 100
+
+      const amountsWithSlippage = invest.receivedAmounts.map((position) =>
+        calcSlippage(position, 18, sl)
+      )
+
+      return [invest, amountsWithSlippage]
+    },
+    [slippage, traderPool]
+  )
+
   const handleDeposit = useCallback(async () => {
     if (!poolAddress || !poolInfo || !traderPool) return
 
     const amount = BigNumber.from(fromAmount)
-    const invest = await traderPool.getInvestTokens(amount.toHexString())
 
-    const sl = 1 - parseFloat(slippage) / 100
-
-    const amountsWithSlippage = invest.receivedAmounts.map((position) =>
-      calcSlippage(position, 18, sl)
-    )
+    const [, amountsWithSlippage] = await getInvestTokensWithSlippage(amount)
 
     const depositResponse = await traderPool.invest(
       amount.toHexString(),
@@ -503,23 +532,32 @@ const useInvest = ({
       runUpdate()
     }
   }, [
-    fromAmount,
     poolAddress,
     poolInfo,
-    slippage,
     traderPool,
-    runUpdate,
+    fromAmount,
+    getInvestTokensWithSlippage,
     addTransaction,
+    runUpdate,
   ])
+
+  const getDivestTokens = useCallback(
+    async (amount: BigNumber) => {
+      if (!traderPool) return
+      const divest = await traderPool.getDivestAmountsAndCommissions(
+        account,
+        amount.toHexString()
+      )
+      return divest
+    },
+    [account, traderPool]
+  )
 
   const handleWithdraw = useCallback(async () => {
     if (!account || !poolAddress || !poolInfo || !traderPool) return
 
     const amount = BigNumber.from(fromAmount)
-    const divest = await traderPool.getDivestAmountsAndCommissions(
-      account,
-      amount.toHexString()
-    )
+    const divest = await getDivestTokens(amount)
     const withdrawResponse = await traderPool.divest(
       amount.toHexString(),
       divest.receptions.receivedAmounts,
@@ -542,6 +580,7 @@ const useInvest = ({
     poolInfo,
     traderPool,
     fromAmount,
+    getDivestTokens,
     addTransaction,
     runUpdate,
   ])
@@ -569,6 +608,68 @@ const useInvest = ({
       handleWithdraw().catch(handleError)
     }
   }, [direction, handleDeposit, handleValidate, handleWithdraw])
+
+  const estimateApproveGas = useCallback(
+    async (amount: BigNumber) => {
+      if (!baseToken) return
+      const approveResponse = await baseToken.estimateGas.approve(
+        poolAddress,
+        amount
+      )
+      return approveResponse
+    },
+    [baseToken, poolAddress]
+  )
+
+  const estimateInvestGas = useCallback(
+    async (amount: BigNumber) => {
+      if (!traderPool) return
+
+      const [, amountsWithSlippage] = await getInvestTokensWithSlippage(amount)
+      const depositResponse = await traderPool.estimateGas.invest(
+        amount.toHexString(),
+        amountsWithSlippage
+      )
+      return depositResponse
+    },
+    [getInvestTokensWithSlippage, traderPool]
+  )
+
+  const estimateDivestGas = useCallback(
+    async (amount: BigNumber) => {
+      if (!traderPool) return
+
+      const divest = await getDivestTokens(amount)
+
+      const withdrawResponse = await traderPool.estimateGas.divest(
+        amount.toHexString(),
+        divest.receptions.receivedAmounts,
+        divest.commissions.dexeDexeCommission
+      )
+      return withdrawResponse
+    },
+    [getDivestTokens, traderPool]
+  )
+
+  const estimateGas = useCallback(async () => {
+    const amount = BigNumber.from(fromAmount)
+
+    if (allowance?.lt(amount)) {
+      return await estimateApproveGas(amount)
+    }
+    if (direction === "deposit") {
+      return await estimateInvestGas(amount)
+    }
+
+    return await estimateDivestGas(amount)
+  }, [
+    allowance,
+    direction,
+    estimateApproveGas,
+    estimateDivestGas,
+    estimateInvestGas,
+    fromAmount,
+  ])
 
   // fetch allowance on mount
   useEffect(() => {
@@ -603,6 +704,39 @@ const useInvest = ({
     })()
   }, [traderPool, account])
 
+  useEffect(() => {
+    setSwapPriceUSD(priceUSD)
+    if (direction === "deposit") {
+      setSwapPrice(priceBase)
+    }
+    if (direction === "withdraw") {
+      const amount = ethers.utils.parseEther("1")
+      setSwapPrice(divideBignumbers([amount, 18], [priceBase, 18]))
+    }
+  }, [direction, priceBase, priceUSD])
+
+  useEffect(() => {
+    const amount = BigNumber.from(fromAmount)
+    if (!baseToken || amount.isZero()) return
+    ;(async () => {
+      try {
+        const gasPrice = await estimateGas()
+
+        if (!gasPrice) return
+
+        const gas = getGasPrice(gasPrice.toNumber())
+        setGasPrice(gas)
+      } catch (e) {}
+    })()
+  }, [
+    baseToken,
+    estimateApproveGas,
+    estimateGas,
+    poolAddress,
+    fromAmount,
+    getGasPrice,
+  ])
+
   return [
     formWithDirection,
     {
@@ -610,6 +744,9 @@ const useInvest = ({
       error,
       isWalletPrompting,
       isSlippageOpen,
+      gasPrice,
+      swapPrice,
+      swapPriceUSD,
       allowance,
       slippage,
       direction,
