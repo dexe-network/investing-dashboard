@@ -7,7 +7,6 @@ const Styled = {
     width: 100%;
     margin: ${(props) => props.m ?? 0};
   `,
-  First: styled.div``,
   Time: styled.div`
     font-family: "Gilroy";
     font-style: normal;

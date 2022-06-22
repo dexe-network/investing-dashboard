@@ -46,10 +46,10 @@ const WithdrawalHistoryRow: FC<IProps> = ({ payload, ...rest }) => {
 
   return (
     <S.Container {...rest}>
-      <S.First>
+      <div>
         <S.Time>{creationTime}</S.Time>
         <S.Percentage>{pnl} %</S.Percentage>
-      </S.First>
+      </div>
       <Amount value={profit} symbol="USD" full />
       <Amount value={fee} symbol="USD" jc="flex-end" full />
     </S.Container>
