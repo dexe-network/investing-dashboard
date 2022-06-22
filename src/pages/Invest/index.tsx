@@ -10,9 +10,10 @@ import Button, { SecondaryButton } from "components/Button"
 import TransactionSlippage from "components/TransactionSlippage"
 import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
+import TokenIcon from "components/TokenIcon"
 
 import { createClient, Provider as GraphProvider } from "urql"
-import { shortenAddress } from "utils"
+import { cutDecimalPlaces, fromBig, shortenAddress } from "utils"
 
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
@@ -24,13 +25,37 @@ import {
   CardHeader,
   Title,
   IconsGroup,
+  InfoCard,
+  InfoRow,
+  InfoGrey,
+  InfoWhite,
+  InfoDropdown,
 } from "components/Exchange/styled"
 
 import useInvest from "./useInvest"
+import { useMemo } from "react"
+import { useERC20 } from "hooks/useContract"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
+
+const Position = ({ position }) => {
+  const [, data] = useERC20(position.address)
+
+  return (
+    <InfoRow>
+      <Flex>
+        <TokenIcon address={position.address} size={15} />
+        <InfoGrey>{data?.name}</InfoGrey>
+      </Flex>
+      <Flex gap="4">
+        <InfoWhite>{fromBig(cutDecimalPlaces(position.amount))}</InfoWhite>
+        <InfoGrey>{data?.symbol}</InfoGrey>
+      </Flex>
+    </InfoRow>
+  )
+}
 
 const Invest = () => {
   const { poolAddress } = useParams<{
@@ -40,6 +65,7 @@ const Invest = () => {
   const [
     { from, to },
     {
+      info,
       allowance,
       isWalletPrompting,
       isSlippageOpen,
@@ -115,6 +141,65 @@ const Invest = () => {
 
   const button = getButton()
 
+  const freeLiquidity = useMemo(() => {
+    if (!info.freeLiquidity.lp) return <InfoGrey>Loading</InfoGrey>
+
+    if (typeof info.freeLiquidity.lp === "number")
+      return <InfoGrey>Unlimited</InfoGrey>
+
+    return (
+      <Flex gap="4">
+        <InfoWhite>
+          {fromBig(cutDecimalPlaces(info.freeLiquidity.lp))} LP
+        </InfoWhite>
+        <InfoGrey>({fromBig(info.freeLiquidity.percent)}%)</InfoGrey>
+      </Flex>
+    )
+  }, [info])
+
+  const availableToInvest = useMemo(() => {
+    if (!info.availableToInvest.amount) return <InfoGrey>Loading</InfoGrey>
+
+    return (
+      <Flex gap="4">
+        <InfoWhite>
+          {fromBig(cutDecimalPlaces(info.availableToInvest.amount))}
+        </InfoWhite>
+        <InfoGrey>{info.symbol}</InfoGrey>
+      </Flex>
+    )
+  }, [info])
+
+  const minInvestAmount = useMemo(() => {
+    if (!info.minInvestAmount.amount) return <InfoGrey>Loading</InfoGrey>
+
+    return (
+      <Flex gap="4">
+        <InfoWhite>
+          {fromBig(cutDecimalPlaces(info.minInvestAmount.amount))}
+        </InfoWhite>
+        <InfoGrey>{info.symbol}</InfoGrey>
+      </Flex>
+    )
+  }, [info])
+
+  const totalPositionSize = useMemo(() => {
+    return (
+      <Flex gap="4">
+        <InfoWhite>
+          {fromBig(cutDecimalPlaces(info.fundPositions.total))}
+        </InfoWhite>
+        <InfoGrey>{info.symbol}</InfoGrey>
+      </Flex>
+    )
+  }, [info])
+
+  const positions = useMemo(() => {
+    return info.fundPositions.positions.map((p) => (
+      <Position key={p.address} position={p} />
+    ))
+  }, [info])
+
   const form = (
     <Card>
       <CardHeader>
@@ -162,6 +247,27 @@ const Invest = () => {
       <Flex p="16px 0 0" full>
         {button}
       </Flex>
+
+      <InfoCard gap="12">
+        <InfoRow>
+          <InfoGrey>Free Liquidity</InfoGrey>
+          {freeLiquidity}
+        </InfoRow>
+        <InfoRow>
+          <InfoGrey>Available to invest</InfoGrey>
+          {availableToInvest}
+        </InfoRow>
+        <InfoRow>
+          <InfoGrey>Min invest amount</InfoGrey>
+          {minInvestAmount}
+        </InfoRow>
+        <InfoDropdown
+          left={<InfoGrey>Total fund positions: </InfoGrey>}
+          right={totalPositionSize}
+        >
+          {positions}
+        </InfoDropdown>
+      </InfoCard>
 
       <TransactionSlippage
         slippage={slippage}

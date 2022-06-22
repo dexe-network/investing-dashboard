@@ -3,6 +3,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react"
 import { BigNumber } from "ethers"
@@ -22,7 +23,12 @@ import { useERC20, usePriceFeedContract } from "hooks/useContract"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
-import { getDividedBalance } from "utils/formulas"
+import {
+  getDividedBalance,
+  getFreeLiquidity,
+  getSumOfBignumbersArray,
+  percentageOfBignumbers,
+} from "utils/formulas"
 import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
 import useAlert, { AlertType } from "hooks/useAlert"
@@ -33,7 +39,26 @@ interface UseInvestProps {
   initialDirection: SwapDirection
 }
 
+interface InvestInfo {
+  symbol: string
+  freeLiquidity: {
+    lp: number | BigNumber | undefined
+    percent: BigNumber
+  }
+  availableToInvest: {
+    amount: BigNumber | undefined
+  }
+  minInvestAmount: {
+    amount: BigNumber | undefined
+  }
+  fundPositions: {
+    total: BigNumber
+    positions: { address: string; amount: BigNumber }[]
+  }
+}
+
 interface UseInvestResponse {
+  info: InvestInfo
   error: string
   isWalletPrompting: boolean
   isSlippageOpen: boolean
@@ -69,7 +94,7 @@ const useInvest = ({
     poolInfo?.parameters.descriptionURL
   )
   const priceFeed = usePriceFeedContract()
-  const [showAlert, hideAlert] = useAlert()
+  const [showAlert] = useAlert()
 
   const poolPrice = usePoolPrice(poolAddress)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -78,12 +103,15 @@ const useInvest = ({
   const [slippage, setSlippage] = useState("0.10")
   const [direction, setDirection] = useState<SwapDirection>(initialDirection)
   const [baseTokenPrice, setBasePrice] = useState(BigNumber.from("0"))
+  const [totalPosition, setTotalPosition] = useState(BigNumber.from("0"))
   const [lpTokenPrice, setLpPrice] = useState(BigNumber.from("0"))
   const [lpTokenBalance, setLPBalance] = useState(BigNumber.from("0"))
   const [allowance, setAllowance] = useState<BigNumber | undefined>()
   const [isWalletPrompting, setWalletPrompting] = useState(false)
   const [isSlippageOpen, setSlippageOpen] = useState(false)
-  const [positions, setPositions] = useState<string[]>([])
+  const [positions, setPositions] = useState<
+    InvestInfo["fundPositions"]["positions"]
+  >([])
   const [error, setError] = useState("")
 
   const poolIcon = (
@@ -133,6 +161,54 @@ const useInvest = ({
         decimals: baseTokenData?.decimals,
         price: baseTokenPrice,
       },
+    },
+  }
+
+  const baseSymbol = useMemo(() => {
+    if (!baseTokenData) return ""
+
+    return baseTokenData.symbol
+  }, [baseTokenData])
+
+  const freeLiquidityLP = useMemo(() => getFreeLiquidity(poolInfo), [poolInfo])
+
+  const freeLiquidityPercent = useMemo(() => {
+    if (!freeLiquidityLP || !poolInfo || typeof freeLiquidityLP === "number")
+      return BigNumber.from("0")
+
+    return percentageOfBignumbers(
+      freeLiquidityLP,
+      poolInfo.parameters.totalLPEmission
+    )
+  }, [freeLiquidityLP, poolInfo])
+
+  const availableToInvest = useMemo(() => {
+    if (!leverageInfo) return
+
+    return leverageInfo.freeLeverageBase
+  }, [leverageInfo])
+
+  const minInvestAmount = useMemo(() => {
+    if (!poolInfo) return
+
+    return poolInfo.parameters.minimalInvestment
+  }, [poolInfo])
+
+  const info = {
+    symbol: baseSymbol,
+    freeLiquidity: {
+      lp: freeLiquidityLP,
+      percent: freeLiquidityPercent,
+    },
+    availableToInvest: {
+      amount: availableToInvest,
+    },
+    minInvestAmount: {
+      amount: minInvestAmount,
+    },
+    fundPositions: {
+      total: totalPosition,
+      positions: positions,
     },
   }
 
@@ -307,8 +383,15 @@ const useInvest = ({
       const getInvestTokens = async () => {
         const tokens = await traderPool.getInvestTokens(amount.toHexString())
         const receivedAmounts = cutDecimalPlaces(tokens.lpAmount)
+        const total = getSumOfBignumbersArray(tokens.givenAmounts)
 
-        setPositions(tokens.positions)
+        setTotalPosition(total)
+        setPositions(
+          tokens.positions.map((address, index) => ({
+            address,
+            amount: tokens.receivedAmounts[index],
+          }))
+        )
         setToAmount(receivedAmounts.toString())
         updateBasePrice(amount)
         updateLpPrice(receivedAmounts)
@@ -319,7 +402,6 @@ const useInvest = ({
           account,
           amount.toHexString()
         )
-        setPositions(divest.receptions.positions)
         const receivedAmounts = cutDecimalPlaces(divest.receptions.baseAmount)
 
         setToAmount(receivedAmounts.toString())
@@ -350,6 +432,8 @@ const useInvest = ({
   }, [fromAmount, handleFromChange])
 
   const handleDirectionChange = useCallback(() => {
+    setPositions([])
+    setTotalPosition(BigNumber.from("0"))
     if (direction === "deposit") {
       setDirection("withdraw")
     } else {
@@ -468,6 +552,7 @@ const useInvest = ({
     setWalletPrompting(true)
 
     const handleError = (error) => {
+      console.log(error)
       setWalletPrompting(false)
 
       if (!!error && !!error.data && !!error.data.message) {
@@ -521,6 +606,7 @@ const useInvest = ({
   return [
     formWithDirection,
     {
+      info,
       error,
       isWalletPrompting,
       isSlippageOpen,

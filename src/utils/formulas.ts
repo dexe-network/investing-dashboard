@@ -1,5 +1,6 @@
+import { PoolInfo } from "constants/interfaces_v2"
 import { BigNumber, ethers, FixedNumber } from "ethers"
-import { formatNumber } from "utils"
+import { cutDecimalPlaces, formatNumber } from "utils"
 
 export const getPNL = (SP: string) => {
   let CP = 1
@@ -134,4 +135,29 @@ export const getPriceImpact = (a: number, b: number) => {
 
   if (isNaN(result)) return 0
   return result
+}
+
+export const getFreeLiquidity = (poolInfo: PoolInfo | null) => {
+  if (!poolInfo) return
+
+  if (poolInfo.parameters.totalLPEmission.eq("0")) return Infinity
+
+  const freeLiquidity = FixedNumber.fromValue(
+    poolInfo.parameters.totalLPEmission,
+    18
+  ).subUnsafe(FixedNumber.fromValue(poolInfo.lpSupply, 18))
+
+  return BigNumber.from(freeLiquidity._hex)
+}
+
+export const percentageOfBignumbers = (num1: BigNumber, num2: BigNumber) => {
+  const percentage = FixedNumber.fromValue(num1)
+    .divUnsafe(FixedNumber.fromValue(num2))
+    .mulUnsafe(FixedNumber.from(100))
+
+  return cutDecimalPlaces(percentage._hex, 18, false, 2)
+}
+
+export const getSumOfBignumbersArray = (bns: BigNumber[]) => {
+  return bns.reduce((prev, next) => prev.add(next), BigNumber.from("0"))
 }

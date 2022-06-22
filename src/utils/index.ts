@@ -52,27 +52,6 @@ export function shortenAddress(
   return `${address.substring(0, chars + 2)}...${address.substring(42 - chars)}`
 }
 
-export function fromBig(
-  value: BigNumber | undefined,
-  decimals: number | undefined
-) {
-  if (!value || !decimals) {
-    return BigNumber.from(0)
-  }
-
-  const divisor = BigNumber.from(10).pow(decimals)
-
-  return value.div(divisor).toString()
-}
-
-export function bigify(value: string, decimals: number) {
-  if (value === "") {
-    return ethers.utils.parseUnits("0", decimals)
-  }
-
-  return ethers.utils.parseUnits(value, decimals)
-}
-
 // create dummy data 90% positive number 10% negative
 export const getRandomPnl = () => {
   const r1 = Math.random()
@@ -82,31 +61,7 @@ export const getRandomPnl = () => {
   return r1 * 100 * negative
 }
 
-function reverseString(str) {
-  const splitString = str.split("")
-  const reverseArray = splitString.reverse()
-
-  const joinArray = reverseArray.join("")
-
-  return joinArray
-}
-
 const parseDecimals = (float: string, decimals) => {
-  // const firstMatch = floatPart.match("[1-9]")
-  // const lastMatch = reverseString(floatPart).match("[1-9]")
-
-  // if (
-  //   !!firstMatch &&
-  //   !!firstMatch.length &&
-  //   !!firstMatch.index &&
-  //   !!lastMatch &&
-  //   !!lastMatch.index
-  // ) {
-  //   const d = firstMatch.index > decimals ? firstMatch.index + 3 : decimals
-
-  //   return floatPart.substring(0, d + 1)
-  // }
-
   const floatPart = !!float ? `${float}`.substring(0, decimals + 1) : ".00"
   return floatPart
 }
@@ -351,11 +306,12 @@ export const isTxMined = (tx: TransactionReceipt | undefined): boolean => {
 export const cutDecimalPlaces = (
   value: BigNumberish,
   decimals = 18,
-  roundUp = true
+  roundUp = true,
+  fix = 6
 ) => {
   const number = ethers.utils.formatUnits(value, decimals)
 
-  const pow = Math.pow(10, 6)
+  const pow = Math.pow(10, fix)
 
   const parsed =
     Math[roundUp ? "round" : "floor"](parseFloat(number) * pow) / pow
@@ -373,4 +329,22 @@ export const getMaxLPInvestAmount = (
   const result = emissionFixed.subUnsafe(supplyFixed)
 
   return BigNumber.from(result._hex)
+}
+
+export function fromBig(value: BigNumber | undefined, decimals = 18) {
+  if (!value) {
+    return "0"
+  }
+
+  const formatedNumber = ethers.utils.formatUnits(value, decimals)
+  if (formatedNumber.split(".")[1] === "0") return formatedNumber.split(".")[0]
+  return formatedNumber
+}
+
+export function bigify(value: string, decimals: number) {
+  if (!value) {
+    return ethers.utils.parseUnits("0", decimals)
+  }
+
+  return ethers.utils.parseUnits(value, decimals)
 }

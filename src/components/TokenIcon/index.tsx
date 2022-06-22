@@ -80,7 +80,7 @@ const TokenIcon: React.FC<IProps> = ({ size, address, m }) => {
   if (isLoading) {
     return (
       <Loader m={m || "0 8px 0 0"} size={size}>
-        <RingSpinner color="#A4EBD4" size={20} />
+        <RingSpinner color="#A4EBD4" size={size ? size / 2 : 20} />
       </Loader>
     )
   }
