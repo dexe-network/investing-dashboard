@@ -17,7 +17,7 @@ import { Flex } from "theme"
 
 import Icon from "components/Icon"
 import Button from "components/Button"
-import ProfitLossChart from "components/ProfitLossChart"
+import FeeChart from "components/FeeChart"
 import Accordion from "components/Accordion"
 import Amount from "components/Amount"
 import AmountRow from "components/Amount/Row"
@@ -202,7 +202,7 @@ const FundDetailsFee: FC = () => {
             </MainCardHeaderRight>
           </Flex>
 
-          <ProfitLossChart address={poolAddress} />
+          <FeeChart address={poolAddress} />
 
           <Flex full dir="column">
             <AmountRow
