@@ -313,7 +313,6 @@ function Trader(props: Props) {
                     commisionUnlockTime={commisionUnlockTime}
                     isPerformanceFeeExist={isPerformanceFeeExist}
                     poolAddress={poolAddress}
-                    poolType={poolType}
                     p="15px 0 0"
                   />
                 </FundDetailsCard>

@@ -206,8 +206,8 @@ export const InsuranceCard = styled(Flex)`
     height: 62px;
     width: 62px;
     position: absolute;
-    top: -2px;
-    left: -2px;
+    top: -6px;
+    left: -6px;
     background: url(${dexePlaceholder});
     background-repeat: no-repeat;
   }

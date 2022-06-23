@@ -53,6 +53,32 @@ export const overlayVariants = {
   },
 }
 
+
+export const accordionSummaryVariants = {
+  visible: {
+    opacity: 1,
+    height: "fit-content",
+    display: "block",
+  },
+  hidden: {
+    opacity: 0,
+    height: 0,
+    transitionEnd: {
+      display: "none",
+    },
+  },
+}
+
+export const rotate180Variants = {
+  visible: {
+    rotate: 0,
+  },
+  hidden: {
+    rotate: 180,
+    transition: { duration: 0.2 },
+  },
+}
+
 export const getSlideTopVariants = (hiddenH) => ({
   visible: {
     top: 55,
@@ -63,6 +89,7 @@ export const getSlideTopVariants = (hiddenH) => ({
     height: hiddenH,
   },
 })
+
 
 export default {
   opacityVariants,

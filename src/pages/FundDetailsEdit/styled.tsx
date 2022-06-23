@@ -13,11 +13,11 @@ export const Container = styled.div<{ loading?: boolean }>`
   border-radius: 26px 26px 0px 0px;
 
   height: ${({ loading = false }) =>
-    loading ? "calc(100vh - 94px)" : "initial"};
+    loading ? "calc(100vh - 128px)" : "initial"};
 
   @media all and (display-mode: standalone) {
     height: ${({ loading = false }) =>
-      loading ? "calc(100vh - 115px)" : "initial"};
+      loading ? "calc(100vh - 149px)" : "initial"};
   }
 `
 
