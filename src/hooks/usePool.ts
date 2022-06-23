@@ -55,7 +55,7 @@ export function usePoolContract(
         setPoolInfo(poolInfo)
         setLeverageInfo(leverage)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     })()
   }, [traderPool, update])

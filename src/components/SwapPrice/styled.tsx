@@ -42,7 +42,6 @@ export const GasPrice = styled.div`
   font-size: 12px;
   line-height: 11px;
   letter-spacing: 0.3px;
-  padding: 0 8px 0 6px;
   transform: translateY(1px);
 
   color: #e4f2ff;

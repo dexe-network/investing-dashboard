@@ -84,7 +84,7 @@ const SwapPrice: React.FC<Props> = ({
           (${formatNumber(ethers.utils.formatUnits(usdCost), 2)})
         </UsdPrice>
       </Flex>
-      <Flex ai="center">
+      <Flex gap="6" ai="center">
         <GasIcon src={gas} />
         <GasPrice>${gasPrice}</GasPrice>
         {isExpandable && icon}

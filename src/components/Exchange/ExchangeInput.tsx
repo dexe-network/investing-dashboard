@@ -9,7 +9,7 @@ import Ripple from "components/Ripple"
 import angleIcon from "assets/icons/angle-down.svg"
 import locker from "assets/icons/locker.svg"
 
-import { formatBigNumber } from "utils"
+import { cutDecimalPlaces, formatBigNumber } from "utils"
 
 import {
   InputContainer,
@@ -112,7 +112,7 @@ const ExchangeInput: React.FC<IToProps> = ({
         <BigNumberInput
           decimals={decimal || 18}
           onChange={handleInputChange}
-          value={amount}
+          value={cutDecimalPlaces(amount, decimal, false, 6).toString()}
           renderInput={(props: any) => (
             <Input disabled={!onChange} inputMode="decimal" {...props} />
           )}

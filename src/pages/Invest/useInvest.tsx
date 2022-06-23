@@ -11,7 +11,6 @@ import { usePoolContract, useTraderPool } from "hooks/usePool"
 import Icon from "components/Icon"
 import {
   calcSlippage,
-  cutDecimalPlaces,
   getAllowance,
   parseTransactionError,
   isTxMined,
@@ -409,12 +408,12 @@ const useInvest = ({
     (v: string) => {
       if (!poolInfo || !priceFeed || !traderPool) return
 
-      const amount = cutDecimalPlaces(v, formWithDirection.from.decimals, false)
+      const amount = BigNumber.from(v)
       setFromAmount(amount.toString())
 
       const getInvestTokens = async () => {
         const tokens = await traderPool.getInvestTokens(amount.toHexString())
-        const receivedAmounts = cutDecimalPlaces(tokens.lpAmount)
+        const receivedAmounts = tokens.lpAmount
         const total = getSumOfBignumbersArray(tokens.givenAmounts)
 
         setTotalPosition(total)
@@ -444,7 +443,7 @@ const useInvest = ({
           }))
         )
 
-        const receivedAmounts = cutDecimalPlaces(divest.receptions.baseAmount)
+        const receivedAmounts = divest.receptions.baseAmount
 
         setToAmount(receivedAmounts.toString())
         updateBasePrice(receivedAmounts)
@@ -461,7 +460,6 @@ const useInvest = ({
       poolInfo,
       priceFeed,
       traderPool,
-      formWithDirection,
       direction,
       account,
       updateBasePrice,
