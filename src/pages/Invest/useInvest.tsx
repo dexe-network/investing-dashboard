@@ -100,7 +100,7 @@ const useInvest = ({
   )
   const priceFeed = usePriceFeedContract()
   const [showAlert] = useAlert()
-  const getGasPrice = useGasTracker()
+  const [transactionOptions, getGasPrice] = useGasTracker()
 
   const { priceBase, priceUSD } = usePoolPrice(poolAddress)
   const [gasPrice, setGasPrice] = useState("0")
@@ -336,7 +336,11 @@ const useInvest = ({
     try {
       setWalletPrompting(true)
       const amount = BigNumber.from(fromAmount)
-      const approveResponse = await baseToken.approve(poolAddress, amount)
+      const approveResponse = await baseToken.approve(
+        poolAddress,
+        amount,
+        transactionOptions
+      )
       setWalletPrompting(false)
 
       const receipt = await addTransaction(approveResponse, {
@@ -355,8 +359,9 @@ const useInvest = ({
     account,
     poolAddress,
     baseToken,
-    fromAmount,
     handleValidate,
+    fromAmount,
+    transactionOptions,
     addTransaction,
     fetchAndUpdateAllowance,
   ])
@@ -419,6 +424,16 @@ const useInvest = ({
           account,
           amount.toHexString()
         )
+        const total = getSumOfBignumbersArray(divest.receptions.receivedAmounts)
+
+        setTotalPosition(total)
+        setPositions(
+          divest.receptions.positions.map((address, index) => ({
+            address,
+            amount: divest.receptions.givenAmounts[index],
+          }))
+        )
+
         const receivedAmounts = cutDecimalPlaces(divest.receptions.baseAmount)
 
         setToAmount(receivedAmounts.toString())
@@ -517,7 +532,8 @@ const useInvest = ({
 
     const depositResponse = await traderPool.invest(
       amount.toHexString(),
-      amountsWithSlippage
+      amountsWithSlippage,
+      transactionOptions
     )
     setWalletPrompting(false)
 
@@ -537,6 +553,7 @@ const useInvest = ({
     traderPool,
     fromAmount,
     getInvestTokensWithSlippage,
+    transactionOptions,
     addTransaction,
     runUpdate,
   ])
@@ -561,7 +578,8 @@ const useInvest = ({
     const withdrawResponse = await traderPool.divest(
       amount.toHexString(),
       divest.receptions.receivedAmounts,
-      divest.commissions.dexeDexeCommission
+      divest.commissions.dexeDexeCommission,
+      transactionOptions
     )
     setWalletPrompting(false)
     const receipt = await addTransaction(withdrawResponse, {
@@ -581,6 +599,7 @@ const useInvest = ({
     traderPool,
     fromAmount,
     getDivestTokens,
+    transactionOptions,
     addTransaction,
     runUpdate,
   ])
@@ -591,15 +610,10 @@ const useInvest = ({
     setWalletPrompting(true)
 
     const handleError = (error) => {
-      console.log(error)
       setWalletPrompting(false)
 
-      if (!!error && !!error.data && !!error.data.message) {
-        setError(error.data.message)
-      } else {
-        const errorMessage = parseTransactionError(error.toString())
-        !!errorMessage && setError(errorMessage)
-      }
+      const errorMessage = parseTransactionError(error)
+      !!errorMessage && setError(errorMessage)
     }
 
     if (direction === "deposit") {
@@ -652,6 +666,7 @@ const useInvest = ({
   )
 
   const estimateGas = useCallback(async () => {
+    if (!handleValidate()) return
     const amount = BigNumber.from(fromAmount)
 
     if (allowance?.lt(amount)) {
@@ -669,6 +684,7 @@ const useInvest = ({
     estimateDivestGas,
     estimateInvestGas,
     fromAmount,
+    handleValidate,
   ])
 
   // fetch allowance on mount
@@ -704,6 +720,7 @@ const useInvest = ({
     })()
   }, [traderPool, account])
 
+  // set swap token price on direction change
   useEffect(() => {
     setSwapPriceUSD(priceUSD)
     if (direction === "deposit") {
@@ -715,6 +732,7 @@ const useInvest = ({
     }
   }, [direction, priceBase, priceUSD])
 
+  // estimate gas price on from amount change
   useEffect(() => {
     const amount = BigNumber.from(fromAmount)
     if (!baseToken || amount.isZero()) return

@@ -1,8 +1,11 @@
-import axios from "axios"
-import { BigNumber } from "ethers"
 import { useCallback, useEffect, useState } from "react"
+import axios from "axios"
+import { BigNumber, ethers } from "ethers"
 
-const useGasTracker = () => {
+const useGasTracker = (): [
+  { gasPrice: BigNumber },
+  (gas: number) => string
+] => {
   const [proposeGasPrice, setProposeGasPrice] = useState("0")
   const [usdPrice, setUsdPrice] = useState("0")
 
@@ -29,7 +32,10 @@ const useGasTracker = () => {
     })()
   }, [])
 
-  return getGasPrice
+  return [
+    { gasPrice: ethers.utils.parseUnits(proposeGasPrice, "gwei") },
+    getGasPrice,
+  ]
 }
 
 export default useGasTracker
