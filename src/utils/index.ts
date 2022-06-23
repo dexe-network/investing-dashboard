@@ -241,6 +241,10 @@ export const parseTransactionError = (str: any) => {
   const DEFAULT_TRANSACTION_ERROR = "Unpredictable transaction error"
 
   try {
+    if (str.code === 4001) {
+      return
+    }
+
     // parse string error
     if (typeof str === "string") {
       const position = str.search(`"message":`)
