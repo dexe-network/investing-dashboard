@@ -45,7 +45,6 @@ const TokenSelect: React.FC = () => {
       const info = await traderPool?.getPoolInfo()
       const balance = {}
 
-      console.log(info)
       info.openPositions.map((address: string, index) => {
         balance[address.toLocaleLowerCase()] =
           info.baseAndPositionBalances[index + 1]
