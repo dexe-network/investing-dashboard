@@ -1,5 +1,5 @@
-import styled, { css } from "styled-components"
-import { Flex, GradientBorder } from "theme"
+import styled from "styled-components"
+import { Flex } from "theme"
 import ExternalLink from "components/ExternalLink"
 
 import cardBG from "assets/background/wallet-card.svg"
@@ -24,14 +24,7 @@ export const Cards = styled(Flex)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-`
-
-export const List = styled(Flex)`
-  width: 100%;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
+  margin-bottom: 57px;
 `
 
 export const Header = styled(Flex)`
@@ -178,49 +171,6 @@ export const TextIcon = styled.img`
   margin-right: 8px;
 `
 
-export const Heading = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 28px;
-  margin-bottom: 24px;
-
-  text-align: center;
-  letter-spacing: 0.35px;
-  width: 100%;
-  color: #cfdce8;
-`
-
-export const TransactionsList = styled.div`
-  position: relative;
-  max-height: 200px;
-  overflow-y: scroll;
-  margin-top: 15px;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-`
-
-export const TransactionsPlaceholder = styled.div`
-  font-family: Gilroy;
-  font-style: normal;
-  font-weight: 300;
-  font-size: 12px;
-  line-height: 14px;
-  text-align: center;
-  letter-spacing: 0.1px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  /* icons */
-  width: 100%;
-  flex: 1;
-
-  color: #5a6071;
-  min-height: 300px;
-`
-
 export const InsuranceCard = styled(Flex)`
   overflow: hidden;
   position: relative;
@@ -256,8 +206,8 @@ export const InsuranceCard = styled(Flex)`
     height: 62px;
     width: 62px;
     position: absolute;
-    top: -2px;
-    left: -2px;
+    top: -6px;
+    left: -6px;
     background: url(${dexePlaceholder});
     background-repeat: no-repeat;
   }
@@ -300,27 +250,4 @@ export const InsuranceButton = styled.button`
   text-align: right;
   color: #9ae2cb;
   z-index: 100;
-`
-
-export const Tabs = styled(Flex)`
-  width: 100%;
-  justify-content: space-around;
-`
-
-export const NavButton = styled(GradientBorder)`
-  border-radius: 16px;
-  font-family: "Gilroy";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 12px;
-  text-align: center;
-  letter-spacing: 0.3px;
-  color: #616d8b;
-  height: 25px;
-  padding: 0 10px;
-
-  &:after {
-    background: #0d121c;
-  }
 `

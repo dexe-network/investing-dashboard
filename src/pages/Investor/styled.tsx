@@ -154,5 +154,5 @@ export const Period = styled.div<{ active?: boolean }>`
     props.active
       ? "linear-gradient(64.44deg, #63b49b 12.29%, #a4ebd4 76.64%)"
       : "translate"};
-  border-radius: 6px;
+  border-radius: 14px;
 `

@@ -341,3 +341,14 @@ export function bigify(value: string, decimals: number) {
 
   return ethers.utils.parseUnits(value, decimals)
 }
+
+/**
+ * Transform BigNumber to FixedNumber (usually for calculations)
+ * @param recepient - converted number
+ * @param decimals - number of decimals for recepient (18 by default)
+ * @returns  recepient formating to FixedNumber
+ */
+export const convertBigToFixed = (
+  recepient: BigNumber,
+  decimals?: number
+): FixedNumber => FixedNumber.fromValue(recepient, decimals ?? 18)

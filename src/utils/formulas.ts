@@ -1,6 +1,6 @@
 import { PoolInfo } from "constants/interfaces_v2"
 import { BigNumber, ethers, FixedNumber } from "ethers"
-import { cutDecimalPlaces, formatNumber } from "utils"
+import { cutDecimalPlaces, formatNumber, convertBigToFixed } from "utils"
 
 export const getPNL = (SP: string) => {
   let CP = 1
@@ -169,4 +169,34 @@ export const percentageOfBignumbers = (num1: BigNumber, num2: BigNumber) => {
 
 export const getSumOfBignumbersArray = (bns: BigNumber[]) => {
   return bns.reduce((prev, next) => prev.add(next), BigNumber.from("0"))
+}
+
+/**
+ * Calculate fund profit amount without trader funds
+ * @param platformFeeAmount - platform fee amount
+ * @param performanceFeeAmount - performance fee amount
+ * @param performanceFeePercentAmount - trader fee percent
+ * @returns fund profit amount without trader funds
+ */
+export const getFundProfitWithoutTraderFunds = (
+  platformFeeAmount: BigNumber,
+  performanceFeeAmount: BigNumber,
+  performanceFeePercentAmount: BigNumber,
+  decimals?: number
+): BigNumber => {
+  const _decimals = decimals ?? 18
+  const HUNDRED = FixedNumber.fromValue(BigNumber.from("100"), _decimals)
+
+  const platformFee = convertBigToFixed(platformFeeAmount, _decimals)
+  const performanceFee = convertBigToFixed(performanceFeeAmount, _decimals)
+  const performanceFeePercent = convertBigToFixed(
+    performanceFeePercentAmount,
+    18
+  )
+
+  const totalFee = platformFee.addUnsafe(performanceFee)
+  const percentage = HUNDRED.subUnsafe(performanceFeePercent)
+  const result = totalFee.divUnsafe(percentage.divUnsafe(HUNDRED))
+
+  return BigNumber.from(result)
 }
