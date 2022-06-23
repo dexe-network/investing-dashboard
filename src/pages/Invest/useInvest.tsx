@@ -34,7 +34,7 @@ import { usePoolPrice } from "state/pools/hooks"
 import { SwapDirection } from "constants/types"
 import useAlert, { AlertType } from "hooks/useAlert"
 import { ExchangeForm } from "constants/interfaces_v2"
-import useGasTracker from "hooks/useGasTracker"
+import useGasTracker from "state/gas/hooks"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -100,10 +100,10 @@ const useInvest = ({
   )
   const priceFeed = usePriceFeedContract()
   const [showAlert] = useAlert()
-  const [transactionOptions, getGasPrice] = useGasTracker()
+  const [gasTrackerResponse, getGasPrice] = useGasTracker()
 
   const { priceBase, priceUSD } = usePoolPrice(poolAddress)
-  const [gasPrice, setGasPrice] = useState("0")
+  const [gasPrice, setGasPrice] = useState("0.00")
   const [swapPriceUSD, setSwapPriceUSD] = useState(BigNumber.from("0"))
   const [swapPrice, setSwapPrice] = useState(BigNumber.from("0"))
   const [isAdmin, setIsAdmin] = useState(false)
@@ -122,6 +122,16 @@ const useInvest = ({
     InvestInfo["fundPositions"]["positions"]
   >([])
   const [error, setError] = useState("")
+
+  const transactionOptions = useMemo(() => {
+    if (!gasTrackerResponse) return
+    return {
+      gasPrice: ethers.utils.parseUnits(
+        gasTrackerResponse.ProposeGasPrice,
+        "gwei"
+      ),
+    }
+  }, [gasTrackerResponse])
 
   const poolIcon = (
     <Icon

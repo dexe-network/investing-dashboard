@@ -216,3 +216,11 @@ export interface ExchangeForm {
   from: FormElement
   to: FormElement
 }
+
+export interface GasPriceResponse {
+  LastBlock: string
+  SafeGasPrice: string
+  ProposeGasPrice: string
+  FastGasPrice: string
+  UsdPrice: string
+}
