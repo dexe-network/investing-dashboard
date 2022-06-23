@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import styled from "styled-components"
+import styled, { css } from "styled-components"
 import { motion } from "framer-motion"
 import { createBreakpoint } from "react-use"
 
@@ -166,7 +166,7 @@ export const BasicCard = styled(Flex)`
   border-radius: 10px;
 `
 
-export const GradientBorder = styled(Flex)<{ focused?: boolean }>`
+const GradientBorderBase = css`
   position: relative;
   z-index: 5;
 
@@ -180,11 +180,6 @@ export const GradientBorder = styled(Flex)<{ focused?: boolean }>`
     bottom: -1px;
     z-index: -1;
     border-radius: inherit;
-    transition: all 0.3s ease-in-out;
-    background-image: ${(props) =>
-      props.focused
-        ? "linear-gradient(to bottom right,#2680eb 0%,#7fffd4 40%,#2680eb 60%,#2680eb 100%)"
-        : "linear-gradient(to bottom right,#587eb76e 0%,#26324482 20%,#2632447d 40%,#6d99db80 100%)"};
   }
   &:after {
     content: "";
@@ -193,6 +188,20 @@ export const GradientBorder = styled(Flex)<{ focused?: boolean }>`
     inset: 0;
     z-index: -1;
     border-radius: inherit;
+  }
+`
+
+export const GradientBorder = styled(Flex)<{ focused?: boolean }>`
+  ${GradientBorderBase}
+
+  &:before {
+    transition: all 0.3s ease-in-out;
+    background-image: ${(props) =>
+      props.focused
+        ? "linear-gradient(to bottom right,#2680eb 0%,#7fffd4 40%,#2680eb 60%,#2680eb 100%)"
+        : "linear-gradient(to bottom right,#587eb76e 0%,#26324482 20%,#2632447d 40%,#6d99db80 100%)"};
+  }
+  &:after {
     background: linear-gradient(
         0deg,
         rgba(16, 20, 32, 0.32),
@@ -203,19 +212,9 @@ export const GradientBorder = styled(Flex)<{ focused?: boolean }>`
 `
 
 export const GradientBorderLight = styled(Flex)`
-  position: relative;
-  z-index: 5;
+  ${GradientBorderBase}
 
   &:before {
-    content: "";
-    display: block;
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    z-index: -1;
-    border-radius: inherit;
     background-image: linear-gradient(
       to bottom right,
       #2680eb 0%,
@@ -225,12 +224,20 @@ export const GradientBorderLight = styled(Flex)`
     );
   }
   &:after {
-    content: "";
-    display: block;
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
+    background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
+  }
+`
+
+export const GradientBorderLightGreen = styled(Flex)<{ focused?: boolean }>`
+  ${GradientBorderBase}
+
+  &:before {
+    background-image: ${(props) =>
+      props.focused
+        ? "linear-gradient(to bottom right,#a4ebd4 100%,#63b49b 100%)"
+        : "linear-gradient(to bottom right,#587eb76e 0%,#26324482 20%,#2632447d 40%,#6d99db80 100%)"};
+  }
+  &:after {
     background: linear-gradient(64.44deg, #191e2b 32.35%, #272e3e 100%);
   }
 `
