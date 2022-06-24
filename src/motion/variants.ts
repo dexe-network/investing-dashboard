@@ -13,6 +13,19 @@ export const opacityVariants = {
   },
 }
 
+export const dropdownVariants = {
+  visible: {
+    height: "fit-content",
+    display: "flex",
+    opacity: 1,
+  },
+  hidden: {
+    height: "0px",
+    opacity: 0,
+    display: "none",
+  },
+}
+
 export const titleVariants = {
   visible: {
     opacity: 1,

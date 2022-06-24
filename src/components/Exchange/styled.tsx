@@ -3,6 +3,7 @@ import { motion } from "framer-motion"
 import { Flex, Text, GradientBorder, BasicCard } from "theme"
 import { FC, ReactNode, useState } from "react"
 import angle from "assets/icons/angle-up.svg"
+import { dropdownVariants } from "motion/variants"
 
 export const InputContainer = styled(GradientBorder)`
   flex-direction: column;
@@ -341,19 +342,6 @@ const iconVariants = {
   },
   hidden: {
     transform: `translate(2px, -1px) rotate(180deg)`,
-  },
-}
-
-const dropdownVariants = {
-  visible: {
-    height: "fit-content",
-    display: "flex",
-    opacity: 1,
-  },
-  hidden: {
-    height: "0px",
-    opacity: 0,
-    display: "none",
   },
 }
 

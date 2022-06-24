@@ -1,6 +1,7 @@
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import { Flex } from "theme"
 import { useParams, useNavigate } from "react-router-dom"
+import { PulseSpinner } from "react-spinners-kit"
 
 import SwapPrice from "components/SwapPrice"
 import IconButton from "components/IconButton"
@@ -25,9 +26,17 @@ import {
   CardHeader,
   Title,
   IconsGroup,
+  InfoCard,
+  InfoRow,
+  InfoGrey,
+  InfoDropdown,
+  InfoWhite,
 } from "components/Exchange/styled"
 
+import { SwapPriceBody } from "./styled"
+
 import useSwap from "./useSwap"
+import { cutDecimalPlaces, fromBig } from "utils"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -39,8 +48,11 @@ const Swap = () => {
   const [
     { from, to },
     {
+      direction,
       gasPrice,
       error,
+      receivedAfterSlippage,
+      priceImpact,
       oneTokenCost,
       oneUSDCost,
       isSlippageOpen,
@@ -75,7 +87,23 @@ const Swap = () => {
     }
   }
 
-  const getButton = () => {
+  const symbol = useMemo(() => {
+    if (direction === "deposit") {
+      return to.symbol ? (
+        to.symbol
+      ) : (
+        <PulseSpinner color="#181E2C" size={14} loading />
+      )
+    }
+
+    return from.symbol ? (
+      from.symbol
+    ) : (
+      <PulseSpinner color="#181E2C" size={14} loading />
+    )
+  }, [direction, from.symbol, to.symbol])
+
+  const button = useMemo(() => {
     if (from.amount === "0" || to.amount === "0") {
       return (
         <SecondaryButton
@@ -91,13 +119,115 @@ const Swap = () => {
     }
 
     return (
-      <Button size="large" theme="primary" onClick={handleSubmit} fz={22} full>
-        Swap
+      <Button
+        size="large"
+        theme={direction === "deposit" ? "primary" : "warn"}
+        onClick={handleSubmit}
+        fz={22}
+        full
+      >
+        {direction === "deposit" ? (
+          <Flex gap="6">Buy token {symbol}</Flex>
+        ) : (
+          <Flex gap="6">Sell token {symbol}</Flex>
+        )}
       </Button>
     )
-  }
+  }, [from.amount, to.amount, direction, handleSubmit, symbol])
 
-  const button = getButton()
+  const fundPNL = useMemo(() => {
+    return (
+      <Flex gap="4">
+        <InfoWhite>+12.72 ISDX</InfoWhite>
+        <InfoGrey>(+37.18%)</InfoGrey>
+      </Flex>
+    )
+  }, [])
+
+  const fundPNLContent = useMemo(() => {
+    return (
+      <>
+        <InfoRow>
+          <InfoGrey>in USD</InfoGrey>
+          <InfoGrey>+1260 USD (+27.18%) </InfoGrey>
+        </InfoRow>
+        <InfoRow>
+          <InfoGrey>Trader P&L</InfoGrey>
+          <Flex gap="4">
+            <InfoWhite>2.11 ISDX </InfoWhite>
+            <InfoGrey>(+14%)</InfoGrey>
+          </Flex>
+        </InfoRow>
+        <InfoRow>
+          <InfoGrey>in USD</InfoGrey>
+          <InfoGrey>+1260 USD (+27.18%) </InfoGrey>
+        </InfoRow>
+      </>
+    )
+  }, [])
+
+  const averagePrice = useMemo(() => {
+    if (direction === "deposit") {
+      return (
+        <InfoRow>
+          <InfoGrey>Average buying price</InfoGrey>
+          <Flex gap="4">
+            <InfoWhite>0.01289</InfoWhite>
+            <InfoGrey>WBNB</InfoGrey>
+          </Flex>
+        </InfoRow>
+      )
+    }
+
+    return (
+      <InfoRow>
+        <InfoGrey>Average selling price</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>0.01289 </InfoWhite>
+          <InfoGrey>WBNB</InfoGrey>
+        </Flex>
+      </InfoRow>
+    )
+  }, [direction])
+
+  const expectedOutput = useMemo(() => {
+    return (
+      <InfoRow>
+        <InfoGrey>Expected Output:</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>
+            {fromBig(cutDecimalPlaces(to.amount, to.decimals, false, 6))}
+          </InfoWhite>
+          <InfoGrey>{to.symbol}</InfoGrey>
+        </Flex>
+      </InfoRow>
+    )
+  }, [to.amount, to.decimals, to.symbol])
+
+  const priceImpactUI = useMemo(() => {
+    return (
+      <InfoRow>
+        <InfoGrey>Price Impact:</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>{priceImpact}%</InfoWhite>
+        </Flex>
+      </InfoRow>
+    )
+  }, [priceImpact])
+
+  const expectedOutputWithSlippage = useMemo(() => {
+    return (
+      <InfoRow>
+        <InfoGrey>Received after slippage ({slippage}%)</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>
+            {fromBig(cutDecimalPlaces(receivedAfterSlippage, 18, false, 6))}
+          </InfoWhite>
+          <InfoGrey>{to.symbol}</InfoGrey>
+        </Flex>
+      </InfoRow>
+    )
+  }, [receivedAfterSlippage, slippage, to.symbol])
 
   const form = (
     <Card>
@@ -155,17 +285,33 @@ const Swap = () => {
         onChange={handleToChange}
       />
 
-      <SwapPrice
-        fromSymbol={from.symbol}
-        toSymbol={to.symbol}
-        tokensCost={oneTokenCost}
-        usdCost={oneUSDCost}
-        gasPrice={gasPrice}
-      />
+      {inputToken !== "0x" && outputToken !== "0x" && (
+        <SwapPrice
+          fromSymbol={from.symbol}
+          toSymbol={to.symbol}
+          tokensCost={oneTokenCost}
+          usdCost={oneUSDCost}
+          gasPrice={gasPrice}
+          isExpandable
+        >
+          <SwapPriceBody>
+            {expectedOutput}
+            {priceImpactUI}
+            {expectedOutputWithSlippage}
+          </SwapPriceBody>
+        </SwapPrice>
+      )}
 
       <Flex full p="16px 0 0">
         {button}
       </Flex>
+
+      <InfoCard gap="12">
+        <InfoDropdown left={<InfoGrey>Fund P&L</InfoGrey>} right={fundPNL}>
+          {fundPNLContent}
+        </InfoDropdown>
+        {averagePrice}
+      </InfoCard>
 
       <TransactionSlippage
         slippage={slippage}

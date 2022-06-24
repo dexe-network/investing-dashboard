@@ -139,11 +139,16 @@ export const formateChartData = (data) => {
   })
 }
 
-export const getPriceImpact = (a: number, b: number) => {
-  const result = b / a - 1
+export const getPriceImpact = (from: BigNumber, to: BigNumber) => {
+  try {
+    const a = FixedNumber.fromValue(from, 18)
+    const b = FixedNumber.fromValue(to, 18)
+    const result = b.divUnsafe(a)
 
-  if (isNaN(result)) return 0
-  return result
+    return (parseFloat(result._value) - 1).toFixed(4)
+  } catch (e) {
+    return "0.00"
+  }
 }
 
 export const getFreeLiquidity = (poolInfo: PoolInfo | null) => {

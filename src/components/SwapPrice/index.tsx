@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Flex } from "theme"
 import { BigNumber } from "@ethersproject/bignumber"
 
@@ -10,6 +10,8 @@ import gas from "assets/icons/gas-price.svg"
 
 import {
   Container,
+  Card,
+  Content,
   WhiteText,
   TokenPrice,
   UsdPrice,
@@ -17,6 +19,7 @@ import {
   GasIcon,
   AngleIcon,
 } from "./styled"
+import { dropdownVariants, rotate180Variants } from "motion/variants"
 
 interface Props {
   fromSymbol: string | undefined
@@ -33,18 +36,25 @@ const SwapPrice: React.FC<Props> = ({
   tokensCost,
   usdCost,
   gasPrice,
+  children,
   isExpandable = false,
 }) => {
   const [loading, setLoading] = useState(true)
-  const [full, setFull] = useState(false)
+  const [isExpanded, setExpanded] = useState(false)
+
+  const handleAngleClick = useCallback(() => {
+    if (isExpandable) {
+      setExpanded(!isExpanded)
+    }
+  }, [isExpandable, isExpanded])
 
   useEffect(() => {
-    if (tokensCost.eq("0") || usdCost.eq("0")) {
+    if (!fromSymbol || !toSymbol) {
       setLoading(true)
       return
     }
     setLoading(false)
-  }, [fromSymbol, toSymbol, tokensCost, usdCost])
+  }, [fromSymbol, toSymbol])
 
   const variants = {
     visible: {
@@ -57,44 +67,58 @@ const SwapPrice: React.FC<Props> = ({
 
   const icon = (
     <AngleIcon
-      initial="hidden"
-      animate={loading ? "hidden" : "visible"}
-      variants={variants}
+      variants={rotate180Variants}
+      animate={isExpanded ? "visible" : "hidden"}
       src={angle}
     />
   )
 
   const loaderContent = (
     <>
-      <Flex ai="center">
-        <WhiteText>Fetching best price...</WhiteText>
-      </Flex>
-      {isExpandable && <Flex ai="center">{icon}</Flex>}
+      <Card>
+        <Flex ai="center">
+          <WhiteText>Fetching best price...</WhiteText>
+        </Flex>
+      </Card>
     </>
   )
 
   const mainContent = (
     <>
-      <Flex ai="center">
-        <TokenPrice>
-          1 {toSymbol} = {formatNumber(ethers.utils.formatUnits(tokensCost), 4)}{" "}
-          {fromSymbol}
-        </TokenPrice>
-        <UsdPrice>
-          (${formatNumber(ethers.utils.formatUnits(usdCost), 2)})
-        </UsdPrice>
-      </Flex>
-      <Flex gap="6" ai="center">
-        <GasIcon src={gas} />
-        <GasPrice>${gasPrice}</GasPrice>
-        {isExpandable && icon}
-      </Flex>
+      <Card onClick={handleAngleClick}>
+        <Flex ai="center">
+          <TokenPrice>
+            1 {toSymbol} ={" "}
+            {formatNumber(ethers.utils.formatUnits(tokensCost), 6)} {fromSymbol}
+          </TokenPrice>
+          <UsdPrice>
+            (${formatNumber(ethers.utils.formatUnits(usdCost), 2)})
+          </UsdPrice>
+        </Flex>
+        <Flex gap="6" ai="center">
+          <GasIcon src={gas} />
+          <GasPrice>${gasPrice}</GasPrice>
+          <Flex
+            initial="hidden"
+            animate={loading ? "hidden" : "visible"}
+            variants={variants}
+            ai="center"
+          >
+            {icon}
+          </Flex>
+        </Flex>
+      </Card>
+      <Content
+        initial="hidden"
+        animate={isExpanded ? "visible" : "hidden"}
+        variants={dropdownVariants}
+      >
+        {children}
+      </Content>
     </>
   )
 
-  return !!fromSymbol && !!toSymbol ? (
-    <Container>{loading ? loaderContent : mainContent}</Container>
-  ) : null
+  return <Container>{loading ? loaderContent : mainContent}</Container>
 }
 
 export default SwapPrice

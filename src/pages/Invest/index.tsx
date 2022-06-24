@@ -95,7 +95,7 @@ const Invest = () => {
   const isAllowanceNeeded =
     direction === "deposit" && !!allowance && allowance.lt(from.amount)
 
-  const getButton = () => {
+  const button = useMemo(() => {
     if (from.amount === "0") {
       return (
         <SecondaryButton
@@ -142,9 +142,16 @@ const Invest = () => {
         {direction === "deposit" ? `Buy ${to.symbol}` : `Sell ${from.symbol}`}
       </Button>
     )
-  }
-
-  const button = getButton()
+  }, [
+    direction,
+    from.amount,
+    from.balance,
+    from.symbol,
+    handleSubmit,
+    isAllowanceNeeded,
+    to.symbol,
+    updateAllowance,
+  ])
 
   const freeLiquidity = useMemo(() => {
     if (!info.freeLiquidity.lp) return <InfoGrey>Loading</InfoGrey>
