@@ -111,6 +111,7 @@ export const Buttons = styled.div`
   justify-content: space-between;
   align-self: baseline;
   margin-top: auto;
+  z-index: 20;
 `
 
 export const LoginContainer = styled(Flex)`

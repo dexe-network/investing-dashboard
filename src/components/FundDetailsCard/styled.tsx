@@ -1,5 +1,7 @@
 import styled from "styled-components"
-import { Flex, Text } from "theme"
+
+import { Flex } from "theme"
+import ArrowOutlineRight from "assets/icons/ArrowOutlineRight"
 
 export const Container = styled.div`
   padding: 30px 0 0;
@@ -24,7 +26,7 @@ export const SecondaryLabel = styled.div`
   color: #5a6071;
 `
 
-const ValueLabel = styled.div`
+export const ValueLabel = styled.div`
   font-family: Gilroy;
   font-style: normal;
   font-weight: 600;
@@ -70,3 +72,9 @@ export const InfoRow = ({ label, value }) => {
     </InfoContainer>
   )
 }
+
+export const ArrowIcon = styled(ArrowOutlineRight)`
+  width: 4.7px;
+  height: 8px;
+  margin-left: 6px;
+`

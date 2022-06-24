@@ -1,40 +1,12 @@
 import * as React from "react"
 
-const LockedIcon: React.FC<{ active?: boolean }> = (props) => {
+function LockedIcon(props) {
   return (
-    <svg width={14} height={18} fill="none" transform="translate(9, -2)">
+    <svg width={19} height={19} fill="none" {...props}>
       <path
-        d="M11.375 6.125h-7v-1.75c0-.7.263-1.313.787-1.837 1.05-1.05 2.713-1.05 3.676 0 .35.35.525.787.7 1.225.087.437.612.7 1.05.612.437-.088.787-.612.612-1.05-.175-.788-.612-1.488-1.137-2.013C9.274.438 8.136 0 7 0a4.333 4.333 0 00-4.375 4.375v1.75C1.137 6.125 0 7.263 0 8.75v6.125C0 16.363 1.137 17.5 2.625 17.5h8.75c1.488 0 2.625-1.137 2.625-2.625V8.75c0-1.487-1.137-2.625-2.625-2.625z"
-        fill={
-          props.active
-            ? "url(#lock-gradient-active)"
-            : "url(#lock-gradient-default)"
-        }
+        d="M12.938 6.813V5.438A3.404 3.404 0 009.5 2a3.404 3.404 0 00-3.438 3.438v1.375C4.894 6.813 4 7.705 4 8.874v4.813c0 1.168.894 2.062 2.063 2.062h6.875c1.168 0 2.062-.894 2.062-2.063V8.875c0-1.169-.894-2.063-2.063-2.063zm-5.5-1.375c0-1.17.893-2.063 2.062-2.063 1.169 0 2.063.894 2.063 2.063v1.375H7.436V5.438z"
+        fill="#788AB4"
       />
-      <defs>
-        <linearGradient
-          id="lock-gradient-default"
-          x1={7}
-          y1={0}
-          x2={7}
-          y2={17.5}
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#5A6071" />
-          <stop offset={1} stopColor="#434C5F" />
-        </linearGradient>
-        <linearGradient
-          id="lock-gradient-active"
-          x1={7}
-          y1={0}
-          x2={7}
-          y2={17.5}
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#fff" />
-          <stop offset={1} stopColor="#fff" />
-        </linearGradient>
-      </defs>
     </svg>
   )
 }

@@ -1,23 +1,24 @@
-import React, { useState, useRef, useEffect } from "react"
-// import styled from "styled-components"
-// import { motion } from "framer-motion"
+import { FC, useState, useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
-import ProgressBar from "components/ProgressBar"
-import chartIcon from "assets/icons/bar-chart-icon.svg"
-import unlim from "assets/icons/unlimited-emmission.svg"
-import { Flex } from "theme"
-import { Label, InfoRow, Container, Icon, Emission, LabelIcon } from "./styled"
-import { IPoolQuery, LeverageInfo, PoolInfo } from "constants/interfaces_v2"
-import { BigNumber, ethers } from "ethers"
-import { formatBigNumber, formatNumber } from "utils"
-import useContract, { useERC20 } from "hooks/useContract"
-import { TraderPool } from "abi"
+import { BigNumber } from "ethers"
 
-const FundStatisticsCard: React.FC<{
+import { TraderPool } from "abi"
+import useContract, { useERC20 } from "hooks/useContract"
+import { IPoolQuery, LeverageInfo, PoolInfo } from "constants/interfaces_v2"
+
+import { Flex } from "theme"
+import ProgressBar from "components/ProgressBar"
+import { Label, InfoRow, Container, Icon, LabelIcon } from "./styled"
+
+import chartIcon from "assets/icons/bar-chart-icon.svg"
+
+interface IProps {
   data: IPoolQuery
   leverage: LeverageInfo | null
   info: PoolInfo | null
-}> = ({ data, leverage, info }) => {
+}
+
+const FundStatisticsCard: FC<IProps> = ({ data, leverage, info }) => {
   const [traderLp, setTraderLp] = useState<BigNumber>(BigNumber.from("0"))
   const [accountLp, setAccountLp] = useState<BigNumber>(BigNumber.from("0"))
   const [, baseData] = useERC20(data.baseToken)
@@ -27,10 +28,6 @@ const FundStatisticsCard: React.FC<{
   // UI variables
   const openPositionsPercent = info?.openPositions.length || 0 * 4
   const openPositions = info?.openPositions.length || 0
-  const totalEmission =
-    info && ethers.utils.formatEther(info.parameters.totalLPEmission)
-
-  const circulatingSupply = info && formatBigNumber(info.lpSupply, 18, 6)
 
   useEffect(() => {
     if (!traderPool || !account || !info || !info.parameters.trader) return
@@ -77,19 +74,6 @@ const FundStatisticsCard: React.FC<{
           <InfoRow label={"BTC"} value={`${0}%`} />
         </Flex>
       </Flex>
-      {/* <Flex full p="14px 0 0">
-        <Emission
-          percent={9}
-          total={
-            totalEmission === "0.0" ? (
-              <LabelIcon src={unlim} />
-            ) : (
-              `${totalEmission} ${data.ticker}`
-            )
-          }
-          current={`${circulatingSupply} ${data.ticker}`}
-        />
-      </Flex> */}
 
       <Flex p="40px 0 0 0" full jc="flex-start">
         <Icon src={chartIcon} />
