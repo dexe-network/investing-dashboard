@@ -313,12 +313,14 @@ const Swap = () => {
               <SwapPathIcon src={swapPathIcon} />
               Swap Route
             </SwapPathTitle>
-            <SwapPath path={swapPath} />
-            <SwapPathDescription>
-              Best price route costs - ${gasPrice} in gas. This route optimizes
-              your total output by considering split routes, multiple hops, and
-              the gas cost of each step.
-            </SwapPathDescription>
+            {!!swapPath.length && <SwapPath path={swapPath} />}
+            {!!swapPath.length && (
+              <SwapPathDescription>
+                Best price route costs - ${gasPrice} in gas. This route
+                optimizes your total output by considering split routes,
+                multiple hops, and the gas cost of each step.
+              </SwapPathDescription>
+            )}
           </SwapRouteBody>
         </SwapPrice>
       )}
