@@ -71,7 +71,7 @@ export const Tab = styled(ClickableArea)<{ active?: boolean }>`
   font-family: Gilroy;
   font-style: normal;
   font-weight: normal;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 100%;
 
   text-align: center;
