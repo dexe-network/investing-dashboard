@@ -1,6 +1,9 @@
 import styled from "styled-components"
 import { motion } from "framer-motion"
 import { Flex, Text, GradientBorder, BasicCard } from "theme"
+import { FC, ReactNode, useState } from "react"
+import angle from "assets/icons/angle-up.svg"
+import { dropdownVariants } from "motion/variants"
 
 export const InputContainer = styled(GradientBorder)`
   flex-direction: column;
@@ -272,16 +275,16 @@ export const CardHeader = styled(Flex)`
   padding: 4px 0 24px;
 `
 
-export const Title = styled.div`
+export const Title = styled.div<{ active?: boolean }>`
   font-family: "Gilroy";
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
   line-height: 16px;
-  color: #e4f2ff;
+  color: ${(props) => (props.active ? "#e4f2ff" : "#788AB4")};
 
   &:nth-child(2) {
-    margin-left: 19px;
+    margin-left: 24px;
   }
 `
 
@@ -290,3 +293,91 @@ export const IconsGroup = styled(Flex)`
   justify-content: flex-end;
   gap: 16px;
 `
+
+// INFO CARD
+
+export const InfoCard = styled(GradientBorder)`
+  padding: 16px;
+  flex-direction: column;
+  border-radius: 20px;
+  width: fill-available;
+  margin-top: 16px;
+
+  &:after {
+    background: #181e2c;
+  }
+`
+
+export const InfoRow = styled(Flex)`
+  width: fill-available;
+  justify-content: space-between;
+`
+
+export const InfoGrey = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 15px;
+  color: #788ab4;
+`
+
+export const InfoWhite = styled.div`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  text-align: right;
+  color: #e4f2ff;
+`
+
+export const AngleIcon = styled(motion.img)`
+  transform: translate(2px, -1px);
+`
+
+const iconVariants = {
+  visible: {
+    transform: `translate(2px, -1px) rotate(0deg)`,
+  },
+  hidden: {
+    transform: `translate(2px, -1px) rotate(180deg)`,
+  },
+}
+
+interface DropdownProps {
+  left: ReactNode
+  right: ReactNode
+}
+
+export const InfoDropdown: FC<DropdownProps> = ({ left, right, children }) => {
+  const [isOpen, setOpen] = useState(false)
+
+  return (
+    <>
+      <InfoRow onClick={() => setOpen(!isOpen)}>
+        {left}
+        <Flex>
+          {right}
+          <AngleIcon
+            initial="hidden"
+            variants={iconVariants}
+            animate={isOpen ? "visible" : "hidden"}
+            src={angle}
+          />
+        </Flex>
+      </InfoRow>
+      <Flex
+        initial="hidden"
+        variants={dropdownVariants}
+        animate={isOpen ? "visible" : "hidden"}
+        dir="column"
+        p="0 16px 0 0"
+        full
+        gap="12"
+      >
+        {children}
+      </Flex>
+    </>
+  )
+}

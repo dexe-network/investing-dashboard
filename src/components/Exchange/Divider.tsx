@@ -1,4 +1,6 @@
 // import React, { useState, useRef } from "react"
+import { Fragment } from "react"
+import { BigNumber } from "ethers"
 import { rotateVariants } from "theme"
 import { EXCHANGE_DEFAULT_PERCENTS } from "constants/index"
 import { SwapDirection } from "constants/types"
@@ -6,13 +8,12 @@ import { SwapDirection } from "constants/types"
 import icon from "assets/icons/swap-arrow.svg"
 
 import { DividerContainer, PercentButton, SwapButton, Icon } from "./styled"
-import { Fragment } from "react"
 
 interface IDividerProps {
-  changeAmount: (v: string) => void
+  changeAmount: (v: BigNumber) => void
   changeDirection: () => void
   direction: SwapDirection
-  points?: { id: string; label: string; percent: string }[]
+  points?: { id: string; label: string; percent: BigNumber }[]
 }
 
 const ExchangeDivider: React.FC<IDividerProps> = ({
@@ -34,7 +35,7 @@ const ExchangeDivider: React.FC<IDividerProps> = ({
             {point.label}
           </PercentButton>
           {index + 1 === buttonsList.length / 2 && (
-            <SwapButton onClick={changeDirection}>
+            <SwapButton onClick={() => changeDirection()}>
               <Icon
                 variants={rotateVariants}
                 animate={direction === "deposit" ? "hidden" : "visible"}

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { BigNumber } from "@ethersproject/bignumber"
+import { ReactNode } from "react"
 
 declare global {
   namespace NodeJS {
@@ -198,4 +199,28 @@ export interface IPositionQuery {
 export enum ExchangeType {
   FROM_EXACT,
   TO_EXACT,
+}
+
+// used to display the exchange data
+interface FormElement {
+  address: string | undefined
+  amount: string
+  balance: BigNumber
+  symbol?: string
+  decimals?: number
+  icon?: ReactNode
+  price: BigNumber
+}
+
+export interface ExchangeForm {
+  from: FormElement
+  to: FormElement
+}
+
+export interface GasPriceResponse {
+  LastBlock: string
+  SafeGasPrice: string
+  ProposeGasPrice: string
+  FastGasPrice: string
+  UsdPrice: string
 }

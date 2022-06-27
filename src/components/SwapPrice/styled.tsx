@@ -4,11 +4,28 @@ import { motion } from "framer-motion"
 
 export const Container = styled(GradientBorder)`
   width: 100%;
-  justify-content: space-between;
-  padding: 17px 20px 17px 14px;
+  flex-direction: column;
+  align-items: space-between;
   align-items: center;
   height: fit-content;
   border-radius: 15px;
+  margin-top: 16px;
+  position: relative;
+
+  &:after {
+    background: #181e2c;
+  }
+`
+
+export const Card = styled(Flex)`
+  width: 100%;
+  padding: 17px 20px 17px 14px;
+`
+
+export const Content = styled(Flex)`
+  width: 100%;
+  flex-direction: column;
+  padding: 12px 0 16px;
 `
 
 export const WhiteText = styled.div`
@@ -37,7 +54,6 @@ export const GasPrice = styled.div`
   font-size: 12px;
   line-height: 11px;
   letter-spacing: 0.3px;
-  padding: 0 8px 0 6px;
   transform: translateY(1px);
 
   color: #e4f2ff;

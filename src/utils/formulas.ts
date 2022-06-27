@@ -1,5 +1,6 @@
+import { PoolInfo } from "constants/interfaces_v2"
 import { BigNumber, ethers, FixedNumber } from "ethers"
-import { formatNumber, convertBigToFixed } from "utils"
+import { cutDecimalPlaces, formatNumber, convertBigToFixed } from "utils"
 
 export const getPNL = (SP: string) => {
   let CP = 1
@@ -95,13 +96,22 @@ export const getUSDPrice = (value) => {
 export const getLastInArray = (array) =>
   array.length ? array[array.length - 1] : false
 
-export const getDividedBalance = (
-  balance: BigNumber,
-  decimals: number | undefined = 18,
-  percent: string
+export const multiplyBignumbers = (
+  bn1: [BigNumber, number],
+  bn2: [BigNumber, number]
 ): BigNumber => {
-  const fn = FixedNumber.fromValue(balance, decimals).mulUnsafe(
-    FixedNumber.fromValue(BigNumber.from(percent), 18)
+  const fn = FixedNumber.fromValue(bn1[0], bn1[1]).mulUnsafe(
+    FixedNumber.fromValue(bn2[0], bn2[1])
+  )
+  return BigNumber.from(fn._hex)
+}
+
+export const divideBignumbers = (
+  bn1: [BigNumber, number],
+  bn2: [BigNumber, number]
+): BigNumber => {
+  const fn = FixedNumber.fromValue(bn1[0], bn1[1]).divUnsafe(
+    FixedNumber.fromValue(bn2[0], bn2[1])
   )
   return BigNumber.from(fn._hex)
 }
@@ -129,11 +139,41 @@ export const formateChartData = (data) => {
   })
 }
 
-export const getPriceImpact = (a: number, b: number) => {
-  const result = b / a - 1
+export const getPriceImpact = (from: BigNumber, to: BigNumber) => {
+  try {
+    const a = FixedNumber.fromValue(from, 18)
+    const b = FixedNumber.fromValue(to, 18)
+    const result = b.divUnsafe(a)
 
-  if (isNaN(result)) return 0
-  return result
+    return (parseFloat(result._value) - 1).toFixed(4)
+  } catch (e) {
+    return "0.00"
+  }
+}
+
+export const getFreeLiquidity = (poolInfo: PoolInfo | null) => {
+  if (!poolInfo) return
+
+  if (poolInfo.parameters.totalLPEmission.eq("0")) return Infinity
+
+  const freeLiquidity = FixedNumber.fromValue(
+    poolInfo.parameters.totalLPEmission,
+    18
+  ).subUnsafe(FixedNumber.fromValue(poolInfo.lpSupply, 18))
+
+  return BigNumber.from(freeLiquidity._hex)
+}
+
+export const percentageOfBignumbers = (num1: BigNumber, num2: BigNumber) => {
+  const percentage = FixedNumber.fromValue(num1)
+    .divUnsafe(FixedNumber.fromValue(num2))
+    .mulUnsafe(FixedNumber.from(100))
+
+  return cutDecimalPlaces(percentage._hex, 18, false, 2)
+}
+
+export const getSumOfBignumbersArray = (bns: BigNumber[]) => {
+  return bns.reduce((prev, next) => prev.add(next), BigNumber.from("0"))
 }
 
 /**
