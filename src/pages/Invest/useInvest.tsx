@@ -34,6 +34,7 @@ import { SwapDirection } from "constants/types"
 import useAlert, { AlertType } from "hooks/useAlert"
 import { ExchangeForm } from "constants/interfaces_v2"
 import useGasTracker from "state/gas/hooks"
+import { IAlert } from "context/AlertContext"
 
 interface UseInvestProps {
   poolAddress: string | undefined
@@ -232,9 +233,10 @@ const useInvest = ({
 
   const formWithDirection = form[direction]
 
-  const handleValidate = useCallback(() => {
-    if (!poolInfo || !baseTokenData || !leverageInfo) return false
+  const checkValidation = useCallback(() => {
+    if (!poolInfo || !baseTokenData || !leverageInfo) return []
 
+    const errors: IAlert[] = []
     const amountIn = BigNumber.from(fromAmount)
     const amountOut = BigNumber.from(toAmount)
 
@@ -243,23 +245,21 @@ const useInvest = ({
       direction === "deposit" &&
       amountIn.lt(poolInfo.parameters.minimalInvestment)
     ) {
-      showAlert({
+      errors.push({
         type: AlertType.warning,
         content: `Minimum investment amount is ${formatBigNumber(
           poolInfo.parameters.minimalInvestment
         )} ${baseTokenData.symbol}, please increase your investment amount.`,
       })
-      return false
     }
 
     // check if trader and has positions (close positions before divest)
     if (direction === "withdraw" && isAdmin && !!positions.length) {
-      showAlert({
+      errors.push({
         type: AlertType.warning,
         content:
           "To withdraw funds from the pool, you must close all positions",
       })
-      return false
     }
     // check if leverage enought to deposit
     if (
@@ -267,7 +267,7 @@ const useInvest = ({
       !isAdmin &&
       amountIn.gt(leverageInfo.freeLeverageBase)
     ) {
-      showAlert({
+      errors.push({
         type: AlertType.warning,
         content: (
           <>
@@ -279,7 +279,6 @@ const useInvest = ({
           </>
         ),
       })
-      return false
     }
     // check if emission is enought to deposit
     if (
@@ -292,7 +291,7 @@ const useInvest = ({
       )
 
       if (maxLPInvestAmount.lt(amountOut)) {
-        showAlert({
+        errors.push({
           type: AlertType.warning,
           content: (
             <>
@@ -302,21 +301,27 @@ const useInvest = ({
             </>
           ),
         })
-        return false
       }
     }
-    return true
+
+    return errors
   }, [
-    poolInfo,
     baseTokenData,
-    leverageInfo,
-    fromAmount,
-    toAmount,
     direction,
+    fromAmount,
     isAdmin,
-    positions,
-    showAlert,
+    leverageInfo,
+    poolInfo,
+    positions.length,
+    toAmount,
   ])
+
+  const handleValidate = useCallback(() => {
+    const errors = checkValidation()
+
+    errors.map((error) => showAlert(error))
+    return errors.length === 0
+  }, [checkValidation, showAlert])
 
   const fetchAndUpdateAllowance = useCallback(async () => {
     if (!account || !library || !poolAddress || !poolInfo) return
@@ -674,7 +679,9 @@ const useInvest = ({
   )
 
   const estimateGas = useCallback(async () => {
-    if (!handleValidate()) return
+    const errors = checkValidation()
+
+    if (!!errors.length) return
     const amount = BigNumber.from(fromAmount)
 
     if (allowance?.lt(amount)) {
@@ -687,12 +694,12 @@ const useInvest = ({
     return await estimateDivestGas(amount)
   }, [
     allowance,
+    checkValidation,
     direction,
     estimateApproveGas,
     estimateDivestGas,
     estimateInvestGas,
     fromAmount,
-    handleValidate,
   ])
 
   // fetch allowance on mount
