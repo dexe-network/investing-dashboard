@@ -1,12 +1,15 @@
 import styled from "styled-components"
 import { Flex, GradientBorder } from "theme"
 
+export const CardContainer = styled.div`
+  margin-bottom: 18px;
+`
 export const Card = styled(GradientBorder)`
   width: 100%;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
   border-radius: 16px;
   flex-direction: column;
-  margin-bottom: 18px;
+  cursor: pointer;
 `
 
 export const Head = styled(Flex)`
@@ -86,3 +89,90 @@ export const StablePrice = styled.div`
   line-height: 100%;
   color: #616d8b;
 `
+
+export const ExtraContainer = styled(Flex)`
+  width: 100%;
+  flex-direction: column;
+`
+
+export const ActionsContainer = styled(Flex)`
+  width: 100%;
+  justify-content: space-between;
+  margin: 8px 0;
+`
+export const Action = styled(GradientBorder)<{ active?: boolean }>`
+  font-family: "Gilroy";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  padding: 8px 12px;
+  border-radius: 23px;
+  color: ${(props) => (props.active ? "#E4F2FF" : "#788AB4")};
+  cursor: pointer;
+
+  &:after {
+    background: #08121a;
+  }
+`
+
+export const PositionTradeList = styled(GradientBorder)`
+  width: 100%;
+  flex-direction: column;
+  border-radius: 20px;
+
+  & > *:not(:last-child) {
+    border-bottom: 1px solid #1d2635;
+  }
+`
+
+// POSITION TRADE
+
+export const PositionTradeStyles = {
+  Container: styled(Flex)`
+    width: 100%;
+  `,
+  Content: styled.div`
+    display: grid;
+    grid-template-columns: 0.5fr 0.25fr 0.25fr;
+    gap: 18px;
+    width: 100%;
+    align-items: flex-start;
+    padding: 12px 15px;
+  `,
+  Item: styled(Flex)`
+    width: 100%;
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+  `,
+  Label: styled.div`
+    width: 100%;
+    margin-bottom: 4px;
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 13px;
+    color: #788ab4;
+  `,
+  Value: styled.div`
+    width: 100%;
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 16px;
+    letter-spacing: 0.03em;
+    color: #e4f2ff;
+  `,
+  Direction: styled.span<{ isBuy?: boolean }>`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 16px;
+    letter-spacing: 0.03em;
+    color: ${(props) => (props.isBuy ? "#9AE2CB" : "#DB6D6D")};
+  `,
+}

@@ -15,6 +15,7 @@ import { IPosition } from "constants/interfaces_v2"
 import { normalizeBigNumber } from "utils"
 
 import {
+  CardContainer,
   Card,
   Head,
   Body,
@@ -25,8 +26,14 @@ import {
   Value,
   StablePrice,
   PNL,
+  ExtraContainer,
+  ActionsContainer,
+  Action,
+  PositionTradeList,
 } from "./styled"
+import PositionTrade from "./PositionTrade"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
+import { accordionSummaryVariants } from "motion/variants"
 
 interface Props {
   baseToken?: string
@@ -35,6 +42,7 @@ interface Props {
   description?: string
   poolAddress?: string
   position: IPosition
+  isPoolTrader: boolean
 }
 
 const PositionCard: React.FC<Props> = ({
@@ -44,6 +52,7 @@ const PositionCard: React.FC<Props> = ({
   description,
   poolAddress,
   position,
+  isPoolTrader,
 }) => {
   const [, tokenData] = useERC20(position.positionToken)
   const [, baseData] = useERC20(baseToken)
@@ -52,11 +61,23 @@ const PositionCard: React.FC<Props> = ({
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
 
+  const [openTrades, setOpenTrades] = useState(false)
+  const toggleTrades = () => {
+    setOpenTrades(!openTrades)
+  }
+
   const markPriceUSD = useTokenPriceOutUSD({
     tokenAddress: position.positionToken,
   })
 
   const [{ poolMetadata }] = usePoolMetadata(poolAddress, description)
+
+  const onBuyMore = () => {
+    console.log("onBuyMore")
+  }
+  const onClosePosition = () => {
+    console.log("onClosePosition")
+  }
 
   useEffect(() => {
     if (!tokenData) return
@@ -101,47 +122,75 @@ const PositionCard: React.FC<Props> = ({
     return null
   }
 
+  const Actions = (
+    <Flex full dir="column">
+      <ActionsContainer>
+        <Action active>All my trades</Action>
+        <Action onClick={onBuyMore}>Buy more</Action>
+        <Action onClick={onClosePosition}>Close Position</Action>
+      </ActionsContainer>
+    </Flex>
+  )
+
   return (
-    <Card>
-      <Head>
-        <Flex>
-          <TokenIcon address={position.positionToken} m="0" size={24} />
-          <Amount>5</Amount>
-          <PositionSymbol>{tokenData?.symbol}</PositionSymbol>
-        </Flex>
-        <Flex>
-          <FundSymbol>{ticker}</FundSymbol>
-          <Icon
-            m="0"
-            size={24}
-            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-            address={poolAddress}
-          />
-        </Flex>
-      </Head>
-      <Body>
-        <Label>Entry Price</Label>
-        <Label>Mark price</Label>
-        <Label>P&L LP</Label>
+    <>
+      <CardContainer>
+        <Card onClick={toggleTrades}>
+          <Head>
+            <Flex>
+              <TokenIcon address={position.positionToken} m="0" size={24} />
+              <Amount>5</Amount>
+              <PositionSymbol>{tokenData?.symbol}</PositionSymbol>
+            </Flex>
+            <Flex>
+              <FundSymbol>{ticker}</FundSymbol>
+              <Icon
+                m="0"
+                size={24}
+                source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+                address={poolAddress}
+              />
+            </Flex>
+          </Head>
+          <Body>
+            <Label>Entry Price</Label>
+            <Label>Mark price</Label>
+            <Label>P&L LP</Label>
 
-        <Flex>
-          <Value>0.1</Value>
-          <Label>{baseSymbol}</Label>
-        </Flex>
-        <Flex>
-          <Value>{normalizeBigNumber(markPrice, 18, 4)}</Value>
-          <Label>{baseSymbol}</Label>
-        </Flex>
-        <Flex>
-          <Value>+0.0012</Value>
-          <PNL>+0.38%</PNL>
-        </Flex>
+            <Flex>
+              <Value>0.1</Value>
+              <Label>{baseSymbol}</Label>
+            </Flex>
+            <Flex>
+              <Value>{normalizeBigNumber(markPrice, 18, 4)}</Value>
+              <Label>{baseSymbol}</Label>
+            </Flex>
+            <Flex>
+              <Value>+0.0012</Value>
+              <PNL>+0.38%</PNL>
+            </Flex>
 
-        <StablePrice>$57</StablePrice>
-        <StablePrice>${normalizeBigNumber(markPriceUSD, 18, 2)}</StablePrice>
-        <StablePrice>+$30</StablePrice>
-      </Body>
-    </Card>
+            <StablePrice>$57</StablePrice>
+            <StablePrice>
+              ${normalizeBigNumber(markPriceUSD, 18, 2)}
+            </StablePrice>
+            <StablePrice>+$30</StablePrice>
+          </Body>
+        </Card>
+        <ExtraContainer
+          initial="hidden"
+          animate={openTrades ? "visible" : "hidden"}
+          variants={accordionSummaryVariants}
+        >
+          {isPoolTrader && Actions}
+          <PositionTradeList>
+            <PositionTrade isBuyTrade={true} />
+            <PositionTrade />
+            <PositionTrade isBuyTrade={true} />
+          </PositionTradeList>
+        </ExtraContainer>
+      </CardContainer>
+    </>
   )
 }
 
