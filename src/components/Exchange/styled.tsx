@@ -251,7 +251,6 @@ export const Container = styled(Flex)`
   width: 100%;
   height: calc(100vh - 94px);
   padding: 16px;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
   overflow-y: auto;
@@ -268,6 +267,7 @@ export const Card = styled(BasicCard)`
   border-radius: 20px;
   background: #181e2c;
   max-width: 400px;
+  margin: auto;
 `
 
 export const CardHeader = styled(Flex)`

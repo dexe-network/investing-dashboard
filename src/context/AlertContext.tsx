@@ -5,7 +5,7 @@ export enum AlertType {
   warning = "warning",
 }
 
-interface IAlert {
+export interface IAlert {
   type?: AlertType | null
   title?: string | null
   content: React.ReactNode

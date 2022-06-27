@@ -22,7 +22,8 @@ const shouldReset = () => {
   const isReseted =
     localStorage.getItem("redux-reset-03-02-2022") === "true" &&
     localStorage.getItem("redux-reset-25-04-2022") === "true" &&
-    localStorage.getItem("redux-reset-08-06-2022") === "true"
+    localStorage.getItem("redux-reset-08-06-2022") === "true" &&
+    localStorage.getItem("redux-reset-27-06-2022") === "true"
 
   if (!isReseted) {
     clear({
@@ -31,6 +32,7 @@ const shouldReset = () => {
     localStorage.setItem("redux-reset-03-02-2022", "true")
     localStorage.setItem("redux-reset-25-04-2022", "true")
     localStorage.setItem("redux-reset-08-06-2022", "true")
+    localStorage.setItem("redux-reset-27-06-2022", "true")
   }
 }
 

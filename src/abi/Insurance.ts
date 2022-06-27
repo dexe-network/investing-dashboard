@@ -43,7 +43,13 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "insurancePayout",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "userStakePayout",
         type: "uint256",
       },
       {

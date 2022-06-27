@@ -3,6 +3,37 @@ export default [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "fromToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "toToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "fromVolume",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "toVolume",
+        type: "uint256",
+      },
+    ],
+    name: "ActivePortfolioExchanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "owner",
@@ -43,19 +74,19 @@ export default [
       {
         indexed: false,
         internalType: "address",
-        name: "investor",
+        name: "user",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "divestedLP",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "commission",
+        name: "receivedBase",
         type: "uint256",
       },
     ],
@@ -68,19 +99,19 @@ export default [
       {
         indexed: false,
         internalType: "address",
-        name: "investor",
+        name: "user",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "investedBase",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "toMintLP",
+        name: "receivedLP",
         type: "uint256",
       },
     ],
@@ -163,7 +194,7 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "lpMinted",
         type: "uint256",
       },
     ],
@@ -182,7 +213,7 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "lpPaid",
         type: "uint256",
       },
     ],
@@ -546,7 +577,27 @@ export default [
           },
           {
             internalType: "uint256",
+            name: "traderLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderUSDCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "dexeBaseCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeUSDCommission",
             type: "uint256",
           },
           {
@@ -870,7 +921,27 @@ export default [
           },
           {
             internalType: "uint256",
+            name: "traderLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderUSDCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "dexeBaseCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeUSDCommission",
             type: "uint256",
           },
           {

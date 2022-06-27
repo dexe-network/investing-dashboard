@@ -80,6 +80,24 @@ export default [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "name",
+        type: "string",
+      },
+      {
+        internalType: "address",
+        name: "poolAddress",
+        type: "address",
+      },
+    ],
+    name: "addPool",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "user",
         type: "address",
@@ -95,7 +113,7 @@ export default [
         type: "address",
       },
     ],
-    name: "addPool",
+    name: "associateUserWithPool",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
