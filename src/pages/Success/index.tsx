@@ -1,17 +1,17 @@
-import { FC, useEffect, useState } from "react"
+import { FC, useCallback, useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { TraderPool, TraderPoolRegistry } from "abi"
 import { Center } from "theme"
 import { GuardSpinner } from "react-spinners-kit"
-import { useSelector } from "react-redux"
 
 import Header from "components/Header/Layout"
 import Icon from "components/Icon"
 import Button from "components/Button"
 
-import useContract from "hooks/useContract"
+import {
+  useTraderPoolContract,
+  useTraderPoolRegistryContract,
+} from "hooks/useContract"
 import { PoolInfo, PoolType } from "constants/interfaces_v2"
-import { selectTraderPoolRegistryAddress } from "state/contracts/selectors"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import { shortenAddress } from "utils"
@@ -58,26 +58,25 @@ const Success: FC<SuccessProps> = () => {
   const [poolInfo, setPoolInfo] = useState<PoolInfo | null>(null)
   const [poolType, setPoolType] = useState<PoolType | null>(null)
 
-  const traderPool = useContract(poolAddress, TraderPool)
-  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
-  const traderPoolRegistry = useContract(
-    traderPoolRegistryAddress,
-    TraderPoolRegistry
-  )
+  const traderPool = useTraderPoolContract(poolAddress)
+  const traderPoolRegistry = useTraderPoolRegistryContract()
 
   const [{ poolMetadata }] = usePoolMetadata(
     poolAddress,
     poolInfo?.parameters.descriptionURL
   )
 
+  const getPoolInfo = useCallback(async () => {
+    if (!traderPool) return
+
+    const info = await traderPool.getPoolInfo()
+    setPoolInfo(info)
+  }, [traderPool])
+
   // get pool info
   useEffect(() => {
-    if (!traderPool) return
-    ;(async () => {
-      const info = await traderPool.getPoolInfo()
-      setPoolInfo(info)
-    })()
-  }, [traderPool])
+    getPoolInfo()
+  }, [getPoolInfo])
 
   useEffect(() => {
     if (!traderPoolRegistry) return
@@ -88,7 +87,7 @@ const Success: FC<SuccessProps> = () => {
   }, [traderPoolRegistry, poolAddress])
 
   const handleDepositRedirect = () => {
-    navigate(`/pool/invest/${poolType}/${poolAddress}`)
+    navigate(`/pool/invest/${poolAddress}`)
   }
 
   if (!poolInfo) {

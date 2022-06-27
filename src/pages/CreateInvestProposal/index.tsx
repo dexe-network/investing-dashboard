@@ -22,12 +22,13 @@ import useContract from "hooks/useContract"
 import { useTraderPool } from "hooks/usePool"
 
 import { addInvestProposalMetadata } from "utils/ipfs"
-import getReceipt from "utils/getReceipt"
+
 import {
   shortTimestamp,
   expandTimestamp,
   formatBigNumber,
   parseTransactionError,
+  isTxMined,
 } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
@@ -160,15 +161,16 @@ const CreateInvestProposal: FC = () => {
         divests.receptions.receivedAmounts
       )
 
-      addTransaction(createReceipt, {
+      const receipt = await addTransaction(createReceipt, {
         type: TransactionType.CREATE_INVEST_PROPOSAL,
         amount,
         ipfsPath: ipfsReceipt.path,
         investLpAmountRaw: investLPLimitHex,
       })
 
-      await getReceipt(library, createReceipt.hash)
-      setSubmiting(false)
+      if (isTxMined(receipt)) {
+        setSubmiting(false)
+      }
     }
 
     createInvestProposal().catch((error) => {

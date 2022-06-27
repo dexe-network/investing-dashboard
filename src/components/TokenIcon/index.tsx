@@ -13,7 +13,6 @@ export const Icon = styled.img<{ size?: number; m: string }>`
   min-width: ${(props) => (props.size ? props.size : 28)}px;
   border-radius: 50px;
   margin: ${(props) => props.m};
-  border: 2px solid #171b1f;
 `
 
 export const Loader = styled.div<{ size?: number; m: string }>`
@@ -81,7 +80,7 @@ const TokenIcon: React.FC<IProps> = ({ size, address, m }) => {
   if (isLoading) {
     return (
       <Loader m={m || "0 8px 0 0"} size={size}>
-        <RingSpinner color="#A4EBD4" size={20} />
+        <RingSpinner color="#A4EBD4" size={size ? size / 2 : 20} />
       </Loader>
     )
   }

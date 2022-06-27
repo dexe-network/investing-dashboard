@@ -6,8 +6,7 @@ import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Insurance, PriceFeed } from "abi"
 
-import ExchangeTo from "components/Exchange/To"
-import ExchangeFrom from "components/Exchange/From"
+import ExchangeInput from "components/Exchange/ExchangeInput"
 import ExchangeDivider from "components/Exchange/Divider"
 import Button, { SecondaryButton } from "components/Button"
 import Payload from "components/Payload"
@@ -21,17 +20,31 @@ import {
   selectPriceFeedAddress,
 } from "state/contracts/selectors"
 
-import getReceipt from "utils/getReceipt"
-import { getDividedBalance } from "utils/formulas"
-import { formatBigNumber, getAllowance, parseTransactionError } from "utils"
+import { multiplyBignumbers } from "utils/formulas"
+import {
+  formatBigNumber,
+  getAllowance,
+  parseTransactionError,
+  isTxMined,
+} from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 
 import LockedIcon from "assets/icons/LockedIcon"
+import multiplier from "assets/icons/10x-staking.svg"
 
 import { Card, CardHeader, Title } from "components/Exchange/styled"
-import { Container, PriceCard, Row, Label, Amount } from "./styled"
+import { SwapDirection } from "constants/types"
+import {
+  Container,
+  PriceCard,
+  Row,
+  Label,
+  Amount,
+  InsuranceAmount,
+  MultiplierIcon,
+} from "./styled"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -47,14 +60,14 @@ export const useInsurance = (): [
     toSelectorOpened: boolean
     fromSelectorOpened: boolean
     pending: boolean
-    direction: "deposit" | "withdraw"
+    direction: SwapDirection
   },
   {
     setFromAmount: (amount: string) => void
     setToAmount: (amount: string) => void
     setToAddress: (address: string) => void
     setFromAddress: (address: string) => void
-    setDirection: () => void
+    setDirection: (d?: SwapDirection) => void
     setPercentage: (v: number) => void
     setToSelector: (state: boolean) => void
     setFromSelector: (state: boolean) => void
@@ -70,7 +83,7 @@ export const useInsurance = (): [
   const [pending, setPending] = useState(false)
   const [toSelectorOpened, setToSelector] = useState(false)
   const [fromSelectorOpened, setFromSelector] = useState(false)
-  const [direction, setDirection] = useState<"deposit" | "withdraw">("deposit")
+  const [direction, setDirection] = useState<SwapDirection>("deposit")
 
   const [toAddress, setToAddress] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -124,13 +137,20 @@ export const useInsurance = (): [
     []
   )
 
-  const handleDirectionChange = useCallback(() => {
-    if (direction === "deposit") {
-      setDirection("withdraw")
-    } else {
-      setDirection("deposit")
-    }
-  }, [direction])
+  const handleDirectionChange = useCallback(
+    (d?: SwapDirection) => {
+      if (d !== undefined) {
+        setDirection(d)
+        return
+      }
+      if (direction === "deposit") {
+        setDirection("withdraw")
+      } else {
+        setDirection("deposit")
+      }
+    },
+    [direction]
+  )
 
   const handlePercentageChange = useCallback((v: number) => {
     // TODO: decide how to know balance
@@ -240,26 +260,28 @@ function Management() {
     const handleBuy = async () => {
       const amount = BigNumber.from(fromAmount)
       const response = await insurance?.buyInsurance(amount)
-      addTransaction(response, {
+      const receipt = await addTransaction(response, {
         type: TransactionType.STAKE_INSURANCE,
         amount: fromAmount,
       })
-      await getReceipt(library, response.hash)
-      refetchBalance()
-      await fetchInsuranceBalance()
+      if (isTxMined(receipt)) {
+        refetchBalance()
+        await fetchInsuranceBalance()
+      }
       setLoading(false)
     }
 
     const handleSell = async () => {
       const amount = BigNumber.from(toAmount)
       const response = await insurance?.withdraw(amount)
-      addTransaction(response, {
+      const receipt = await addTransaction(response, {
         type: TransactionType.UNSTAKE_INSURANCE,
         amount: toAmount,
       })
-      await getReceipt(library, response.hash)
-      refetchBalance()
-      await fetchInsuranceBalance()
+      if (isTxMined(receipt)) {
+        refetchBalance()
+        await fetchInsuranceBalance()
+      }
       setLoading(false)
     }
 
@@ -283,14 +305,13 @@ function Management() {
       const approveResponse = await fromToken.approve(insuranceAddress, amount)
       setLoading(false)
 
-      addTransaction(approveResponse, {
+      const receipt = await addTransaction(approveResponse, {
         type: TransactionType.APPROVAL,
         tokenAddress: dexeAddress,
         spender: account,
       })
 
-      const receipt = await getReceipt(library, approveResponse.hash)
-      if (receipt !== null && receipt.logs.length) {
+      if (isTxMined(receipt) && receipt!.logs.length) {
         await fetchAndUpdateAllowance()
       }
     }
@@ -298,9 +319,14 @@ function Management() {
     approveToken().catch(console.error)
   }
 
-  const handlePercentageChange = (percent) => {
-    const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
-    handleFromChange(from)
+  const handlePercentageChange = (percent: BigNumber) => {
+    if (!fromData) return
+
+    const from = multiplyBignumbers(
+      [fromBalance, fromData.decimals],
+      [percent, 18]
+    )
+    handleFromChange(from.toString())
   }
 
   const handleFromChange = (v: string) => {
@@ -371,7 +397,7 @@ function Management() {
   const button = getButton()
 
   const from = (
-    <ExchangeFrom
+    <ExchangeInput
       price={inPrice}
       amount={fromAmount}
       balance={fromBalance}
@@ -379,11 +405,18 @@ function Management() {
       symbol="DEXE"
       decimal={18}
       onChange={handleFromChange}
+      customPrice={
+        direction === "withdraw" && (
+          <Flex>
+            <InsuranceAmount>Unstake amount</InsuranceAmount>
+          </Flex>
+        )
+      }
     />
   )
 
   const to = (
-    <ExchangeTo
+    <ExchangeInput
       price={outPrice}
       amount={toAmount}
       balance={insuranceAmount}
@@ -391,6 +424,14 @@ function Management() {
       symbol="LP DEXE"
       decimal={18}
       onChange={handleToChange}
+      customPrice={
+        direction === "deposit" && (
+          <Flex>
+            <InsuranceAmount>Insurance amount</InsuranceAmount>
+            <MultiplierIcon src={multiplier} />
+          </Flex>
+        )
+      }
     />
   )
 
@@ -398,7 +439,18 @@ function Management() {
     <Card>
       <CardHeader>
         <Flex>
-          <Title>Stake insurance</Title>
+          <Title
+            active={direction === "deposit"}
+            onClick={() => setDirection("deposit")}
+          >
+            Stake
+          </Title>
+          <Title
+            active={direction === "withdraw"}
+            onClick={() => setDirection("withdraw")}
+          >
+            Unstake
+          </Title>
         </Flex>
       </CardHeader>
 

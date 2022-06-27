@@ -25,12 +25,13 @@ import { useCreateFundContext } from "context/CreateFundContext"
 import { selectPoolFactoryAddress } from "state/contracts/selectors"
 import { Token } from "constants/interfaces"
 import { sliderPropsByPeriodType, performanceFees } from "constants/index"
+import { UpdateListType } from "constants/types"
 import useContract from "hooks/useContract"
 import { TraderPool, PoolFactory } from "abi"
 
 import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { addFundMetadata } from "utils/ipfs"
-import { bigify } from "utils"
+import { bigify, isTxMined } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -154,13 +155,11 @@ const CreateFund: FC = () => {
       poolParameters
     )
 
-    addTransaction(receipt, {
+    return addTransaction(receipt, {
       type: TransactionType.FUND_CREATE,
       baseCurrencyId: baseToken.address,
       fundName,
     })
-
-    return await receipt.wait()
   }, [
     account,
     avatarBlobString,
@@ -183,14 +182,22 @@ const CreateFund: FC = () => {
   const handleManagersAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyAdmins(managers, true)
 
-    return await receipt.wait()
-  }, [managers, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_MANAGERS,
+      editType: UpdateListType.ADD,
+      poolId: contractAddress,
+    })
+  }, [addTransaction, contractAddress, managers, traderPool])
 
   const handleInvestorsAdd = useCallback(async () => {
     const receipt = await traderPool?.modifyPrivateInvestors(investors, true)
 
-    return await receipt.wait()
-  }, [investors, traderPool])
+    return addTransaction(receipt, {
+      type: TransactionType.FUND_UPDATE_INVESTORS,
+      editType: UpdateListType.ADD,
+      poolId: contractAddress,
+    })
+  }, [addTransaction, contractAddress, investors, traderPool])
 
   const handleSubmit = async () => {
     if (stepsFormating) return
@@ -249,17 +256,10 @@ const CreateFund: FC = () => {
       setTransactionFail(false)
       if (steps[step].title === "Create") {
         setStepPending(true)
-        const data = await handlePoolCreate()
+        const tx = await handlePoolCreate()
 
-        // check if transaction is mined
-        if (
-          !!data &&
-          ((data.logs.length && data.logs[0].address) || data.address)
-        ) {
-          const createdAddress = data.address
-            ? data.address
-            : data.logs[0].address
-          setCreactedAddress(createdAddress)
+        if (isTxMined(tx) && !!tx!.logs.length && !!tx!.logs[1].address) {
+          setCreactedAddress(tx!.logs[1].address)
           setStep(step + 1)
           setStepPending(false)
         }
@@ -267,18 +267,22 @@ const CreateFund: FC = () => {
 
       if (steps[step].title === "Managers") {
         setStepPending(true)
-        await handleManagersAdd()
+        const tx = await handleManagersAdd()
 
-        setStep(step + 1)
-        setStepPending(false)
+        if (isTxMined(tx)) {
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
       if (steps[step].title === "Investors") {
         setStepPending(true)
-        await handleInvestorsAdd()
+        const tx = await handleInvestorsAdd()
 
-        setStep(step + 1)
-        setStepPending(false)
+        if (isTxMined(tx)) {
+          setStep(step + 1)
+          setStepPending(false)
+        }
       }
 
       if (steps[step].title === "Success") {
@@ -491,6 +495,8 @@ const CreateFund: FC = () => {
                 >
                   <InputRow>
                     <Input
+                      type="number"
+                      inputmode="decimal"
                       placeholder="---"
                       value={totalLPEmission}
                       onChange={(value) =>
@@ -538,9 +544,11 @@ const CreateFund: FC = () => {
                 >
                   <InputRow>
                     <Input
+                      type="number"
+                      inputmode="decimal"
                       placeholder="---"
-                      onChange={(v) => handleChange("minimalInvestment", v)}
                       value={minimalInvestment}
+                      onChange={(v) => handleChange("minimalInvestment", v)}
                       rightIcon={<InputText>{baseToken.symbol}</InputText>}
                     />
                     {getFieldErrors("minimalInvestment")}

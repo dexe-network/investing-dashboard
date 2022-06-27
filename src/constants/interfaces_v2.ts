@@ -1,4 +1,33 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 import { BigNumber } from "@ethersproject/bignumber"
+import { ReactNode } from "react"
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      REACT_APP_NAMESPACE: string
+      REACT_APP_UPDATE_INTERVAL: string
+
+      REACT_APP_INFURA_ID: string
+      REACT_APP_ETHERSCAN_API_KEY: string
+
+      REACT_APP_PANCAKE_EXCHANGE_TOOL: string
+      REACT_APP_UNISWAP_EXCHANGE_TOOL: string
+
+      REACT_APP_CONTRACTS_REGISTRY_ADDRESS: string
+
+      REACT_APP_STATS_API_URL: string
+      REACT_APP_NOTIFICATIONS_API_URL: string
+
+      REACT_APP_ALL_POOLS_API_URL: string
+      REACT_APP_BASIC_POOLS_API_URL: string
+      REACT_APP_INVEST_POOLS_API_URL: string
+
+      REACT_APP_IPFS_PROJECT_ID: string
+      REACT_APP_IPFS_PROJECT_SECRET: string
+    }
+  }
+}
 
 export interface User {
   avatar_url: string
@@ -60,6 +89,7 @@ export interface IPriceHistoryQuery {
 /// @param openPositions the array of open positions addresses
 /// @param baseAndPositionBalances the array of balances. [0] is the balance of base tokens (array is normalized)
 /// @param totalPoolUSD is the current USD TVL in this pool
+/// @param traderBase is amount of trader base tokens in this pool
 /// @param lpEmission is the current number of LP tokens
 export interface PoolInfo {
   baseAndPositionBalances: BigNumber[]
@@ -71,6 +101,7 @@ export interface PoolInfo {
   totalInvestors: BigNumber
   totalPoolBase: BigNumber
   totalPoolUSD: BigNumber
+  traderBase: BigNumber
   parameters: PoolParameters
 }
 
@@ -91,6 +122,28 @@ interface PoolParameters {
   minimalInvestment: BigNumber
   privatePool: boolean
   totalLPEmission: BigNumber
+}
+
+interface RiskyProposalLimits {
+  investLPLimit: BigNumber
+  maxTokenPriceLimit: BigNumber
+  timestampLimit: BigNumber
+}
+
+interface RiskyProposalInfo {
+  balanceBase: BigNumber
+  balancePosition: BigNumber
+  lpLocked: BigNumber
+  propoosalLimits: RiskyProposalLimits
+  token: string
+  tokenDecimals: BigNumber
+}
+
+export interface RiskyProposal {
+  lp2Supply: BigNumber
+  proposalInfo: RiskyProposalInfo
+  totalProposalBase: BigNumber
+  totalProposalUSD
 }
 
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
@@ -146,4 +199,28 @@ export interface IPositionQuery {
 export enum ExchangeType {
   FROM_EXACT,
   TO_EXACT,
+}
+
+// used to display the exchange data
+interface FormElement {
+  address: string | undefined
+  amount: string
+  balance: BigNumber
+  symbol?: string
+  decimals?: number
+  icon?: ReactNode
+  price: BigNumber
+}
+
+export interface ExchangeForm {
+  from: FormElement
+  to: FormElement
+}
+
+export interface GasPriceResponse {
+  LastBlock: string
+  SafeGasPrice: string
+  ProposeGasPrice: string
+  FastGasPrice: string
+  UsdPrice: string
 }

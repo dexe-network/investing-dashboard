@@ -1,12 +1,24 @@
 import { useMemo, useEffect, useState, useCallback } from "react"
 import { Contract } from "@ethersproject/contracts"
-import { ERC20 } from "abi"
+import {
+  ERC20,
+  TraderPool,
+  TraderPoolRiskyProposal,
+  BasicTraderPool,
+  PriceFeed,
+  TraderPoolRegistry,
+} from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
 import { BigNumber } from "@ethersproject/bignumber"
 import { ITokenBase } from "constants/interfaces"
 import { isAddress } from "utils"
 import { ethers } from "ethers"
+import { useSelector } from "react-redux"
+import {
+  selectPriceFeedAddress,
+  selectTraderPoolRegistryAddress,
+} from "state/contracts/selectors"
 
 const provider = new ethers.providers.JsonRpcProvider(
   "https://data-seed-prebsc-1-s1.binance.org:8545/"
@@ -20,7 +32,7 @@ export default function useContract(
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
-    if (!address || !ABI || !provider || !isAddress(address)) return null
+    if (!address || !ABI || !isAddress(address)) return null
 
     try {
       return getContract(
@@ -33,7 +45,7 @@ export default function useContract(
       console.error("Failed to get contract", error)
       return null
     }
-  }, [address, ABI, library, provider, withSignerIfPossible, account])
+  }, [address, ABI, library, withSignerIfPossible, account])
 }
 
 export function useERC20(
@@ -110,4 +122,50 @@ export function useERC20(
   }, [contract, account, storedAddress, library, init])
 
   return [contract, tokenData, balance, init]
+}
+
+export function useTraderPoolContract(
+  poolAddress: string | undefined
+): Contract | null {
+  return useContract(poolAddress, TraderPool)
+}
+
+export function useBasicPoolContract(
+  poolAddress: string | undefined
+): Contract | null {
+  return useContract(poolAddress, BasicTraderPool)
+}
+
+export function usePriceFeedContract(): Contract | null {
+  const priceFeedAddress = useSelector(selectPriceFeedAddress)
+
+  return useContract(priceFeedAddress, PriceFeed)
+}
+
+export function useTraderPoolRegistryContract(): Contract | null {
+  const traderPoolRegistryAddress = useSelector(selectTraderPoolRegistryAddress)
+
+  return useContract(traderPoolRegistryAddress, TraderPoolRegistry)
+}
+
+export function useRiskyProposalContract(
+  poolAddress: string | undefined
+): [Contract | null, string] {
+  const [riskyProposalAddress, setRiskyProposalAddress] = useState("")
+
+  const traderPool = useTraderPoolContract(poolAddress)
+  const proposalPool = useContract(
+    riskyProposalAddress,
+    TraderPoolRiskyProposal
+  )
+
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      const proposalAddress = await traderPool.proposalPoolAddress()
+      setRiskyProposalAddress(proposalAddress)
+    })()
+  }, [traderPool])
+
+  return [proposalPool, riskyProposalAddress]
 }
