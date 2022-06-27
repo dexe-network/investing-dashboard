@@ -98,7 +98,7 @@ export const ExtraContainer = styled(Flex)`
 export const ActionsContainer = styled(Flex)`
   width: 100%;
   justify-content: space-between;
-  margin: 8px 0;
+  margin: 8px 0 0;
 `
 export const Action = styled(GradientBorder)<{ active?: boolean }>`
   font-family: "Gilroy";
@@ -120,6 +120,7 @@ export const PositionTradeList = styled(GradientBorder)`
   width: 100%;
   flex-direction: column;
   border-radius: 20px;
+  margin-top: 8px;
 
   & > *:not(:last-child) {
     border-bottom: 1px solid #1d2635;
