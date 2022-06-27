@@ -116,37 +116,39 @@ const Open = () => {
 
   return (
     <>
-      {positions.map((p) => (
-        <PositionCard
-          baseSymbol={baseToken?.symbol}
-          baseToken={data?.baseToken}
-          ticker={data?.ticker}
-          description={data?.descriptionURL}
-          key={p.id}
-          position={p}
-          poolAddress={poolAddress}
-          isPoolTrader={isPoolTrader}
-        />
-      ))}
+      <List>
+        {positions.map((p) => (
+          <PositionCard
+            baseSymbol={baseToken?.symbol}
+            baseToken={data?.baseToken}
+            ticker={data?.ticker}
+            description={data?.descriptionURL}
+            key={p.id}
+            position={p}
+            poolAddress={poolAddress}
+            isPoolTrader={isPoolTrader}
+          />
+        ))}
 
-      {(data?.positions || []).map((position) => (
-        <PositionCard
-          baseSymbol={baseToken?.symbol}
-          baseToken={data?.baseToken}
-          ticker={data?.ticker}
-          description={data?.descriptionURL}
-          key={position.id}
-          position={position}
-          isPoolTrader={isPoolTrader}
-        />
-      ))}
-      {showProposeToInvest && (
-        <ProposeToInvestModal
-          positionCount={positions.length}
-          poolAddress={poolAddress}
-          ticker={poolInfo?.ticker}
-        />
-      )}
+        {(data?.positions || []).map((position) => (
+          <PositionCard
+            baseSymbol={baseToken?.symbol}
+            baseToken={data?.baseToken}
+            ticker={data?.ticker}
+            description={data?.descriptionURL}
+            key={position.id}
+            position={position}
+            isPoolTrader={isPoolTrader}
+          />
+        ))}
+        {showProposeToInvest && (
+          <ProposeToInvestModal
+            positionCount={positions.length}
+            poolAddress={poolAddress}
+            ticker={poolInfo?.ticker}
+          />
+        )}
+      </List>
     </>
   )
 }

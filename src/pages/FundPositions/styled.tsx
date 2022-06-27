@@ -16,5 +16,5 @@ export const Container = styled.div`
 export const List = styled.div`
   height: fill-content;
   width: 100%;
-  padding-bottom: 16px;
+  position: relative;
 `

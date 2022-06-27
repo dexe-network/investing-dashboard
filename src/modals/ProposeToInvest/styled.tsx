@@ -17,12 +17,12 @@ const Styled = {
   Overlay: styled(motion.div)`
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 99;
+    left: -16px;
+    right: -16px;
+    bottom: -16px;
+    z-index: 81;
     background: rgba(13, 18, 28, 0.3);
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(20px);
   `,
   ButtonContainer: styled(Flex)`
     width: inherit;

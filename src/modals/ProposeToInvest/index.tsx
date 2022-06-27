@@ -29,6 +29,7 @@ const ProposeToInvest: FC<IProps> = ({
 
   return (
     <>
+      <S.Overlay />
       <Modal title="Become investor" isOpen toggle={onToggle}>
         <S.ModalText>
           The trader has {positionCount} open positions, but you need to be a
