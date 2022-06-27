@@ -30,7 +30,44 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "index",
+        name: "proposalId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "fromToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "toToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "fromVolume",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "toVolume",
+        type: "uint256",
+      },
+    ],
+    name: "ProposalActivePortfolioExchanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "proposalId",
         type: "uint256",
       },
       {
@@ -72,25 +109,31 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "index",
+        name: "proposalId",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "address",
-        name: "investor",
+        name: "user",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amountLP",
+        name: "divestedLP2",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amountBase",
+        name: "receivedLP",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "receivedBase",
         type: "uint256",
       },
     ],
@@ -103,7 +146,7 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "index",
+        name: "proposalId",
         type: "uint256",
       },
       {
@@ -140,7 +183,44 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "index",
+        name: "proposalId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "investedLP",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "investedBase",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "receivedLP2",
+        type: "uint256",
+      },
+    ],
+    name: "ProposalInvested",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "proposalId",
         type: "uint256",
       },
       {
@@ -149,20 +229,46 @@ export default [
         name: "investor",
         type: "address",
       },
+    ],
+    name: "ProposalInvestorAdded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
       {
         indexed: false,
         internalType: "uint256",
-        name: "amountLP",
+        name: "proposalId",
         type: "uint256",
       },
       {
         indexed: false,
-        internalType: "uint256",
-        name: "amountBase",
-        type: "uint256",
+        internalType: "address",
+        name: "investor",
+        type: "address",
       },
     ],
-    name: "ProposalInvested",
+    name: "ProposalInvestorRemoved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "proposalId",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "positionToken",
+        type: "address",
+      },
+    ],
+    name: "ProposalPositionClosed",
     type: "event",
   },
   {
@@ -457,7 +563,7 @@ export default [
       },
       {
         internalType: "uint256",
-        name: "minProposalOut",
+        name: "minPositionOut",
         type: "uint256",
       },
       {
@@ -504,31 +610,7 @@ export default [
     outputs: [
       {
         internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        internalType: "uint256[]",
-        name: "minPositionsOut",
-        type: "uint256[]",
-      },
-    ],
-    name: "divestAll",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "totalReceivedBase",
+        name: "receivedBase",
         type: "uint256",
       },
     ],
@@ -626,7 +708,12 @@ export default [
           },
           {
             internalType: "uint256",
-            name: "lpLocked",
+            name: "baseInvested",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "lpInvested",
             type: "uint256",
           },
           {
@@ -968,6 +1055,16 @@ export default [
           {
             internalType: "uint256",
             name: "lp2Supply",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "totalInvestors",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "positionTokenPrice",
             type: "uint256",
           },
         ],

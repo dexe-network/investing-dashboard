@@ -10,17 +10,17 @@ const PRICE_HISTORY = `
   supply
   absPNL
   percPNL
-  seconds
+  timestamp
 `
 
 const PRICE_HISTORY_LAST = `
-  priceHistory(first: 1, orderBy: seconds, orderDirection: desc, where: { isLast: true }) {
+  priceHistory(first: 1, orderBy: timestamp, orderDirection: desc, where: { isLast: true }) {
     ${PRICE_HISTORY}
   }
 `
 
 const PRICE_HISTORY_FULL = `
-  priceHistory(first: 1000, orderBy: seconds, orderDirection: desc) {
+  priceHistory(first: 1000, orderBy: timestamp, orderDirection: desc) {
     ${PRICE_HISTORY}
   }
 `
