@@ -54,7 +54,7 @@ export interface IPriceHistory {
   supply: number
   absPNL: number
   percPNL: number
-  seconds: number
+  timestamp: number
 }
 
 export interface IPoolQuery {

@@ -3,6 +3,37 @@ export default [
     anonymous: false,
     inputs: [
       {
+        indexed: false,
+        internalType: "address",
+        name: "fromToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "toToken",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "fromVolume",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "toVolume",
+        type: "uint256",
+      },
+    ],
+    name: "ActivePortfolioExchanged",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
         indexed: true,
         internalType: "address",
         name: "owner",
@@ -43,19 +74,19 @@ export default [
       {
         indexed: false,
         internalType: "address",
-        name: "investor",
+        name: "user",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "divestedLP",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "commission",
+        name: "receivedBase",
         type: "uint256",
       },
     ],
@@ -68,19 +99,19 @@ export default [
       {
         indexed: false,
         internalType: "address",
-        name: "investor",
+        name: "user",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "investedBase",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "toMintLP",
+        name: "receivedLP",
         type: "uint256",
       },
     ],
@@ -157,134 +188,35 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "index",
+        name: "proposalId",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "address",
-        name: "token",
-        type: "address",
-      },
-      {
-        components: [
-          {
-            internalType: "uint256",
-            name: "timestampLimit",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "investLPLimit",
-            type: "uint256",
-          },
-        ],
-        indexed: false,
-        internalType: "struct ITraderPoolInvestProposal.ProposalLimits",
-        name: "proposalLimits",
-        type: "tuple",
-      },
-    ],
-    name: "ProposalCreated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "index",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "investor",
+        name: "user",
         type: "address",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "divestedLP2",
         type: "uint256",
       },
       {
         indexed: false,
         internalType: "uint256",
-        name: "commission",
+        name: "receivedLP",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "receivedBase",
         type: "uint256",
       },
     ],
-    name: "ProposalDivest",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "index",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "fromToken",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "toToken",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "fromVolume",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "toVolume",
-        type: "uint256",
-      },
-    ],
-    name: "ProposalExchange",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "index",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "investor",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amountLP",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amountBase",
-        type: "uint256",
-      },
-    ],
-    name: "ProposalInvest",
+    name: "ProposalDivested",
     type: "event",
   },
   {
@@ -299,7 +231,7 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "lpMinted",
         type: "uint256",
       },
     ],
@@ -318,7 +250,7 @@ export default [
       {
         indexed: false,
         internalType: "uint256",
-        name: "amount",
+        name: "lpPaid",
         type: "uint256",
       },
     ],
@@ -823,7 +755,27 @@ export default [
           },
           {
             internalType: "uint256",
+            name: "traderLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderUSDCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "dexeBaseCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeUSDCommission",
             type: "uint256",
           },
           {
@@ -1160,7 +1112,27 @@ export default [
           },
           {
             internalType: "uint256",
+            name: "traderLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "traderUSDCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
             name: "dexeBaseCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeLPCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "dexeUSDCommission",
             type: "uint256",
           },
           {
@@ -1460,19 +1432,6 @@ export default [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256[]",
-        name: "minPositionsOut",
-        type: "uint256[]",
-      },
-    ],
-    name: "reinvestAllProposals",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
