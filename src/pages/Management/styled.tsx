@@ -6,7 +6,7 @@ export const Container = styled(Flex)`
   flex: 1;
   justify-content: center;
   align-items: center;
-  padding: 0 16px;
+  padding: 16px;
 `
 
 export const PriceCard = styled(GradientBorder)`

@@ -44,6 +44,7 @@ interface UseSwapResponse {
   isSlippageOpen: boolean
   isWalletPrompting: boolean
   baseToken: string | undefined
+  swapPath: string[]
   setError: Dispatch<SetStateAction<string>>
   setSlippage: Dispatch<SetStateAction<string>>
   setWalletPrompting: Dispatch<SetStateAction<boolean>>
@@ -85,6 +86,10 @@ const useSwap = ({
   const [toPrice, setToPrice] = useState(BigNumber.from("0"))
   const [oneTokenCost, setTokenCost] = useState(BigNumber.from("0"))
   const [oneUSDCost, setUSDCost] = useState(BigNumber.from("0"))
+  const [swapPath, setSwapPath] = useState<string[]>([])
+  const [lastChangedField, setLastChangedField] = useState<"from" | "to">(
+    "from"
+  )
 
   const transactionOptions = useMemo(() => {
     if (!gasTrackerResponse) return
@@ -96,24 +101,38 @@ const useSwap = ({
     }
   }, [gasTrackerResponse])
 
-  const form = {
-    from: {
-      address: from,
-      amount: fromAmount,
-      balance: fromBalance,
-      symbol: fromToken?.symbol,
-      decimals: fromToken?.decimals,
-      price: fromPrice,
-    },
-    to: {
-      address: to,
-      amount: toAmount,
-      balance: toBalance,
-      symbol: toToken?.symbol,
-      decimals: toToken?.decimals,
-      price: toPrice,
-    },
-  }
+  const form = useMemo(
+    () => ({
+      from: {
+        address: from,
+        amount: fromAmount,
+        balance: fromBalance,
+        symbol: fromToken?.symbol,
+        decimals: fromToken?.decimals,
+        price: fromPrice,
+      },
+      to: {
+        address: to,
+        amount: toAmount,
+        balance: toBalance,
+        symbol: toToken?.symbol,
+        decimals: toToken?.decimals,
+        price: toPrice,
+      },
+    }),
+    [
+      from,
+      fromAmount,
+      fromBalance,
+      fromPrice,
+      fromToken,
+      to,
+      toAmount,
+      toBalance,
+      toPrice,
+      toToken,
+    ]
+  )
 
   const direction = useMemo<SwapDirection>(() => {
     if (
@@ -131,7 +150,7 @@ const useSwap = ({
     setPriceImpact(result)
   }
 
-  const getExchangeAmounts = useCallback(
+  const getExchangeFromAmounts = useCallback(
     async (amount: BigNumber) => {
       const exchange = await traderPool?.getExchangeAmount(
         from,
@@ -147,10 +166,27 @@ const useSwap = ({
     },
     [from, slippage, to, traderPool]
   )
+  const getExchangeToAmounts = useCallback(
+    async (amount: BigNumber) => {
+      const exchange = await traderPool?.getExchangeAmount(
+        from,
+        to,
+        amount.toHexString(),
+        [],
+        ExchangeType.TO_EXACT
+      )
+
+      const sl = 1 + parseFloat(slippage) / 100
+      const exchangeWithSlippage = calcSlippage(exchange[0], 18, sl)
+      return [exchange, exchangeWithSlippage]
+    },
+    [from, slippage, to, traderPool]
+  )
 
   const handleFromChange = useCallback(
     (v: string) => {
       if (!traderPool || !priceFeed) return
+      setLastChangedField("from")
 
       const amount = BigNumber.from(v)
       setFromAmount(amount.toString())
@@ -158,7 +194,7 @@ const useSwap = ({
       const fetchAndUpdateTo = async () => {
         const amount = BigNumber.from(v)
 
-        const [exchange, exchangeWithSlippage] = await getExchangeAmounts(
+        const [exchange, exchangeWithSlippage] = await getExchangeFromAmounts(
           amount
         )
         setReceivedAfterSlippage(exchangeWithSlippage)
@@ -173,6 +209,7 @@ const useSwap = ({
         )
 
         const receivedAmount = exchange[0]
+        setSwapPath(exchange[1])
         setToAmount(receivedAmount.toString())
         setFromPrice(fromPrice[0])
         setToPrice(toPrice[0])
@@ -182,12 +219,13 @@ const useSwap = ({
 
       fetchAndUpdateTo().catch(console.error)
     },
-    [from, getExchangeAmounts, priceFeed, to, traderPool]
+    [from, getExchangeFromAmounts, priceFeed, to, traderPool]
   )
 
   const handleToChange = useCallback(
     (v: string) => {
       if (!traderPool || !priceFeed) return
+      setLastChangedField("to")
 
       const amount = BigNumber.from(v)
       setToAmount(amount.toString())
@@ -195,21 +233,17 @@ const useSwap = ({
       const fetchAndUpdateFrom = async () => {
         const amount = BigNumber.from(v)
 
-        const exchange = await traderPool?.getExchangeAmount(
-          from,
-          to,
-          amount.toHexString(),
-          [],
-          ExchangeType.TO_EXACT
+        const [exchange, exchangeWithSlippage] = await getExchangeToAmounts(
+          amount
         )
 
         const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(to, amount)
         const toPrice = await priceFeed?.getNormalizedPriceOutUSD(
           from,
-          exchange[0]
+          exchangeWithSlippage
         )
-        const givenAmounts = exchange[0]
-        setFromAmount(givenAmounts.toString())
+        setSwapPath(exchange[1])
+        setFromAmount(exchange[0].toString())
         setFromPrice(fromPrice[0])
         setToPrice(toPrice[0])
 
@@ -218,7 +252,7 @@ const useSwap = ({
 
       fetchAndUpdateFrom().catch(console.error)
     },
-    [from, priceFeed, to, traderPool]
+    [traderPool, priceFeed, getExchangeToAmounts, to, from]
   )
 
   const handlePercentageChange = useCallback(
@@ -260,12 +294,29 @@ const useSwap = ({
     refreshPoolInfo()
   }, [refreshPoolInfo])
 
+  const exchangeParams = useMemo(() => {
+    return {
+      from: {
+        amount: fromAmount,
+        func: getExchangeFromAmounts,
+        type: ExchangeType.FROM_EXACT,
+      },
+      to: {
+        amount: toAmount,
+        func: getExchangeToAmounts,
+        type: ExchangeType.TO_EXACT,
+      },
+    }
+  }, [fromAmount, getExchangeFromAmounts, getExchangeToAmounts, toAmount])
+
   const estimateGas = useCallback(async () => {
     if (!traderPool) return
 
     try {
-      const amount = BigNumber.from(fromAmount)
-      const [, exchangeWithSlippage] = await getExchangeAmounts(amount)
+      const amount = BigNumber.from(exchangeParams[lastChangedField].amount)
+      const [, exchangeWithSlippage] = await exchangeParams[
+        lastChangedField
+      ].func(amount)
 
       return await traderPool.estimateGas.exchange(
         from,
@@ -273,20 +324,22 @@ const useSwap = ({
         amount.toHexString(),
         exchangeWithSlippage.toHexString(),
         [],
-        ExchangeType.FROM_EXACT
+        exchangeParams[lastChangedField].type
       )
     } catch (e) {
       return
     }
-  }, [from, fromAmount, getExchangeAmounts, to, traderPool])
+  }, [exchangeParams, from, lastChangedField, to, traderPool])
 
   const handleSubmit = useCallback(async () => {
     if (!traderPool) return
 
     setWalletPrompting(true)
     try {
-      const amount = BigNumber.from(fromAmount)
-      const [exchange, exchangeWithSlippage] = await getExchangeAmounts(amount)
+      const amount = BigNumber.from(exchangeParams[lastChangedField].amount)
+      const [exchange, exchangeWithSlippage] = await exchangeParams[
+        lastChangedField
+      ].func(amount)
 
       const transactionResponse = await traderPool.exchange(
         from,
@@ -294,7 +347,7 @@ const useSwap = ({
         amount.toHexString(),
         exchangeWithSlippage.toHexString(),
         [],
-        ExchangeType.FROM_EXACT,
+        exchangeParams[lastChangedField].type,
         transactionOptions
       )
 
@@ -324,8 +377,8 @@ const useSwap = ({
     }
   }, [
     traderPool,
-    fromAmount,
-    getExchangeAmounts,
+    exchangeParams,
+    lastChangedField,
     from,
     to,
     transactionOptions,
@@ -407,6 +460,7 @@ const useSwap = ({
       isSlippageOpen,
       slippage,
       baseToken: poolInfo?.parameters.baseToken,
+      swapPath,
       setError,
       setWalletPrompting,
       setSlippage,
