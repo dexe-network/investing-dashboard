@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom"
 import { PulseSpinner } from "react-spinners-kit"
 
 import SwapPrice from "components/SwapPrice"
+import SwapPath from "components/SwapPrice/SwapPath"
 import IconButton from "components/IconButton"
 import ExchangeInput from "components/Exchange/ExchangeInput"
 import ExchangeDivider from "components/Exchange/Divider"
@@ -19,6 +20,7 @@ import { createClient, Provider as GraphProvider } from "urql"
 import settings from "assets/icons/settings.svg"
 import close from "assets/icons/close-big.svg"
 import plus from "assets/icons/plus.svg"
+import swapPathIcon from "assets/icons/swap-path.svg"
 
 import {
   Container,
@@ -33,7 +35,13 @@ import {
   InfoWhite,
 } from "components/Exchange/styled"
 
-import { SwapPriceBody } from "./styled"
+import {
+  SwapPriceBody,
+  SwapRouteBody,
+  SwapPathTitle,
+  SwapPathIcon,
+  SwapPathDescription,
+} from "./styled"
 
 import useSwap from "./useSwap"
 import { cutDecimalPlaces, fromBig } from "utils"
@@ -58,6 +66,7 @@ const Swap = () => {
       isSlippageOpen,
       isWalletPrompting,
       slippage,
+      swapPath,
       setError,
       setWalletPrompting,
       setSlippage,
@@ -299,6 +308,18 @@ const Swap = () => {
             {priceImpactUI}
             {expectedOutputWithSlippage}
           </SwapPriceBody>
+          <SwapRouteBody>
+            <SwapPathTitle>
+              <SwapPathIcon src={swapPathIcon} />
+              Swap Route
+            </SwapPathTitle>
+            <SwapPath path={swapPath} />
+            <SwapPathDescription>
+              Best price route costs - ${gasPrice} in gas. This route optimizes
+              your total output by considering split routes, multiple hops, and
+              the gas cost of each step.
+            </SwapPathDescription>
+          </SwapRouteBody>
         </SwapPrice>
       )}
 

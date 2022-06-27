@@ -44,6 +44,7 @@ interface UseSwapResponse {
   isSlippageOpen: boolean
   isWalletPrompting: boolean
   baseToken: string | undefined
+  swapPath: string[]
   setError: Dispatch<SetStateAction<string>>
   setSlippage: Dispatch<SetStateAction<string>>
   setWalletPrompting: Dispatch<SetStateAction<boolean>>
@@ -85,6 +86,7 @@ const useSwap = ({
   const [toPrice, setToPrice] = useState(BigNumber.from("0"))
   const [oneTokenCost, setTokenCost] = useState(BigNumber.from("0"))
   const [oneUSDCost, setUSDCost] = useState(BigNumber.from("0"))
+  const [swapPath, setSwapPath] = useState<string[]>([])
 
   const transactionOptions = useMemo(() => {
     if (!gasTrackerResponse) return
@@ -173,6 +175,7 @@ const useSwap = ({
         )
 
         const receivedAmount = exchange[0]
+        setSwapPath(exchange[1])
         setToAmount(receivedAmount.toString())
         setFromPrice(fromPrice[0])
         setToPrice(toPrice[0])
@@ -209,6 +212,7 @@ const useSwap = ({
           exchange[0]
         )
         const givenAmounts = exchange[0]
+        setSwapPath(exchange[1])
         setFromAmount(givenAmounts.toString())
         setFromPrice(fromPrice[0])
         setToPrice(toPrice[0])
@@ -407,6 +411,7 @@ const useSwap = ({
       isSlippageOpen,
       slippage,
       baseToken: poolInfo?.parameters.baseToken,
+      swapPath,
       setError,
       setWalletPrompting,
       setSlippage,

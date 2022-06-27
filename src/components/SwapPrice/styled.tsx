@@ -25,7 +25,7 @@ export const Card = styled(Flex)`
 export const Content = styled(Flex)`
   width: 100%;
   flex-direction: column;
-  padding: 12px 0 16px;
+  padding: 0 0 16px;
 `
 
 export const WhiteText = styled.div`
@@ -66,4 +66,46 @@ export const GasIcon = styled.img`
 
 export const AngleIcon = styled(motion.img)`
   transform: translateY(1px);
+`
+
+export const SwapPathContainer = styled(Flex)`
+  width: 100%;
+  padding: 12px 0;
+  height: 47px;
+  justify-content: space-between;
+  position: relative;
+
+  & > img {
+    z-index: 2;
+  }
+
+  &:after {
+    position: absolute;
+    right: 5px;
+    left: 5px;
+    z-index: 1;
+    height: 1px;
+    border-bottom: 1px dashed #1f2b3d;
+    content: "";
+    flex: 1;
+  }
+`
+
+export const TokensUnion = styled(Flex)`
+  width: 34px;
+  height: 23px;
+
+  & > img {
+    z-index: 2;
+
+    &:first-child {
+      transform: translateX(2px);
+    }
+    &:last-child {
+      transform: translateX(-2px);
+    }
+  }
+
+  border-radius: 32px;
+  border: 1px solid #2f4460;
 `
