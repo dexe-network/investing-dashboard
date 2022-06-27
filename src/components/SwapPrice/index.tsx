@@ -98,14 +98,16 @@ const SwapPrice: React.FC<Props> = ({
         <Flex gap="6" ai="center">
           <GasIcon src={gas} />
           <GasPrice>${gasPrice}</GasPrice>
-          <Flex
-            initial="hidden"
-            animate={loading ? "hidden" : "visible"}
-            variants={variants}
-            ai="center"
-          >
-            {icon}
-          </Flex>
+          {isExpandable && (
+            <Flex
+              initial="hidden"
+              animate={loading ? "hidden" : "visible"}
+              variants={variants}
+              ai="center"
+            >
+              {icon}
+            </Flex>
+          )}
         </Flex>
       </Card>
       <Content
