@@ -161,7 +161,6 @@ function Trader(props: Props) {
   useEffect((): void => {
     if (!traderPool) return
     ;(async () => {
-      setPerformanceFeeExist
       const investors = await traderPool?.totalInvestors()
 
       const limit = +ethers.utils.formatEther(investors) + 1
