@@ -1,18 +1,19 @@
-import Header from "components/Header/Layout"
+import { useEffect, useMemo, useState } from "react"
 import { Routes, Route, useParams, useNavigate } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 
+import Header from "components/Header/Layout"
 import PositionCard from "components/PositionCard"
 import RiskyCard from "components/RiskyCard"
+import ProposeToInvestModal from "modals/ProposeToInvest"
 
 import { usePoolPositions } from "state/pools/hooks"
-import { useERC20 } from "hooks/useContract"
-import useRiskyProposals from "hooks/useRiskyProposals"
+import { useActiveWeb3React } from "hooks"
 import { usePoolContract } from "hooks/usePool"
+import useRiskyProposals from "hooks/useRiskyProposals"
+import { useERC20, useTraderPoolContract } from "hooks/useContract"
 
 import { Container, List } from "./styled"
-import { useActiveWeb3React } from "hooks"
-import { useMemo } from "react"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
@@ -88,20 +89,36 @@ const positions = [
 const Open = () => {
   const { account } = useActiveWeb3React()
   const { poolAddress } = useParams()
+  const traderPool = useTraderPoolContract(poolAddress)
   const [, poolInfo] = usePoolContract(poolAddress)
+  const [, baseToken] = useERC20(poolInfo?.parameters.baseToken)
   const data = usePoolPositions(poolAddress, false)
-  const [, baseData] = useERC20(data?.baseToken)
+
+  const [isInvestorHaveLP, setIsInvestorHaveLP] = useState(false)
+  const [showProposeToInvest, setShowProposeToInvest] = useState(false)
 
   const isPoolTrader = useMemo(() => {
     if (!account || !poolInfo) return false
     return account === poolInfo.parameters.trader
   }, [account, poolInfo])
 
+  useEffect(() => {
+    if (isPoolTrader || !traderPool) return
+    ;(async () => {
+      const claimedAmountBigNumber = await traderPool?.balanceOf(account)
+      setIsInvestorHaveLP(!claimedAmountBigNumber.isZero())
+    })()
+  }, [account, isPoolTrader, traderPool])
+
+  useEffect(() => {
+    setShowProposeToInvest(!isPoolTrader && !isInvestorHaveLP)
+  }, [isPoolTrader, isInvestorHaveLP])
+
   return (
     <>
       {positions.map((p) => (
         <PositionCard
-          baseSymbol={baseData?.symbol}
+          baseSymbol={baseToken?.symbol}
           baseToken={data?.baseToken}
           ticker={data?.ticker}
           description={data?.descriptionURL}
@@ -114,7 +131,7 @@ const Open = () => {
 
       {(data?.positions || []).map((position) => (
         <PositionCard
-          baseSymbol={baseData?.symbol}
+          baseSymbol={baseToken?.symbol}
           baseToken={data?.baseToken}
           ticker={data?.ticker}
           description={data?.descriptionURL}
@@ -123,6 +140,13 @@ const Open = () => {
           isPoolTrader={isPoolTrader}
         />
       ))}
+      {showProposeToInvest && (
+        <ProposeToInvestModal
+          positionCount={positions.length}
+          poolAddress={poolAddress}
+          ticker={poolInfo?.ticker}
+        />
+      )}
     </>
   )
 }
