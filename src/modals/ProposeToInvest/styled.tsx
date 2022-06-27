@@ -1,4 +1,3 @@
-import { motion } from "framer-motion"
 import styled from "styled-components"
 import { Flex } from "theme"
 
@@ -13,16 +12,6 @@ const Styled = {
     line-height: 150%;
     text-align: center;
     color: #e4f2ff;
-  `,
-  Overlay: styled(motion.div)`
-    position: absolute;
-    top: 0;
-    left: -16px;
-    right: -16px;
-    bottom: -16px;
-    z-index: 81;
-    background: rgba(13, 18, 28, 0.3);
-    backdrop-filter: blur(20px);
   `,
   ButtonContainer: styled(Flex)`
     width: inherit;
