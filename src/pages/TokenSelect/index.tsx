@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { TraderPool } from "abi"
@@ -17,25 +17,26 @@ import { Title, Container, TitleContainer, CardHeader, Card } from "./styled"
 
 const TokenSelect: React.FC = () => {
   const navigate = useNavigate()
-  const { type, poolAddress } = useParams()
+  const { type, poolAddress, field, address } = useParams()
   const [q, setQuery] = useState("")
   const [balances, setBalances] = useState({})
   const whitelisted = useSelector(selectWhitelist)
   const traderPool = useContract(poolAddress, TraderPool)
 
-  const onSelect = (token: Token) => {
-    // if (
-    //   type === "BASIC_POOL" &&
-    //   token.address === "0x8babbb98678facc7342735486c851abd7a0d17ca"
-    // ) {
-    //   navigate(`/create-risky-proposal/${poolAddress}/${token.address}/1`)
-    //   return
-    // }
+  const onSelect = useCallback(
+    (token: Token) => {
+      const rootPath = `/pool/swap/${type}/${poolAddress}`
 
-    const rootPath = `/pool/swap/${type}`
+      if (field === "from") {
+        navigate(`${rootPath}/${token.address}/${address}`)
+      }
 
-    navigate(`${rootPath}/${poolAddress}/${token.address}`)
-  }
+      if (field === "to") {
+        navigate(`${rootPath}/${address}/${token.address}`)
+      }
+    },
+    [navigate, poolAddress, type, field, address]
+  )
 
   useEffect(() => {
     if (!traderPool) return

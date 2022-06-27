@@ -8,12 +8,14 @@ import contracts from "./contracts/reducer"
 import pricefeed from "./pricefeed/reducer"
 import application from "./application/reducer"
 import ipfsMetadata from "./ipfsMetadata/reducer"
+import gas from "./gas/reducer"
 
 const PERSISTED_KEYS: string[] = [
   "user",
   "transactions",
   "pools",
   "ipfsMetadata",
+  "gas",
 ]
 
 const shouldReset = () => {
@@ -43,6 +45,7 @@ const store = configureStore({
     contracts,
     pricefeed,
     ipfsMetadata,
+    gas,
   },
   middleware: [
     ...getDefaultMiddleware({ thunk: false }),

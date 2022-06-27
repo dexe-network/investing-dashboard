@@ -42,6 +42,10 @@ import {
   TextGrey,
   FundsUsed,
   DetailsEditLinkFrame,
+  OwnInvesting,
+  OwnInvestingLabel,
+  OwnInvestingValue,
+  OwnInvestingLink,
 } from "./styled"
 
 const pnlNew: IDetailedChart[] = [
@@ -106,6 +110,7 @@ function Trader(props: Props) {
   const [commisionUnlockTime, setCommisionUnlockTime] = useState<number>(0)
   const [isPerformanceFeeExist, setPerformanceFeeExist] =
     useState<boolean>(false)
+  const [ownInvestUsd, setOwnInvestUsd] = useState<string>("0")
 
   useEffect(() => {
     localStorage.setItem(`last-visited-profile-${account}`, pathname)
@@ -119,6 +124,10 @@ function Trader(props: Props) {
   const redirectToInvestor = useCallback(() => {
     navigate("/me/investor")
   }, [navigate])
+
+  const handleBuyRedirect = () => {
+    navigate(`/pool/invest/${poolData?.id}`)
+  }
 
   const commissionPercentage = useMemo((): number | string => {
     if (!poolInfoData) return "0"
@@ -163,6 +172,15 @@ function Trader(props: Props) {
     })()
   }, [traderPool])
 
+  useEffect((): void => {
+    if (!traderPool) return
+    ;(async () => {
+      const poolInfo = await traderPool?.getPoolInfo()
+
+      setOwnInvestUsd(formatBigNumber(poolInfo.traderUSD, 18, 3))
+    })()
+  }, [traderPool])
+
   const body = !poolData ? (
     <Center>
       <GuardSpinner size={20} loading />
@@ -179,7 +197,11 @@ function Trader(props: Props) {
           <SecondaryButton
             fz={14}
             full
-            onClick={() => navigate(`/pool/swap/${poolType}/${poolData.id}/0x`)}
+            onClick={() =>
+              navigate(
+                `/pool/swap/${poolType}/${poolData.id}/${poolData.baseToken}/0x`
+              )
+            }
           >
             Open new trade
           </SecondaryButton>
@@ -255,6 +277,14 @@ function Trader(props: Props) {
         />
       </TabCard>
 
+      <OwnInvesting>
+        <Flex dir="column" ai="flex-start">
+          <OwnInvestingLabel>My own investing</OwnInvestingLabel>
+          <OwnInvestingValue>$ {ownInvestUsd}</OwnInvestingValue>
+        </Flex>
+        <OwnInvestingLink onClick={handleBuyRedirect} />
+      </OwnInvesting>
+
       <Details>
         <DetailsEditLinkFrame>
           <IconButton
@@ -287,7 +317,6 @@ function Trader(props: Props) {
                     commisionUnlockTime={commisionUnlockTime}
                     isPerformanceFeeExist={isPerformanceFeeExist}
                     poolAddress={poolAddress}
-                    poolType={poolType}
                     p="15px 0 0"
                   />
                 </FundDetailsCard>

@@ -20,7 +20,7 @@ import {
   selectPriceFeedAddress,
 } from "state/contracts/selectors"
 
-import { getDividedBalance } from "utils/formulas"
+import { multiplyBignumbers } from "utils/formulas"
 import {
   formatBigNumber,
   getAllowance,
@@ -32,10 +32,19 @@ import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
 
 import LockedIcon from "assets/icons/LockedIcon"
+import multiplier from "assets/icons/10x-staking.svg"
 
 import { Card, CardHeader, Title } from "components/Exchange/styled"
 import { SwapDirection } from "constants/types"
-import { Container, PriceCard, Row, Label, Amount } from "./styled"
+import {
+  Container,
+  PriceCard,
+  Row,
+  Label,
+  Amount,
+  InsuranceAmount,
+  MultiplierIcon,
+} from "./styled"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -58,7 +67,7 @@ export const useInsurance = (): [
     setToAmount: (amount: string) => void
     setToAddress: (address: string) => void
     setFromAddress: (address: string) => void
-    setDirection: () => void
+    setDirection: (d?: SwapDirection) => void
     setPercentage: (v: number) => void
     setToSelector: (state: boolean) => void
     setFromSelector: (state: boolean) => void
@@ -128,13 +137,20 @@ export const useInsurance = (): [
     []
   )
 
-  const handleDirectionChange = useCallback(() => {
-    if (direction === "deposit") {
-      setDirection("withdraw")
-    } else {
-      setDirection("deposit")
-    }
-  }, [direction])
+  const handleDirectionChange = useCallback(
+    (d?: SwapDirection) => {
+      if (d !== undefined) {
+        setDirection(d)
+        return
+      }
+      if (direction === "deposit") {
+        setDirection("withdraw")
+      } else {
+        setDirection("deposit")
+      }
+    },
+    [direction]
+  )
 
   const handlePercentageChange = useCallback((v: number) => {
     // TODO: decide how to know balance
@@ -303,8 +319,13 @@ function Management() {
     approveToken().catch(console.error)
   }
 
-  const handlePercentageChange = (percent) => {
-    const from = getDividedBalance(fromBalance, fromData?.decimals, percent)
+  const handlePercentageChange = (percent: BigNumber) => {
+    if (!fromData) return
+
+    const from = multiplyBignumbers(
+      [fromBalance, fromData.decimals],
+      [percent, 18]
+    )
     handleFromChange(from.toString())
   }
 
@@ -384,6 +405,13 @@ function Management() {
       symbol="DEXE"
       decimal={18}
       onChange={handleFromChange}
+      customPrice={
+        direction === "withdraw" && (
+          <Flex>
+            <InsuranceAmount>Unstake amount</InsuranceAmount>
+          </Flex>
+        )
+      }
     />
   )
 
@@ -396,6 +424,14 @@ function Management() {
       symbol="LP DEXE"
       decimal={18}
       onChange={handleToChange}
+      customPrice={
+        direction === "deposit" && (
+          <Flex>
+            <InsuranceAmount>Insurance amount</InsuranceAmount>
+            <MultiplierIcon src={multiplier} />
+          </Flex>
+        )
+      }
     />
   )
 
@@ -403,7 +439,18 @@ function Management() {
     <Card>
       <CardHeader>
         <Flex>
-          <Title>Stake insurance</Title>
+          <Title
+            active={direction === "deposit"}
+            onClick={() => setDirection("deposit")}
+          >
+            Stake
+          </Title>
+          <Title
+            active={direction === "withdraw"}
+            onClick={() => setDirection("withdraw")}
+          >
+            Unstake
+          </Title>
         </Flex>
       </CardHeader>
 

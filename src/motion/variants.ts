@@ -13,6 +13,19 @@ export const opacityVariants = {
   },
 }
 
+export const dropdownVariants = {
+  visible: {
+    height: "fit-content",
+    display: "flex",
+    opacity: 1,
+  },
+  hidden: {
+    height: "0px",
+    opacity: 0,
+    display: "none",
+  },
+}
+
 export const titleVariants = {
   visible: {
     opacity: 1,
@@ -52,6 +65,42 @@ export const overlayVariants = {
     },
   },
 }
+
+export const accordionSummaryVariants = {
+  visible: {
+    opacity: 1,
+    height: "fit-content",
+    display: "block",
+  },
+  hidden: {
+    opacity: 0,
+    height: 0,
+    transitionEnd: {
+      display: "none",
+    },
+  },
+}
+
+export const rotate180Variants = {
+  visible: {
+    rotate: 0,
+  },
+  hidden: {
+    rotate: 180,
+    transition: { duration: 0.2 },
+  },
+}
+
+export const getSlideTopVariants = (hiddenH) => ({
+  visible: {
+    top: 55,
+    height: "100vh",
+  },
+  hidden: {
+    top: "initial",
+    height: hiddenH,
+  },
+})
 
 export default {
   opacityVariants,

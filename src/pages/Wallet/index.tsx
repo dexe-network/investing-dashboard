@@ -6,8 +6,10 @@ import { Insurance, UserRegistry } from "abi"
 
 import { PulseSpinner } from "react-spinners-kit"
 import Avatar from "components/Avatar"
-import Header, { EHeaderTitles } from "components/Header"
+import { EHeaderTitles } from "components/Header"
+import Header from "components/Header/Layout"
 import IconButton from "components/IconButton"
+import TransactionHistory from "components/TransactionHistory"
 
 import {
   selectInsuranceAddress,
@@ -29,10 +31,6 @@ import { useAddToast } from "state/application/hooks"
 import pen from "assets/icons/pencil-edit.svg"
 import bsc from "assets/wallets/bsc.svg"
 import add from "assets/icons/add-green.svg"
-import Invest from "assets/icons/Invest"
-import Withdraw from "assets/icons/Withdraw"
-import Swap from "assets/icons/Swap"
-import Expand from "assets/icons/Expand"
 import plus from "assets/icons/plus.svg"
 import copyIcon from "assets/icons/copy.svg"
 import logoutIcon from "assets/icons/logout.svg"
@@ -40,7 +38,6 @@ import logoutIcon from "assets/icons/logout.svg"
 import {
   Container,
   Cards,
-  List,
   Info,
   FloatingButtons,
   TextGray,
@@ -54,9 +51,6 @@ import {
   TextButton,
   TextLink,
   TextIcon,
-  Heading,
-  TransactionsList,
-  TransactionsPlaceholder,
   InsuranceCard,
   InsuranceInfo,
   InsuranceTitle,
@@ -64,12 +58,10 @@ import {
   InsuranceIcon,
   Network,
   NetworkIcon,
-  Tabs,
-  NavButton,
 } from "./styled"
 import { BigNumber } from "ethers"
 
-const transactions = []
+import useTransactionHistory from "./useTransactionHistory"
 
 const useUserSettings = (): [
   {
@@ -206,6 +198,11 @@ export default function Wallet() {
   const insuranceAddress = useSelector(selectInsuranceAddress)
   const insurance = useContract(insuranceAddress, Insurance)
 
+  const [
+    { txList, txFilter, FilterTypes, txListExpanded },
+    { setTxFiler, setTxListExpanded },
+  ] = useTransactionHistory()
+
   useEffect(() => {
     if (!insurance) return
 
@@ -256,14 +253,21 @@ export default function Wallet() {
 
   return (
     <>
-      <Header title={EHeaderTitles.myWallet} />
+      <Header>
+        {txListExpanded ? "Transactions History" : EHeaderTitles.myWallet}
+      </Header>
       <Container
         initial={{ opacity: 0, y: -15 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -15 }}
         transition={{ duration: 0.5, ease: [0.29, 0.98, 0.29, 1] }}
       >
-        <Cards>
+        <Cards
+          animate={{
+            opacity: txListExpanded ? 0 : 1,
+            transition: { duration: txListExpanded ? 0.2 : 0.4 },
+          }}
+        >
           <User>
             <Info>
               <AvatarWrapper>
@@ -347,32 +351,14 @@ export default function Wallet() {
           </Card>
         </Cards>
 
-        <List>
-          <Heading>Transactions History</Heading>
-
-          <Tabs>
-            <NavButton>
-              Investing <Invest />
-            </NavButton>
-            <NavButton>
-              Swap <Swap />
-            </NavButton>
-            <NavButton>
-              Withdraw <Withdraw />
-            </NavButton>
-            <NavButton>
-              <Expand />
-            </NavButton>
-          </Tabs>
-
-          {transactions.length ? (
-            <TransactionsList></TransactionsList>
-          ) : (
-            <TransactionsPlaceholder>
-              Your transactions will appear here....
-            </TransactionsPlaceholder>
-          )}
-        </List>
+        <TransactionHistory
+          list={txList}
+          filterTypes={FilterTypes}
+          filter={txFilter}
+          setFilter={setTxFiler}
+          expanded={txListExpanded}
+          setExpanded={setTxListExpanded}
+        />
       </Container>
     </>
   )

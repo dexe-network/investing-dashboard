@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { BigNumber } from "@ethersproject/bignumber"
+import { ReactNode } from "react"
 
 declare global {
   namespace NodeJS {
@@ -88,6 +89,7 @@ export interface IPriceHistoryQuery {
 /// @param openPositions the array of open positions addresses
 /// @param baseAndPositionBalances the array of balances. [0] is the balance of base tokens (array is normalized)
 /// @param totalPoolUSD is the current USD TVL in this pool
+/// @param traderBase is amount of trader base tokens in this pool
 /// @param lpEmission is the current number of LP tokens
 export interface PoolInfo {
   baseAndPositionBalances: BigNumber[]
@@ -99,6 +101,7 @@ export interface PoolInfo {
   totalInvestors: BigNumber
   totalPoolBase: BigNumber
   totalPoolUSD: BigNumber
+  traderBase: BigNumber
   parameters: PoolParameters
 }
 
@@ -196,4 +199,28 @@ export interface IPositionQuery {
 export enum ExchangeType {
   FROM_EXACT,
   TO_EXACT,
+}
+
+// used to display the exchange data
+interface FormElement {
+  address: string | undefined
+  amount: string
+  balance: BigNumber
+  symbol?: string
+  decimals?: number
+  icon?: ReactNode
+  price: BigNumber
+}
+
+export interface ExchangeForm {
+  from: FormElement
+  to: FormElement
+}
+
+export interface GasPriceResponse {
+  LastBlock: string
+  SafeGasPrice: string
+  ProposeGasPrice: string
+  FastGasPrice: string
+  UsdPrice: string
 }

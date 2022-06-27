@@ -9,7 +9,7 @@ import Ripple from "components/Ripple"
 import angleIcon from "assets/icons/angle-down.svg"
 import locker from "assets/icons/locker.svg"
 
-import { formatBigNumber } from "utils"
+import { cutDecimalPlaces, formatBigNumber } from "utils"
 
 import {
   InputContainer,
@@ -35,6 +35,7 @@ interface IToProps {
   decimal?: number
   priceImpact?: string
   customIcon?: ReactNode
+  customPrice?: ReactNode
   isLocked?: boolean
   onChange?: (amount: string) => void
   onSelect?: () => void
@@ -49,6 +50,7 @@ const ExchangeInput: React.FC<IToProps> = ({
   decimal,
   priceImpact,
   customIcon,
+  customPrice,
   isLocked,
   onChange,
   onSelect,
@@ -91,10 +93,14 @@ const ExchangeInput: React.FC<IToProps> = ({
   return (
     <InputContainer>
       <InputTop>
-        <Price>
-          ≈${formatBigNumber(price, 18, 2)}{" "}
-          {priceImpact && <>({priceImpact}%)</>}
-        </Price>
+        {customPrice ? (
+          customPrice
+        ) : (
+          <Price>
+            ≈${formatBigNumber(price, 18, 2)}{" "}
+            {priceImpact && <>({priceImpact}%)</>}
+          </Price>
+        )}
 
         <Balance onClick={setMaxAmount}>
           <Tokens>{formatBigNumber(balance, decimal, 6)}</Tokens>
@@ -106,9 +112,9 @@ const ExchangeInput: React.FC<IToProps> = ({
         <BigNumberInput
           decimals={decimal || 18}
           onChange={handleInputChange}
-          value={amount}
+          value={cutDecimalPlaces(amount, decimal, false, 6).toString()}
           renderInput={(props: any) => (
-            <Input disabled={!onChange} {...props} />
+            <Input disabled={!onChange} inputMode="decimal" {...props} />
           )}
         />
 

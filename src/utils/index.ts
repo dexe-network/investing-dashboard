@@ -52,27 +52,6 @@ export function shortenAddress(
   return `${address.substring(0, chars + 2)}...${address.substring(42 - chars)}`
 }
 
-export function fromBig(
-  value: BigNumber | undefined,
-  decimals: number | undefined
-) {
-  if (!value || !decimals) {
-    return BigNumber.from(0)
-  }
-
-  const divisor = BigNumber.from(10).pow(decimals)
-
-  return value.div(divisor).toString()
-}
-
-export function bigify(value: string, decimals: number) {
-  if (value === "") {
-    return ethers.utils.parseUnits("0", decimals)
-  }
-
-  return ethers.utils.parseUnits(value, decimals)
-}
-
 // create dummy data 90% positive number 10% negative
 export const getRandomPnl = () => {
   const r1 = Math.random()
@@ -82,31 +61,7 @@ export const getRandomPnl = () => {
   return r1 * 100 * negative
 }
 
-function reverseString(str) {
-  const splitString = str.split("")
-  const reverseArray = splitString.reverse()
-
-  const joinArray = reverseArray.join("")
-
-  return joinArray
-}
-
 const parseDecimals = (float: string, decimals) => {
-  // const firstMatch = floatPart.match("[1-9]")
-  // const lastMatch = reverseString(floatPart).match("[1-9]")
-
-  // if (
-  //   !!firstMatch &&
-  //   !!firstMatch.length &&
-  //   !!firstMatch.index &&
-  //   !!lastMatch &&
-  //   !!lastMatch.index
-  // ) {
-  //   const d = firstMatch.index > decimals ? firstMatch.index + 3 : decimals
-
-  //   return floatPart.substring(0, d + 1)
-  // }
-
   const floatPart = !!float ? `${float}`.substring(0, decimals + 1) : ".00"
   return floatPart
 }
@@ -273,24 +228,23 @@ export const calcSlippage = (
   decimals: number,
   slippage: number
 ) => {
-  try {
-    const normalizedAmount = ethers.utils.formatUnits(amount, decimals)
-    const normalizedWithSlippage = parseFloat(normalizedAmount) * slippage
+  const a = FixedNumber.fromValue(amount, decimals)
+  const sl = FixedNumber.fromValue(
+    ethers.utils.parseEther(slippage.toString()),
+    18
+  )
 
-    const result = ethers.utils.parseUnits(
-      fixFractionalDecimals(normalizedWithSlippage.toString(), decimals),
-      decimals
-    )
-
-    return result
-  } catch (e) {
-    console.log(e)
-    return amount
-  }
+  return BigNumber.from(a.mulUnsafe(sl)._hex)
 }
 
 export const parseTransactionError = (str: any) => {
+  const DEFAULT_TRANSACTION_ERROR = "Unpredictable transaction error"
+
   try {
+    if (str.code === 4001) {
+      return
+    }
+
     // parse string error
     if (typeof str === "string") {
       const position = str.search(`"message":`)
@@ -298,11 +252,11 @@ export const parseTransactionError = (str: any) => {
       const cutString = str.substring(position + 10)
 
       const matches = cutString.match(/"(.*?)"/)
-      return matches ? matches[1] : ""
+      return matches ? matches[1] : DEFAULT_TRANSACTION_ERROR
     }
 
     if (typeof str !== "object") {
-      return "Unpredictable transaction error"
+      return DEFAULT_TRANSACTION_ERROR
     }
 
     if (
@@ -318,7 +272,7 @@ export const parseTransactionError = (str: any) => {
       return str.data.message
     }
   } catch (e) {
-    return "Unpredictable transaction error"
+    return DEFAULT_TRANSACTION_ERROR
   }
 }
 
@@ -349,11 +303,12 @@ export const isTxMined = (tx: TransactionReceipt | undefined): boolean => {
 export const cutDecimalPlaces = (
   value: BigNumberish,
   decimals = 18,
-  roundUp = true
+  roundUp = true,
+  fix = 6
 ) => {
   const number = ethers.utils.formatUnits(value, decimals)
 
-  const pow = Math.pow(10, 6)
+  const pow = Math.pow(10, fix)
 
   const parsed =
     Math[roundUp ? "round" : "floor"](parseFloat(number) * pow) / pow
@@ -372,3 +327,32 @@ export const getMaxLPInvestAmount = (
 
   return BigNumber.from(result._hex)
 }
+
+export function fromBig(value: BigNumber | undefined, decimals = 18) {
+  if (!value) {
+    return "0"
+  }
+
+  const formatedNumber = ethers.utils.formatUnits(value, decimals)
+  if (formatedNumber.split(".")[1] === "0") return formatedNumber.split(".")[0]
+  return formatedNumber
+}
+
+export function bigify(value: string, decimals: number) {
+  if (!value) {
+    return ethers.utils.parseUnits("0", decimals)
+  }
+
+  return ethers.utils.parseUnits(value, decimals)
+}
+
+/**
+ * Transform BigNumber to FixedNumber (usually for calculations)
+ * @param recepient - converted number
+ * @param decimals - number of decimals for recepient (18 by default)
+ * @returns  recepient formating to FixedNumber
+ */
+export const convertBigToFixed = (
+  recepient: BigNumber,
+  decimals?: number
+): FixedNumber => FixedNumber.fromValue(recepient, decimals ?? 18)
