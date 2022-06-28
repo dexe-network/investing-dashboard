@@ -18,9 +18,9 @@ export const Container = styled(Flex)`
   width: 100%;
   height: calc(100vh - 94px);
   padding: 16px;
-  justify-content: center;
   align-items: center;
   flex-direction: column;
+  overflow-y: scroll;
 
   @media all and (display-mode: standalone) {
     height: calc(100vh - 115px);
@@ -33,7 +33,8 @@ export const Card = styled(Flex)`
   width: 100%;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
   border-radius: 10px;
-  max-height: calc(100vh - 220px);
+  max-height: fit-content;
+  margin: auto;
 `
 
 export const Content = styled(Flex)`

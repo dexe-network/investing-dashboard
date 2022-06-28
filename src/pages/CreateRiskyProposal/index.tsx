@@ -28,10 +28,14 @@ import DatePicker from "components/DatePicker"
 import Payload from "components/Payload"
 import TransactionError from "modals/TransactionError"
 
-import { usePoolQuery, useTraderPool } from "hooks/usePool"
+import { usePoolContract, usePoolQuery, useTraderPool } from "hooks/usePool"
 import { Token } from "constants/interfaces"
 import { selectWhitelist } from "state/pricefeed/selectors"
-import useContract, { useERC20 } from "hooks/useContract"
+import useContract, {
+  useBasicPoolContract,
+  useERC20,
+  useRiskyProposalContract,
+} from "hooks/useContract"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 
 import {
@@ -81,8 +85,15 @@ const poolsClient = createClient({
 
 const isFaqRead = localStorage.getItem("risky-proposal-faq-read") === "true"
 
-const useCreateRiskyProposal = (): [
+const useCreateRiskyProposal = (
+  poolAddress?: string,
+  tokenAddress?: string
+): [
   {
+    error: string
+    isSubmiting: boolean
+    baseTokenPrice?: BigNumber
+    lpAvailable?: BigNumber
     lpAmount: string
     timestampLimit: number
     investLPLimit: string
@@ -90,84 +101,32 @@ const useCreateRiskyProposal = (): [
     instantTradePercentage: number
   },
   {
+    setSubmiting: (value: boolean) => void
+    setError: (value: string) => void
     setLpAmount: (value: string) => void
     setTimestampLimit: (timestamp: number) => void
     setInvestLPLimit: (value: string) => void
     setMaxTokenPriceLimit: (value: string) => void
     setInstantTradePercentage: (percent: number) => void
+    handleSubmit: () => void
   }
 ] => {
+  const { account, library } = useWeb3React()
   const initialTimeLimit = shortTimestamp(getTime(addDays(new Date(), 30)))
+  const [riskyProposal] = useRiskyProposalContract(poolAddress)
 
+  const basicTraderPool = useBasicPoolContract(poolAddress)
+  const traderPool = useTraderPool(poolAddress)
+
+  const [error, setError] = useState("")
+  const [isSubmiting, setSubmiting] = useState(false)
   const [lpAmount, setLpAmount] = useState("")
   const [timestampLimit, setTimestampLimit] = useState(initialTimeLimit)
   const [investLPLimit, setInvestLPLimit] = useState("")
   const [maxTokenPriceLimit, setMaxTokenPriceLimit] = useState("")
   const [instantTradePercentage, setInstantTradePercentage] = useState(0)
-
-  return [
-    {
-      lpAmount,
-      timestampLimit,
-      investLPLimit,
-      maxTokenPriceLimit,
-      instantTradePercentage,
-    },
-    {
-      setLpAmount,
-      setTimestampLimit,
-      setInvestLPLimit,
-      setMaxTokenPriceLimit,
-      setInstantTradePercentage,
-    },
-  ]
-}
-
-const CreateRiskyProposal: FC = () => {
-  const [
-    {
-      lpAmount,
-      timestampLimit,
-      investLPLimit,
-      maxTokenPriceLimit,
-      instantTradePercentage,
-    },
-    {
-      setLpAmount,
-      setTimestampLimit,
-      setInvestLPLimit,
-      setMaxTokenPriceLimit,
-      setInstantTradePercentage,
-    },
-  ] = useCreateRiskyProposal()
-
-  const { tokenAddress, poolAddress } = useParams()
-
-  const [error, setError] = useState("")
-  const [isSubmiting, setSubmiting] = useState(false)
-  const [riskyProposalAddress, setRiskyProposalAddress] = useState("")
-  const [isChecked, setChecked] = useState(false)
-  const [isDateOpen, setDateOpen] = useState(false)
   const [baseTokenPrice, setBaseTokenPrice] = useState<BigNumber | undefined>()
   const [lpAvailable, setLpAvailable] = useState<BigNumber | undefined>()
-
-  const proposalTokenPrice = useTokenPriceOutUSD({ tokenAddress: tokenAddress })
-
-  const { account, library } = useWeb3React()
-  const [, tokenData] = useERC20(tokenAddress)
-  const navigate = useNavigate()
-
-  const whitelisted = useSelector(selectWhitelist)
-
-  const traderPool = useTraderPool(poolAddress)
-  const [poolQuery] = usePoolQuery(poolAddress)
-
-  const basicTraderPool = useContract(poolAddress, BasicTraderPool)
-  const [, baseTokenData] = useERC20(poolQuery?.baseToken)
-  const riskyProposal = useContract(
-    riskyProposalAddress,
-    TraderPoolRiskyProposal
-  )
 
   useEffect(() => {
     if (!riskyProposal || !tokenAddress || tokenAddress.length !== 42) return
@@ -186,16 +145,16 @@ const CreateRiskyProposal: FC = () => {
   }, [riskyProposal, tokenAddress])
 
   // get risky pool address
-  useEffect(() => {
-    if (!basicTraderPool) return
+  // useEffect(() => {
+  //   if (!basicTraderPool) return
 
-    const getProposalPoolAddress = async () => {
-      const address = await basicTraderPool.proposalPoolAddress()
-      setRiskyProposalAddress(address)
-    }
+  //   const getProposalPoolAddress = async () => {
+  //     const address = await basicTraderPool.proposalPoolAddress()
+  //     setRiskyProposalAddress(address)
+  //   }
 
-    getProposalPoolAddress().catch(console.error)
-  }, [basicTraderPool])
+  //   getProposalPoolAddress().catch(console.error)
+  // }, [basicTraderPool])
 
   useEffect(() => {
     if (!traderPool || !account) return
@@ -207,20 +166,6 @@ const CreateRiskyProposal: FC = () => {
 
     getBalance().catch(console.error)
   }, [traderPool, account])
-
-  const handleNextStep = () => {
-    if (isChecked) {
-      localStorage.setItem("risky-proposal-faq-read", "true")
-    }
-
-    if (!tokenData) {
-      navigate(`/create-risky-proposal/${poolAddress}/0x/2`)
-    }
-  }
-
-  const handleRiskyTokenSelect = (token: Token) => {
-    navigate(`/create-risky-proposal/${poolAddress}/${token.address}/3`)
-  }
 
   const handleSubmit = () => {
     if (!basicTraderPool || !traderPool || !riskyProposal) return
@@ -274,6 +219,84 @@ const CreateRiskyProposal: FC = () => {
         !!errorMessage && setError(errorMessage)
       }
     })
+  }
+
+  return [
+    {
+      lpAmount,
+      error,
+      isSubmiting,
+      lpAvailable,
+      baseTokenPrice,
+      timestampLimit,
+      investLPLimit,
+      maxTokenPriceLimit,
+      instantTradePercentage,
+    },
+    {
+      setError,
+      setSubmiting,
+      setLpAmount,
+      setTimestampLimit,
+      setInvestLPLimit,
+      setMaxTokenPriceLimit,
+      setInstantTradePercentage,
+      handleSubmit,
+    },
+  ]
+}
+
+const CreateRiskyProposal: FC = () => {
+  const { tokenAddress, poolAddress } = useParams()
+
+  const [
+    {
+      error,
+      isSubmiting,
+      lpAvailable,
+      baseTokenPrice,
+      lpAmount,
+      timestampLimit,
+      investLPLimit,
+      maxTokenPriceLimit,
+      instantTradePercentage,
+    },
+    {
+      setError,
+      setSubmiting,
+      setLpAmount,
+      setTimestampLimit,
+      setInvestLPLimit,
+      setMaxTokenPriceLimit,
+      setInstantTradePercentage,
+      handleSubmit,
+    },
+  ] = useCreateRiskyProposal(poolAddress, tokenAddress)
+
+  const [isChecked, setChecked] = useState(false)
+  const [isDateOpen, setDateOpen] = useState(false)
+
+  const proposalTokenPrice = useTokenPriceOutUSD({ tokenAddress: tokenAddress })
+  const [, poolInfo] = usePoolContract(poolAddress)
+  const [, baseTokenData] = useERC20(poolInfo?.parameters.baseToken)
+
+  const [, tokenData] = useERC20(tokenAddress)
+  const navigate = useNavigate()
+
+  const whitelisted = useSelector(selectWhitelist)
+
+  const handleNextStep = () => {
+    if (isChecked) {
+      localStorage.setItem("risky-proposal-faq-read", "true")
+    }
+
+    if (!tokenData) {
+      navigate(`/create-risky-proposal/${poolAddress}/0x/2`)
+    }
+  }
+
+  const handleRiskyTokenSelect = (token: Token) => {
+    navigate(`/create-risky-proposal/${poolAddress}/${token.address}/3`)
   }
 
   const stepComponents = {
