@@ -4,24 +4,19 @@ import { Flex } from "theme"
 import { PriceFeed } from "abi"
 import { BigNumber, ethers } from "ethers"
 
-import TokenIcon from "components/TokenIcon"
-import Icon from "components/Icon"
-
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { IPosition } from "constants/interfaces_v2"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import { normalizeBigNumber } from "utils"
 
+import { accordionSummaryVariants } from "motion/variants"
 import {
   CardContainer,
   Card,
-  Head,
   Body,
-  PositionSymbol,
-  FundSymbol,
-  Amount,
   Label,
   Value,
   StablePrice,
@@ -32,8 +27,7 @@ import {
   PositionTradeList,
 } from "./styled"
 import PositionTrade from "./PositionTrade"
-import { usePoolMetadata } from "state/ipfsMetadata/hooks"
-import { accordionSummaryVariants } from "motion/variants"
+import PositionCardHeader from "./PositionCardHeader"
 
 interface Props {
   baseToken?: string
@@ -136,22 +130,14 @@ const PositionCard: React.FC<Props> = ({
     <>
       <CardContainer>
         <Card onClick={toggleTrades}>
-          <Head>
-            <Flex>
-              <TokenIcon address={position.positionToken} m="0" size={24} />
-              <Amount>5</Amount>
-              <PositionSymbol>{tokenData?.symbol}</PositionSymbol>
-            </Flex>
-            <Flex>
-              <FundSymbol>{ticker}</FundSymbol>
-              <Icon
-                m="0"
-                size={24}
-                source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-                address={poolAddress}
-              />
-            </Flex>
-          </Head>
+          <PositionCardHeader
+            positionToken={position.positionToken}
+            symbol={tokenData?.symbol}
+            showBaseToken={!isPoolTrader}
+            baseTokenSymbol={ticker}
+            poolAddress={poolAddress}
+            poolIcon={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+          />
           <Body>
             <Label>Entry Price</Label>
             <Label>Mark price</Label>
