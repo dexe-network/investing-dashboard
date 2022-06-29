@@ -1,73 +1,45 @@
 import { FC } from "react"
-import { Flex } from "theme"
-
-import TokenIcon from "components/TokenIcon"
 
 import { useERC20 } from "hooks/useContract"
 
-import {
-  Card,
-  Head,
-  Body,
-  PositionSymbol,
-  FundSymbol,
-  Amount,
-  Label,
-  Value,
-  StablePrice,
-  PNL,
-} from "./styled"
+import RiskyCardTrader from "components/RiskyCard/RiskyCardTrader"
+import RiskyCardInvestor from "components/RiskyCard/RiskyCardInvestor"
 
 interface Props {
   positionAddress: string
-  baseTokenAddress?: string
-  fundSymbol?: string
-  description?: string
-  onClick: () => void
+  poolAddress: string
+
+  onInvest: () => void
+  isPoolTrader: boolean
+  poolMetadata: any
+  poolTicker: string
 }
 
 const RiskyCard: FC<Props> = ({
+  isPoolTrader,
   positionAddress,
-  baseTokenAddress,
-  fundSymbol,
-  description,
-  onClick,
+  poolAddress,
+  onInvest,
+  poolMetadata,
+  poolTicker,
 }) => {
-  const [, tokenData] = useERC20(positionAddress)
-  const [, baseData] = useERC20(baseTokenAddress)
+  const [, positionTokenData] = useERC20(positionAddress)
 
-  return (
-    <Card onClick={onClick}>
-      <Head>
-        <Flex>
-          <TokenIcon address={positionAddress} m="0" size={24} />
-          <Amount>5</Amount>
-          <PositionSymbol>{tokenData?.symbol}</PositionSymbol>
-        </Flex>
-      </Head>
-      <Body>
-        <Label>Entry Price</Label>
-        <Label>Mark price</Label>
-        <Label>P&L LP</Label>
-
-        <Flex>
-          <Value>0.1</Value>
-          <Label>{baseData?.symbol}</Label>
-        </Flex>
-        <Flex>
-          <Value>0</Value>
-          <Label>{baseData?.symbol}</Label>
-        </Flex>
-        <Flex>
-          <Value>+0.0012</Value>
-          <PNL>+0.38%</PNL>
-        </Flex>
-
-        <StablePrice>$57</StablePrice>
-        <StablePrice>0</StablePrice>
-        <StablePrice>+$30</StablePrice>
-      </Body>
-    </Card>
+  return isPoolTrader ? (
+    <RiskyCardTrader
+      onInvest={onInvest}
+      positionAddress={positionAddress}
+      positionTokenData={positionTokenData}
+    />
+  ) : (
+    <RiskyCardInvestor
+      poolMetadata={poolMetadata}
+      onInvest={onInvest}
+      positionAddress={positionAddress}
+      poolAddress={poolAddress}
+      poolTicker={poolTicker}
+      positionTokenData={positionTokenData}
+    />
   )
 }
 

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from "react"
-import { Routes, Route, useParams, useNavigate } from "react-router-dom"
+import { Routes, Route, useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 
 import Header from "components/Header/Layout"
 import PositionCard from "components/PositionCard"
-import RiskyCard from "components/RiskyCard"
 import ProposeToInvestModal from "modals/ProposeToInvest"
+
+import RiskyProposals from "pages/RiskyProposals"
 
 import { usePoolPositions } from "state/pools/hooks"
 import { useActiveWeb3React } from "hooks"
 import { usePoolContract } from "hooks/usePool"
-import useRiskyProposals from "hooks/useRiskyProposals"
 import { useERC20, useTraderPoolContract } from "hooks/useContract"
 
 import { Container, List } from "./styled"
@@ -153,32 +153,6 @@ const Open = () => {
   )
 }
 
-const Proposals = () => {
-  const { poolAddress } = useParams()
-  const [, poolInfo] = usePoolContract(poolAddress)
-  const navigate = useNavigate()
-  const proposals = useRiskyProposals(poolAddress)
-
-  const handleCardClick = (index) => {
-    navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
-  }
-
-  return (
-    <>
-      {proposals.map((position, index) => (
-        <RiskyCard
-          onClick={() => handleCardClick(index)}
-          baseTokenAddress={poolInfo?.parameters.baseToken}
-          fundSymbol={poolInfo?.ticker}
-          description={poolInfo?.parameters.descriptionURL}
-          positionAddress={position.proposalInfo.token}
-          key={position.proposalInfo.token}
-        />
-      ))}
-    </>
-  )
-}
-
 const Closed = () => {
   const { account } = useActiveWeb3React()
   const { poolAddress } = useParams()
@@ -218,7 +192,7 @@ const FundPositions = () => {
 
   const proposals = (
     <GraphProvider value={poolsClient}>
-      <Proposals />
+      <RiskyProposals />
     </GraphProvider>
   )
 
@@ -238,7 +212,7 @@ const FundPositions = () => {
           },
           {
             title: "Proposals",
-            source: `/fund-positions/${poolAddress}/proposals`,
+            source: `/fund-positions/${poolAddress}/proposals/open`,
           },
           {
             title: "Closed positions",
@@ -251,7 +225,7 @@ const FundPositions = () => {
       <Container>
         <Routes>
           <Route path="open" element={open}></Route>
-          <Route path="proposals" element={proposals}></Route>
+          <Route path="proposals/*" element={proposals}></Route>
           <Route path="closed" element={closed}></Route>
         </Routes>
       </Container>
