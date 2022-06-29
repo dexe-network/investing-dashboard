@@ -29,7 +29,7 @@ import {
   percentageOfBignumbers,
   divideBignumbers,
 } from "utils/formulas"
-import { usePoolPrice } from "state/pools/hooks"
+import usePoolPrice from "hooks/usePoolPrice"
 import { SwapDirection } from "constants/types"
 import useAlert, { AlertType } from "hooks/useAlert"
 import { ExchangeForm } from "constants/interfaces_v2"
