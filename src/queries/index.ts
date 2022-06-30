@@ -111,25 +111,27 @@ const PoolsQueryByTypeWithSort = `
   }
 `
 
+const POSITION = `
+  id
+  positionToken
+  closed
+  exchanges {
+    fromToken
+    toToken
+    fromVolume
+    toVolume
+  }
+`
+
 const BasicPositionsQuery = `
   query ($address: String!, $closed: Boolean!) {
-    basicPool(id: $address) {
+    traderPool(id: $address) {
       baseToken
       descriptionURL
       ticker
+      trader
       positions(first: 100, where: { closed: $closed }) {
-        id
-        positionToken
-        closed
-        exchanges {
-          fromToken
-          toToken
-          fromVolume
-          toVolume
-          day {
-            day
-          }
-        }
+        ${POSITION}
       }
     }
   }

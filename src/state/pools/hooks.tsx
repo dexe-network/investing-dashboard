@@ -196,11 +196,11 @@ export function usePools(poolType: PoolType): [boolean, () => void] {
 
 export function usePoolPositions(address?: string, closed = false) {
   const [response, executeQuery] = useQuery<{
-    basicPool: IPositionQuery
+    traderPool: IPositionQuery
   }>({
     query: BasicPositionsQuery,
     variables: { address, closed },
   })
 
-  return response.data?.basicPool
+  return response.data?.traderPool
 }
