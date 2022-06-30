@@ -3,7 +3,7 @@ import { BigNumber } from "ethers"
 export interface IProposalInvestTokens {
   baseAmount: BigNumber
   lp2Amount: BigNumber
-  positionAmount: BigNumber[]
+  positionAmount: BigNumber
 }
 
 export interface IDivestAmounts {

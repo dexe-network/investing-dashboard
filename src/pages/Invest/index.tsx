@@ -241,7 +241,6 @@ const Invest = () => {
       />
 
       <ExchangeDivider
-        direction={direction}
         changeAmount={handlePercentageChange}
         changeDirection={handleDirectionChange}
       />

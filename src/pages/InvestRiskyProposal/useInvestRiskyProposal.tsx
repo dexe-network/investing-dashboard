@@ -12,7 +12,7 @@ import { TransactionType } from "state/transactions/types"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import { SwapDirection } from "constants/types"
 
-import { multiplyBignumbers } from "utils/formulas"
+import { divideBignumbers, multiplyBignumbers } from "utils/formulas"
 
 import {
   IDivestAmounts,
@@ -32,21 +32,25 @@ import {
   useRiskyProposalContract,
   useTraderPoolContract,
 } from "hooks/useContract"
-import { ExchangeForm } from "constants/interfaces_v2"
+import { RiskyForm } from "constants/interfaces_v2"
 import usePoolPrice from "hooks/usePoolPrice"
 import useRiskyPrice from "hooks/useRiskyPrice"
+import useGasTracker from "state/gas/hooks"
 
 const useInvestRiskyProposal = (
   poolAddress?: string,
   proposalId?: string
 ): [
   {
-    formWithDirection: ExchangeForm
+    formWithDirection: RiskyForm
     isSlippageOpen: boolean
     fromBalance: BigNumber
     toBalance: BigNumber
     inPrice: BigNumber
     outPrice: BigNumber
+    oneTokenCost: BigNumber
+    usdTokenCost: BigNumber
+    gasPrice: string
     fromAmount: string
     toAmount: string
     slippage: string
@@ -73,6 +77,7 @@ const useInvestRiskyProposal = (
 ] => {
   const { account } = useWeb3React()
   const [showAlert] = useAlert()
+  const [, getGasPrice] = useGasTracker()
 
   const [toBalance, setToBalance] = useState(BigNumber.from("0"))
   const [fromBalance, setFromBalance] = useState(BigNumber.from("0"))
@@ -85,6 +90,16 @@ const useInvestRiskyProposal = (
   const [toSelectorOpened, setToSelector] = useState(false)
   const [fromSelectorOpened, setFromSelector] = useState(false)
   const [direction, setDirection] = useState<SwapDirection>("deposit")
+  const [oneTokenCost, setOneTokenCost] = useState(BigNumber.from("0"))
+  const [usdTokenCost, setUSDTokenCost] = useState(BigNumber.from("0"))
+  const [gasPrice, setGasPrice] = useState("0.00")
+
+  const [baseAmountReceived, setBaseAmountReceived] = useState(
+    BigNumber.from("0")
+  )
+  const [positionAmountReceived, setPositionAmountReceived] = useState(
+    BigNumber.from("0")
+  )
 
   const [toAddress, setToAddress] = useState("")
   const [fromAddress, setFromAddress] = useState("")
@@ -105,8 +120,12 @@ const useInvestRiskyProposal = (
 
   const [, toData] = useERC20(proposal?.proposalInfo.token)
 
-  const { priceUSD: poolPriceUSD } = usePoolPrice(poolAddress)
-  const { priceUSD: riskyPriceUSD } = useRiskyPrice(poolAddress, proposalId)
+  const { priceUSD: poolPriceUSD, priceBase: poolPriceBase } =
+    usePoolPrice(poolAddress)
+  const { priceUSD: riskyPriceUSD, priceBase: riskyPriceBase } = useRiskyPrice(
+    poolAddress,
+    proposalId
+  )
 
   const addTransaction = useTransactionAdder()
 
@@ -118,8 +137,8 @@ const useInvestRiskyProposal = (
     />
   )
 
-  const exchangeForm = useMemo(
-    () => ({
+  const exchangeForm = useMemo(() => {
+    return {
       deposit: {
         from: {
           address: undefined,
@@ -138,6 +157,14 @@ const useInvestRiskyProposal = (
           symbol: `${toData?.symbol}-LP`,
           decimals: toData?.decimals,
           icon: undefined,
+          info: {
+            stakeLimit: proposal?.proposalInfo.proposalLimits.investLPLimit,
+            tokens: [
+              poolInfo?.parameters.baseToken || "",
+              proposal?.proposalInfo.token || "",
+            ],
+            amounts: [baseAmountReceived, positionAmountReceived],
+          },
         },
       },
       withdraw: {
@@ -149,6 +176,9 @@ const useInvestRiskyProposal = (
           symbol: `${toData?.symbol}-LP`,
           decimals: toData?.decimals,
           icon: undefined,
+          info: {
+            stakeLimit: proposal?.proposalInfo.proposalLimits.investLPLimit,
+          },
         },
         to: {
           address: undefined,
@@ -160,20 +190,21 @@ const useInvestRiskyProposal = (
           icon: poolIcon,
         },
       },
-    }),
-    [
-      fromAmount,
-      fromBalance,
-      inPrice,
-      outPrice,
-      poolIcon,
-      poolInfo,
-      proposal,
-      toAmount,
-      toBalance,
-      toData,
-    ]
-  )
+    }
+  }, [
+    baseAmountReceived,
+    positionAmountReceived,
+    fromAmount,
+    toAmount,
+    fromBalance,
+    toBalance,
+    inPrice,
+    outPrice,
+    poolIcon,
+    poolInfo,
+    proposal,
+    toData,
+  ])
 
   const formWithDirection = exchangeForm[direction]
 
@@ -236,6 +267,44 @@ const useInvestRiskyProposal = (
     },
     [proposalId, proposalPool, traderPool]
   )
+
+  const estimateDepositGasPrice = useCallback(async () => {
+    const amount = BigNumber.from(fromAmount)
+
+    if (!basicPool || amount.isZero()) return
+
+    const [divests, invests] = await getInvestTokens(amount)
+
+    return await basicPool.estimateGas.investProposal(
+      Number(proposalId) + 1,
+      amount,
+      divests.receptions.receivedAmounts,
+      invests.positionAmount
+    )
+  }, [basicPool, fromAmount, getInvestTokens, proposalId])
+
+  const estimateWithdrawGasPrice = useCallback(async () => {
+    const amount = BigNumber.from(fromAmount)
+
+    if (!basicPool || amount.isZero()) return
+
+    const [divests, invests] = await getDivestTokens(amount)
+
+    return await basicPool.estimateGas.reinvestProposal(
+      Number(proposalId) + 1,
+      amount,
+      invests.receivedAmounts,
+      divests.receivedAmounts[0]
+    )
+  }, [basicPool, fromAmount, getDivestTokens, proposalId])
+
+  const estimateGas = useCallback(async () => {
+    if (direction === "deposit") {
+      return await estimateDepositGasPrice()
+    } else {
+      return await estimateWithdrawGasPrice()
+    }
+  }, [direction, estimateDepositGasPrice, estimateWithdrawGasPrice])
 
   const handleDeposit = useCallback(async () => {
     const amount = BigNumber.from(fromAmount)
@@ -344,6 +413,8 @@ const useInvestRiskyProposal = (
           const lpPrice = getLpPrice(amount)
           const lp2Price = getLp2Price(invests.lp2Amount)
 
+          setPositionAmountReceived(invests.positionAmount)
+          setBaseAmountReceived(invests.baseAmount)
           setToAmount(invests.lp2Amount.toString())
           setInPrice(lpPrice)
           setOutPrice(lp2Price)
@@ -372,25 +443,54 @@ const useInvestRiskyProposal = (
     [fromBalance, handleFromChange]
   )
 
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const gasPrice = await estimateGas()
+        if (!gasPrice) return
+
+        const gas = getGasPrice(gasPrice.toNumber())
+        setGasPrice(gas)
+      } catch (e) {}
+    })()
+  }, [estimateGas, getGasPrice])
+
+  useEffect(() => {
+    handleFromChange(fromAmount)
+  }, [direction])
+
+  useEffect(() => {
+    if (direction === "deposit") {
+      setUSDTokenCost(riskyPriceUSD)
+      setOneTokenCost(
+        divideBignumbers([riskyPriceBase, 18], [poolPriceBase, 18])
+      )
+    }
+    if (direction === "withdraw") {
+      setUSDTokenCost(poolPriceUSD)
+      setOneTokenCost(
+        divideBignumbers([poolPriceBase, 18], [riskyPriceBase, 18])
+      )
+    }
+  }, [direction, poolPriceBase, poolPriceUSD, riskyPriceBase, riskyPriceUSD])
+
   // get LP balance
   // get LP2 balance
   // update amounts
   useEffect(() => {
     getLPBalance().catch(console.error)
     getLP2Balance().catch(console.error)
-    handleFromChange(fromAmount).catch(console.error)
-  }, [direction, getLP2Balance, getLPBalance, handleFromChange])
+  }, [direction, getLP2Balance, getLPBalance])
 
   // balance updater for both LP and LP2
   useEffect(() => {
     const interval = setInterval(() => {
       getLPBalance().catch(console.error)
       getLP2Balance().catch(console.error)
-      handleFromChange(fromAmount)
     }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     return () => clearInterval(interval)
-  }, [getLPBalance, getLP2Balance, handleFromChange])
+  }, [getLPBalance, getLP2Balance])
 
   return [
     {
@@ -398,6 +498,9 @@ const useInvestRiskyProposal = (
       isSlippageOpen,
       fromBalance,
       toBalance,
+      oneTokenCost,
+      usdTokenCost,
+      gasPrice,
       inPrice,
       outPrice,
       fromAmount,

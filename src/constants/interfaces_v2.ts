@@ -134,7 +134,7 @@ interface RiskyProposalInfo {
   balanceBase: BigNumber
   balancePosition: BigNumber
   lpLocked: BigNumber
-  propoosalLimits: RiskyProposalLimits
+  proposalLimits: RiskyProposalLimits
   token: string
   tokenDecimals: BigNumber
 }
@@ -202,7 +202,7 @@ export enum ExchangeType {
 }
 
 // used to display the exchange data
-interface FormElement {
+interface FormElement<T = void> {
   address: string | undefined
   amount: string
   balance: BigNumber
@@ -210,6 +210,18 @@ interface FormElement {
   decimals?: number
   icon?: ReactNode
   price: BigNumber
+  info?: T
+}
+
+export interface RiskyInvestInfo {
+  stakeLimit?: BigNumber
+  tokens?: Array<string>
+  amounts?: BigNumber[]
+}
+
+export interface RiskyForm {
+  from: FormElement<RiskyInvestInfo>
+  to: FormElement<RiskyInvestInfo>
 }
 
 export interface ExchangeForm {

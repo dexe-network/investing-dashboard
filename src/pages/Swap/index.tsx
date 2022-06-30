@@ -276,7 +276,6 @@ const Swap = () => {
       />
 
       <ExchangeDivider
-        direction="deposit"
         changeAmount={handlePercentageChange}
         changeDirection={handleDirectionChange}
       />

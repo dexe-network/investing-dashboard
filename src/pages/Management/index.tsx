@@ -457,7 +457,6 @@ function Management() {
       {direction === "deposit" ? from : to}
 
       <ExchangeDivider
-        direction={direction}
         changeAmount={handlePercentageChange}
         changeDirection={setDirection}
       />
