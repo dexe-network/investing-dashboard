@@ -227,5 +227,6 @@ export interface IPoolPosition {
 export interface ITab {
   title: string
   source: string
+  activeSource?: string[]
   amount?: number
 }

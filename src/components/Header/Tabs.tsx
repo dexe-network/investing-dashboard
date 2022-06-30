@@ -15,13 +15,21 @@ interface IHeaderTabsProps {
 const HeaderTabs = ({ tabs }: IHeaderTabsProps) => {
   const { pathname } = useLocation()
 
+  const isActive = (source, activeSource) => {
+    if (activeSource && activeSource.length > 0) {
+      return activeSource.some((s) => isActiveRoute(pathname, s))
+    }
+
+    return isActiveRoute(pathname, source)
+  }
+
   return tabs.length > 0 ? (
     <TabsMenu>
       <Tabs>
         {tabs.map((tab: ITab) => {
           return (
             <To key={tab.title} to={tab.source}>
-              <Tab active={isActiveRoute(pathname, tab.source)}>
+              <Tab active={isActive(tab.source, tab.activeSource)}>
                 {tab.title}
               </Tab>
 
