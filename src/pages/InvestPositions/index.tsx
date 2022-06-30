@@ -96,11 +96,11 @@ const RiskyProposals = () => {
 const InvestmentProposals = () => {
   const tabs: ITab[] = [
     {
-      title: "Risk proposals",
+      title: "New",
       source: `/invest-positions/invest-proposals/new`,
     },
     {
-      title: "Closed",
+      title: "Invested",
       source: `/invest-positions/invest-proposals/invested`,
     },
   ]
@@ -144,14 +144,27 @@ const InvestPositions = () => {
           {
             title: "My positions",
             source: "/invest-positions/positions/open",
+            activeSource: [
+              "/invest-positions/positions/open",
+              "/invest-positions/positions/closed",
+            ],
           },
           {
             title: "Risk proposals",
             source: "/invest-positions/risk-proposals/open",
+            activeSource: [
+              "/invest-positions/risk-proposals/open",
+              "/invest-positions/risk-proposals/positions",
+              "/invest-positions/risk-proposals/closed",
+            ],
           },
           {
             title: "Investment",
             source: `/invest-positions/invest-proposals/new`,
+            activeSource: [
+              "/invest-positions/invest-proposals/new",
+              "/invest-positions/invest-proposals/invested",
+            ],
           },
         ]}
       >

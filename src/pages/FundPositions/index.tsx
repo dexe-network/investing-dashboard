@@ -142,6 +142,11 @@ const FundPositions = () => {
           {
             title: "Proposals",
             source: `/fund-positions/${poolAddress}/proposals/open`,
+            activeSource: [
+              `/fund-positions/${poolAddress}/proposals/open`,
+              `/fund-positions/${poolAddress}/proposals/positions`,
+              `/fund-positions/${poolAddress}/proposals/closed`,
+            ],
           },
           {
             title: "Closed positions",
