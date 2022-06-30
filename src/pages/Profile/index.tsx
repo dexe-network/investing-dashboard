@@ -1,10 +1,18 @@
-import MemberMobile from "components/MemberMobile"
-import Button, { SecondaryButton } from "components/Button"
+import { useMemo } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { GuardSpinner } from "react-spinners-kit"
+
+import MemberMobile from "components/MemberMobile"
+import Button, { SecondaryButton } from "components/Button"
 import FundDetailsCard from "components/FundDetailsCard"
 import FundStatisticsCard from "components/FundStatisticsCard"
+import AreaChart from "components/AreaChart"
+import ProfitLossChart from "components/ProfitLossChart"
+import TabsLight from "components/TabsLight"
+import Header from "components/Header/Layout"
+
+import { Flex, Center } from "theme"
 import {
   Container,
   ButtonContainer,
@@ -13,8 +21,7 @@ import {
   TextWhiteBig,
   FundsUsed,
 } from "./styled"
-import { Flex, Center } from "theme"
-import { IDetailedChart } from "constants/interfaces"
+
 import {
   TabCard,
   Row,
@@ -22,14 +29,12 @@ import {
   Period,
   ChartPeriods,
 } from "pages/Investor/styled"
-
-import AreaChart from "components/AreaChart"
-import ProfitLossChart from "components/ProfitLossChart"
 import BarChart from "pages/Investor/Bar"
-import TabsLight from "components/TabsLight"
-import Header from "components/Header/Layout"
+
+import { IDetailedChart } from "constants/interfaces"
 import { PoolType } from "constants/interfaces_v2"
 import { shortenAddress } from "utils"
+import { useActiveWeb3React } from "hooks"
 import { usePoolContract, usePoolQuery } from "hooks/usePool"
 
 const pnl: IDetailedChart[] = [
@@ -138,21 +143,29 @@ const poolsClient = createClient({
 })
 
 const Profile: React.FC<Props> = () => {
+  const { account } = useActiveWeb3React()
   const { poolAddress, poolType } = useParams<{
     poolAddress: string
     poolType: PoolType
   }>()
-  const navigate = useNavigate()
 
   const [poolData] = usePoolQuery(poolAddress)
   const [leverageInfo, poolInfoData] = usePoolContract(poolAddress)
+
+  const navigate = useNavigate()
+
+  const isPoolOwner = useMemo(() => {
+    if (!account || !poolInfoData) return false
+    return account === poolInfoData.parameters.trader
+  }, [account, poolInfoData])
 
   const handleBuyRedirect = () => {
     navigate(`/pool/invest/${poolData?.id}`)
   }
 
   const handlePositionsRedirect = () => {
-    navigate(`/fund-positions/${poolData?.id}/open`)
+    const tabPath = isPoolOwner ? "open" : "closed"
+    navigate(`/fund-positions/${poolData?.id}/${tabPath}`)
   }
 
   const back = () => navigate(-1)
