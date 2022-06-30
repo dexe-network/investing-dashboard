@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Routes, Route, useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
+import { RotateSpinner } from "react-spinners-kit"
 
 import Header from "components/Header/Layout"
 import PositionCard from "components/PositionCard"
@@ -11,87 +12,19 @@ import RiskyProposals from "pages/RiskyProposals"
 import { usePoolPositions } from "state/pools/hooks"
 import { useActiveWeb3React } from "hooks"
 import { usePoolContract } from "hooks/usePool"
-import { useERC20, useTraderPoolContract } from "hooks/useContract"
+import { useTraderPoolContract } from "hooks/useContract"
 
-import { Container, List } from "./styled"
+import { Container, List, LoaderContainer } from "./styled"
 
 const poolsClient = createClient({
-  url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
-
-const positions = [
-  {
-    closed: false,
-    id: "slkdfjhasjdklfhaskjdfhask",
-    positionToken: "string",
-    exchanges: [
-      {
-        fromToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        toToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        fromVolume: "0x00",
-        toVolume: "0x00",
-        day: {
-          day: 1656320126965,
-        },
-      },
-    ],
-  },
-  {
-    closed: false,
-    id: "slkdfjha9678hogkjlfhask",
-    positionToken: "string",
-    exchanges: [
-      {
-        fromToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        toToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        fromVolume: "0x00",
-        toVolume: "0x00",
-        day: {
-          day: 1656320126965,
-        },
-      },
-    ],
-  },
-  {
-    closed: false,
-    id: "slkdfjhasj0987gik574askjdfhask",
-    positionToken: "string",
-    exchanges: [
-      {
-        fromToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        toToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        fromVolume: "0x00",
-        toVolume: "0x00",
-        day: {
-          day: 1656320126965,
-        },
-      },
-    ],
-  },
-  {
-    closed: false,
-    id: "sl131313131234567574askjdfhask",
-    positionToken: "string",
-    exchanges: [
-      {
-        fromToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        toToken: "0x0c085b4b68261dA18D860F647A33216503b3b26C",
-        fromVolume: "0x00",
-        toVolume: "0x00",
-        day: {
-          day: 1656320126965,
-        },
-      },
-    ],
-  },
-]
 
 const Open = () => {
   const { account } = useActiveWeb3React()
   const { poolAddress } = useParams()
   const traderPool = useTraderPoolContract(poolAddress)
   const [, poolInfo] = usePoolContract(poolAddress)
-  const [, baseToken] = useERC20(poolInfo?.parameters.baseToken)
   const data = usePoolPositions(poolAddress, false)
 
   const [isInvestorHaveLP, setIsInvestorHaveLP] = useState(false)
@@ -114,28 +47,22 @@ const Open = () => {
     setShowProposeToInvest(!isPoolTrader && !isInvestorHaveLP)
   }, [isPoolTrader, isInvestorHaveLP])
 
+  if (!data || !poolInfo) {
+    return (
+      <LoaderContainer>
+        <RotateSpinner />
+      </LoaderContainer>
+    )
+  }
+
   return (
     <>
       <List>
-        {positions.map((p) => (
-          <PositionCard
-            baseSymbol={baseToken?.symbol}
-            baseToken={data?.baseToken}
-            ticker={data?.ticker}
-            description={data?.descriptionURL}
-            key={p.id}
-            position={p}
-            poolAddress={poolAddress}
-            isPoolTrader={isPoolTrader}
-          />
-        ))}
-
         {(data?.positions || []).map((position) => (
           <PositionCard
-            baseSymbol={baseToken?.symbol}
-            baseToken={data?.baseToken}
+            baseTokenAddress={data?.baseToken}
             ticker={data?.ticker}
-            description={data?.descriptionURL}
+            descriptionURL={data?.descriptionURL}
             key={position.id}
             position={position}
             isPoolTrader={isPoolTrader}
@@ -143,7 +70,7 @@ const Open = () => {
         ))}
         {showProposeToInvest && (
           <ProposeToInvestModal
-            positionCount={positions.length}
+            positionCount={data?.positions.length}
             poolAddress={poolAddress}
             ticker={poolInfo?.ticker}
           />
@@ -166,17 +93,19 @@ const Closed = () => {
 
   return (
     <>
-      {(data?.positions || []).map((position) => (
-        <PositionCard
-          baseToken={data?.baseToken}
-          ticker={data?.ticker}
-          description={data?.descriptionURL}
-          poolAddress={poolAddress}
-          key={position.id}
-          position={position}
-          isPoolTrader={isPoolTrader}
-        />
-      ))}
+      <List>
+        {(data?.positions || []).map((position) => (
+          <PositionCard
+            baseTokenAddress={data?.baseToken}
+            ticker={data?.ticker}
+            descriptionURL={data?.descriptionURL}
+            poolAddress={poolAddress}
+            key={position.id}
+            position={position}
+            isPoolTrader={isPoolTrader}
+          />
+        ))}
+      </List>
     </>
   )
 }

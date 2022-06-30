@@ -10,6 +10,10 @@ export const Card = styled(GradientBorder)`
   border-radius: 16px;
   flex-direction: column;
   cursor: pointer;
+
+  &::after {
+    background: #181e2c;
+  }
 `
 
 export const Head = styled(Flex)`
@@ -90,11 +94,6 @@ export const StablePrice = styled.div`
   color: #616d8b;
 `
 
-export const ExtraContainer = styled(Flex)`
-  width: 100%;
-  flex-direction: column;
-`
-
 export const ActionsContainer = styled(Flex)`
   width: 100%;
   justify-content: space-between;
@@ -121,6 +120,10 @@ export const PositionTradeList = styled(GradientBorder)`
   flex-direction: column;
   border-radius: 20px;
   margin-top: 8px;
+
+  &::after {
+    background: #181e2c;
+  }
 
   & > *:not(:last-child) {
     border-bottom: 1px solid #1d2635;
@@ -177,3 +180,17 @@ export const PositionTradeStyles = {
     color: ${(props) => (props.isBuy ? "#9AE2CB" : "#DB6D6D")};
   `,
 }
+
+// COMMISSION
+
+export const CommissionCard = styled(GradientBorder)`
+  width: 100%;
+  flex-direction: column;
+  border-radius: 20px;
+  margin-top: 8px;
+  padding: 8px 16px;
+
+  &::after {
+    background: #181e2c;
+  }
+`

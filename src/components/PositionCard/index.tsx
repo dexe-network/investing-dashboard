@@ -1,86 +1,55 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { Flex } from "theme"
-import { PriceFeed } from "abi"
 import { BigNumber, ethers } from "ethers"
 
+import { PriceFeed } from "abi"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 import { IPosition } from "constants/interfaces_v2"
-import { usePoolMetadata } from "state/ipfsMetadata/hooks"
-
 import { normalizeBigNumber } from "utils"
 
-import { accordionSummaryVariants } from "motion/variants"
-import {
-  CardContainer,
-  Card,
-  Body,
-  Label,
-  Value,
-  StablePrice,
-  PNL,
-  ExtraContainer,
-  ActionsContainer,
-  Action,
-  PositionTradeList,
-} from "./styled"
-import PositionTrade from "./PositionTrade"
-import PositionCardHeader from "./PositionCardHeader"
+import PositionCardInvestor from "./PositionCardInvestor"
+import PositionCardTrader from "./PositionCardTrader"
 
 interface Props {
-  baseToken?: string
+  baseTokenAddress?: string
+
   baseSymbol?: string
   ticker?: string
-  description?: string
+  descriptionURL?: string
   poolAddress?: string
   position: IPosition
   isPoolTrader: boolean
 }
 
 const PositionCard: React.FC<Props> = ({
-  baseToken,
-  baseSymbol,
+  baseTokenAddress,
   ticker,
-  description,
+  descriptionURL,
   poolAddress,
   position,
   isPoolTrader,
 }) => {
   const [, tokenData] = useERC20(position.positionToken)
-  const [, baseData] = useERC20(baseToken)
+  const [, baseToken] = useERC20(baseTokenAddress)
+
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
-
-  const [openTrades, setOpenTrades] = useState(false)
-  const toggleTrades = () => {
-    setOpenTrades(!openTrades)
-  }
-
   const markPriceUSD = useTokenPriceOutUSD({
     tokenAddress: position.positionToken,
   })
-
-  const [{ poolMetadata }] = usePoolMetadata(poolAddress, description)
-
-  const onBuyMore = () => {
-    console.log("onBuyMore")
-  }
-  const onClosePosition = () => {
-    console.log("onClosePosition")
-  }
 
   useEffect(() => {
     if (!tokenData) return
 
     const buy = position.exchanges.filter((exchange) => {
-      return exchange.fromToken === baseToken
+      return exchange.fromToken === baseTokenAddress
     })
     const sell = position.exchanges.filter((exchange) => {
-      return exchange.toToken === baseToken
+      return exchange.toToken === baseTokenAddress
     })
 
     buy.map((exchange) => {
@@ -90,7 +59,8 @@ const PositionCard: React.FC<Props> = ({
       const price = Number(from) / Number(to)
       return price
     })
-  }, [baseToken, position.exchanges, tokenData])
+    console.log({ buy })
+  }, [baseTokenAddress, position.exchanges, tokenData])
 
   // get mark price
   useEffect(() => {
@@ -102,7 +72,7 @@ const PositionCard: React.FC<Props> = ({
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(
         position.positionToken,
-        baseToken,
+        baseTokenAddress,
         amount,
         []
       )
@@ -110,73 +80,29 @@ const PositionCard: React.FC<Props> = ({
     }
 
     getMarkPrice().catch(console.error)
-  }, [priceFeed, baseToken, position.positionToken])
+  }, [priceFeed, baseTokenAddress, position.positionToken])
 
-  if (baseToken === position.positionToken) {
+  if (baseTokenAddress === position.positionToken) {
     return null
   }
 
-  const Actions = (
-    <Flex full dir="column">
-      <ActionsContainer>
-        <Action active>All my trades</Action>
-        <Action onClick={onBuyMore}>Buy more</Action>
-        <Action onClick={onClosePosition}>Close Position</Action>
-      </ActionsContainer>
-    </Flex>
-  )
-
-  return (
-    <>
-      <CardContainer>
-        <Card onClick={toggleTrades}>
-          <PositionCardHeader
-            positionToken={position.positionToken}
-            symbol={tokenData?.symbol}
-            showBaseToken={!isPoolTrader}
-            baseTokenSymbol={ticker}
-            poolAddress={poolAddress}
-            poolIcon={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-          />
-          <Body>
-            <Label>Entry Price</Label>
-            <Label>Mark price</Label>
-            <Label>P&L LP</Label>
-
-            <Flex>
-              <Value>0.1</Value>
-              <Label>{baseSymbol}</Label>
-            </Flex>
-            <Flex>
-              <Value>{normalizeBigNumber(markPrice, 18, 4)}</Value>
-              <Label>{baseSymbol}</Label>
-            </Flex>
-            <Flex>
-              <Value>+0.0012</Value>
-              <PNL>+0.38%</PNL>
-            </Flex>
-
-            <StablePrice>$57</StablePrice>
-            <StablePrice>
-              ${normalizeBigNumber(markPriceUSD, 18, 2)}
-            </StablePrice>
-            <StablePrice>+$30</StablePrice>
-          </Body>
-        </Card>
-        <ExtraContainer
-          initial="hidden"
-          animate={openTrades ? "visible" : "hidden"}
-          variants={accordionSummaryVariants}
-        >
-          {isPoolTrader && Actions}
-          <PositionTradeList>
-            <PositionTrade isBuyTrade={true} />
-            <PositionTrade />
-            <PositionTrade isBuyTrade={true} />
-          </PositionTradeList>
-        </ExtraContainer>
-      </CardContainer>
-    </>
+  return isPoolTrader ? (
+    <PositionCardTrader
+      position={position}
+      markPrice={markPrice}
+      markPriceUSD={markPriceUSD}
+      baseTokenAddress={baseTokenAddress}
+    />
+  ) : (
+    <PositionCardInvestor
+      ticker={ticker}
+      position={position}
+      markPrice={markPrice}
+      markPriceUSD={markPriceUSD}
+      poolAddress={poolAddress}
+      descriptionURL={descriptionURL}
+      baseTokenAddress={baseTokenAddress}
+    />
   )
 }
 
