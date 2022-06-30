@@ -173,7 +173,7 @@ function Investor(props: Props) {
                 New investment
               </SecondaryButton>
             </To>
-            <To to="/">
+            <To to="/invest-positions/positions/open">
               <Button full fz={14}>
                 My investments
               </Button>

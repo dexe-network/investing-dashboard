@@ -31,6 +31,7 @@ const ServiceTerms = lazy(() => import("pages/ServiceTerms"))
 const Insurance = lazy(() => import("pages/Insurance"))
 const FundPositions = lazy(() => import("pages/FundPositions"))
 const FundDetails = lazy(() => import("pages/FundDetails")) // TODO: my trader profile
+const InvestPositions = lazy(() => import("pages/InvestPositions"))
 
 function Layout() {
   return <Outlet />
@@ -113,6 +114,10 @@ export default function Routes() {
                     <Route
                       path="fund-details/:poolAddress/*"
                       element={<FundDetails />}
+                    />
+                    <Route
+                      path="invest-positions/*"
+                      element={<InvestPositions />}
                     />
 
                     <Route path="/*" element={<TopMembers />} />
