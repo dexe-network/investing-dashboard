@@ -16,11 +16,11 @@ const FundDetails = () => {
   const tabs: ITab[] = [
     {
       title: "Fund details",
-      source: `/fund-details/${poolAddress}/edit/`,
+      source: `/fund-details/${poolAddress}/edit`,
     },
     {
       title: "Performance Fee",
-      source: `/fund-details/${poolAddress}/fee/`,
+      source: `/fund-details/${poolAddress}/fee`,
     },
   ]
 
