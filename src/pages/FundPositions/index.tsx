@@ -44,7 +44,7 @@ const Proposals = () => {
   const proposals = useRiskyProposals(poolAddress)
 
   const handleCardClick = (index) => {
-    navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
+    navigate(`/swap-risky-proposal/${poolAddress}/${index}/deposit`)
   }
 
   return (
