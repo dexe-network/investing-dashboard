@@ -1,11 +1,14 @@
 import { Routes, Route } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 
+import { ITab } from "constants/interfaces"
+
+import InvestmentPositions from "pages/InvestmentPositions"
+
 import Header from "components/Header/Layout"
 import RouteTabs from "components/RouteTabs"
 
 import { Container } from "./styled"
-import { ITab } from "constants/interfaces"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
@@ -25,47 +28,6 @@ const PageItem = ({ children }) => {
     <div style={styles}>
       <span>{children}</span>
     </div>
-  )
-}
-
-const Positions = () => {
-  const tabs: ITab[] = [
-    {
-      title: "Open",
-      source: `/investment/positions/open`,
-    },
-    {
-      title: "Closed",
-      source: `/investment/positions/closed`,
-    },
-  ]
-
-  return (
-    <>
-      <RouteTabs tabs={tabs} />
-      <Routes>
-        <Route
-          path="open"
-          element={
-            <PageItem>
-              <h1 style={{ color: "white", textAlign: "center" }}>
-                Positions open
-              </h1>
-            </PageItem>
-          }
-        ></Route>
-        <Route
-          path="closed"
-          element={
-            <PageItem>
-              <h1 style={{ color: "white", textAlign: "center" }}>
-                Positions closed
-              </h1>
-            </PageItem>
-          }
-        ></Route>
-      </Routes>
-    </>
   )
 }
 
@@ -165,19 +127,13 @@ const InvestmentProposals = () => {
 }
 
 const InvestPositions = () => {
-  const open = (
-    <GraphProvider value={poolsClient}>
-      <Positions />
-    </GraphProvider>
-  )
-
-  const proposals = (
+  const risky = (
     <GraphProvider value={poolsClient}>
       <RiskyProposals />
     </GraphProvider>
   )
 
-  const closed = (
+  const invest = (
     <GraphProvider value={poolsClient}>
       <InvestmentProposals />
     </GraphProvider>
@@ -218,9 +174,9 @@ const InvestPositions = () => {
       </Header>
       <Container>
         <Routes>
-          <Route path="positions/*" element={open}></Route>
-          <Route path="risk-proposals/*" element={proposals}></Route>
-          <Route path="invest-proposals/*" element={closed}></Route>
+          <Route path="positions/*" element={<InvestmentPositions />}></Route>
+          <Route path="risk-proposals/*" element={risky}></Route>
+          <Route path="invest-proposals/*" element={invest}></Route>
         </Routes>
       </Container>
     </>
