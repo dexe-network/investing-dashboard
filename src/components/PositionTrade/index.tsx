@@ -2,16 +2,15 @@ import S from "./styled"
 
 interface Props {
   isBuyTrade?: boolean
-  className?: string
 }
 
-const PositionTrade: React.FC<Props> = ({ className, isBuyTrade = false }) => {
+const PositionTrade: React.FC<Props> = ({ isBuyTrade = false, ...rest }) => {
   const PositionDirection = (
     <S.Direction isBuy={isBuyTrade}>{isBuyTrade ? "Buy" : "Sell"}</S.Direction>
   )
 
   return (
-    <S.Container className={className}>
+    <S.Container {...rest}>
       <S.Content>
         <S.Item>
           <S.Label>12Jun 2021, 12:10</S.Label>

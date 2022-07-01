@@ -4,6 +4,10 @@ import { Flex } from "theme"
 export const Styled = {
   Container: styled(Flex)`
     width: 100%;
+
+    &:not(:first-child) {
+      border-top: 1px solid #1d2635;
+    }
   `,
   Content: styled.div`
     display: grid;
