@@ -41,11 +41,11 @@ const Positions = () => {
   const tabs: ITab[] = [
     {
       title: "Open",
-      source: `/invest-positions/positions/open`,
+      source: `/investment/positions/open`,
     },
     {
       title: "Closed",
-      source: `/invest-positions/positions/closed`,
+      source: `/investment/positions/closed`,
     },
   ]
 
@@ -65,15 +65,15 @@ const RiskyProposals = () => {
   const tabs: ITab[] = [
     {
       title: "Risk proposals",
-      source: `/invest-positions/risk-proposals/open`,
+      source: `/investment/risk-proposals/open`,
     },
     {
       title: "Risk positions",
-      source: `/invest-positions/risk-proposals/positions`,
+      source: `/investment/risk-proposals/positions`,
     },
     {
       title: "Closed",
-      source: `/invest-positions/risk-proposals/closed`,
+      source: `/investment/risk-proposals/closed`,
     },
   ]
 
@@ -97,11 +97,11 @@ const InvestmentProposals = () => {
   const tabs: ITab[] = [
     {
       title: "New",
-      source: `/invest-positions/invest-proposals/new`,
+      source: `/investment/invest-proposals/new`,
     },
     {
       title: "Invested",
-      source: `/invest-positions/invest-proposals/invested`,
+      source: `/investment/invest-proposals/invested`,
     },
   ]
   return (
@@ -143,27 +143,27 @@ const InvestPositions = () => {
         tabs={[
           {
             title: "My positions",
-            source: "/invest-positions/positions/open",
+            source: "/investment/positions/open",
             activeSource: [
-              "/invest-positions/positions/open",
-              "/invest-positions/positions/closed",
+              "/investment/positions/open",
+              "/investment/positions/closed",
             ],
           },
           {
             title: "Risk proposals",
-            source: "/invest-positions/risk-proposals/open",
+            source: "/investment/risk-proposals/open",
             activeSource: [
-              "/invest-positions/risk-proposals/open",
-              "/invest-positions/risk-proposals/positions",
-              "/invest-positions/risk-proposals/closed",
+              "/investment/risk-proposals/open",
+              "/investment/risk-proposals/positions",
+              "/investment/risk-proposals/closed",
             ],
           },
           {
             title: "Investment",
-            source: `/invest-positions/invest-proposals/new`,
+            source: `/investment/invest-proposals/new`,
             activeSource: [
-              "/invest-positions/invest-proposals/new",
-              "/invest-positions/invest-proposals/invested",
+              "/investment/invest-proposals/new",
+              "/investment/invest-proposals/invested",
             ],
           },
         ]}
