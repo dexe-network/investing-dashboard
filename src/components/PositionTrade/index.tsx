@@ -1,4 +1,4 @@
-import { PositionTradeStyles as S } from "./styled"
+import S from "./styled"
 
 interface Props {
   isBuyTrade?: boolean

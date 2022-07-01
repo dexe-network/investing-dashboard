@@ -9,17 +9,19 @@ interface Props {
   baseToken?: any
   markPrice: BigNumber
   markPriceUSD: BigNumber
+  closed: boolean
 }
 
 const PositionCardBody: React.FC<Props> = ({
   baseToken,
   markPriceUSD,
   markPrice,
+  closed,
 }) => (
   <>
     <Body>
       <Label>Entry Price</Label>
-      <Label>Mark price</Label>
+      <Label>{closed ? "Closed price" : "Сurrent Price"}</Label>
       <Label>P&L LP</Label>
 
       <Flex>

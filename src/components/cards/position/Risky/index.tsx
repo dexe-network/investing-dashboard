@@ -1,12 +1,18 @@
 import { useCallback, useState } from "react"
 import { BigNumber } from "ethers"
+import { useSelector } from "react-redux"
 
+import { PriceFeed } from "abi"
 import { IPosition } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
+import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
+import PositionTrade from "components/PositionTrade"
+import AmountRow from "components/Amount/Row"
 import { accordionSummaryVariants } from "motion/variants"
 import {
   CardContainer,
@@ -18,14 +24,8 @@ import {
   Action,
 } from "./styled"
 
-import PositionTrade from "./PositionTrade"
 import PositionCardHeader from "./Header"
 import PositionCardBody from "./Body"
-import AmountRow from "components/Amount/Row"
-import { selectPriceFeedAddress } from "state/contracts/selectors"
-import { useSelector } from "react-redux"
-import { PriceFeed } from "abi"
-import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 
 interface Props {
   baseTokenAddress?: string
@@ -115,6 +115,7 @@ const RiskyPositionCard: React.FC<Props> = ({
             baseToken={baseToken}
             markPrice={markPrice}
             markPriceUSD={markPriceUSD}
+            closed={position.closed}
           />
         </Card>
 

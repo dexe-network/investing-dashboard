@@ -9,6 +9,7 @@ import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { Flex } from "theme"
+import PositionTrade from "components/PositionTrade"
 import { accordionSummaryVariants } from "motion/variants"
 import {
   CardContainer,
@@ -17,7 +18,6 @@ import {
   Action,
   PositionTradeList,
 } from "./styled"
-import PositionTrade from "./PositionTrade"
 import PositionCardHeader from "./Header"
 import PositionCardBody from "./Body"
 
@@ -32,7 +32,6 @@ const PoolPositionCard: React.FC<Props> = ({
   position,
   isTrader,
 }) => {
-  console.log({ position, isTrader })
   const [, tokenData] = useERC20(position.positionToken)
   const [, baseToken] = useERC20(baseTokenAddress)
 
@@ -47,19 +46,14 @@ const PoolPositionCard: React.FC<Props> = ({
   const [openExtra, setOpenExtra] = useState<boolean>(false)
   const [showPositions, setShowPositions] = useState<boolean>(false)
   const toggleExtraContent = useCallback(() => {
-    // if (position.closed) {
-    //   setOpenExtra(!openExtra)
-    //   setShowPositions(!showPositions)
-    // } else if()
     if (!isTrader || position.closed) {
-      setOpenExtra(!openExtra)
       setShowPositions(!showPositions)
     } else {
       if (showPositions) {
         setShowPositions(false)
       }
-      setOpenExtra(!openExtra)
     }
+    setOpenExtra(!openExtra)
   }, [isTrader, openExtra, position.closed, showPositions])
 
   // get mark price
@@ -101,6 +95,7 @@ const PoolPositionCard: React.FC<Props> = ({
             baseToken={baseToken}
             markPrice={markPrice}
             markPriceUSD={markPriceUSD}
+            closed={position.closed}
           />
         </Card>
 

@@ -1,12 +1,19 @@
 import { useCallback, useEffect, useState } from "react"
 import { BigNumber, ethers } from "ethers"
+import { useSelector } from "react-redux"
 
+import { PriceFeed } from "abi"
 import { IPosition } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
+import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
+import PositionTrade from "components/PositionTrade"
+import AmountRow from "components/Amount/Row"
+
 import { accordionSummaryVariants } from "motion/variants"
 import {
   CardContainer,
@@ -18,14 +25,8 @@ import {
   Action,
 } from "./styled"
 
-import PositionTrade from "./PositionTrade"
 import PositionCardHeader from "./Header"
 import PositionCardBody from "./Body"
-import AmountRow from "components/Amount/Row"
-import { selectPriceFeedAddress } from "state/contracts/selectors"
-import { useSelector } from "react-redux"
-import { PriceFeed } from "abi"
-import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 
 interface Props {
   baseTokenAddress?: string
@@ -55,18 +56,22 @@ const InvestPositionCard: React.FC<Props> = ({
     tokenAddress: position.positionToken,
   })
 
-  const [openExtra, setOpenExtra] = useState<boolean>(false)
+  const [showExtra, setShowExtra] = useState<boolean>(false)
   const [showPositions, setShowPositions] = useState<boolean>(false)
   const [showComission, setShowComission] = useState<boolean>(false)
   const toggleExtraContent = useCallback(() => {
-    if (showPositions) {
-      setShowPositions(false)
+    if (position.closed) {
+      setShowPositions(!showPositions)
+    } else {
+      if (showPositions) {
+        setShowPositions(false)
+      }
+      if (showComission) {
+        setShowComission(false)
+      }
     }
-    if (showComission) {
-      setShowComission(false)
-    }
-    setOpenExtra(!openExtra)
-  }, [openExtra, showComission, showPositions])
+    setShowExtra(!showExtra)
+  }, [showExtra, position.closed, showComission, showPositions])
 
   const togglePositions = useCallback(() => {
     if (!showPositions && showComission) {
@@ -135,6 +140,7 @@ const InvestPositionCard: React.FC<Props> = ({
             baseToken={baseToken}
             markPrice={markPrice}
             markPriceUSD={markPriceUSD}
+            closed={position.closed}
           />
         </Card>
 
@@ -142,19 +148,21 @@ const InvestPositionCard: React.FC<Props> = ({
           full
           dir="column"
           initial="hidden"
-          animate={openExtra ? "visible" : "hidden"}
+          animate={showExtra ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
         >
-          <ActionsContainer>
-            <Action active={showPositions} onClick={togglePositions}>
-              All trades
-            </Action>
-            <Action onClick={onBuyMore}>Buy more</Action>
-            <Action active={showComission} onClick={toggleComission}>
-              Comission
-            </Action>
-            <Action onClick={onClose}>Close</Action>
-          </ActionsContainer>
+          {!position.closed && (
+            <ActionsContainer>
+              <Action active={showPositions} onClick={togglePositions}>
+                All trades
+              </Action>
+              <Action onClick={onBuyMore}>Buy more</Action>
+              <Action active={showComission} onClick={toggleComission}>
+                Comission
+              </Action>
+              <Action onClick={onClose}>Close</Action>
+            </ActionsContainer>
+          )}
         </Flex>
         <ExtraContainer
           initial="hidden"
