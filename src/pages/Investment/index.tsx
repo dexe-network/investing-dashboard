@@ -1,7 +1,9 @@
-import { Routes, Route, Link } from "react-router-dom"
+import { Routes, Route } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 
 import Header from "components/Header/Layout"
+import RouteTabs from "components/RouteTabs"
+
 import { Container } from "./styled"
 import { ITab } from "constants/interfaces"
 
@@ -9,24 +11,13 @@ const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
-const TabList = ({ tabs }: { tabs: ITab[] }) => {
-  return (
-    <div style={{ display: "flex" }}>
-      {tabs.map((t) => (
-        <Link key={t.source} to={t.source}>
-          {t.title}
-        </Link>
-      ))}
-    </div>
-  )
-}
-
 const PageItem = ({ children }) => {
   const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    padding: "16px",
     height: "-webkit-fill-available",
     color: "white",
   }
@@ -51,11 +42,28 @@ const Positions = () => {
 
   return (
     <>
-      <h1 style={{ color: "white", textAlign: "center" }}>Positions</h1>
-      <TabList tabs={tabs} />
+      <RouteTabs tabs={tabs} />
       <Routes>
-        <Route path="open" element={<PageItem>open</PageItem>}></Route>
-        <Route path="closed" element={<PageItem>closed</PageItem>}></Route>
+        <Route
+          path="open"
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Positions open
+              </h1>
+            </PageItem>
+          }
+        ></Route>
+        <Route
+          path="closed"
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Positions closed
+              </h1>
+            </PageItem>
+          }
+        ></Route>
       </Routes>
     </>
   )
@@ -79,15 +87,38 @@ const RiskyProposals = () => {
 
   return (
     <>
-      <h1 style={{ color: "white", textAlign: "center" }}>Risky proposals</h1>
-      <TabList tabs={tabs} />
+      <RouteTabs tabs={tabs} />
       <Routes>
-        <Route path="open" element={<PageItem>live</PageItem>}></Route>
+        <Route
+          path="open"
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Risky proposals open
+              </h1>
+            </PageItem>
+          }
+        ></Route>
         <Route
           path="positions"
-          element={<PageItem>positions</PageItem>}
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Risky proposals positions
+              </h1>
+            </PageItem>
+          }
         ></Route>
-        <Route path="closed" element={<PageItem>closed</PageItem>}></Route>
+        <Route
+          path="closed"
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Risky proposals closed
+              </h1>
+            </PageItem>
+          }
+        ></Route>
       </Routes>
     </>
   )
@@ -106,13 +137,28 @@ const InvestmentProposals = () => {
   ]
   return (
     <>
-      <h1 style={{ color: "white", textAlign: "center" }}>
-        Investment proposals
-      </h1>
-      <TabList tabs={tabs} />
+      <RouteTabs tabs={tabs} />
       <Routes>
-        <Route path="new" element={<PageItem>new</PageItem>}></Route>
-        <Route path="invested" element={<PageItem>invested</PageItem>}></Route>
+        <Route
+          path="new"
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Investment proposals new
+              </h1>
+            </PageItem>
+          }
+        ></Route>
+        <Route
+          path="invested"
+          element={
+            <PageItem>
+              <h1 style={{ color: "white", textAlign: "center" }}>
+                Investment proposals invested
+              </h1>
+            </PageItem>
+          }
+        ></Route>
       </Routes>
     </>
   )
