@@ -1,6 +1,7 @@
-import { useCallback, useState } from "react"
-import { BigNumber } from "ethers"
+import { useCallback, useEffect, useState } from "react"
+import { BigNumber, ethers } from "ethers"
 import { useSelector } from "react-redux"
+import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
 import { IPosition } from "constants/interfaces_v2"
@@ -11,21 +12,12 @@ import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
+import TokenIcon from "components/TokenIcon"
 import PositionTrade from "components/PositionTrade"
-import AmountRow from "components/Amount/Row"
-import { accordionSummaryVariants } from "motion/variants"
-import {
-  CardContainer,
-  Card,
-  PositionTradeList,
-  CommissionCard,
-  FundSymbol,
-  ActionsContainer,
-  Action,
-} from "./styled"
 
-import PositionCardHeader from "./Header"
-import PositionCardBody from "./Body"
+import { accordionSummaryVariants } from "motion/variants"
+import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
+import S from "./styled"
 
 interface Props {
   baseTokenAddress?: string
@@ -57,87 +49,114 @@ const RiskyPositionCard: React.FC<Props> = ({
 
   const [openExtra, setOpenExtra] = useState<boolean>(false)
   const [showPositions, setShowPositions] = useState<boolean>(false)
-  const [showComission, setShowComission] = useState<boolean>(false)
   const toggleExtraContent = useCallback(() => {
     if (showPositions) {
       setShowPositions(false)
     }
-    if (showComission) {
-      setShowComission(false)
-    }
     setOpenExtra(!openExtra)
-  }, [openExtra, showComission, showPositions])
+  }, [openExtra, showPositions])
 
   const togglePositions = useCallback(() => {
-    if (!showPositions && showComission) {
-      setShowComission(false)
-    }
     setShowPositions(!showPositions)
-  }, [showComission, showPositions])
+  }, [showPositions])
 
-  const toggleComission = useCallback(() => {
-    if (!showComission && showPositions) {
-      setShowPositions(false)
+  // get mark price
+  useEffect(() => {
+    if (!priceFeed) return
+
+    const getMarkPrice = async () => {
+      const amount = ethers.utils.parseUnits("1", 18)
+
+      // without extended
+      const price = await priceFeed.getNormalizedExtendedPriceOut(
+        position.positionToken,
+        baseTokenAddress,
+        amount,
+        []
+      )
+      setMarkPrice(price.amountOut)
     }
-    setShowComission(!showComission)
-  }, [showComission, showPositions])
+
+    getMarkPrice().catch(console.error)
+  }, [priceFeed, baseTokenAddress, position.positionToken])
 
   const onBuyMore = (e) => {
     e.preventDefault()
     console.log("onBuyMore")
   }
 
-  const onClose = (e) => {
+  const onClosePosition = (e) => {
     e.preventDefault()
     console.log("onClose")
   }
 
+  const actions = [
+    {
+      label: "All my trades",
+      active: showPositions,
+      onClick: togglePositions,
+    },
+    {
+      label: "Buy more",
+      onClick: onBuyMore,
+    },
+    {
+      label: "Close Position",
+      onClick: onClosePosition,
+    },
+  ]
+
   return (
     <>
-      <CardContainer>
-        <Card onClick={toggleExtraContent}>
-          <PositionCardHeader
-            dir="row-reverse"
-            positionToken={position.positionToken}
-            symbol={tokenData?.symbol}
-          >
+      <SharedS.Container>
+        <SharedS.Card onClick={toggleExtraContent}>
+          <SharedS.Head>
             <Flex>
+              <TokenIcon address={position.positionToken} m="0" size={24} />
+              <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
+              <S.FundSymbol>/DEXE</S.FundSymbol>
+            </Flex>
+            <Flex>
+              <S.Amount>5 LP</S.Amount>
+              <S.FundSymbol>/10 LP</S.FundSymbol>
+            </Flex>
+            <Flex>
+              <S.FundSymbol>{ticker}</S.FundSymbol>
               <Icon
                 m="0"
                 size={24}
                 source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
                 address={poolAddress}
               />
-              <FundSymbol>{ticker}</FundSymbol>
             </Flex>
-          </PositionCardHeader>
-          <PositionCardBody
-            baseToken={baseToken}
-            markPrice={markPrice}
-            markPriceUSD={markPriceUSD}
-            closed={position.closed}
-          />
-        </Card>
+          </SharedS.Head>
+          <SharedS.Body>
+            <BodyItem
+              label="Entry Price"
+              amount={ethers.utils.parseUnits("0.1")}
+              amountUSD={ethers.utils.parseUnits("57")}
+            />
+            <BodyItem
+              label={position.closed ? "Closed price" : "Current price"}
+              amount={markPrice}
+              amountUSD={markPriceUSD}
+            />
+            <BodyItem
+              label="P&L LP"
+              amount={ethers.utils.parseUnits("0.0012")}
+              pnl={ethers.utils.parseUnits("0.38")}
+              amountUSD={ethers.utils.parseUnits("30")}
+            />
+          </SharedS.Body>
+        </SharedS.Card>
 
-        <Flex
-          full
-          dir="column"
-          initial="hidden"
-          animate={openExtra ? "visible" : "hidden"}
-          variants={accordionSummaryVariants}
-        >
-          <ActionsContainer>
-            <Action active={showPositions} onClick={togglePositions}>
-              All trades
-            </Action>
-            <Action onClick={onBuyMore}>Buy more</Action>
-            <Action active={showComission} onClick={toggleComission}>
-              Comission
-            </Action>
-            <Action onClick={onClose}>Close</Action>
-          </ActionsContainer>
-        </Flex>
-        <PositionTradeList
+        <AnimatePresence>
+          {!position.closed && (
+            <Actions visible={openExtra} actions={actions} />
+          )}
+        </AnimatePresence>
+
+        <SharedS.ExtraItem
           initial="hidden"
           animate={showPositions ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
@@ -145,24 +164,8 @@ const RiskyPositionCard: React.FC<Props> = ({
           <PositionTrade isBuyTrade={true} />
           <PositionTrade />
           <PositionTrade isBuyTrade={true} />
-        </PositionTradeList>
-        <PositionTradeList
-          initial="hidden"
-          animate={showComission ? "visible" : "hidden"}
-          variants={accordionSummaryVariants}
-        >
-          <CommissionCard>
-            <AmountRow m="8px" title="3 month Performance Fee" value="30%" />
-            <AmountRow m="8px" title="Performance Fee" value="$22k" />
-            <AmountRow m="8px" title="Date of withdrawal" value="12.12.2021" />
-            <AmountRow
-              m="8px"
-              title="Investor funds locked (3%)"
-              value="$133k/$3.333.333"
-            />
-          </CommissionCard>
-        </PositionTradeList>
-      </CardContainer>
+        </SharedS.ExtraItem>
+      </SharedS.Container>
     </>
   )
 }

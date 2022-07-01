@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { BigNumber, ethers } from "ethers"
 import { useSelector } from "react-redux"
+import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
 import { IPosition } from "constants/interfaces_v2"
@@ -11,22 +12,13 @@ import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
-import PositionTrade from "components/PositionTrade"
+import TokenIcon from "components/TokenIcon"
 import AmountRow from "components/Amount/Row"
+import PositionTrade from "components/PositionTrade"
 
 import { accordionSummaryVariants } from "motion/variants"
-import {
-  CardContainer,
-  Card,
-  ExtraContainer,
-  CommissionCard,
-  FundSymbol,
-  ActionsContainer,
-  Action,
-} from "./styled"
-
-import PositionCardHeader from "./Header"
-import PositionCardBody from "./Body"
+import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
+import S from "./styled"
 
 interface Props {
   baseTokenAddress?: string
@@ -112,20 +104,37 @@ const InvestPositionCard: React.FC<Props> = ({
     console.log("onBuyMore")
   }
 
-  const onClose = (e) => {
+  const onClosePosition = (e) => {
     e.preventDefault()
-    console.log("onClose")
+    console.log("onClosePosition")
   }
+
+  const actions = [
+    {
+      label: "All trades",
+      active: showPositions,
+      onClick: togglePositions,
+    },
+    {
+      label: "Buy more",
+      onClick: onBuyMore,
+    },
+    {
+      label: "Comission",
+      active: showComission,
+      onClick: toggleComission,
+    },
+    {
+      label: "Close",
+      onClick: onClosePosition,
+    },
+  ]
 
   return (
     <>
-      <CardContainer>
-        <Card onClick={toggleExtraContent}>
-          <PositionCardHeader
-            dir="row-reverse"
-            positionToken={position.positionToken}
-            symbol={tokenData?.symbol}
-          >
+      <SharedS.Container>
+        <SharedS.Card onClick={toggleExtraContent}>
+          <SharedS.Head>
             <Flex>
               <Icon
                 m="0"
@@ -133,38 +142,44 @@ const InvestPositionCard: React.FC<Props> = ({
                 source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
                 address={poolAddress}
               />
-              <FundSymbol>{ticker}</FundSymbol>
+              <S.Amount>5</S.Amount>
+              <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
             </Flex>
-          </PositionCardHeader>
-          <PositionCardBody
-            baseToken={baseToken}
-            markPrice={markPrice}
-            markPriceUSD={markPriceUSD}
-            closed={position.closed}
-          />
-        </Card>
+            <Flex>
+              <S.FundSymbol>{ticker}</S.FundSymbol>
+              <TokenIcon address={position.positionToken} m="0" size={24} />
+            </Flex>
+          </SharedS.Head>
 
-        <Flex
-          full
-          dir="column"
-          initial="hidden"
-          animate={showExtra ? "visible" : "hidden"}
-          variants={accordionSummaryVariants}
-        >
+          <SharedS.Body>
+            <BodyItem
+              label="Entry Price"
+              amount={ethers.utils.parseUnits("0.1")}
+              symbol={baseToken?.symbol}
+              amountUSD={ethers.utils.parseUnits("57")}
+            />
+            <BodyItem
+              label={position.closed ? "Closed price" : "Current price"}
+              amount={markPrice}
+              symbol={baseToken?.symbol}
+              amountUSD={markPriceUSD}
+            />
+            <BodyItem
+              label="P&L LP"
+              amount={ethers.utils.parseUnits("0.0012")}
+              pnl={ethers.utils.parseUnits("0.38")}
+              amountUSD={ethers.utils.parseUnits("30")}
+            />
+          </SharedS.Body>
+        </SharedS.Card>
+
+        <AnimatePresence>
           {!position.closed && (
-            <ActionsContainer>
-              <Action active={showPositions} onClick={togglePositions}>
-                All trades
-              </Action>
-              <Action onClick={onBuyMore}>Buy more</Action>
-              <Action active={showComission} onClick={toggleComission}>
-                Comission
-              </Action>
-              <Action onClick={onClose}>Close</Action>
-            </ActionsContainer>
+            <Actions actions={actions} visible={showExtra} />
           )}
-        </Flex>
-        <ExtraContainer
+        </AnimatePresence>
+
+        <SharedS.ExtraItem
           initial="hidden"
           animate={showPositions ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
@@ -172,24 +187,27 @@ const InvestPositionCard: React.FC<Props> = ({
           <PositionTrade isBuyTrade={true} />
           <PositionTrade />
           <PositionTrade isBuyTrade={true} />
-        </ExtraContainer>
-        <ExtraContainer
+        </SharedS.ExtraItem>
+        <SharedS.ExtraItem
           initial="hidden"
           animate={showComission ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
+          p="16px"
         >
-          <CommissionCard>
-            <AmountRow m="8px" title="3 month Performance Fee" value="30%" />
-            <AmountRow m="8px" title="Performance Fee" value="$22k" />
-            <AmountRow m="8px" title="Date of withdrawal" value="12.12.2021" />
-            <AmountRow
-              m="8px"
-              title="Investor funds locked (3%)"
-              value="$133k/$3.333.333"
-            />
-          </CommissionCard>
-        </ExtraContainer>
-      </CardContainer>
+          <AmountRow title="3 month Performance Fee" value="30%" />
+          <AmountRow m="14px 0 0" title="Performance Fee" value="$22k" />
+          <AmountRow
+            m="14px 0 0"
+            title="Date of withdrawal"
+            value="12.12.2021"
+          />
+          <AmountRow
+            m="14px 0 0"
+            title="Investor funds locked (3%)"
+            value="$133k/$3.333.333"
+          />
+        </SharedS.ExtraItem>
+      </SharedS.Container>
     </>
   )
 }

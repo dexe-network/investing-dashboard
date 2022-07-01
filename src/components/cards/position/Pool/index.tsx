@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { ethers, BigNumber } from "ethers"
+import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
 import { IPosition } from "constants/interfaces_v2"
@@ -10,16 +11,11 @@ import { selectPriceFeedAddress } from "state/contracts/selectors"
 
 import { Flex } from "theme"
 import PositionTrade from "components/PositionTrade"
+import TokenIcon from "components/TokenIcon"
+
 import { accordionSummaryVariants } from "motion/variants"
-import {
-  CardContainer,
-  Card,
-  ActionsContainer,
-  Action,
-  PositionTradeList,
-} from "./styled"
-import PositionCardHeader from "./Header"
-import PositionCardBody from "./Body"
+import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
+import S from "./styled"
 
 interface Props {
   baseTokenAddress?: string
@@ -55,6 +51,9 @@ const PoolPositionCard: React.FC<Props> = ({
     }
     setOpenExtra(!openExtra)
   }, [isTrader, openExtra, position.closed, showPositions])
+  const togglePositions = useCallback(() => {
+    setShowPositions(!showPositions)
+  }, [showPositions])
 
   // get mark price
   useEffect(() => {
@@ -76,50 +75,72 @@ const PoolPositionCard: React.FC<Props> = ({
     getMarkPrice().catch(console.error)
   }, [priceFeed, baseTokenAddress, position.positionToken])
 
-  const onBuyMore = () => {
+  const onBuyMore = (e) => {
+    e.preventDefault()
     console.log("onBuyMore")
   }
-  const onClosePosition = () => {
+  const onClosePosition = (e) => {
+    e.preventDefault()
     console.log("onClosePosition")
   }
 
+  const actions = [
+    {
+      label: "All my trades",
+      active: showPositions,
+      onClick: togglePositions,
+    },
+    {
+      label: "Buy more",
+      onClick: onBuyMore,
+    },
+    {
+      label: "Close Position",
+      onClick: onClosePosition,
+    },
+  ]
+
   return (
     <>
-      <CardContainer>
-        <Card onClick={toggleExtraContent}>
-          <PositionCardHeader
-            positionToken={position.positionToken}
-            symbol={tokenData?.symbol}
-          />
-          <PositionCardBody
-            baseToken={baseToken}
-            markPrice={markPrice}
-            markPriceUSD={markPriceUSD}
-            closed={position.closed}
-          />
-        </Card>
+      <SharedS.Container>
+        <SharedS.Card onClick={toggleExtraContent}>
+          <SharedS.Head>
+            <Flex>
+              <TokenIcon address={position.positionToken} m="0" size={24} />
+              <S.Amount>5</S.Amount>
+              <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
+            </Flex>
+          </SharedS.Head>
 
-        <Flex
-          full
-          dir="column"
-          initial="hidden"
-          animate={openExtra ? "visible" : "hidden"}
-          variants={accordionSummaryVariants}
-        >
+          <SharedS.Body>
+            <BodyItem
+              label="Entry Price"
+              amount={ethers.utils.parseUnits("0.1")}
+              symbol={baseToken?.symbol}
+              amountUSD={ethers.utils.parseUnits("57")}
+            />
+            <BodyItem
+              label={position.closed ? "Closed price" : "Current price"}
+              amount={markPrice}
+              symbol={baseToken?.symbol}
+              amountUSD={markPriceUSD}
+            />
+            <BodyItem
+              label="P&L LP"
+              amount={ethers.utils.parseUnits("0.0012")}
+              pnl={ethers.utils.parseUnits("0.38")}
+              amountUSD={ethers.utils.parseUnits("30")}
+            />
+          </SharedS.Body>
+        </SharedS.Card>
+
+        <AnimatePresence>
           {isTrader && !position.closed && (
-            <ActionsContainer>
-              <Action
-                active={showPositions}
-                onClick={() => setShowPositions(!showPositions)}
-              >
-                All my trades
-              </Action>
-              <Action onClick={onBuyMore}>Buy more</Action>
-              <Action onClick={onClosePosition}>Close Position</Action>
-            </ActionsContainer>
+            <Actions actions={actions} visible={openExtra} />
           )}
-        </Flex>
-        <PositionTradeList
+        </AnimatePresence>
+
+        <SharedS.ExtraItem
           initial="hidden"
           variants={accordionSummaryVariants}
           animate={showPositions ? "visible" : "hidden"}
@@ -127,8 +148,8 @@ const PoolPositionCard: React.FC<Props> = ({
           <PositionTrade isBuyTrade={true} />
           <PositionTrade />
           <PositionTrade isBuyTrade={true} />
-        </PositionTradeList>
-      </CardContainer>
+        </SharedS.ExtraItem>
+      </SharedS.Container>
     </>
   )
 }
