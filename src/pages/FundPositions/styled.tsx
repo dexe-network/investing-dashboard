@@ -1,15 +1,19 @@
 import styled from "styled-components"
 import { Flex } from "theme"
 
-export const Container = styled.div`
-  width: 100%;
-  height: calc(100vh - 128px);
-  box-sizing: border-box;
+const Styled = {
+  Container: styled.div`
+    width: 100%;
+    height: calc(100vh - 128px);
+    box-sizing: border-box;
 
-  @media all and (display-mode: standalone) {
-    height: calc(100vh - 149px);
-  }
-`
+    @media all and (display-mode: standalone) {
+      height: calc(100vh - 149px);
+    }
+  `,
+}
+
+export default Styled
 
 export const List = styled.div`
   width: 100%;

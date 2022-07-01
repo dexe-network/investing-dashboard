@@ -2,7 +2,7 @@ import { useCallback, useState } from "react"
 import { BigNumber } from "ethers"
 
 import { IPosition } from "constants/interfaces_v2"
-import { useERC20 } from "hooks/useContract"
+import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import { Flex } from "theme"
@@ -22,32 +22,38 @@ import PositionTrade from "./PositionTrade"
 import PositionCardHeader from "./Header"
 import PositionCardBody from "./Body"
 import AmountRow from "components/Amount/Row"
+import { selectPriceFeedAddress } from "state/contracts/selectors"
+import { useSelector } from "react-redux"
+import { PriceFeed } from "abi"
+import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 
 interface Props {
   baseTokenAddress?: string
   position: IPosition
   ticker?: string
   descriptionURL?: string
-  markPrice: BigNumber
-  markPriceUSD: BigNumber
   poolAddress?: string
 }
 
-const PositionCardInvestor: React.FC<Props> = ({
+const RiskyPositionCard: React.FC<Props> = ({
   baseTokenAddress,
   position,
   ticker,
-
-  markPrice,
-  markPriceUSD,
 
   descriptionURL,
   poolAddress,
 }) => {
   const [, tokenData] = useERC20(position.positionToken)
   const [, baseToken] = useERC20(baseTokenAddress)
+  const priceFeedAddress = useSelector(selectPriceFeedAddress)
+  const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
   const [{ poolMetadata }] = usePoolMetadata(poolAddress, descriptionURL)
+
+  const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
+  const markPriceUSD = useTokenPriceOutUSD({
+    tokenAddress: position.positionToken,
+  })
 
   const [openExtra, setOpenExtra] = useState<boolean>(false)
   const [showPositions, setShowPositions] = useState<boolean>(false)
@@ -160,4 +166,4 @@ const PositionCardInvestor: React.FC<Props> = ({
   )
 }
 
-export default PositionCardInvestor
+export default RiskyPositionCard

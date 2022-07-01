@@ -6,6 +6,7 @@ import {
   useNavigate,
   useLocation,
 } from "react-router-dom"
+import { createClient, Provider as GraphProvider } from "urql"
 
 import RiskyCard from "components/RiskyCard"
 
@@ -18,6 +19,10 @@ import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import S from "./styled"
 import { Flex } from "theme"
+
+const AllPoolsClient = createClient({
+  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+})
 
 const RiskyProposals = () => {
   const navigate = useNavigate()
@@ -116,4 +121,12 @@ const RiskyProposals = () => {
   )
 }
 
-export default RiskyProposals
+const RiskyProposalsWithPorvider = () => {
+  return (
+    <GraphProvider value={AllPoolsClient}>
+      <RiskyProposals />
+    </GraphProvider>
+  )
+}
+
+export default RiskyProposalsWithPorvider
