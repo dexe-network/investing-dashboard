@@ -14,7 +14,7 @@ import {
   FundUpdateManagersTransactionInfo,
   CreateRiskyProposalTransactionInfo,
   EditRiskyProposalTransactionInfo,
-  CreateInvestProposalTransactionInfo,
+  CreateInvestmentProposalTransactionInfo,
   EditInvestProposalTransactionInfo,
   StakeInsuranceTransactionInfo,
   UnstakeInsuranceTransactionInfo,
@@ -163,8 +163,8 @@ const EditRiskyProposalSummary: React.FC<{
   return <>Update Risky Proposal</>
 }
 
-const CreateInvestProposalSummary: React.FC<{
-  info: CreateInvestProposalTransactionInfo
+const CreateInvestmentProposalSummary: React.FC<{
+  info: CreateInvestmentProposalTransactionInfo
 }> = ({ info: { investLpAmountRaw } }) => {
   const amount = formatBigNumber(BigNumber.from(investLpAmountRaw))
   return <>Create Invest Proposal for {amount} LP tokens</>
@@ -217,7 +217,7 @@ const TransactionSummary: React.FC<IProps> = ({ info }) => {
     case TransactionType.EDIT_RISKY_PROPOSAL:
       return <EditRiskyProposalSummary info={info} />
     case TransactionType.CREATE_INVEST_PROPOSAL:
-      return <CreateInvestProposalSummary info={info} />
+      return <CreateInvestmentProposalSummary info={info} />
     case TransactionType.EDIT_INVEST_PROPOSAL:
       return <EditInvestProposalSummary info={info} />
     case TransactionType.STAKE_INSURANCE:

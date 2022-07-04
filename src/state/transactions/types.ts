@@ -127,7 +127,7 @@ export interface WithdrawRiskyProposalTransactionInfo {
   expectedInputCurrencySymbol: string
 }
 
-export interface CreateInvestProposalTransactionInfo {
+export interface CreateInvestmentProposalTransactionInfo {
   type: TransactionType.CREATE_INVEST_PROPOSAL
   amount: string
   ipfsPath: string
@@ -165,7 +165,7 @@ export type TransactionInfo =
   | EditRiskyProposalTransactionInfo
   | DepositRiskyProposalTransactionInfo
   | WithdrawRiskyProposalTransactionInfo
-  | CreateInvestProposalTransactionInfo
+  | CreateInvestmentProposalTransactionInfo
   | EditInvestProposalTransactionInfo
   | StakeInsuranceTransactionInfo
   | UnstakeInsuranceTransactionInfo

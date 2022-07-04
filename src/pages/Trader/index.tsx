@@ -47,6 +47,7 @@ import {
   OwnInvestingValue,
   OwnInvestingLink,
 } from "./styled"
+import { useProposalAddress } from "hooks/useContract"
 
 const pnlNew: IDetailedChart[] = [
   {
@@ -106,6 +107,9 @@ function Trader(props: Props) {
     poolAddress: string
     poolType: string
   }>()
+
+  const proposalId = useProposalAddress(poolAddress)
+  console.log(proposalId)
 
   const [commisionUnlockTime, setCommisionUnlockTime] = useState<number>(0)
   const [isPerformanceFeeExist, setPerformanceFeeExist] =
@@ -197,9 +201,10 @@ function Trader(props: Props) {
             fz={14}
             full
             onClick={() =>
-              navigate(
-                `/pool/swap/${poolType}/${poolData.id}/${poolData.baseToken}/0x`
-              )
+              // navigate(
+              //   `/pool/swap/${poolType}/${poolData.id}/${poolData.baseToken}/0x`
+              // )
+              navigate(`/invest-investment-proposal/${poolData.id}/0`)
             }
           >
             Open new trade

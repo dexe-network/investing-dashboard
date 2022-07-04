@@ -24,7 +24,12 @@ const TokenSelect = lazy(() => import("pages/TokenSelect")) // TODO: my trader p
 const CreateRiskyProposal = lazy(() => import("pages/CreateRiskyProposal"))
 const InvestRiskyProposal = lazy(() => import("pages/InvestRiskyProposal"))
 const SwapRiskyProposal = lazy(() => import("pages/SwapRiskyProposal"))
-const CreateInvestProposal = lazy(() => import("pages/CreateInvestProposal"))
+const CreateInvestmentProposal = lazy(
+  () => import("pages/CreateInvestmentProposal")
+)
+const InvestInvestmentProposal = lazy(
+  () => import("pages/InvestInvestmentProposal")
+)
 // const Insurance = lazy(() => import("pages/Insurance"))
 
 const PrivacyPolicy = lazy(() => import("pages/PrivacyPolicy"))
@@ -105,7 +110,11 @@ export default function Routes() {
                     />
                     <Route
                       path="create-invest-proposal/:poolAddress"
-                      element={<CreateInvestProposal />}
+                      element={<CreateInvestmentProposal />}
+                    />
+                    <Route
+                      path="invest-investment-proposal/:poolAddress/:proposalId"
+                      element={<InvestInvestmentProposal />}
                     />
                     <Route path="create-fund" element={<CreateFund />} />
                     <Route path="success/:poolAddress" element={<Success />} />

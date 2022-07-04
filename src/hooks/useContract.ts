@@ -148,16 +148,10 @@ export function useTraderPoolRegistryContract(): Contract | null {
   return useContract(traderPoolRegistryAddress, TraderPoolRegistry)
 }
 
-export function useRiskyProposalContract(
-  poolAddress: string | undefined
-): [Contract | null, string] {
+export function useProposalAddress(poolAddress) {
   const [riskyProposalAddress, setRiskyProposalAddress] = useState("")
 
   const traderPool = useTraderPoolContract(poolAddress)
-  const proposalPool = useContract(
-    riskyProposalAddress,
-    TraderPoolRiskyProposal
-  )
 
   useEffect(() => {
     if (!traderPool) return
@@ -166,6 +160,19 @@ export function useRiskyProposalContract(
       setRiskyProposalAddress(proposalAddress)
     })()
   }, [traderPool])
+
+  return riskyProposalAddress
+}
+
+export function useRiskyProposalContract(
+  poolAddress: string | undefined
+): [Contract | null, string] {
+  const riskyProposalAddress = useProposalAddress(poolAddress)
+
+  const proposalPool = useContract(
+    riskyProposalAddress,
+    TraderPoolRiskyProposal
+  )
 
   return [proposalPool, riskyProposalAddress]
 }
