@@ -6,7 +6,8 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "HTTPS=true SSL_CRT_FILE=./.cert/cert.pem SSL_KEY_FILE=./.cert/key.pem react-scripts start",
-    "build": "react-scripts build && yarn run analyze",
+    "build": "react-scripts build",
+    "build-analyze": "react-scripts build && yarn run analyze",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write src/**/*.ts{,x}",
