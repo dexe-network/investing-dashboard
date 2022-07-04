@@ -3,7 +3,7 @@ import { createClient, Provider as GraphProvider } from "urql"
 
 import Header from "components/Header/Layout"
 
-import RiskyProposals from "pages/RiskyProposals"
+import FundProposals from "pages/FundProposals"
 import FundPositionsList from "./FundPositionsList"
 
 import S from "./styled"
@@ -55,7 +55,7 @@ const FundPositions = () => {
       <S.Container>
         <Routes>
           <Route path="open" element={open}></Route>
-          <Route path="proposals/*" element={<RiskyProposals />}></Route>
+          <Route path="proposals/*" element={<FundProposals />}></Route>
           <Route path="closed" element={closed}></Route>
         </Routes>
       </S.Container>
