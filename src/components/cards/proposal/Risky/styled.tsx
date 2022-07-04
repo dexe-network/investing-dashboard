@@ -1,44 +1,53 @@
+import { FC } from "react"
 import styled from "styled-components"
+
 import { Flex, GradientBorder } from "theme"
+import Amount from "components/Amount"
 
-export const Card = styled(GradientBorder)`
-  width: 100%;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
-  flex-direction: column;
-  margin-bottom: 18px;
+import checkGreenIcon from "assets/icons/green-check.svg"
 
-  &:after {
-    background: #181e2c;
-  }
-`
+const Styled = {
+  Container: styled(GradientBorder)`
+    width: 100%;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    flex-direction: column;
+    margin-bottom: 18px;
 
-export const PositionSymbol = styled.div`
-  font-family: "Gilroy";
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 100%;
-  color: #e4f2ff;
-  margin: 0 4px;
-  transform: translateY(2px);
-`
-
-export const HeaderStyled = {
+    &:after {
+      background: #181e2c;
+    }
+  `,
   Head: styled(Flex)<{ isTrader?: boolean }>`
     width: 100%;
     justify-content: space-between;
     padding: ${(props) =>
-      props.isTrader ? "8px 8px 8px 16px" : "8px 14px 8px 16px"};
+      props.isTrader ? "8px 8px 7px 16px" : "8px 14px 7px 16px"};
     border-bottom: 1px solid #1d2635;
     position: relative;
   `,
-  Amount: styled(PositionSymbol)`
-    margin: 0 0 0 8px;
+  Body: styled.div`
+    width: 100%;
+    padding: 12px 14px 16px 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 16px 8px;
+  `,
+  Title: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 100%;
+    color: #e4f2ff;
+    margin: 0 4px;
+    transform: translateY(2px);
   `,
   Status: styled.div<{ active?: boolean }>`
     padding: 5px 6px;
     border-radius: 36px;
+    white-space: nowrap;
     border: 1px solid ${(props) => (props.active ? "#9ae2cb" : "#788AB4")};
     color: ${(props) => (props.active ? "#9ae2cb" : "#788AB4")};
     font-family: "Gilroy";
@@ -57,6 +66,9 @@ export const HeaderStyled = {
   `,
 }
 
+export default Styled
+
+// Settings popup styled
 export const SettingsStyled = {
   Container: styled(GradientBorder)`
     width: 91%;
@@ -109,29 +121,48 @@ export const SettingsStyled = {
   `,
 }
 
-export const BodyStyled = {
-  Body: styled.div`
-    width: 100%;
-    padding: 12px 14px 16px 16px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 16px 8px;
-  `,
-  Item: styled(Flex)`
+// Body item
+export const BodyItemStyled = {
+  Container: styled(Flex)`
     width: 100%;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
   `,
-  Label: styled.div`
+  Label: styled(Flex)`
+    min-height: 16px;
+    align-items: center;
+    margin-bottom: 2px;
     font-family: "Gilroy";
     font-style: normal;
     font-weight: 400;
-    font-size: 12px;
+    font-size: 11px;
     line-height: 100%;
     letter-spacing: 0.03em;
     color: #616d8b;
-    margin-bottom: 4px;
   `,
 }
+
+interface IBodyItemProps {
+  label: string
+  amount: string
+  symbol?: string
+  fz?: string
+  completed?: boolean
+}
+
+export const BodyItem: FC<IBodyItemProps> = ({
+  label,
+  amount,
+  symbol,
+  fz,
+  completed = false,
+}) => (
+  <BodyItemStyled.Container>
+    <BodyItemStyled.Label>
+      {label}
+      {completed && <img src={checkGreenIcon} />}
+    </BodyItemStyled.Label>
+    <Amount value={amount} symbol={symbol} fz={fz} />
+  </BodyItemStyled.Container>
+)

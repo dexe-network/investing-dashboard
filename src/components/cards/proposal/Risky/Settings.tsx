@@ -1,15 +1,15 @@
 import { Dispatch, FC, SetStateAction, useState } from "react"
+import { format } from "date-fns"
 
-import Tooltip from "components/Tooltip"
+import { expandTimestamp } from "utils"
+import { accordionSummaryVariants } from "motion/variants"
+
 import Input from "components/Input"
+import Tooltip from "components/Tooltip"
+import DatePicker from "components/DatePicker"
 import Button, { SecondaryButton } from "components/Button"
 
 import { SettingsStyled as S } from "./styled"
-
-import { accordionSummaryVariants } from "motion/variants"
-import DatePicker from "components/DatePicker"
-import { format } from "date-fns"
-import { expandTimestamp } from "utils"
 
 interface Props {
   visible: boolean

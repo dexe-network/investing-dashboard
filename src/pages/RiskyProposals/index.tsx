@@ -1,16 +1,13 @@
-import { useMemo } from "react"
 import { Routes, Route, useParams, useNavigate } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 
-import RiskyCard from "components/RiskyCard"
+import RiskyCard from "components/cards/proposal/Risky"
 import RouteTabs from "components/RouteTabs"
 
 import { ITab } from "constants/interfaces"
 
-import { useActiveWeb3React } from "hooks"
 import { usePoolContract } from "hooks/usePool"
 import useRiskyProposals from "hooks/useRiskyProposals"
-import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import S from "./styled"
 import { Flex } from "theme"
@@ -21,22 +18,11 @@ const AllPoolsClient = createClient({
 
 const RiskyProposals = () => {
   const navigate = useNavigate()
-  const { account } = useActiveWeb3React()
 
   const { poolAddress } = useParams()
 
   const [, poolInfo] = usePoolContract(poolAddress)
   const proposals = useRiskyProposals(poolAddress)
-
-  const [{ poolMetadata }] = usePoolMetadata(
-    poolAddress,
-    poolInfo?.parameters.descriptionURL
-  )
-
-  const isPoolTrader = useMemo(() => {
-    if (!account || !poolInfo) return false
-    return account === poolInfo.parameters.trader
-  }, [account, poolInfo])
 
   const handleCardClick = (index) => {
     navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
@@ -61,15 +47,14 @@ const RiskyProposals = () => {
     return <>Loading</>
   }
 
-  const open = proposals.map((position, index) => (
+  console.log(proposals)
+
+  const open = proposals.map((proposal, index) => (
     <RiskyCard
-      key={position.proposalInfo.token}
-      poolMetadata={poolMetadata}
-      onInvest={() => handleCardClick(index)}
-      positionAddress={position.proposalInfo.token}
+      key={proposal.proposalInfo.token}
+      proposal={proposal}
       poolAddress={poolAddress}
-      poolTicker={poolInfo?.ticker}
-      isPoolTrader={isPoolTrader}
+      onInvest={() => handleCardClick(index)}
     />
   ))
 
@@ -78,11 +63,14 @@ const RiskyProposals = () => {
       <span style={{ color: "red" }}>Risky positions</span>
     </Flex>
   )
-  const closed = (
-    <Flex>
-      <span style={{ color: "red" }}>Closed Risky positions</span>
-    </Flex>
-  )
+  const closed = proposals.map((proposal, index) => (
+    <RiskyCard
+      key={proposal.proposalInfo.token}
+      proposal={proposal}
+      poolAddress={poolAddress}
+      onInvest={() => handleCardClick(index)}
+    />
+  ))
 
   return (
     <>
