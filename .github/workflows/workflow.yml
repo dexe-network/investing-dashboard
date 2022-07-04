@@ -15,8 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - run: npm install
-      - run: npm run build
+      - run: yarn
+      - run: yarn build
       - run: npm test
       - name: Deploy to AWS S3
         uses: jakejarvis/s3-sync-action@master
