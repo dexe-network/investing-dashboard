@@ -25,7 +25,7 @@ interface Props {
   onInvest: () => void
 }
 // TODO: poolAddress for investor proposals ???
-const RiskyCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
+const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
   const { account } = useActiveWeb3React()
   const [, positionTokenData] = useERC20(proposal.proposalInfo.token)
   const [, poolInfo] = usePoolContract(poolAddress)
@@ -120,4 +120,4 @@ const RiskyCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
   )
 }
 
-export default RiskyCard
+export default RiskyProposalCard
