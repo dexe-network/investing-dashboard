@@ -7,10 +7,46 @@ import { useTraderPoolRegistryContract } from "hooks/useContract"
 
 import { Flex } from "theme"
 import RouteTabs from "components/RouteTabs"
+import RiskyPositionCard from "components/cards/position/Risky"
 import FundProposalsRisky from "pages/FundProposalsRisky"
 import FundProposalsInvest from "pages/FundProposalsInvest"
 
 import S from "./styled"
+
+const positionsList = [
+  {
+    closed: false,
+    id: "adfasdasdfasdf",
+    positionToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+    exchanges: [
+      {
+        fromToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        toToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        fromVolume: "12",
+        toVolume: "12",
+        day: {
+          day: 132414,
+        },
+      },
+    ],
+  },
+  {
+    closed: true,
+    id: "adfasdasdfasdf",
+    positionToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+    exchanges: [
+      {
+        fromToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        toToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+        fromVolume: "12",
+        toVolume: "12",
+        day: {
+          day: 132414,
+        },
+      },
+    ],
+  },
+]
 
 const FundProposals = () => {
   const { poolAddress } = useParams()
@@ -50,13 +86,33 @@ const FundProposals = () => {
     poolType === "BASIC_POOL" ? <FundProposalsRisky /> : <FundProposalsInvest />
 
   const positions = (
-    <Flex>
-      <span style={{ color: "red" }}>Risky positions open</span>
+    <Flex full>
+      <S.List>
+        {positionsList
+          .filter((p) => !p.closed)
+          .map((p) => (
+            <RiskyPositionCard
+              key={p.id}
+              position={p}
+              poolAddress={poolAddress}
+            />
+          ))}
+      </S.List>
     </Flex>
   )
   const closed = (
-    <Flex>
-      <span style={{ color: "red" }}>Risky positions closed</span>
+    <Flex full>
+      <S.List>
+        {positionsList
+          .filter((p) => p.closed)
+          .map((p) => (
+            <RiskyPositionCard
+              key={p.id}
+              position={p}
+              poolAddress={poolAddress}
+            />
+          ))}
+      </S.List>
     </Flex>
   )
 

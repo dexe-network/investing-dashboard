@@ -116,10 +116,12 @@ const RiskyPositionCard: React.FC<Props> = ({
               <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
               <S.FundSymbol>/DEXE</S.FundSymbol>
             </Flex>
-            <Flex>
-              <S.Amount>5 LP</S.Amount>
-              <S.FundSymbol>/10 LP</S.FundSymbol>
-            </Flex>
+            {!position.closed && (
+              <Flex>
+                <S.Amount>5 LP</S.Amount>
+                <S.FundSymbol>/10 LP</S.FundSymbol>
+              </Flex>
+            )}
             <Flex>
               <S.FundSymbol>{ticker}</S.FundSymbol>
               <Icon

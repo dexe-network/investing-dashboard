@@ -12,7 +12,7 @@ const SharedAmount = css`
 const Styled = {
   PositionSymbol: styled.div`
     ${SharedAmount}
-    margin: 0 4px;
+    margin: 0 0 0 4px;
   `,
 
   Amount: styled.div`
@@ -26,7 +26,6 @@ const Styled = {
     font-weight: 500;
     font-size: 14px;
     line-height: 100%;
-    margin: 0 8px;
     color: #616d8b;
     transform: translateY(2px);
   `,
