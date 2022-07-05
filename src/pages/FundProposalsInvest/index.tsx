@@ -4,7 +4,6 @@ import { createClient, Provider as GraphProvider } from "urql"
 import InvestProposalCard from "components/cards/proposal/Invest"
 import { usePoolContract } from "hooks/usePool"
 import useInvestProposals from "hooks/useInvestProposals"
-import useRiskyProposals from "hooks/useRiskyProposals"
 import S from "./styled"
 
 const AllPoolsClient = createClient({
@@ -24,6 +23,15 @@ const FundProposalsInvest = () => {
       proposalInfo: {
         token: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
       },
+      closed: false,
+    },
+    {
+      id: "as1389047123908kflasf",
+      poolAddress,
+      proposalInfo: {
+        token: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      },
+      closed: true,
     },
   ]
 

@@ -16,7 +16,7 @@ interface Props {
   setVisible: Dispatch<SetStateAction<boolean>>
 }
 
-const RiskyCardSettings: FC<Props> = ({ visible, setVisible }) => {
+const InvestCardSettings: FC<Props> = ({ visible, setVisible }) => {
   const [isDateOpen, setDateOpen] = useState(false)
   const [timestampLimit, setTimestampLimit] = useState(new Date().valueOf())
 
@@ -27,10 +27,13 @@ const RiskyCardSettings: FC<Props> = ({ visible, setVisible }) => {
       exit="hidden"
       variants={accordionSummaryVariants}
     >
-      <div>
+      <S.Head>
+        <S.Title>Investment proposal 1/JBR settings</S.Title>
+      </S.Head>
+      <S.Content>
         <S.Row minInputW="94px">
           <Tooltip id="rp-expiration-date">End of risky proposal</Tooltip>
-          <S.Title>Expiration date:</S.Title>
+          <S.Label>Expiration date:</S.Label>
           <div>
             <Input
               disabled
@@ -54,7 +57,7 @@ const RiskyCardSettings: FC<Props> = ({ visible, setVisible }) => {
         </S.Row>
         <S.Row minInputW="79px">
           <Tooltip id="rp-available-staking">Staking</Tooltip>
-          <S.Title>LPs available for staking</S.Title>
+          <S.Label>LPs available for staking:</S.Label>
           <Input
             theme="grey"
             size="small"
@@ -64,33 +67,19 @@ const RiskyCardSettings: FC<Props> = ({ visible, setVisible }) => {
             placeholder="---"
             onChange={(v) => console.log("available-staking", v)}
           />
-          <S.InputType>TRX</S.InputType>
+          <S.InputType> 1/JBR</S.InputType>
         </S.Row>
-        <S.Row>
-          <Tooltip id="rp-max-invest">Maximum invest price</Tooltip>
-          <S.Title>Maximum invest price</S.Title>
-          <Input
-            theme="grey"
-            size="small"
-            type="number"
-            inputmode="decimal"
-            value={"0"}
-            placeholder="---"
-            onChange={(v) => console.log("maximum-invest-price", v)}
-          />
-          <S.InputType>TRX</S.InputType>
-        </S.Row>
-      </div>
-      <S.ButtonGroup>
-        <SecondaryButton full size="small" onClick={() => setVisible(false)}>
-          Сancel
-        </SecondaryButton>
-        <Button full size="small">
-          Apply changes
-        </Button>
-      </S.ButtonGroup>
+        <S.ButtonGroup>
+          <SecondaryButton full size="small" onClick={() => setVisible(false)}>
+            Сancel
+          </SecondaryButton>
+          <Button full size="small">
+            Apply changes
+          </Button>
+        </S.ButtonGroup>
+      </S.Content>
     </S.Container>
   )
 }
 
-export default RiskyCardSettings
+export default InvestCardSettings

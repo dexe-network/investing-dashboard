@@ -63,7 +63,7 @@ const FundProposals = () => {
   return (
     <>
       {poolType === "BASIC_POOL" && <RouteTabs tabs={tabs} />}
-      <S.Content>
+      <S.Content withExtraTabs={poolType === "BASIC_POOL"}>
         <Routes>
           <Route path="open" element={open}></Route>
           {poolType === "BASIC_POOL" && (

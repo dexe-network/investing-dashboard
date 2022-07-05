@@ -7,12 +7,14 @@ import Amount from "components/Amount"
 import checkGreenIcon from "assets/icons/green-check.svg"
 
 const Styled = {
-  Container: styled(GradientBorder)`
+  Container: styled.div`
+    margin-bottom: 18px;
+  `,
+  Card: styled(GradientBorder)`
     width: 100%;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
     border-radius: 16px;
     flex-direction: column;
-    margin-bottom: 18px;
 
     &:after {
       background: #181e2c;
@@ -31,7 +33,6 @@ const Styled = {
     padding: 12px 14px 16px 16px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
     gap: 16px 8px;
   `,
   Title: styled.div`
@@ -64,6 +65,24 @@ const Styled = {
     line-height: 100%;
     color: #788ab4;
   `,
+  FundSymbol: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 100%;
+    margin: 0 8px;
+    color: #788ab4;
+    transform: translateY(2px);
+  `,
+  ReadMoreContainer: styled.div`
+    width: 100%;
+    padding: 0 14px 16px 16px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 130%;
+    color: #e4f2ff;
+  `,
 }
 
 export default Styled
@@ -71,8 +90,7 @@ export default Styled
 // Settings popup styled
 export const SettingsStyled = {
   Container: styled(GradientBorder)`
-    width: 91%;
-    padding: 16px 16px 13px;
+    width: 100%;
     position: absolute;
     top: 38px;
     right: 0;
@@ -82,6 +100,23 @@ export const SettingsStyled = {
     &:after {
       background: #181e2c;
     }
+  `,
+  Head: styled(Flex)`
+    width: 100%;
+    padding: 20px 16px;
+    border-bottom: 1px solid rgba(41, 60, 84, 0.3);
+  `,
+  Title: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    color: #e4f2ff;
+  `,
+  Content: styled.div`
+    width: 100%;
+    padding: 16px 16px 13px;
   `,
   Row: styled.div<{ minInputW?: string }>`
     display: grid;
@@ -95,7 +130,7 @@ export const SettingsStyled = {
     gap: 4.5px;
     margin: 0 0 12px 0;
   `,
-  Title: styled.div`
+  Label: styled.div`
     font-family: "Gilroy";
     font-style: normal;
     font-weight: 400;

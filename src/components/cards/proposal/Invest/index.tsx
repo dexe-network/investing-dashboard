@@ -1,18 +1,20 @@
 import { FC, useMemo, useState } from "react"
+import { AnimatePresence } from "framer-motion"
 
 import { useActiveWeb3React } from "hooks"
 import { useERC20 } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
-import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 import { Flex } from "theme"
-import Icon from "components/Icon"
-import Button from "components/Button"
 import TokenIcon from "components/TokenIcon"
 import IconButton from "components/IconButton"
+import ReadMore from "components/ReadMore"
 
-import S, { BodyItem } from "./styled"
-import RiskyCardSettings from "./Settings"
+import { Actions } from "components/cards/proposal/styled"
+import S from "./styled"
+import InvestCardSettings from "./Settings"
+import BodyTrader from "./BodyTrader"
+import BodyInvestor from "./BodyInvestor"
 
 import settingsIcon from "assets/icons/settings.svg"
 import settingsGreenIcon from "assets/icons/settings-green.svg"
@@ -28,14 +30,8 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
   const [, positionTokenData] = useERC20(proposal.proposalInfo.token)
   const [, poolInfo] = usePoolContract(poolAddress)
 
-  // const [{ poolMetadata }] = usePoolMetadata(
-  //   poolAddress,
-  //   poolInfo?.parameters.descriptionURL
-  // )
-
-  // const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
-
-  // const active = true
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
+  const [openExtra, setOpenExtra] = useState<boolean>(false)
 
   // Check that current user is pool trader or not
   const isTrader = useMemo(() => {
@@ -43,107 +39,122 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
     return account === poolInfo?.parameters.trader
   }, [account, poolInfo])
 
+  // Actions
+  const actions = useMemo(() => {
+    if (isTrader)
+      return [
+        {
+          label: "Withdraw",
+          onClick: () => {
+            console.log("Withdraw")
+          },
+        },
+        {
+          label: "Deposit",
+          onClick: () => {
+            console.log("Deposit")
+          },
+        },
+        {
+          label: "Claim",
+          onClick: () => {
+            console.log("Claim")
+          },
+        },
+        {
+          label: "Pay dividend",
+          onClick: () => {
+            console.log("Pay dividend")
+          },
+        },
+      ]
+    return [
+      {
+        label: "Stake LP",
+        onClick: () => {
+          console.log("Stake LP")
+        },
+      },
+      {
+        label: "Request a dividend",
+        onClick: () => {
+          console.log("Request a dividend")
+        },
+      },
+      {
+        label: "Withdraw",
+        onClick: () => {
+          console.log("Withdraw")
+        },
+      },
+    ]
+  }, [isTrader])
+
   return (
     <>
       <S.Container>
-        <S.Head isTrader={isTrader}>
-          <Flex>
-            <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
-            <S.Title>{positionTokenData?.symbol}</S.Title>
-          </Flex>
-        </S.Head>
-        <S.Body>
-          <BodyItem label="Supply" amount={"90k"} symbol={"1/JBR"} />
-          <BodyItem label="Your size" amount={"47k"} symbol={"1/JBR"} />
-          <BodyItem label="Max Size" amount={"100k"} symbol={"1/JBR"} />
-          <BodyItem label="APR" amount={"10.02 %"} />
-          <BodyItem label="Total dividends" amount={"~999k"} symbol={"USDT"} />
-          <BodyItem label="Dividends avail." amount={"~88k"} symbol={"USDT"} />
-          <BodyItem label="Investors" amount={"999/"} symbol={"1000"} />
-          <BodyItem label="Price OTC" amount={"-"} />
-          <BodyItem
-            label="Expiration date"
-            amount={"JUN 20,2022  20:00"}
-            fz="11px"
-          />
-        </S.Body>
+        <S.Card onClick={() => setOpenExtra(!openExtra)}>
+          <S.Head isTrader={isTrader}>
+            <Flex>
+              <TokenIcon
+                address={proposal.proposalInfo.token}
+                m="0"
+                size={24}
+              />
+              <S.Title>{positionTokenData?.symbol}</S.Title>
+            </Flex>
+            {isTrader ? (
+              <>
+                <Flex>
+                  <S.Status active={!proposal.closed}>
+                    {!proposal.closed ? "Open investing" : "Closed"}
+                  </S.Status>
+                  <Flex m="0 0 0 4px">
+                    <IconButton
+                      size={12}
+                      media={isSettingsOpen ? settingsGreenIcon : settingsIcon}
+                      onClick={() => {
+                        if (!proposal.closed) {
+                          setIsSettingsOpen(!isSettingsOpen)
+                        }
+                      }}
+                    />
+                  </Flex>
+                </Flex>
+                <InvestCardSettings
+                  visible={isSettingsOpen}
+                  setVisible={setIsSettingsOpen}
+                />
+              </>
+            ) : (
+              <Flex>
+                <S.FundSymbol>FUND NAME</S.FundSymbol>
+                <TokenIcon address={proposal.positionToken} m="0" size={24} />
+              </Flex>
+            )}
+          </S.Head>
+          <S.Body>
+            {isTrader ? (
+              <BodyTrader />
+            ) : (
+              <BodyInvestor invested={proposal.invested ?? false} />
+            )}
+          </S.Body>
+          <S.ReadMoreContainer>
+            <ReadMore
+              content="During this time, we managed to reach the key goal — the creation product the product During this time, we managed to reach the key goal — the creation product the product During this time, we managed to reach the key goal — the creation product the product During this time, we managed to reach the key goal — the creation product the product"
+              maxLen={85}
+            />
+          </S.ReadMoreContainer>
+        </S.Card>
+        <AnimatePresence>
+          {!proposal.closed && (
+            <Actions actions={actions} visible={openExtra} />
+          )}
+        </AnimatePresence>
       </S.Container>
     </>
   )
-
-  // return (
-  //   <>
-  //     <S.Container>
-  //       <S.Head isTrader={isTrader}>
-  //         <Flex>
-  //           <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
-  //           <S.Title>
-  //             {positionTokenData?.symbol} for 0.0013 WBNB or less
-  //           </S.Title>
-  //         </Flex>
-  //         {isTrader ? (
-  //           <>
-  //             <Flex>
-  //               <S.Status active={active}>
-  //                 {active ? "Open investing" : "Closed"}
-  //               </S.Status>
-  //               <Flex m="0 0 0 4px">
-  //                 <IconButton
-  //                   size={12}
-  //                   media={isSettingsOpen ? settingsGreenIcon : settingsIcon}
-  //                   onClick={() => {
-  //                     setIsSettingsOpen(!isSettingsOpen)
-  //                   }}
-  //                 />
-  //               </Flex>
-  //             </Flex>
-  //             <RiskyCardSettings
-  //               visible={isSettingsOpen}
-  //               setVisible={setIsSettingsOpen}
-  //             />
-  //           </>
-  //         ) : (
-  //           <Flex>
-  //             <S.Ticker>{poolInfo?.ticker}</S.Ticker>
-  //             <Icon
-  //               size={24}
-  //               m="0 0 0 4px"
-  //               source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-  //               address={poolAddress}
-  //             />
-  //           </Flex>
-  //         )}
-  //       </S.Head>
-  //       <S.Body>
-  //         <BodyItem
-  //           label={isTrader ? "Max size" : "Proposal size"}
-  //           amount={"40 LP"}
-  //         />
-  //         <BodyItem label="Your size" amount={"0 LP"} />
-  //         <BodyItem label="Fullness" amount={"35 LP"} />
-  //         <BodyItem
-  //           label="Max. Invest Price"
-  //           amount={"0.0013"}
-  //           symbol={"WBNB"}
-  //         />
-  //         <BodyItem label="Current price" amount={"0.00129"} symbol={"WBNB"} />
-  //         <BodyItem
-  //           label="Expiration date"
-  //           amount={"JUN 20,2022  20:00"}
-  //           fz={"11px"}
-  //           completed
-  //         />
-  //         <BodyItem label="Investors" amount={"299"} symbol={"/ 1000"} />
-  //         <BodyItem label="Position size" amount={"20"} symbol={"WBNB"} />
-  //         <Flex full>
-  //           <Button full size="small" onClick={onInvest}>
-  //             {isTrader ? "Terminal" : "Stake LP"}
-  //           </Button>
-  //         </Flex>
-  //       </S.Body>
-  //     </S.Container>
-  //   </>
-  // )
 }
 
 export default InvestProposalCard
