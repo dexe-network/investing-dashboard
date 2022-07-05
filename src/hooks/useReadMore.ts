@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 const MAX_LENGTH = 113
 
@@ -13,7 +13,9 @@ interface IMethods {
   toggle: () => void
 }
 
-export default function useReadMore(): [IValues, IMethods] {
+export default function useReadMore(
+  maxLen: number = MAX_LENGTH
+): [IValues, IMethods] {
   const [full, setFull] = useState("")
   const [inView, setInView] = useState("")
   const [isExpand, setIsExpand] = useState(false)
@@ -22,8 +24,8 @@ export default function useReadMore(): [IValues, IMethods] {
   const setContent = (content: string) => {
     setFull(content)
 
-    if (content.length > MAX_LENGTH) {
-      const short = content.substring(0, MAX_LENGTH)
+    if (content.length > maxLen) {
+      const short = content.substring(0, maxLen)
       setInView(short)
       setCanToggle(true)
     } else {
@@ -37,7 +39,7 @@ export default function useReadMore(): [IValues, IMethods] {
   }
 
   const showPart = () => {
-    setInView(full.substring(0, MAX_LENGTH))
+    setInView(full.substring(0, maxLen))
   }
 
   const toggle = () => {
