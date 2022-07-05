@@ -20,6 +20,10 @@ const FundProposalsInvest = () => {
   const proposals = [
     {
       id: "as;flkajsd;kflasf",
+      poolAddress,
+      proposalInfo: {
+        token: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+      },
     },
   ]
 

@@ -5,8 +5,6 @@ import { useERC20 } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
-import { RiskyProposal } from "constants/interfaces_v2"
-
 import { Flex } from "theme"
 import Icon from "components/Icon"
 import Button from "components/Button"
@@ -27,8 +25,8 @@ interface Props {
 
 const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
   const { account } = useActiveWeb3React()
-  // const [, positionTokenData] = useERC20(proposal.proposalInfo.token)
-  // const [, poolInfo] = usePoolContract(poolAddress)
+  const [, positionTokenData] = useERC20(proposal.proposalInfo.token)
+  const [, poolInfo] = usePoolContract(poolAddress)
 
   // const [{ poolMetadata }] = usePoolMetadata(
   //   poolAddress,
@@ -39,15 +37,21 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
 
   // const active = true
 
-  // // Check that current user is pool trader or not
-  // const isTrader = useMemo(() => {
-  //   if (!account || !poolInfo) return false
-  //   return account === poolInfo?.parameters.trader
-  // }, [account, poolInfo])
+  // Check that current user is pool trader or not
+  const isTrader = useMemo(() => {
+    if (!account || !poolInfo) return false
+    return account === poolInfo?.parameters.trader
+  }, [account, poolInfo])
 
   return (
     <>
       <S.Container>
+        <S.Head isTrader={isTrader}>
+          <Flex>
+            <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
+            <S.Title>{positionTokenData?.symbol}</S.Title>
+          </Flex>
+        </S.Head>
         <S.Body>
           <BodyItem label="Supply" amount={"90k"} symbol={"1/JBR"} />
           <BodyItem label="Your size" amount={"47k"} symbol={"1/JBR"} />
