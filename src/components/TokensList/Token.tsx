@@ -1,11 +1,11 @@
-import { FC, useEffect, useState } from "react"
-import { BigNumber, Contract, ethers } from "ethers"
+import { FC } from "react"
+import { BigNumber } from "@ethersproject/bignumber"
 
-import TokenIcon from "components/TokenIcon"
 import { Token as IToken } from "constants/interfaces"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { formatBigNumber, normalizeBigNumber } from "utils"
 
+import TokenIcon from "components/TokenIcon"
 import {
   TokenContainer,
   TokenInfo,

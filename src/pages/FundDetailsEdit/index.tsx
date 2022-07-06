@@ -3,8 +3,7 @@ import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { RotateSpinner, PulseSpinner } from "react-spinners-kit"
-import { ethers } from "ethers"
-import { TransactionReceipt } from "@ethersproject/providers"
+import { formatEther, parseEther } from "@ethersproject/units"
 import { useDispatch } from "react-redux"
 
 import {
@@ -454,11 +453,9 @@ const FundDetailsEdit: FC = () => {
       }
 
       const totalEmission =
-        poolInfoData &&
-        ethers.utils.formatEther(poolInfoData.parameters.totalLPEmission)
+        poolInfoData && formatEther(poolInfoData.parameters.totalLPEmission)
       const minInvestment =
-        poolInfoData &&
-        ethers.utils.formatEther(poolInfoData.parameters.minimalInvestment)
+        poolInfoData && formatEther(poolInfoData.parameters.minimalInvestment)
 
       const investors = poolData?.privateInvestors.map((m) => m.id)
       const managers = poolData?.admins
@@ -475,9 +472,7 @@ const FundDetailsEdit: FC = () => {
   // update emission switch state
   useEffect(() => {
     if (!poolInfoData) return
-    if (
-      !poolInfoData.parameters.totalLPEmission.eq(ethers.utils.parseEther("0"))
-    ) {
+    if (!poolInfoData.parameters.totalLPEmission.eq(parseEther("0"))) {
       setEmission(true)
     }
   }, [poolInfoData])
@@ -485,11 +480,7 @@ const FundDetailsEdit: FC = () => {
   // update min invest amount switch state
   useEffect(() => {
     if (!poolInfoData) return
-    if (
-      !poolInfoData.parameters.minimalInvestment.eq(
-        ethers.utils.parseEther("0")
-      )
-    ) {
+    if (!poolInfoData.parameters.minimalInvestment.eq(parseEther("0"))) {
       setMinimalInvest(true)
     }
   }, [poolInfoData])

@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit"
-import { ethers } from "ethers"
+import { formatEther } from "@ethersproject/units"
 
 import {
   addTransation,
@@ -56,10 +56,8 @@ export default createReducer(initialState, (builder) =>
         return
       }
 
-      receipt.cumulativeGasUsed = ethers.utils.formatEther(
-        receipt.cumulativeGasUsed
-      )
-      receipt.gasUsed = ethers.utils.formatEther(receipt.gasUsed)
+      receipt.cumulativeGasUsed = formatEther(receipt.cumulativeGasUsed)
+      receipt.gasUsed = formatEther(receipt.gasUsed)
 
       tx.receipt = receipt
       tx.confirmedTime = now()

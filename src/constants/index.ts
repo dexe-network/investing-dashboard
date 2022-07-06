@@ -1,5 +1,5 @@
 import { addDays, addMonths, addYears } from "date-fns"
-import { ethers } from "ethers"
+import { parseEther } from "@ethersproject/units"
 import { createStaticRanges } from "react-date-range"
 import { ISortItem } from "./interfaces"
 
@@ -253,22 +253,22 @@ export const EXCHANGE_DEFAULT_PERCENTS = [
   {
     id: "010",
     label: "10%",
-    percent: ethers.utils.parseEther("0.1"),
+    percent: parseEther("0.1"),
   },
   {
     id: "025",
     label: "25%",
-    percent: ethers.utils.parseEther("0.25"),
+    percent: parseEther("0.25"),
   },
   {
     id: "050",
     label: "50%",
-    percent: ethers.utils.parseEther("0.5"),
+    percent: parseEther("0.5"),
   },
   {
     id: "075",
     label: "75%",
-    percent: ethers.utils.parseEther("0.75"),
+    percent: parseEther("0.75"),
   },
 ]
 

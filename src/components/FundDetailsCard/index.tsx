@@ -1,5 +1,5 @@
 import { FC, ReactNode, useState, useEffect, useMemo } from "react"
-import { ethers } from "ethers"
+import { formatEther } from "@ethersproject/units"
 import { format } from "date-fns"
 
 import { useERC20 } from "hooks/useContract"
@@ -51,7 +51,7 @@ const FundDetailsCard: FC<Props> = ({ data, poolInfo, children = null }) => {
   const minimalInvestment = useMemo(() => {
     if (!poolInfo || !baseData) return "-"
 
-    const res = ethers.utils.formatEther(poolInfo.parameters.minimalInvestment)
+    const res = formatEther(poolInfo.parameters.minimalInvestment)
 
     if (res === "0.0" || res === "0.00") {
       return "-"
@@ -81,8 +81,8 @@ const FundDetailsCard: FC<Props> = ({ data, poolInfo, children = null }) => {
     const dif = total.sub(used)
 
     const percent = percentage(
-      Number(ethers.utils.formatEther(used)).toFixed(2),
-      Number(ethers.utils.formatEther(total)).toFixed(2)
+      Number(formatEther(used)).toFixed(2),
+      Number(formatEther(total)).toFixed(2)
     )
 
     return {

@@ -4,6 +4,7 @@ import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
+import { formatUnits, parseEther } from "@ethersproject/units"
 import { createClient, Provider as GraphProvider } from "urql"
 
 import IconButton from "components/IconButton"
@@ -48,7 +49,6 @@ import {
   Title,
   IconsGroup,
 } from "components/Exchange/styled"
-import { ethers } from "ethers"
 import { parseTransactionError } from "utils"
 
 import { useTransactionAdder } from "state/transactions/hooks"
@@ -372,15 +372,15 @@ function InvestRiskyProposal() {
   }
 
   const calculateFromPrice = (amount: string) => {
-    const amountNormalized = ethers.utils.formatUnits(amount, 18)
+    const amountNormalized = formatUnits(amount, 18)
     const resultNormalized =
       parseFloat(amountNormalized) * parseFloat(lpUSDPrice)
 
     if (isNaN(resultNormalized)) {
-      return ethers.utils.parseEther("0")
+      return parseEther("0")
     }
 
-    return ethers.utils.parseEther(resultNormalized.toString())
+    return parseEther(resultNormalized.toString())
   }
 
   const handleFromChange = async (v: string) => {

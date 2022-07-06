@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { TraderPoolRegistry } from "abi"
 import { useQuery } from "urql"
+import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
+import { parseEther } from "@ethersproject/units"
 
 import useContract from "hooks/useContract"
 import { AppDispatch, AppState } from "state"
@@ -27,8 +29,7 @@ import {
   BasicPositionsQuery,
   getPoolsQueryVariables,
 } from "queries"
-import { BigNumber, ethers, FixedNumber } from "ethers"
-import { usePoolContract, useTraderPool } from "hooks/usePool"
+import { useTraderPool } from "hooks/usePool"
 
 /**
  * Returns top members filter state variables and setter
@@ -100,8 +101,8 @@ export function usePriceHistory(
 
 export function usePoolPrice(address: string | undefined) {
   const traderPool = useTraderPool(address)
-  const [priceUSD, setPriceUSD] = useState(ethers.utils.parseEther("1"))
-  const [priceBase, setPriceBase] = useState(ethers.utils.parseEther("1"))
+  const [priceUSD, setPriceUSD] = useState(parseEther("1"))
+  const [priceBase, setPriceBase] = useState(parseEther("1"))
 
   useEffect(() => {
     if (!traderPool) return

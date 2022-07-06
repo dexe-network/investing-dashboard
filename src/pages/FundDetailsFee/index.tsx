@@ -2,7 +2,7 @@ import { FC, useState, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
-import { ethers } from "ethers"
+import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 import { useSelector } from "react-redux"
 
 import { formatBigNumber } from "utils"
@@ -73,12 +73,12 @@ const FundDetailsFee: FC = () => {
 
     const { totalPoolBase, traderBase } = poolInfoData
 
-    const _totalPoolBase = ethers.FixedNumber.fromValue(totalPoolBase, 18)
-    const _traderBase = ethers.FixedNumber.fromValue(traderBase, 18)
+    const _totalPoolBase = FixedNumber.fromValue(totalPoolBase, 18)
+    const _traderBase = FixedNumber.fromValue(traderBase, 18)
 
     const result = _totalPoolBase.subUnsafe(_traderBase)
 
-    return ethers.BigNumber.from(result)
+    return BigNumber.from(result)
   }, [poolInfoData])
 
   const commissionPercentage = useMemo(() => {

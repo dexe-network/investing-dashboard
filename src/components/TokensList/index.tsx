@@ -1,12 +1,10 @@
+import { BigNumber } from "@ethersproject/bignumber"
+
 import { Token as IToken } from "constants/interfaces"
 
 import Search from "components/Search"
-
-import { BigNumber } from "ethers"
-
-import Token from "./Token"
-
 import { Card, CardHeader, CardList } from "./styled"
+import Token from "./Token"
 
 interface Props {
   tokens: IToken[]

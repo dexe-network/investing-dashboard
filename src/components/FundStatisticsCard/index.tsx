@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { BigNumber } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 
 import { TraderPool } from "abi"
 import useContract, { useERC20 } from "hooks/useContract"
@@ -8,7 +8,7 @@ import { IPoolQuery, LeverageInfo, PoolInfo } from "constants/interfaces_v2"
 
 import { Flex } from "theme"
 import ProgressBar from "components/ProgressBar"
-import { Label, InfoRow, Container, Icon, LabelIcon } from "./styled"
+import { Label, InfoRow, Container, Icon } from "./styled"
 
 import chartIcon from "assets/icons/bar-chart-icon.svg"
 
