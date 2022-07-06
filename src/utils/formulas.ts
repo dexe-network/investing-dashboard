@@ -1,6 +1,6 @@
 import { PoolInfo } from "constants/interfaces_v2"
-import { ethers, FixedNumber } from "ethers"
-import { BigNumber } from "@ethersproject/bignumber"
+import { ethers } from "ethers"
+import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 import { cutDecimalPlaces, formatNumber, convertBigToFixed } from "utils"
 
 export const getPNL = (SP: string) => {
