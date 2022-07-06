@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import getTime from "date-fns/getTime"
 import { addDays, format } from "date-fns/esm"
 import { useWeb3React } from "@web3-react/core"
-import { ethers } from "ethers"
+import { parseUnits, parseEther } from "@ethersproject/units"
 import { BigNumber } from "@ethersproject/bignumber"
 import { createClient, Provider as GraphProvider } from "urql"
 
@@ -135,7 +135,7 @@ const CreateInvestProposal: FC = () => {
     const createInvestProposal = async () => {
       setSubmiting(true)
       setError("")
-      const amount = ethers.utils.parseEther(lpAmount).toHexString()
+      const amount = parseEther(lpAmount).toHexString()
 
       const divests = await traderPool.getDivestAmountsAndCommissions(
         account,
@@ -148,9 +148,7 @@ const CreateInvestProposal: FC = () => {
         account
       )
 
-      const investLPLimitHex = ethers.utils
-        .parseUnits(investLPLimit, 18)
-        .toHexString()
+      const investLPLimitHex = parseUnits(investLPLimit, 18).toHexString()
 
       const createReceipt = await investTraderPool.createProposal(
         ipfsReceipt.path,

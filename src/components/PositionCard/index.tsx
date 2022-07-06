@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { ethers } from "ethers"
+import { parseUnits, formatEther } from "@ethersproject/units"
 import { BigNumber } from "@ethersproject/bignumber"
 
 import { PriceFeed } from "abi"
@@ -69,8 +69,8 @@ const PositionCard: React.FC<Props> = ({
     })
 
     buy.map((exchange) => {
-      const from = ethers.utils.formatEther(exchange.fromVolume)
-      const to = ethers.utils.formatEther(exchange.toVolume)
+      const from = formatEther(exchange.fromVolume)
+      const to = formatEther(exchange.toVolume)
 
       const price = Number(from) / Number(to)
       return price
@@ -82,7 +82,7 @@ const PositionCard: React.FC<Props> = ({
     if (!priceFeed) return
 
     const getMarkPrice = async () => {
-      const amount = ethers.utils.parseUnits("1", 18)
+      const amount = parseUnits("1", 18)
 
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(

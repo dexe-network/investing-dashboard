@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { Flex, ease } from "theme"
 import TokenIcon from "components/TokenIcon"
 import { useERC20 } from "hooks/useContract"
-import { ethers } from "ethers"
+import { formatUnits } from "@ethersproject/units"
 import { IPoolPosition, IPoolTransaction } from "constants/interfaces"
 import { CircleSpinner } from "react-spinners-kit"
 import { format } from "date-fns"
@@ -103,26 +103,21 @@ export const TradesTotalItem: React.FC<IProps> = ({
     )
   }
 
-  const basePrice = ethers.utils
-    .formatUnits(data.avgBasePrice.toString())
-    .toString()
+  const basePrice = formatUnits(data.avgBasePrice.toString()).toString()
 
-  const baseTotal = ethers.utils
-    .formatUnits(data.avgBasePrice.mul(data.amount).toString())
-    .toString()
+  const baseTotal = formatUnits(
+    data.avgBasePrice.mul(data.amount).toString()
+  ).toString()
 
-  const stablePrice = ethers.utils
-    .formatUnits(data.avgStablePrice.toString(), 6)
-    .toString()
+  const stablePrice = formatUnits(data.avgStablePrice.toString(), 6).toString()
 
-  const stableTotal = ethers.utils
-    .formatUnits(data.avgStablePrice.mul(data.amount).toString(), 6)
-    .toString()
+  const stableTotal = formatUnits(
+    data.avgStablePrice.mul(data.amount).toString(),
+    6
+  ).toString()
 
-  const pnlBase = ethers.utils.formatUnits(data.pnlBase.toString()).toString()
-  const pnlStable = ethers.utils
-    .formatUnits(data.pnlStable.toString(), 6)
-    .toString()
+  const pnlBase = formatUnits(data.pnlBase.toString()).toString()
+  const pnlStable = formatUnits(data.pnlStable.toString(), 6).toString()
 
   return (
     <Wrapper
@@ -216,21 +211,18 @@ const TradesListItem: React.FC<{ data: IPoolTransaction }> = ({ data }) => {
     )
   }
 
-  const basePrice = ethers.utils
-    .formatUnits(data.basePrice.toString())
-    .toString()
+  const basePrice = formatUnits(data.basePrice.toString()).toString()
 
-  const baseTotal = ethers.utils
-    .formatUnits(data.basePrice.mul(data.amount).toString())
-    .toString()
+  const baseTotal = formatUnits(
+    data.basePrice.mul(data.amount).toString()
+  ).toString()
 
-  const stablePrice = ethers.utils
-    .formatUnits(data.stablePrice.toString(), 6)
-    .toString()
+  const stablePrice = formatUnits(data.stablePrice.toString(), 6).toString()
 
-  const stableTotal = ethers.utils
-    .formatUnits(data.stablePrice.mul(data.amount).toString(), 6)
-    .toString()
+  const stableTotal = formatUnits(
+    data.stablePrice.mul(data.amount).toString(),
+    6
+  ).toString()
 
   return (
     <Wrapper

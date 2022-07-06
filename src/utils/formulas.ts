@@ -1,5 +1,5 @@
 import { PoolInfo } from "constants/interfaces_v2"
-import { ethers } from "ethers"
+import { formatUnits } from "@ethersproject/units"
 import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 import { cutDecimalPlaces, formatNumber, convertBigToFixed } from "utils"
 
@@ -91,7 +91,7 @@ export const getPriceStable = (stable: string, emission: string): string => {
 }
 
 export const getUSDPrice = (value) => {
-  return formatNumber(ethers.utils.formatUnits(value, 18).toString(), 0)
+  return formatNumber(formatUnits(value, 18).toString(), 0)
 }
 
 export const getLastInArray = (array) =>

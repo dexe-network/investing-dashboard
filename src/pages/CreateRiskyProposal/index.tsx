@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { ethers } from "ethers"
+import { parseUnits, parseEther } from "@ethersproject/units"
 import { BigNumber } from "@ethersproject/bignumber"
 import getTime from "date-fns/getTime"
 import { addDays, format } from "date-fns/esm"
@@ -177,8 +177,8 @@ const CreateRiskyProposal: FC = () => {
     const getCreatingTokensInfo = async () => {
       const tokens = await riskyProposal.getCreationTokens(
         tokenAddress,
-        ethers.utils.parseEther("1").toHexString(),
-        ethers.utils.parseUnits("100", 27).toHexString(),
+        parseEther("1").toHexString(),
+        parseUnits("100", 27).toHexString(),
         []
       )
       setBaseTokenPrice(tokens.positionTokenPrice)
@@ -230,10 +230,11 @@ const CreateRiskyProposal: FC = () => {
     const createRiskyProposal = async () => {
       setSubmiting(true)
       setError("")
-      const amount = ethers.utils.parseEther(lpAmount).toHexString()
-      const percentage = ethers.utils
-        .parseUnits(instantTradePercentage.toString(), 25)
-        .toHexString()
+      const amount = parseEther(lpAmount).toHexString()
+      const percentage = parseUnits(
+        instantTradePercentage.toString(),
+        25
+      ).toHexString()
 
       const divests = await traderPool.getDivestAmountsAndCommissions(
         account,
@@ -252,8 +253,8 @@ const CreateRiskyProposal: FC = () => {
         amount,
         [
           timestampLimit,
-          ethers.utils.parseUnits(investLPLimit, 18).toHexString(),
-          ethers.utils.parseUnits(maxTokenPriceLimit, 18).toHexString(),
+          parseUnits(investLPLimit, 18).toHexString(),
+          parseUnits(maxTokenPriceLimit, 18).toHexString(),
         ],
         percentage,
         divests.receptions.receivedAmounts,

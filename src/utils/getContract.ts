@@ -2,7 +2,6 @@ import { AddressZero } from "@ethersproject/constants"
 import { Contract } from "@ethersproject/contracts"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import { isAddress } from "./index"
-import { ethers } from "ethers"
 
 export function getContract(
   address: string,

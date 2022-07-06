@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { Flex } from "theme"
 import { BigNumber } from "@ethersproject/bignumber"
-
-import { ethers } from "ethers"
+import { formatUnits } from "@ethersproject/units"
 import { formatNumber } from "utils"
 
 import angle from "assets/icons/angle-down.svg"
@@ -88,12 +87,10 @@ const SwapPrice: React.FC<Props> = ({
       <Card onClick={handleAngleClick}>
         <Flex ai="center">
           <TokenPrice>
-            1 {toSymbol} ={" "}
-            {formatNumber(ethers.utils.formatUnits(tokensCost), 6)} {fromSymbol}
+            1 {toSymbol} = {formatNumber(formatUnits(tokensCost), 6)}{" "}
+            {fromSymbol}
           </TokenPrice>
-          <UsdPrice>
-            (${formatNumber(ethers.utils.formatUnits(usdCost), 2)})
-          </UsdPrice>
+          <UsdPrice>(${formatNumber(formatUnits(usdCost), 2)})</UsdPrice>
         </Flex>
         <Flex gap="6" ai="center">
           <GasIcon src={gas} />

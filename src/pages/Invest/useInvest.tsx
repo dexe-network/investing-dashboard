@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react"
-import { ethers } from "ethers"
+import { parseUnits, parseEther } from "@ethersproject/units"
 import { BigNumber } from "@ethersproject/bignumber"
 import { useWeb3React } from "@web3-react/core"
 
@@ -130,10 +130,7 @@ const useInvest = ({
   const transactionOptions = useMemo(() => {
     if (!gasTrackerResponse) return
     return {
-      gasPrice: ethers.utils.parseUnits(
-        gasTrackerResponse.ProposeGasPrice,
-        "gwei"
-      ),
+      gasPrice: parseUnits(gasTrackerResponse.ProposeGasPrice, "gwei"),
     }
   }, [gasTrackerResponse])
 
@@ -746,7 +743,7 @@ const useInvest = ({
       setSwapPrice(priceBase)
     }
     if (direction === "withdraw") {
-      const amount = ethers.utils.parseEther("1")
+      const amount = parseEther("1")
       setSwapPrice(divideBignumbers([amount, 18], [priceBase, 18]))
     }
   }, [direction, priceBase, priceUSD])

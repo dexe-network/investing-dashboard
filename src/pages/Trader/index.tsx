@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { GuardSpinner } from "react-spinners-kit"
 import { useWeb3React } from "@web3-react/core"
 import { createClient, Provider as GraphProvider } from "urql"
-import { ethers } from "ethers"
+import { formatEther } from "@ethersproject/units"
 
 import { Flex, Center } from "theme"
 import Button, { SecondaryButton } from "components/Button"
@@ -148,12 +148,10 @@ function Trader(props: Props) {
     ;(async () => {
       const investors = await traderPool?.totalInvestors()
 
-      const limit = +ethers.utils.formatEther(investors) + 1
+      const limit = +formatEther(investors) + 1
       const res = await traderPool?.getUsersInfo(0, limit)
 
-      const commisionTime = ethers.utils.formatEther(
-        res[0].commissionUnlockTimestamp
-      )
+      const commisionTime = formatEther(res[0].commissionUnlockTimestamp)
       setCommisionUnlockTime(Number(commisionTime))
     })()
   }, [traderPool])
@@ -163,7 +161,7 @@ function Trader(props: Props) {
     ;(async () => {
       const investors = await traderPool?.totalInvestors()
 
-      const limit = +ethers.utils.formatEther(investors) + 1
+      const limit = +formatEther(investors) + 1
       const fees = await traderPool?.getReinvestCommissions(0, limit)
 
       const commission = formatBigNumber(fees.traderBaseCommission, 18, 0)
