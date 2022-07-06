@@ -12,7 +12,8 @@ import {
   usePriceFeedContract,
   useTraderPoolContract,
 } from "hooks/useContract"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import { usePoolContract } from "hooks/usePool"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 
 import { usePriceFeedContract } from "hooks/useContract"
 

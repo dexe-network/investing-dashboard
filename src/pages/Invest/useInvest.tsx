@@ -6,9 +6,12 @@ import {
   useMemo,
   useState,
 } from "react"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
+import { useWeb3React } from "@web3-react/core"
+
 import { usePoolContract, useTraderPool } from "hooks/usePool"
-import Icon from "components/Icon"
+
 import {
   calcSlippage,
   getAllowance,
@@ -17,7 +20,6 @@ import {
   formatBigNumber,
   getMaxLPInvestAmount,
 } from "utils"
-import { useWeb3React } from "@web3-react/core"
 import { useERC20, usePriceFeedContract } from "hooks/useContract"
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -35,6 +37,8 @@ import useAlert, { AlertType } from "hooks/useAlert"
 import { ExchangeForm } from "constants/interfaces_v2"
 import useGasTracker from "state/gas/hooks"
 import { IAlert } from "context/AlertContext"
+
+import Icon from "components/Icon"
 
 interface UseInvestProps {
   poolAddress: string | undefined

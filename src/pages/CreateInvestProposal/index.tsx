@@ -1,13 +1,27 @@
 import { FC, useEffect, useState } from "react"
-import { Flex } from "theme"
 import { useNavigate, useParams } from "react-router-dom"
 import getTime from "date-fns/getTime"
 import { addDays, format } from "date-fns/esm"
 import { useWeb3React } from "@web3-react/core"
-import { BigNumber, ethers } from "ethers"
-import { InvestTraderPool } from "abi"
+import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import { createClient, Provider as GraphProvider } from "urql"
 
+import { InvestTraderPool } from "abi"
+import useContract from "hooks/useContract"
+import { useTraderPool } from "hooks/usePool"
+import { addInvestProposalMetadata } from "utils/ipfs"
+import { useTransactionAdder } from "state/transactions/hooks"
+import { TransactionType } from "state/transactions/types"
+import {
+  shortTimestamp,
+  expandTimestamp,
+  formatBigNumber,
+  parseTransactionError,
+  isTxMined,
+} from "utils"
+
+import { Flex } from "theme"
 import Header from "components/Header/Layout"
 import IconButton from "components/IconButton"
 import Button from "components/Button"
@@ -17,22 +31,6 @@ import Tooltip from "components/Tooltip"
 import DatePicker from "components/DatePicker"
 import Payload from "components/Payload"
 import TransactionError from "modals/TransactionError"
-
-import useContract from "hooks/useContract"
-import { useTraderPool } from "hooks/usePool"
-
-import { addInvestProposalMetadata } from "utils/ipfs"
-
-import {
-  shortTimestamp,
-  expandTimestamp,
-  formatBigNumber,
-  parseTransactionError,
-  isTxMined,
-} from "utils"
-
-import { useTransactionAdder } from "state/transactions/hooks"
-import { TransactionType } from "state/transactions/types"
 
 import close from "assets/icons/close-big.svg"
 import calendar from "assets/icons/calendar.svg"

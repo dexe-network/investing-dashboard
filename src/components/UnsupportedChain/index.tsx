@@ -3,7 +3,7 @@
 import { useCallback } from "react"
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core"
 import IconButton from "components/IconButton"
-import { BigNumber } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 
 import { connectorsByName, RPC_URLS } from "constants/connectors"
 

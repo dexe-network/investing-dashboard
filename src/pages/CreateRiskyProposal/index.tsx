@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from "react"
-import { Flex } from "theme"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import getTime from "date-fns/getTime"
 import { addDays, format } from "date-fns/esm"
 import {
@@ -12,9 +12,11 @@ import {
 } from "react-router-dom"
 import { useSelector } from "react-redux"
 import { useWeb3React } from "@web3-react/core"
-import { TraderPoolRiskyProposal, BasicTraderPool } from "abi"
 import { createClient, Provider as GraphProvider } from "urql"
 
+import { TraderPoolRiskyProposal, BasicTraderPool } from "abi"
+
+import { Flex } from "theme"
 import Header from "components/Header/Layout"
 import IconButton from "components/IconButton"
 import Checkbox from "components/Checkbox"

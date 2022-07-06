@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { useWeb3React } from "@web3-react/core"
 import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 import { useSelector } from "react-redux"
 
 import { formatBigNumber } from "utils"
@@ -78,7 +79,7 @@ const FundDetailsFee: FC = () => {
 
     const result = _totalPoolBase.subUnsafe(_traderBase)
 
-    return ethers.BigNumber.from(result)
+    return BigNumber.from(result)
   }, [poolInfoData])
 
   const commissionPercentage = useMemo(() => {

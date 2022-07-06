@@ -2,6 +2,8 @@ import { useState, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { TraderPoolRegistry } from "abi"
 import { useQuery } from "urql"
+import { ethers, FixedNumber } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
 
 import useContract from "hooks/useContract"
 import { AppDispatch, AppState } from "state"
@@ -27,8 +29,7 @@ import {
   BasicPositionsQuery,
   getPoolsQueryVariables,
 } from "queries"
-import { BigNumber, ethers, FixedNumber } from "ethers"
-import { usePoolContract, useTraderPool } from "hooks/usePool"
+import { useTraderPool } from "hooks/usePool"
 
 /**
  * Returns top members filter state variables and setter

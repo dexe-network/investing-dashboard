@@ -1,13 +1,12 @@
-// import React, { useState, useRef } from "react"
 import { Fragment } from "react"
-import { BigNumber } from "ethers"
-import { rotateVariants } from "theme"
+import { BigNumber } from "@ethersproject/bignumber"
+
 import { EXCHANGE_DEFAULT_PERCENTS } from "constants/index"
 import { SwapDirection } from "constants/types"
 
-import icon from "assets/icons/swap-arrow.svg"
-
+import { rotateVariants } from "theme"
 import { DividerContainer, PercentButton, SwapButton, Icon } from "./styled"
+import icon from "assets/icons/swap-arrow.svg"
 
 interface IDividerProps {
   changeAmount: (v: BigNumber) => void

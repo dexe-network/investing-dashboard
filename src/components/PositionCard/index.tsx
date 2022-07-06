@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
-import { Flex } from "theme"
+import { ethers } from "ethers"
+import { BigNumber } from "@ethersproject/bignumber"
+
 import { PriceFeed } from "abi"
-import { BigNumber, ethers } from "ethers"
-
-import TokenIcon from "components/TokenIcon"
-import Icon from "components/Icon"
-
+import { normalizeBigNumber } from "utils"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import useContract, { useERC20 } from "hooks/useContract"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import { IPosition } from "constants/interfaces_v2"
 
-import { normalizeBigNumber } from "utils"
+import { Flex } from "theme"
+import TokenIcon from "components/TokenIcon"
+import Icon from "components/Icon"
 
 import {
   Card,
@@ -26,7 +27,6 @@ import {
   StablePrice,
   PNL,
 } from "./styled"
-import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 interface Props {
   baseToken?: string
