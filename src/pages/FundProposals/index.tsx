@@ -18,6 +18,8 @@ const positionsList = [
     closed: false,
     id: "adfasdasdfasdf",
     positionToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+    totalUSDCloseVolume: "0",
+    totalUSDOpenVolume: "68474",
     exchanges: [
       {
         fromToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
@@ -34,6 +36,8 @@ const positionsList = [
     closed: true,
     id: "adfasdasdfasdf",
     positionToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",
+    totalUSDCloseVolume: "0",
+    totalUSDOpenVolume: "68474",
     exchanges: [
       {
         fromToken: "0x8a9424745056Eb399FD19a0EC26A14316684e274",

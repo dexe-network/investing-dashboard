@@ -1,4 +1,4 @@
-import { FC, MouseEvent } from "react"
+import { FC, MouseEvent, useMemo } from "react"
 import { BigNumber } from "ethers"
 import { normalizeBigNumber } from "utils"
 import styled from "styled-components"
@@ -64,7 +64,7 @@ export const BodyItemStyled = {
     margin-bottom: 8px;
   `,
 
-  PNL: styled.div`
+  PNL: styled.div<{ positive?: boolean }>`
     font-family: "Gilroy";
     font-style: normal;
     font-weight: 600;
@@ -72,7 +72,7 @@ export const BodyItemStyled = {
     letter-spacing: 0.01em;
     margin-right: 4px;
     font-size: 12px;
-    color: #83e5ca;
+    color: ${(props) => (props.positive ? "#83e5ca" : "#DB6D6D")};
   `,
 
   StablePrice: styled.div`
@@ -101,14 +101,20 @@ export const BodyItem: FC<IBodyItemProps> = ({
   pnl,
   amountUSD,
 }) => {
+  const normalizedPnl = useMemo(() => {
+    if (!pnl) return null
+    return normalizeBigNumber(pnl, 18, 2)
+  }, [pnl])
+
   return (
     <Flex dir="column" ai="flex-start">
       <BodyItemStyled.Label>{label}</BodyItemStyled.Label>
       <Flex>
         <Amount value={normalizeBigNumber(amount, 18, 4)} symbol={symbol} />
         {pnl && (
-          <BodyItemStyled.PNL>
-            &nbsp;+{normalizeBigNumber(pnl, 18, 2)}%
+          <BodyItemStyled.PNL positive={Number(normalizedPnl) > 0}>
+            &nbsp;{Number(normalizedPnl) > 0 && "+"}
+            {normalizedPnl}%
           </BodyItemStyled.PNL>
         )}
       </Flex>

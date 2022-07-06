@@ -183,6 +183,8 @@ export interface IPosition {
   closed: boolean
   id: string
   positionToken: string
+  totalUSDOpenVolume: string
+  totalUSDCloseVolume: string
   exchanges: IExchange[]
 }
 

@@ -8,6 +8,7 @@ export interface ButtonBaseProps {
 export interface MainButtonProps extends ButtonBaseProps {
   size?: "normal" | "big" | "small" | "large"
   m?: string
+  br?: string
   fz?: number
   full?: boolean
 }

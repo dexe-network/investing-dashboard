@@ -22,7 +22,12 @@ const BodyInvestor: FC<Props> = ({ invested }) => {
           <BodyItem label="Custodian" amount={"-"} />
           <BodyItem label="LP price" amount={"999,989"} symbol={"USDT"} />
           <div>
-            <Button size="small" onClick={() => console.log("Stake LP")}>
+            <Button
+              full
+              size="small"
+              br="10px"
+              onClick={() => console.log("Stake LP")}
+            >
               Stake LP
             </Button>
           </div>

@@ -115,6 +115,8 @@ const POSITION = `
   id
   positionToken
   closed
+  totalUSDOpenVolume
+  totalUSDCloseVolume
   exchanges {
     fromToken
     toToken

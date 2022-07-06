@@ -128,7 +128,7 @@ const PoolPositionCard: React.FC<Props> = ({
             <BodyItem
               label="P&L LP"
               amount={ethers.utils.parseUnits("0.0012")}
-              pnl={ethers.utils.parseUnits("0.38")}
+              pnl={ethers.utils.parseUnits("-0.38")}
               amountUSD={ethers.utils.parseUnits("30")}
             />
           </SharedS.Body>

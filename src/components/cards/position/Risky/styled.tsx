@@ -28,6 +28,7 @@ const Styled = {
     line-height: 100%;
     color: #616d8b;
     transform: translateY(2px);
+    margin-right: 4px;
   `,
 }
 

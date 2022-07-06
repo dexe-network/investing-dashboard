@@ -123,7 +123,7 @@ const RiskyPositionCard: React.FC<Props> = ({
               </Flex>
             )}
             <Flex>
-              <S.FundSymbol>{ticker}</S.FundSymbol>
+              <S.FundSymbol>{ticker ?? "POOL"}</S.FundSymbol>
               <Icon
                 m="0"
                 size={24}
