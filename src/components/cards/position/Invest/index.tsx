@@ -4,7 +4,7 @@ import { useSelector } from "react-redux"
 import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
-import { IPosition } from "constants/interfaces_v2"
+import { IInvestorProposal } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
@@ -22,7 +22,7 @@ import S from "./styled"
 
 interface Props {
   baseTokenAddress?: string
-  position: IPosition
+  position: IInvestorProposal
   ticker?: string
   descriptionURL?: string
   poolAddress?: string
@@ -36,7 +36,9 @@ const InvestPositionCard: React.FC<Props> = ({
   descriptionURL,
   poolAddress,
 }) => {
-  const [, tokenData] = useERC20(position.positionToken)
+  const [, tokenData] = useERC20(position.pool.token)
+  // TODO: usePool to get descriptionURL
+  const [, poolData] = useERC20(position.pool.id)
   const [, baseToken] = useERC20(baseTokenAddress)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
@@ -45,14 +47,14 @@ const InvestPositionCard: React.FC<Props> = ({
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
   const markPriceUSD = useTokenPriceOutUSD({
-    tokenAddress: position.positionToken,
+    tokenAddress: position.pool.token,
   })
 
   const [showExtra, setShowExtra] = useState<boolean>(false)
   const [showPositions, setShowPositions] = useState<boolean>(false)
   const [showComission, setShowComission] = useState<boolean>(false)
   const toggleExtraContent = useCallback(() => {
-    if (position.closed) {
+    if (position.isClosed) {
       setShowPositions(!showPositions)
     } else {
       if (showPositions) {
@@ -63,7 +65,7 @@ const InvestPositionCard: React.FC<Props> = ({
       }
     }
     setShowExtra(!showExtra)
-  }, [showExtra, position.closed, showComission, showPositions])
+  }, [showExtra, position.isClosed, showComission, showPositions])
 
   const togglePositions = useCallback(() => {
     if (!showPositions && showComission) {
@@ -88,7 +90,7 @@ const InvestPositionCard: React.FC<Props> = ({
 
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(
-        position.positionToken,
+        position.pool.token,
         baseTokenAddress,
         amount,
         []
@@ -97,7 +99,7 @@ const InvestPositionCard: React.FC<Props> = ({
     }
 
     getMarkPrice().catch(console.error)
-  }, [priceFeed, baseTokenAddress, position.positionToken])
+  }, [priceFeed, baseTokenAddress, position.pool.token])
 
   const onBuyMore = (e) => {
     e.preventDefault()
@@ -146,8 +148,8 @@ const InvestPositionCard: React.FC<Props> = ({
               <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
             </Flex>
             <Flex>
-              <S.FundSymbol>{ticker}</S.FundSymbol>
-              <TokenIcon address={position.positionToken} m="0" size={24} />
+              <S.FundSymbol>{poolData?.name}</S.FundSymbol>
+              <TokenIcon address={position.pool.token} m="0" size={24} />
             </Flex>
           </SharedS.Head>
 
@@ -159,7 +161,7 @@ const InvestPositionCard: React.FC<Props> = ({
               amountUSD={ethers.utils.parseUnits("57")}
             />
             <BodyItem
-              label={position.closed ? "Closed price" : "Current price"}
+              label={position.isClosed ? "Closed price" : "Current price"}
               amount={markPrice}
               symbol={baseToken?.symbol}
               amountUSD={markPriceUSD}
@@ -174,7 +176,7 @@ const InvestPositionCard: React.FC<Props> = ({
         </SharedS.Card>
 
         <AnimatePresence>
-          {!position.closed && (
+          {!position.isClosed && (
             <Actions actions={actions} visible={showExtra} />
           )}
         </AnimatePresence>

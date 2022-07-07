@@ -2,15 +2,18 @@ import { Routes, Route } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 
 import RouteTabs from "components/RouteTabs"
-import InvestmentPositionsList from "./InvestmentPositionsList"
+import InvestmentPositionsList from "./List"
 
 import { ITab } from "constants/interfaces"
+import { useActiveWeb3React } from "hooks"
 
 const poolsClient = createClient({
-  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+  url: process.env.REACT_APP_INVESTORS_API_URL || "",
 })
 
 const InvestmentPositions = () => {
+  const { account } = useActiveWeb3React()
+
   const tabs: ITab[] = [
     {
       title: "Open",
@@ -22,17 +25,21 @@ const InvestmentPositions = () => {
     },
   ]
 
+  if (!account) {
+    return <span style={{ color: "white" }}>Loading</span>
+  }
+
   return (
     <>
       <RouteTabs tabs={tabs} />
       <Routes>
         <Route
           path="open"
-          element={<InvestmentPositionsList closed={false} />}
+          element={<InvestmentPositionsList account={account} closed={false} />}
         ></Route>
         <Route
           path="closed"
-          element={<InvestmentPositionsList closed={true} />}
+          element={<InvestmentPositionsList account={account} closed={true} />}
         ></Route>
       </Routes>
     </>

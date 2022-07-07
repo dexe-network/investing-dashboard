@@ -191,7 +191,7 @@ const RiskyProposalsQuery = `
   }
 `
 
-// Pool ivnest proposals
+// Pool invnest proposals
 
 // lastSupply {
 //   id
@@ -227,6 +227,40 @@ const InvestProposalsQuery = `
       baseToken
       proposals(first: 100) {
         ${INVEST_PROPOSAL}
+      }
+    }
+  }
+`
+
+// Investor proposals
+
+const INVESTOR_PROPOSAL_VEST = `
+  id
+  isInvest
+  timestamp
+  volumeBase
+  volumeLP
+  volumeUSD
+`
+
+const InvestorProposalsQuery = `
+  query ($address: String!, $closed: Boolean!) {
+    investorPoolPositions(where: {investor: $address, isClosed: $closed}) {
+      id
+      isClosed
+      totalBaseInvestVolume
+      totalBaseDivestVolume
+      totalLPInvestVolume
+      totalLPDivestVolume
+      totalUSDInvestVolume
+      totalUSDDivestVolume
+      pool {
+        id
+        type
+        token
+      }
+      vest(first: 100) {
+        ${INVESTOR_PROPOSAL_VEST}
       }
     }
   }
@@ -286,5 +320,6 @@ export {
   PoolsQueryByTypeWithSort,
   RiskyProposalsQuery,
   InvestProposalsQuery,
+  InvestorProposalsQuery,
   getPoolsQueryVariables,
 }

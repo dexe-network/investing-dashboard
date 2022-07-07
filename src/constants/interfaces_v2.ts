@@ -22,6 +22,7 @@ declare global {
       REACT_APP_ALL_POOLS_API_URL: string
       REACT_APP_BASIC_POOLS_API_URL: string
       REACT_APP_INVEST_POOLS_API_URL: string
+      REACT_APP_INVESTORS_API_URL: string
 
       REACT_APP_IPFS_PROJECT_ID: string
       REACT_APP_IPFS_PROJECT_SECRET: string
@@ -192,6 +193,33 @@ export interface IInvestProposalQuery {
   id: string
   baseToken: string
   proposals: IInvestProposal[]
+}
+
+// Investor proposals
+export interface IInvestorProposalVest {
+  id: string
+  isInvest: boolean
+  timestamp: BigNumber
+  volumeBase: BigNumber
+  volumeLP: BigNumber
+  volumeUSD: BigNumber
+}
+
+export interface IInvestorProposal {
+  id: string
+  isClosed: boolean
+  totalBaseInvestVolume: BigNumber
+  totalBaseDivestVolume: BigNumber
+  totalLPInvestVolume: BigNumber
+  totalLPDivestVolume: BigNumber
+  totalUSDInvestVolume: BigNumber
+  totalUSDDivestVolume: BigNumber
+  pool: {
+    id: string
+    type: string
+    token: string
+  }
+  vest: IInvestorProposalVest[]
 }
 
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
