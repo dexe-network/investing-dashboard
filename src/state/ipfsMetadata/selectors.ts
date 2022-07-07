@@ -16,6 +16,14 @@ export const selectPoolMetadata = (poolId, hash) =>
     return metadata.pools[poolId][hash]
   })
 
+export const selectinvestProposalMetadata = (poolId, hash) =>
+  createSelector([selectIpfsMetadataState], (metadata) => {
+    if (!metadata.proposals[poolId] || !metadata.proposals[poolId][hash]) {
+      return null
+    }
+    return metadata.proposals[poolId][hash]
+  })
+
 export const selectUserMetadata = (hash) =>
   createSelector([selectIpfsMetadataState], (metadata) =>
     metadata.user?.hash === hash ? metadata.user : null

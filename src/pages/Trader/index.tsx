@@ -108,9 +108,6 @@ function Trader(props: Props) {
     poolType: string
   }>()
 
-  const proposalId = useProposalAddress(poolAddress)
-  console.log(proposalId)
-
   const [commisionUnlockTime, setCommisionUnlockTime] = useState<number>(0)
   const [isPerformanceFeeExist, setPerformanceFeeExist] =
     useState<boolean>(false)
@@ -204,7 +201,7 @@ function Trader(props: Props) {
               // navigate(
               //   `/pool/swap/${poolType}/${poolData.id}/${poolData.baseToken}/0x`
               // )
-              navigate(`/invest-investment-proposal/${poolData.id}/0`)
+              navigate(`/invest-investment-proposal/${poolData.id}/${0}`)
             }
           >
             Open new trade

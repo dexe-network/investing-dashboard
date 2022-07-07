@@ -1,6 +1,6 @@
 import { createReducer } from "@reduxjs/toolkit"
 
-import { IPoolMetadata, IUserMetadata } from "./types"
+import { IInvestProposalMetadata, IPoolMetadata, IUserMetadata } from "./types"
 import { addPool, removePool, addUser, removeUser } from "./actions"
 
 export interface IpfsMetadataState {
@@ -10,11 +10,17 @@ export interface IpfsMetadataState {
       [hash: string]: IPoolMetadata
     }
   }
+  proposals: {
+    [poolId: string]: {
+      [hash: string]: IInvestProposalMetadata
+    }
+  }
 }
 
 export const initialState: IpfsMetadataState = {
   user: null,
   pools: {},
+  proposals: {},
 }
 
 export default createReducer(initialState, (builder) =>

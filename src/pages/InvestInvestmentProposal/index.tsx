@@ -127,29 +127,50 @@ function InvestInvestmentProposal() {
     )
   }, [])
 
-  const averagePrice = useMemo(() => {
-    if (direction === "deposit") {
-      return (
-        <InfoRow>
-          <InfoGrey>Average buying price</InfoGrey>
-          <Flex gap="4">
-            <InfoWhite>0.01289</InfoWhite>
-            <InfoGrey>WBNB</InfoGrey>
-          </Flex>
-        </InfoRow>
-      )
-    }
-
+  const proposalTVL = useMemo(() => {
     return (
       <InfoRow>
-        <InfoGrey>Average selling price</InfoGrey>
+        <InfoGrey>Proposal TVL:</InfoGrey>
         <Flex gap="4">
-          <InfoWhite>0.01289 </InfoWhite>
-          <InfoGrey>WBNB</InfoGrey>
+          <InfoWhite>100.000 WBNB</InfoWhite>
+          <InfoGrey>($800k)</InfoGrey>
         </Flex>
       </InfoRow>
     )
-  }, [direction])
+  }, [])
+
+  const fullness = useMemo(() => {
+    return (
+      <InfoRow>
+        <InfoGrey>Fullness:</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>90%</InfoWhite>
+        </Flex>
+      </InfoRow>
+    )
+  }, [])
+
+  const averagePrice = useMemo(() => {
+    return (
+      <InfoRow>
+        <InfoGrey>Average LP price:</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>1 ISDX = 5.96 USD</InfoWhite>
+        </Flex>
+      </InfoRow>
+    )
+  }, [])
+
+  const expirationDate = useMemo(() => {
+    return (
+      <InfoRow>
+        <InfoGrey>Expiration date:</InfoGrey>
+        <Flex gap="4">
+          <InfoWhite>JUN 12,2022, 20:00</InfoWhite>
+        </Flex>
+      </InfoRow>
+    )
+  }, [])
 
   const form = (
     <Card>
@@ -169,65 +190,30 @@ function InvestInvestmentProposal() {
         </IconsGroup>
       </CardHeader>
 
-      {direction === "deposit" ? (
-        <ExchangeInput
-          price={formWithDirection.from.price}
-          amount={formWithDirection.from.amount}
-          balance={formWithDirection.from.balance}
-          address={formWithDirection.from.address}
-          symbol={formWithDirection.from.symbol}
-          customIcon={formWithDirection.from.icon}
-          decimal={formWithDirection.from.decimals}
-          onChange={handleFromChange}
-        />
-      ) : (
-        <RiskyInvestInput
-          price={formWithDirection.from.price}
-          info={formWithDirection.from.info}
-          amount={formWithDirection.from.amount}
-          address={formWithDirection.from.address}
-          balance={formWithDirection.from.balance}
-          symbol={formWithDirection.from.symbol}
-          decimal={formWithDirection.from.decimals}
-          customIcon={formWithDirection.from.icon}
-          onChange={handleFromChange}
-        />
-      )}
+      <ExchangeInput
+        price={formWithDirection.from.price}
+        amount={formWithDirection.from.amount}
+        balance={formWithDirection.from.balance}
+        address={formWithDirection.from.address}
+        symbol={formWithDirection.from.symbol}
+        customIcon={formWithDirection.from.icon}
+        decimal={formWithDirection.from.decimals}
+        onChange={handleFromChange}
+      />
 
       <ExchangeDivider
         changeAmount={handlePercentageChange}
         changeDirection={setDirection}
       />
 
-      {direction === "deposit" ? (
-        <RiskyInvestInput
-          price={formWithDirection.to.price}
-          info={formWithDirection.to.info}
-          amount={formWithDirection.to.amount}
-          address={formWithDirection.to.address}
-          balance={formWithDirection.to.balance}
-          symbol={formWithDirection.to.symbol}
-          decimal={formWithDirection.to.decimals}
-          customIcon={formWithDirection.to.icon}
-        />
-      ) : (
-        <ExchangeInput
-          price={formWithDirection.to.price}
-          amount={formWithDirection.to.amount}
-          balance={formWithDirection.to.balance}
-          address={formWithDirection.to.address}
-          symbol={formWithDirection.to.symbol}
-          customIcon={formWithDirection.to.icon}
-          decimal={formWithDirection.to.decimals}
-        />
-      )}
-
-      <SwapPrice
-        fromSymbol={formWithDirection.from.symbol}
-        toSymbol={formWithDirection.to.symbol}
-        gasPrice={gasPrice}
-        tokensCost={oneTokenCost}
-        usdCost={usdTokenCost}
+      <ExchangeInput
+        price={formWithDirection.to.price}
+        amount={formWithDirection.to.amount}
+        balance={formWithDirection.to.balance}
+        address={formWithDirection.to.address}
+        symbol={formWithDirection.to.symbol}
+        customIcon={formWithDirection.to.icon}
+        decimal={formWithDirection.to.decimals}
       />
 
       <Flex full p="16px 0 0">
@@ -235,10 +221,10 @@ function InvestInvestmentProposal() {
       </Flex>
 
       <InfoCard gap="12">
+        {proposalTVL}
+        {fullness}
         {averagePrice}
-        <InfoDropdown left={<InfoGrey>My P&L</InfoGrey>} right={myPNL}>
-          {myPNLContent}
-        </InfoDropdown>
+        {expirationDate}
       </InfoCard>
 
       <TransactionSlippage
@@ -252,7 +238,7 @@ function InvestInvestmentProposal() {
 
   return (
     <>
-      <Header>Invest risky proposal</Header>
+      <Header>Invest investment proposal</Header>
       <Container
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

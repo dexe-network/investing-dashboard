@@ -55,7 +55,7 @@ const stringify = (json) => {
   }
 }
 
-export const parsePoolData = async (hash) => {
+const getIpfsData = async (hash) => {
   try {
     if (!!hash && hash.length === 46) {
       const res = await axios.post(
@@ -69,20 +69,11 @@ export const parsePoolData = async (hash) => {
   }
 }
 
-export const parseUserData = async (hash) => {
-  try {
-    if (!!hash && hash.length === 46) {
-      const res = await axios.post(
-        `https://ipfs.infura.io:5001/api/v0/cat?arg=${hash}`
-      )
-      return res.data
-    }
-    return false
-  } catch (e) {
-    console.log(e)
-    return false
-  }
-}
+export const parsePoolData = getIpfsData
+
+export const parseUserData = getIpfsData
+
+export const parseInvestProposalData = getIpfsData
 
 export const addFundMetadata: FundMetadataAdder = (
   assets,

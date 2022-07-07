@@ -12,3 +12,10 @@ export interface IUserMetadata {
   timestamp: number
   account: string
 }
+
+export interface IInvestProposalMetadata {
+  timestamp: number
+  account: string
+  description: string
+  ticker: string
+}

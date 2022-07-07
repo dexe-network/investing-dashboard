@@ -4,9 +4,11 @@ import {
   ERC20,
   TraderPool,
   TraderPoolRiskyProposal,
+  TraderPoolInvestProposal,
   BasicTraderPool,
   PriceFeed,
   TraderPoolRegistry,
+  InvestTraderPool,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -136,6 +138,12 @@ export function useBasicPoolContract(
   return useContract(poolAddress, BasicTraderPool)
 }
 
+export function useInvestPoolContract(
+  poolAddress: string | undefined
+): Contract | null {
+  return useContract(poolAddress, InvestTraderPool)
+}
+
 export function usePriceFeedContract(): Contract | null {
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
 
@@ -149,7 +157,7 @@ export function useTraderPoolRegistryContract(): Contract | null {
 }
 
 export function useProposalAddress(poolAddress) {
-  const [riskyProposalAddress, setRiskyProposalAddress] = useState("")
+  const [proposalAddress, setProposalAddress] = useState("")
 
   const traderPool = useTraderPoolContract(poolAddress)
 
@@ -157,22 +165,29 @@ export function useProposalAddress(poolAddress) {
     if (!traderPool) return
     ;(async () => {
       const proposalAddress = await traderPool.proposalPoolAddress()
-      setRiskyProposalAddress(proposalAddress)
+      setProposalAddress(proposalAddress)
     })()
   }, [traderPool])
 
-  return riskyProposalAddress
+  return proposalAddress
 }
 
 export function useRiskyProposalContract(
   poolAddress: string | undefined
 ): [Contract | null, string] {
-  const riskyProposalAddress = useProposalAddress(poolAddress)
+  const proposalAddress = useProposalAddress(poolAddress)
 
-  const proposalPool = useContract(
-    riskyProposalAddress,
-    TraderPoolRiskyProposal
-  )
+  const proposalPool = useContract(proposalAddress, TraderPoolRiskyProposal)
 
-  return [proposalPool, riskyProposalAddress]
+  return [proposalPool, proposalAddress]
+}
+
+export function useInvestProposalContract(
+  poolAddress: string | undefined
+): [Contract | null, string] {
+  const proposalAddress = useProposalAddress(poolAddress)
+
+  const proposalPool = useContract(proposalAddress, TraderPoolInvestProposal)
+
+  return [proposalPool, proposalAddress]
 }
