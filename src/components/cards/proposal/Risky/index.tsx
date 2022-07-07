@@ -5,7 +5,7 @@ import { useERC20 } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
-import { RiskyProposal } from "constants/interfaces_v2"
+import { IRiskyProposal } from "constants/interfaces_v2"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
@@ -20,14 +20,14 @@ import settingsIcon from "assets/icons/settings.svg"
 import settingsGreenIcon from "assets/icons/settings-green.svg"
 
 interface Props {
-  proposal: RiskyProposal
+  proposal: IRiskyProposal
   poolAddress: string
   onInvest: () => void
 }
-// TODO: poolAddress for investor proposals ???
+
 const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
   const { account } = useActiveWeb3React()
-  const [, positionTokenData] = useERC20(proposal.proposalInfo.token)
+  const [, proposalTokenData] = useERC20(proposal.token)
   const [, poolInfo] = usePoolContract(poolAddress)
 
   const [{ poolMetadata }] = usePoolMetadata(
@@ -50,9 +50,9 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
       <S.Container>
         <S.Head isTrader={isTrader}>
           <Flex>
-            <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
+            <TokenIcon address={proposal.token} m="0" size={24} />
             <S.Title>
-              {positionTokenData?.symbol} for 0.0013 WBNB or less
+              {proposalTokenData?.symbol} for 0.0013 WBNB or less
             </S.Title>
           </Flex>
           {isTrader ? (

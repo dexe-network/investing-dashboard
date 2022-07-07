@@ -111,17 +111,26 @@ const PoolsQueryByTypeWithSort = `
   }
 `
 
+// Basic pool positions
+const POSITION_EXCHANGE = `
+  fromToken
+  toToken
+  fromVolume
+  toVolume
+`
+
 const POSITION = `
   id
-  positionToken
   closed
+  positionToken
   totalUSDOpenVolume
   totalUSDCloseVolume
+  totalBaseOpenVolume
+  totalBaseCloseVolume
+  totalPositionOpenVolume
+  totalPositionCloseVolume
   exchanges {
-    fromToken
-    toToken
-    fromVolume
-    toVolume
+    ${POSITION_EXCHANGE}
   }
 `
 
@@ -134,6 +143,90 @@ const BasicPositionsQuery = `
       trader
       positions(first: 100, where: { closed: $closed }) {
         ${POSITION}
+      }
+    }
+  }
+`
+
+// Pool risky proposals
+const RISKY_PROPOSAL_EXCHANGE = `
+  id
+  day
+`
+const RISKY_PROPOSAL_POSITION = `
+  id
+  isClosed
+  totalBaseOpenVolume
+  totalBaseCloseVolume
+  totalPositionOpenVolume
+  totalPositionCloseVolume
+  totalUSDOpenVolume
+  totalUSDCloseVolume
+`
+const RISKY_PROPOSAL = `
+  id
+  token
+  timestampLimit
+  investLPLimit
+  maxTokenPriceLimit
+  basicPool {
+    id
+  }
+  exchanges(first: 100) {
+    ${RISKY_PROPOSAL_EXCHANGE}
+  }
+  positions(first: 100) {
+    ${RISKY_PROPOSAL_POSITION}
+  }
+`
+
+const RiskyProposalsQuery = `
+  query ($address: String!) {
+    basicPool(id: $address) {
+      baseToken
+      proposals(first: 100) {
+        ${RISKY_PROPOSAL}
+      }
+    }
+  }
+`
+
+// Pool ivnest proposals
+
+// lastSupply {
+//   id
+//   timestamp
+//   dividendsTokens
+//   amountDividendsTokens
+// }
+// lastWithdraw {
+//   id
+//   timestamp
+//   amountBase
+// }
+
+// TODO: Add lastSupply and lastWithdraw fields (declared above)
+const INVEST_PROPOSAL = `
+  id
+  timestampLimit
+  investLPLimit
+  leftTokens
+  leftAmounts
+  totalUSDSupply
+  firstSupplyTimestamp
+  APR
+  investPool {
+    id
+  }
+`
+
+const InvestProposalsQuery = `
+  query ($address: String!) {
+    investPool(id: $address) {
+      id
+      baseToken
+      proposals(first: 100) {
+        ${INVEST_PROPOSAL}
       }
     }
   }
@@ -191,5 +284,7 @@ export {
   BasicPositionsQuery,
   PoolsQueryWithSort,
   PoolsQueryByTypeWithSort,
+  RiskyProposalsQuery,
+  InvestProposalsQuery,
   getPoolsQueryVariables,
 }

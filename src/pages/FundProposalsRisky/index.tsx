@@ -1,47 +1,70 @@
-import { useParams, useNavigate } from "react-router-dom"
+import { FC } from "react"
+import { Routes, Route, useParams } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
+import { PulseSpinner } from "react-spinners-kit"
 
-import useRiskyProposals from "hooks/useRiskyProposals"
+import { ITab } from "constants/interfaces"
 
-import RiskyProposalCard from "components/cards/proposal/Risky"
+import RouteTabs from "components/RouteTabs"
+import Proposals from "./Proposals"
+import Positions from "./Positions"
 
 import S from "./styled"
+import useRiskyProposals from "hooks/useRiskyProposals"
 
-const AllPoolsClient = createClient({
-  url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
+const poolClient = createClient({
+  url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
 })
 
-const FundProposalsRisky = () => {
-  const navigate = useNavigate()
+const FundProposalsRisky: FC = () => {
   const { poolAddress } = useParams()
 
-  const proposals = useRiskyProposals(poolAddress)
+  const data = useRiskyProposals(poolAddress)
 
-  const handleRiskyCardClick = (index) => {
-    navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
+  const tabs: ITab[] = [
+    {
+      title: "Risk proposals",
+      source: `/fund-positions/${poolAddress}/proposals/open`,
+    },
+    {
+      title: "Positions",
+      source: `/fund-positions/${poolAddress}/proposals/positions`,
+    },
+    {
+      title: "Closed",
+      source: `/fund-positions/${poolAddress}/proposals/closed`,
+    },
+  ]
+
+  if (!data) {
+    return (
+      <S.PageLoading full ai="center" jc="center">
+        <PulseSpinner />
+      </S.PageLoading>
+    )
   }
 
-  if (!poolAddress || !proposals) {
-    return <>Loading</>
-  }
+  const open = <Proposals data={data.proposals} />
+  const positions = <Positions data={data.proposals} closed={false} />
+  const closed = <Positions data={data.proposals} closed />
 
   return (
-    <S.Content>
-      {proposals.map((proposal, index) => (
-        <RiskyProposalCard
-          key={proposal.proposalInfo.token}
-          proposal={proposal}
-          poolAddress={poolAddress}
-          onInvest={() => handleRiskyCardClick(index)}
-        />
-      ))}
-    </S.Content>
+    <>
+      <RouteTabs tabs={tabs} />
+      <S.Content>
+        <Routes>
+          <Route path="open" element={open}></Route>
+          <Route path="positions" element={positions}></Route>
+          <Route path="closed" element={closed}></Route>
+        </Routes>
+      </S.Content>
+    </>
   )
 }
 
 const FundProposalsRiskyWithPorvider = () => {
   return (
-    <GraphProvider value={AllPoolsClient}>
+    <GraphProvider value={poolClient}>
       <FundProposalsRisky />
     </GraphProvider>
   )

@@ -28,8 +28,8 @@ const PoolPositionCard: React.FC<Props> = ({
   position,
   isTrader,
 }) => {
-  const [, tokenData] = useERC20(position.positionToken)
   const [, baseToken] = useERC20(baseTokenAddress)
+  const [positionContract, positionTokenData] = useERC20(position.positionToken)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
@@ -51,6 +51,7 @@ const PoolPositionCard: React.FC<Props> = ({
     }
     setOpenExtra(!openExtra)
   }, [isTrader, openExtra, position.closed, showPositions])
+
   const togglePositions = useCallback(() => {
     setShowPositions(!showPositions)
   }, [showPositions])
@@ -108,7 +109,7 @@ const PoolPositionCard: React.FC<Props> = ({
             <Flex>
               <TokenIcon address={position.positionToken} m="0" size={24} />
               <S.Amount>5</S.Amount>
-              <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
+              <S.PositionSymbol>{positionTokenData?.symbol}</S.PositionSymbol>
             </Flex>
           </SharedS.Head>
 

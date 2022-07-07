@@ -27,7 +27,6 @@ interface Props {
 
 const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
   const { account } = useActiveWeb3React()
-  const [, positionTokenData] = useERC20(proposal.proposalInfo.token)
   const [, poolInfo] = usePoolContract(poolAddress)
 
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
@@ -96,12 +95,8 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
         <S.Card onClick={() => setOpenExtra(!openExtra)}>
           <S.Head isTrader={isTrader}>
             <Flex>
-              <TokenIcon
-                address={proposal.proposalInfo.token}
-                m="0"
-                size={24}
-              />
-              <S.Title>{positionTokenData?.symbol}</S.Title>
+              <TokenIcon m="0" size={24} />
+              <S.Title>1/JBR</S.Title>
             </Flex>
             {isTrader ? (
               <>

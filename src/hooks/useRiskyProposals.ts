@@ -1,9 +1,23 @@
 import { useEffect, useState } from "react"
-import { RiskyProposal } from "constants/interfaces_v2"
+import { useQuery } from "urql"
+
+import { IRiskyProposalQuery, RiskyProposal } from "constants/interfaces_v2"
 import { TraderPool, TraderPoolRiskyProposal } from "abi"
 import useContract from "hooks/useContract"
+import { RiskyProposalsQuery } from "queries"
 
-function useRiskyProposals(poolAddress?: string): RiskyProposal[] {
+function useRiskyProposals(address?: string) {
+  const [response, executeQuery] = useQuery<{
+    basicPool: IRiskyProposalQuery
+  }>({
+    query: RiskyProposalsQuery,
+    variables: { address },
+  })
+
+  return response.data?.basicPool
+}
+
+function useRiskyProposals_Deprecated(poolAddress?: string): RiskyProposal[] {
   const [proposalAddress, setProposalAddress] = useState("")
   const [proposals, setProposals] = useState<RiskyProposal[]>([])
 
@@ -38,7 +52,7 @@ export function useRiskyProposal(
 ): RiskyProposal | undefined {
   const proposals = useRiskyProposals(poolAddress)
 
-  if (!index) {
+  if (!index || !proposals) {
     return undefined
   }
 
