@@ -316,6 +316,46 @@ const InvestorRiskyPositionsQuery = `
   }
 `
 
+const INVESTOR_INVEST_PROPOSAL = `
+  id
+  timestampLimit
+  investLPLimit
+  leftTokens
+  leftAmounts
+  totalUSDSupply
+  firstSupplyTimestamp
+  APR
+  lastSupply {
+    id
+    timestamp 
+    dividendsTokens 
+    amountDividendsTokens 
+  }
+  lastWithdraw {
+    id
+    timestamp
+    amountBase
+  }
+  investPool {
+    id
+    baseToken
+  }
+`
+const InvestorInvestProposalsQuery = `
+  query ($poolAddressList: [String]!) {
+    proposals(where: { investPool_in: $poolAddressList }){
+      ${INVESTOR_INVEST_PROPOSAL}
+    }
+  }
+`
+const InvestorNewInvestProposalsQuery = `
+  query ($poolAddressList: [String]!) {
+    proposals(where: { investPool_not_in: $poolAddressList }){
+      ${INVESTOR_INVEST_PROPOSAL}
+    }
+  }
+`
+
 const getPoolsQueryVariables = (
   isAllPools: boolean,
   filters: ITopMembersFilters,
@@ -374,5 +414,7 @@ export {
   InvestorPoolsInvestedForQuery,
   InvestorRiskyProposalsQuery,
   InvestorRiskyPositionsQuery,
+  InvestorInvestProposalsQuery,
+  InvestorNewInvestProposalsQuery,
   getPoolsQueryVariables,
 }

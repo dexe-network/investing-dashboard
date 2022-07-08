@@ -57,6 +57,8 @@ const InvestmentRiskyPositionsList: FC<IProps> = ({ activePools, closed }) => {
     )
   }
 
+  console.log("positions", positions)
+
   return (
     <>
       <S.List>

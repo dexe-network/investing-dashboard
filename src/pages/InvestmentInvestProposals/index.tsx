@@ -4,8 +4,7 @@ import { createClient, Provider as GraphProvider } from "urql"
 import { PulseSpinner } from "react-spinners-kit"
 
 import RouteTabs from "components/RouteTabs"
-import RiskyProposalsList from "./ProposalsList"
-import RiskyPositionsList from "./PositionsList"
+import InvestProposalsList from "./ProposalsList"
 
 import { ITab } from "constants/interfaces"
 import { useActiveWeb3React } from "hooks"
@@ -17,7 +16,7 @@ const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
 
-const InvestmentRiskyProposals = () => {
+const InvestmentInvestProposals = () => {
   const { account } = useActiveWeb3React()
 
   const preparedAccount = useMemo(() => {
@@ -25,20 +24,16 @@ const InvestmentRiskyProposals = () => {
     return String(account).toLowerCase()
   }, [account])
 
-  const activePools = useInvestorProposalPools(preparedAccount, "BASIC_POOL")
+  const activePools = useInvestorProposalPools(preparedAccount, "INVEST_POOL")
 
   const tabs: ITab[] = [
     {
-      title: "Risk proposals",
-      source: `/investment/risk-proposals/open`,
+      title: "New",
+      source: `/investment/invest-proposals/new`,
     },
     {
-      title: "Risk positions",
-      source: `/investment/risk-proposals/positions`,
-    },
-    {
-      title: "Closed",
-      source: `/investment/risk-proposals/closed`,
+      title: "Invested",
+      source: `/investment/invest-proposals/invested`,
     },
   ]
 
@@ -53,7 +48,7 @@ const InvestmentRiskyProposals = () => {
   if (activePools && activePools.lenght === 0) {
     return (
       <S.Content>
-        <span>There are no risky proposals</span>
+        <span>There are no invest proposals</span>
       </S.Content>
     )
   }
@@ -63,19 +58,15 @@ const InvestmentRiskyProposals = () => {
       <RouteTabs tabs={tabs} />
       <Routes>
         <Route
-          path="open"
-          element={<RiskyProposalsList activePools={activePools} />}
-        ></Route>
-        <Route
-          path="positions"
+          path="new"
           element={
-            <RiskyPositionsList activePools={activePools} closed={false} />
+            <InvestProposalsList activePools={activePools} invested={false} />
           }
         ></Route>
         <Route
-          path="closed"
+          path="invested"
           element={
-            <RiskyPositionsList activePools={activePools} closed={true} />
+            <InvestProposalsList activePools={activePools} invested={true} />
           }
         ></Route>
       </Routes>
@@ -83,10 +74,10 @@ const InvestmentRiskyProposals = () => {
   )
 }
 
-const InvestmentPositionsWithProvider = () => (
+const InvestmentInvestProposalsWithProvider = () => (
   <GraphProvider value={poolsClient}>
-    <InvestmentRiskyProposals />
+    <InvestmentInvestProposals />
   </GraphProvider>
 )
 
-export default InvestmentPositionsWithProvider
+export default InvestmentInvestProposalsWithProvider

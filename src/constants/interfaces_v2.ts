@@ -263,6 +263,32 @@ export interface IInvestorRiskyPositions {
   positions: IInvestorRiskyPosition[]
 }
 
+export interface IInvestorInvestProposal {
+  id: string
+  timestampLimit: BigNumber
+  investLPLimit: BigNumber
+  leftTokens: BigNumber
+  leftAmounts: string[]
+  totalUSDSupply: BigNumber
+  firstSupplyTimestamp: BigNumber
+  APR: BigNumber
+  lastSupply: {
+    id: string
+    timestamp: BigNumber
+    dividendsTokens: string[]
+    amountDividendsTokens: BigNumber[]
+  }
+  lastWithdraw: {
+    id: string
+    timestamp: BigNumber
+    amountBase: BigNumber
+  }
+  investPool: {
+    id: string
+    baseToken: string
+  }
+}
+
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
 /// @param totalPoolUSDWithProposals the total USD value of the pool
 /// @param traderLeverageUSDTokens the maximal amount of USD that the trader is allowed to own
