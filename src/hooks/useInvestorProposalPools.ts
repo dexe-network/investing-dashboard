@@ -10,7 +10,9 @@ function useInvestorProposalPools(address?: string, poolType?: string) {
     variables: { address, poolType },
   })
 
-  return response.data?.investors[0].activePools.map((p) => p.id)
+  return response.data?.investors[0]
+    ? response.data?.investors[0].activePools.map((p) => p.id)
+    : []
 }
 
 export default useInvestorProposalPools
