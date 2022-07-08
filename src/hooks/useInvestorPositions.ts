@@ -10,8 +10,6 @@ function useInvestorPositions(address?: string, closed?: boolean) {
     variables: { address, closed },
   })
 
-  console.log("response", response)
-
   return response.data?.investorPoolPositions
 }
 

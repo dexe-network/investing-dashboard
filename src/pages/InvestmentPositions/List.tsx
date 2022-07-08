@@ -1,9 +1,10 @@
 import { FC } from "react"
+import { PulseSpinner } from "react-spinners-kit"
 
 import useInvestorPositions from "hooks/useInvestorPositions"
 
 import InvestPositionCard from "components/cards/position/Invest"
-import { List } from "./styled"
+import S from "./styled"
 
 interface IProps {
   account: string
@@ -13,27 +14,31 @@ interface IProps {
 const InvestmentPositionsList: FC<IProps> = ({ account, closed }) => {
   const data = useInvestorPositions(String(account).toLowerCase(), closed)
 
-  console.log("data", data)
-
   if (!data) {
-    return <div style={{ color: "white", textAlign: "center" }}>Loading</div>
+    return (
+      <S.Content>
+        <PulseSpinner />
+      </S.Content>
+    )
   }
 
   if (data && data.length === 0) {
     return (
-      <div style={{ color: "white", textAlign: "center" }}>
-        No positions yet
-      </div>
+      <S.Content>
+        <div style={{ color: "white", textAlign: "center" }}>
+          No {closed ? "closed" : "open"} positions yet
+        </div>
+      </S.Content>
     )
   }
 
   return (
     <>
-      <List>
+      <S.List>
         {(data || []).map((p) => (
           <InvestPositionCard key={p.id} position={p} />
         ))}
-      </List>
+      </S.List>
     </>
   )
 }

@@ -1,11 +1,14 @@
 import { Routes, Route } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
+import { PulseSpinner } from "react-spinners-kit"
 
 import RouteTabs from "components/RouteTabs"
 import InvestmentPositionsList from "./List"
 
 import { ITab } from "constants/interfaces"
 import { useActiveWeb3React } from "hooks"
+
+import S from "./styled"
 
 const poolsClient = createClient({
   url: process.env.REACT_APP_INVESTORS_API_URL || "",
@@ -26,7 +29,11 @@ const InvestmentPositions = () => {
   ]
 
   if (!account) {
-    return <span style={{ color: "white" }}>Loading</span>
+    return (
+      <S.Content>
+        <PulseSpinner />
+      </S.Content>
+    )
   }
 
   return (
