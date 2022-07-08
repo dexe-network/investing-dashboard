@@ -83,6 +83,9 @@ const Styled = {
     color: #e4f2ff;
     margin: 0 0 6px 0;
   `,
+  LPSizeContainer: styled.div`
+    width: 137px;
+  `,
 }
 
 export default Styled
@@ -187,14 +190,13 @@ export const BodyItem: FC<IBodyItemProps> = ({
 )
 
 const LineBase = css`
-  max-width: 45px;
   height: 2px;
   border-radius: 7px;
 `
 
 const LPSizeStyled = {
   Container: styled(Flex)`
-    width: 137px;
+    width: 100%;
     height: 2px;
     position: relative;
     background: #293c54;
@@ -208,17 +210,17 @@ const LPSizeStyled = {
   `,
   First: styled.div<{ w?: string }>`
     ${LineBase}
-    width: ${(props) => (props.w ? props.w : "45px")};
+    width: ${(props) => (props.w ? props.w : "100%")};
     background: linear-gradient(90deg, #77ffd4 0%, #ffa51f 100%);
   `,
   Second: styled.div<{ w?: string }>`
     ${LineBase}
-    width: ${(props) => (props.w ? props.w : "45px")};
+    width: ${(props) => (props.w ? props.w : "100%")};
     background: linear-gradient(90deg, #fda723 0%, #f14b4b 100%, #ff9052 100%);
   `,
   Third: styled.div<{ w?: string }>`
     ${LineBase}
-    width: ${(props) => (props.w ? props.w : "45px")};
+    width: ${(props) => (props.w ? props.w : "100%")};
     background: linear-gradient(90deg, #ff514f 0%, #fe0404 100%);
   `,
 }
@@ -262,8 +264,6 @@ export const TraderLPSize: FC<{ size: number }> = ({ size }) => {
 
     return 0
   }, [MAX.second, MAX.third, size])
-
-  console.log({ firstSize, secondSize, thirdSize })
 
   return (
     <LPSizeStyled.Container>

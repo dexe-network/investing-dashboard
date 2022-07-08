@@ -46,6 +46,10 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
     return account === poolInfo?.parameters.trader
   }, [account, poolInfo])
 
+  const lpPercentage = useMemo(() => {
+    return 76
+  }, [])
+
   return (
     <>
       <S.Container>
@@ -127,8 +131,10 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
                 />
               </S.FundIconContainer>
               <Flex dir="column" ai="flex-start" m="0 0 0 4px">
-                <S.SizeTitle>Trader size: 30 LP (90%)</S.SizeTitle>
-                <TraderLPSize size={100} />
+                <S.SizeTitle>Trader size: 30 LP ({lpPercentage}%)</S.SizeTitle>
+                <S.LPSizeContainer>
+                  <TraderLPSize size={lpPercentage} />
+                </S.LPSizeContainer>
               </Flex>
             </Flex>
             <div>
