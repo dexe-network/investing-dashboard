@@ -232,9 +232,8 @@ const InvestProposalsQuery = `
   }
 `
 
-// Investor proposals
-
-const INVESTOR_PROPOSAL_VEST = `
+// Investor positions
+const INVESTOR_POSITION_VEST = `
   id
   isInvest
   timestamp
@@ -243,7 +242,7 @@ const INVESTOR_PROPOSAL_VEST = `
   volumeUSD
 `
 
-const InvestorProposalsQuery = `
+const InvestorPositionsQuery = `
   query ($address: String!, $closed: Boolean!) {
     investorPoolPositions(where: {investor: $address, isClosed: $closed}) {
       id
@@ -260,7 +259,58 @@ const InvestorProposalsQuery = `
         token
       }
       vest(first: 100) {
-        ${INVESTOR_PROPOSAL_VEST}
+        ${INVESTOR_POSITION_VEST}
+      }
+    }
+  }
+`
+
+// Investor proposals
+const InvestorPoolsInvestedForQuery = `
+  query ($address: String!, $poolType: String!) {
+    investors(where: { id: $address, allPools_: { type: $poolType }}) {
+      activePools { id }
+    }
+  }
+`
+
+const InvestorRiskyProposalsQuery = `
+  query ($poolAddressList: [String]!) {
+    proposals(where: { basicPool_in: $poolAddressList }){
+      id
+      token
+      timestampLimit
+      investLPLimit
+      maxTokenPriceLimit
+      basicPool {
+        id
+        baseToken
+      }
+    }
+  }
+`
+
+const INVESTOR_RISKY_POSITION = `
+  id
+  isClosed
+  totalBaseOpenVolume
+  totalBaseCloseVolume
+  totalPositionOpenVolume
+  totalPositionCloseVolume
+  totalUSDOpenVolume
+  totalUSDCloseVolume
+`
+const InvestorRiskyPositionsQuery = `
+  query ($poolAddressList: [String]!, $closed: Boolean!) {
+    proposals(where: { basicPool_in: $poolAddressList }){
+      id
+      token
+      basicPool {
+        id
+        baseToken
+      }
+      positions(where: { isClosed: $closed }) {
+        ${INVESTOR_RISKY_POSITION}
       }
     }
   }
@@ -320,6 +370,9 @@ export {
   PoolsQueryByTypeWithSort,
   RiskyProposalsQuery,
   InvestProposalsQuery,
-  InvestorProposalsQuery,
+  InvestorPositionsQuery,
+  InvestorPoolsInvestedForQuery,
+  InvestorRiskyProposalsQuery,
+  InvestorRiskyPositionsQuery,
   getPoolsQueryVariables,
 }

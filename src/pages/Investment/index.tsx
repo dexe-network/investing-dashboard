@@ -4,6 +4,7 @@ import { createClient, Provider as GraphProvider } from "urql"
 import { ITab } from "constants/interfaces"
 
 import InvestmentPositions from "pages/InvestmentPositions"
+import InvestmentRiskyProposals from "pages/InvestmentRiskyProposals"
 
 import RouteTabs from "components/RouteTabs"
 import Header from "components/Header/Layout"
@@ -14,78 +15,6 @@ import { Container, List } from "./styled"
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
-
-const PageItem = ({ children }) => {
-  const styles = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    padding: "16px",
-    height: "-webkit-fill-available",
-    color: "white",
-  }
-  return (
-    <div style={styles}>
-      <span>{children}</span>
-    </div>
-  )
-}
-
-const RiskyProposals = () => {
-  const tabs: ITab[] = [
-    {
-      title: "Risk proposals",
-      source: `/investment/risk-proposals/open`,
-    },
-    {
-      title: "Risk positions",
-      source: `/investment/risk-proposals/positions`,
-    },
-    {
-      title: "Closed",
-      source: `/investment/risk-proposals/closed`,
-    },
-  ]
-
-  return (
-    <>
-      <RouteTabs tabs={tabs} />
-      <Routes>
-        <Route
-          path="open"
-          element={
-            <PageItem>
-              <h1 style={{ color: "white", textAlign: "center" }}>
-                Risky proposals open
-              </h1>
-            </PageItem>
-          }
-        ></Route>
-        <Route
-          path="positions"
-          element={
-            <PageItem>
-              <h1 style={{ color: "white", textAlign: "center" }}>
-                Risky proposals positions
-              </h1>
-            </PageItem>
-          }
-        ></Route>
-        <Route
-          path="closed"
-          element={
-            <PageItem>
-              <h1 style={{ color: "white", textAlign: "center" }}>
-                Risky proposals closed
-              </h1>
-            </PageItem>
-          }
-        ></Route>
-      </Routes>
-    </>
-  )
-}
 
 const InvestmentProposals = () => {
   const poolAddress = "0x8a9424745056Eb399FD19a0EC26A14316684e274"
@@ -165,12 +94,6 @@ const InvestmentProposals = () => {
 }
 
 const InvestPositions = () => {
-  const risky = (
-    <GraphProvider value={poolsClient}>
-      <RiskyProposals />
-    </GraphProvider>
-  )
-
   const invest = (
     <GraphProvider value={poolsClient}>
       <InvestmentProposals />
@@ -213,7 +136,10 @@ const InvestPositions = () => {
       <Container>
         <Routes>
           <Route path="positions/*" element={<InvestmentPositions />}></Route>
-          <Route path="risk-proposals/*" element={risky}></Route>
+          <Route
+            path="risk-proposals/*"
+            element={<InvestmentRiskyProposals />}
+          ></Route>
           <Route path="invest-proposals/*" element={invest}></Route>
         </Routes>
       </Container>

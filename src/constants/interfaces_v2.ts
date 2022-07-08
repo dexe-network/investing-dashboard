@@ -222,6 +222,47 @@ export interface IInvestorProposal {
   vest: IInvestorProposalVest[]
 }
 
+// Investor proposals
+interface IInvestorInvestedPool {
+  id: string
+}
+export interface IInvestorInvestedPools {
+  activePools: IInvestorInvestedPool[]
+}
+
+export interface IInvestorRiskyProposal {
+  id: string
+  token: string
+  timestampLimit: BigNumber
+  investLPLimit: BigNumber
+  maxTokenPriceLimit: BigNumber
+  basicPool: {
+    id: string
+    baseToken: string
+  }
+}
+
+export interface IInvestorRiskyPosition {
+  id: string
+  isClosed: boolean
+  totalBaseOpenVolume: BigNumber
+  totalBaseCloseVolume: BigNumber
+  totalPositionOpenVolume: BigNumber
+  totalPositionCloseVolume: BigNumber
+  totalUSDOpenVolume: BigNumber
+  totalUSDCloseVolume: BigNumber
+}
+
+export interface IInvestorRiskyPositions {
+  id: string
+  token: string
+  basicPool: {
+    id: string
+    baseToken: string
+  }
+  positions: IInvestorRiskyPosition[]
+}
+
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
 /// @param totalPoolUSDWithProposals the total USD value of the pool
 /// @param traderLeverageUSDTokens the maximal amount of USD that the trader is allowed to own

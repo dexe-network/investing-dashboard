@@ -4,7 +4,7 @@ import { useSelector } from "react-redux"
 import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
-import { IPosition } from "constants/interfaces_v2"
+import { IPosition, IInvestorRiskyPosition } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
