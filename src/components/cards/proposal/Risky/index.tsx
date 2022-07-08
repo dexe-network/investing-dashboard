@@ -4,7 +4,7 @@ import { useActiveWeb3React } from "hooks"
 import { useERC20 } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
-
+import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { IRiskyProposal } from "constants/interfaces_v2"
 
 import { Flex } from "theme"
@@ -12,8 +12,9 @@ import Icon from "components/Icon"
 import Button from "components/Button"
 import TokenIcon from "components/TokenIcon"
 import IconButton from "components/IconButton"
+import ExternalLink from "components/ExternalLink"
 
-import S, { BodyItem } from "./styled"
+import S, { BodyItem, TraderLPSize } from "./styled"
 import RiskyCardSettings from "./Settings"
 
 import settingsIcon from "assets/icons/settings.svg"
@@ -26,7 +27,7 @@ interface Props {
 }
 
 const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const [, proposalTokenData] = useERC20(proposal.token)
   const [, poolInfo] = usePoolContract(poolAddress)
 
@@ -79,11 +80,10 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
           ) : (
             <Flex>
               <S.Ticker>{poolInfo?.ticker}</S.Ticker>
-              <Icon
-                size={24}
+              <TokenIcon
+                address={poolInfo?.parameters.baseToken}
                 m="0 0 0 4px"
-                source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-                address={poolAddress}
+                size={24}
               />
             </Flex>
           )}
@@ -115,6 +115,38 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
             </Button>
           </Flex>
         </S.Body>
+        {!isTrader && (
+          <S.Footer>
+            <Flex>
+              <S.FundIconContainer>
+                <Icon
+                  size={24}
+                  m="0"
+                  source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+                  address={poolAddress}
+                />
+              </S.FundIconContainer>
+              <Flex dir="column" ai="flex-start" m="0 0 0 4px">
+                <S.SizeTitle>Trader size: 30 LP (90%)</S.SizeTitle>
+                <TraderLPSize size={100} />
+              </Flex>
+            </Flex>
+            <div>
+              {chainId && (
+                <ExternalLink
+                  color="#2680EB"
+                  href={getExplorerLink(
+                    chainId,
+                    proposal.token,
+                    ExplorerDataType.ADDRESS
+                  )}
+                >
+                  Сheck token
+                </ExternalLink>
+              )}
+            </div>
+          </S.Footer>
+        )}
       </S.Container>
     </>
   )
