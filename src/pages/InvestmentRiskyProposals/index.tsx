@@ -50,6 +50,14 @@ const InvestmentRiskyProposals = () => {
     )
   }
 
+  if (activePools && activePools.lenght === 0) {
+    return (
+      <S.Content>
+        <span>No active risky proposals</span>
+      </S.Content>
+    )
+  }
+
   return (
     <>
       <RouteTabs tabs={tabs} />
