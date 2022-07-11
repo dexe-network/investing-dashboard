@@ -1,5 +1,6 @@
 import { FC, useMemo } from "react"
 import styled, { css } from "styled-components"
+import { motion, AnimatePresence } from "framer-motion"
 
 import { Flex, GradientBorder } from "theme"
 import Amount from "components/Amount"
@@ -208,19 +209,16 @@ const LPSizeStyled = {
       margin: 0 1px;
     }
   `,
-  First: styled.div<{ w?: string }>`
+  First: styled(motion.div)`
     ${LineBase}
-    width: ${(props) => (props.w ? props.w : "100%")};
     background: linear-gradient(90deg, #77ffd4 0%, #ffa51f 100%);
   `,
-  Second: styled.div<{ w?: string }>`
+  Second: styled(motion.div)`
     ${LineBase}
-    width: ${(props) => (props.w ? props.w : "100%")};
     background: linear-gradient(90deg, #fda723 0%, #f14b4b 100%, #ff9052 100%);
   `,
-  Third: styled.div<{ w?: string }>`
+  Third: styled(motion.div)`
     ${LineBase}
-    width: ${(props) => (props.w ? props.w : "100%")};
     background: linear-gradient(90deg, #ff514f 0%, #fe0404 100%);
   `,
 }
@@ -268,13 +266,45 @@ export const TraderLPSize: FC<{ size: number }> = ({ size }) => {
   return (
     <LPSizeStyled.Container>
       <LPSizeStyled.LineWrapper>
-        {size > 0 && <LPSizeStyled.First w={firstSize.toString() + "%"} />}
+        <AnimatePresence>
+          {size > 0 && (
+            <LPSizeStyled.First
+              initial={{ width: 0 }}
+              animate={
+                size > 0 ? { width: firstSize.toString() + "%" } : { width: 0 }
+              }
+              transition={{ delay: size > 0 ? 0 : 0.3, duration: 0.15 }}
+            />
+          )}
+        </AnimatePresence>
       </LPSizeStyled.LineWrapper>
       <LPSizeStyled.LineWrapper>
-        {size > 33 && <LPSizeStyled.Second w={secondSize.toString() + "%"} />}
+        <AnimatePresence>
+          {size > 33 && (
+            <LPSizeStyled.Second
+              initial={{ width: 0 }}
+              animate={
+                size > 33
+                  ? { width: secondSize.toString() + "%" }
+                  : { width: 0 }
+              }
+              transition={{ delay: size > 33 ? 0.15 : 0.15, duration: 0.15 }}
+            />
+          )}
+        </AnimatePresence>
       </LPSizeStyled.LineWrapper>
       <LPSizeStyled.LineWrapper>
-        {size > 66 && <LPSizeStyled.Third w={thirdSize.toString() + "%"} />}
+        <AnimatePresence>
+          {size > 66 && (
+            <LPSizeStyled.Third
+              initial={{ width: 0 }}
+              animate={
+                size > 66 ? { width: thirdSize.toString() + "%" } : { width: 0 }
+              }
+              transition={{ delay: size > 33 ? 0.3 : 0, duration: 0.15 }}
+            />
+          )}
+        </AnimatePresence>
       </LPSizeStyled.LineWrapper>
     </LPSizeStyled.Container>
   )
