@@ -1,5 +1,6 @@
 import { FC, useMemo } from "react"
 import { useParams } from "react-router-dom"
+import { PulseSpinner } from "react-spinners-kit"
 
 import PoolPositionCard from "components/cards/position/Pool"
 
@@ -7,7 +8,7 @@ import { usePoolPositions } from "state/pools/hooks"
 import { useActiveWeb3React } from "hooks"
 import { usePoolContract } from "hooks/usePool"
 
-import { List } from "./styled"
+import S from "./styled"
 
 const FundPositionsList: FC<{ closed: boolean }> = ({ closed }) => {
   const { account } = useActiveWeb3React()
@@ -20,9 +21,25 @@ const FundPositionsList: FC<{ closed: boolean }> = ({ closed }) => {
     return account === poolInfo.parameters.trader
   }, [account, poolInfo])
 
+  if (!data || !data.positions) {
+    return (
+      <S.Content>
+        <PulseSpinner />
+      </S.Content>
+    )
+  }
+
+  if (data.positions && data.positions.length === 0) {
+    return (
+      <S.Content>
+        <S.WithoutData>No {closed ? "closed" : "open"} positions</S.WithoutData>
+      </S.Content>
+    )
+  }
+
   return (
     <>
-      <List>
+      <S.List>
         {(data?.positions || []).map((position) => (
           <PoolPositionCard
             baseTokenAddress={data?.baseToken}
@@ -31,7 +48,7 @@ const FundPositionsList: FC<{ closed: boolean }> = ({ closed }) => {
             isTrader={isPoolTrader}
           />
         ))}
-      </List>
+      </S.List>
     </>
   )
 }
