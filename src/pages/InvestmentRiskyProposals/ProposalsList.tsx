@@ -43,7 +43,6 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
           <RiskyProposalCard
             key={p.id}
             proposal={p}
-            poolAddress={p.basicPool.id}
             onInvest={() => console.log("onInvest")}
           />
         ))}

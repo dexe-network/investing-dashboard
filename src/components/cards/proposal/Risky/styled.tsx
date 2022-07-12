@@ -6,6 +6,8 @@ import { Flex, GradientBorder } from "theme"
 import Amount from "components/Amount"
 
 import checkGreenIcon from "assets/icons/green-check.svg"
+import starIcon from "assets/icons/star.svg"
+import starDarkIcon from "assets/icons/star-dark.svg"
 
 const Styled = {
   Container: styled(GradientBorder)`
@@ -86,6 +88,29 @@ const Styled = {
   `,
   LPSizeContainer: styled.div`
     width: 137px;
+  `,
+  TraderRating: styled(Flex)`
+    unicode-bidi: bidi-override;
+    direction: rtl;
+  `,
+  TraderRatingStar: styled.div`
+    position: relative;
+    width: 10.51px;
+    height: 10.44px;
+    color: #293c54;
+
+    &::after {
+      content: "\2605";
+      position: absolute;
+      color: #9ae2cb;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      width: inherit;
+      height: inherit;
+      z-index: 1000;
+    }
   `,
 }
 
@@ -307,5 +332,33 @@ export const TraderLPSize: FC<{ size: number }> = ({ size }) => {
         </AnimatePresence>
       </LPSizeStyled.LineWrapper>
     </LPSizeStyled.Container>
+  )
+}
+
+const TraderRatingStyled = {
+  Container: styled(Flex)`
+    unicode-bidi: bidi-override;
+    margin: 0 9px 0 4px;
+  `,
+  Star: styled.img`
+    position: relative;
+    width: 10.51px;
+    height: 10.44px;
+
+    &:not(:last-child) {
+      margin-right: 2.5px;
+    }
+  `,
+}
+
+export const TraderRating = ({ rating }: { rating: number }) => {
+  return (
+    <TraderRatingStyled.Container>
+      <TraderRatingStyled.Star src={starIcon} />
+      <TraderRatingStyled.Star src={starIcon} />
+      <TraderRatingStyled.Star src={starIcon} />
+      <TraderRatingStyled.Star src={starDarkIcon} />
+      <TraderRatingStyled.Star src={starDarkIcon} />
+    </TraderRatingStyled.Container>
   )
 }

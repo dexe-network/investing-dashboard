@@ -1,4 +1,6 @@
 import { FC, useMemo, useState } from "react"
+import { format } from "date-fns"
+import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 
 import { useActiveWeb3React } from "hooks"
 import { useERC20 } from "hooks/useContract"
@@ -6,6 +8,7 @@ import { usePoolContract } from "hooks/usePool"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
 import { IRiskyProposal } from "constants/interfaces_v2"
+import { expandTimestamp, normalizeBigNumber } from "utils"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
@@ -13,31 +16,33 @@ import Button, { SecondaryButton } from "components/Button"
 import TokenIcon from "components/TokenIcon"
 import IconButton from "components/IconButton"
 import ExternalLink from "components/ExternalLink"
+import Tooltip from "components/Tooltip"
 
-import S, { BodyItem, TraderLPSize } from "./styled"
+import S, { BodyItem, TraderLPSize, TraderRating } from "./styled"
 import RiskyCardSettings from "./Settings"
 
 import settingsIcon from "assets/icons/settings.svg"
 import settingsGreenIcon from "assets/icons/settings-green.svg"
-import { expandTimestamp, normalizeBigNumber } from "utils"
-import { format } from "date-fns"
-import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 
 interface Props {
   proposal: IRiskyProposal
-  poolAddress: string
   onInvest: () => void
 }
 
-const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
+const RiskyProposalCard: FC<Props> = ({ proposal, onInvest }) => {
   const { account, chainId } = useActiveWeb3React()
   const [, proposalTokenData] = useERC20(proposal.token)
-  const [, poolInfo] = usePoolContract(poolAddress)
+  const [, poolInfo] = usePoolContract(proposal.basicPool.id)
 
   const [{ poolMetadata }] = usePoolMetadata(
-    poolAddress,
+    proposal.basicPool.id,
     poolInfo?.parameters.descriptionURL
   )
+
+  console.groupCollapsed("RiskyProposalCard")
+  console.log("proposal", proposal)
+  console.log("poolMetadata", poolMetadata)
+  console.groupEnd()
 
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
 
@@ -115,7 +120,19 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
         <S.Head isTrader={isTrader}>
           <Flex>
             <TokenIcon address={proposal.token} m="0" size={24} />
-            <S.Title>{proposalSymbol} for 0.0013 WBNB or less</S.Title>
+            {isTrader ? (
+              <S.Title>{proposalSymbol} for 0.0013 WBNB or less</S.Title>
+            ) : (
+              <Flex ai="center">
+                <S.Title>{proposalSymbol}</S.Title>
+                <TraderRating rating={20} />
+                <Flex m="0 0 -5px">
+                  <Tooltip id="risky-proposal-rating-info" size="small">
+                    Risky proposal rating info
+                  </Tooltip>
+                </Flex>
+              </Flex>
+            )}
           </Flex>
           {isTrader ? (
             <>
@@ -188,7 +205,7 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
                   size={24}
                   m="0"
                   source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-                  address={poolAddress}
+                  address={proposal.basicPool.id}
                 />
               </S.FundIconContainer>
               <Flex dir="column" ai="flex-start" m="0 0 0 4px">

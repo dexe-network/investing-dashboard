@@ -15,7 +15,6 @@ const FundProposalsRisky = ({ data }) => {
         <RiskyProposalCard
           key={proposal.token}
           proposal={proposal}
-          poolAddress={proposal.basicPool.id}
           onInvest={() => handleRiskyCardClick(proposal.basicPool.id, index)}
         />
       ))}
