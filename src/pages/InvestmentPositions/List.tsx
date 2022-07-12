@@ -25,9 +25,9 @@ const InvestmentPositionsList: FC<IProps> = ({ account, closed }) => {
   if (data && data.length === 0) {
     return (
       <S.Content>
-        <div style={{ color: "white", textAlign: "center" }}>
+        <S.WithoutData>
           No {closed ? "closed" : "open"} positions yet
-        </div>
+        </S.WithoutData>
       </S.Content>
     )
   }
@@ -35,7 +35,7 @@ const InvestmentPositionsList: FC<IProps> = ({ account, closed }) => {
   return (
     <>
       <S.List>
-        {(data || []).map((p) => (
+        {data.map((p) => (
           <InvestPositionCard key={p.id} position={p} />
         ))}
       </S.List>

@@ -1,23 +1,38 @@
+import { useMemo } from "react"
+import { format } from "date-fns"
+
+import { expandTimestamp } from "utils"
+
 import S from "./styled"
 
 interface Props {
-  isBuyTrade?: boolean
+  data: any
+  baseTokenSymbol?: string
 }
 
-const PositionTrade: React.FC<Props> = ({ isBuyTrade = false, ...rest }) => {
+const PositionTrade: React.FC<Props> = ({ data, baseTokenSymbol, ...rest }) => {
   const PositionDirection = (
-    <S.Direction isBuy={isBuyTrade}>{isBuyTrade ? "Buy" : "Sell"}</S.Direction>
+    <S.Direction isBuy={data.isInvest}>
+      {data.isInvest ? "Buy" : "Sell"}
+    </S.Direction>
   )
+
+  const date = useMemo(() => {
+    if (!data.timestamp) return "0"
+    return format(expandTimestamp(data.timestamp), "MMM dd, y HH:mm")
+  }, [data])
 
   return (
     <S.Container {...rest}>
       <S.Content>
         <S.Item>
-          <S.Label>12Jun 2021, 12:10</S.Label>
-          <S.Value>{PositionDirection} 1 DEXE/ WBNB</S.Value>
+          <S.Label>{date}</S.Label>
+          <S.Value>
+            {PositionDirection} 1 DEXE / {baseTokenSymbol ?? ""}
+          </S.Value>
         </S.Item>
         <S.Item>
-          <S.Label>Price WBNB</S.Label>
+          <S.Label>Price {baseTokenSymbol ?? ""}</S.Label>
           <S.Value>1.148</S.Value>
         </S.Item>
         <S.Item>

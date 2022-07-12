@@ -167,9 +167,9 @@ const RiskyPositionCard: React.FC<Props> = ({
           animate={showPositions ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
         >
-          <PositionTrade isBuyTrade={true} />
-          <PositionTrade />
-          <PositionTrade isBuyTrade={true} />
+          <PositionTrade data={{}} />
+          <PositionTrade data={{}} />
+          <PositionTrade data={{}} />
         </SharedS.ExtraItem>
       </SharedS.Container>
     </>

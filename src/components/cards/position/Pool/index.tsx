@@ -178,9 +178,9 @@ const PoolPositionCard: React.FC<Props> = ({
           variants={accordionSummaryVariants}
           animate={showPositions ? "visible" : "hidden"}
         >
-          <PositionTrade isBuyTrade={true} />
-          <PositionTrade />
-          <PositionTrade isBuyTrade={true} />
+          <PositionTrade data={{}} />
+          <PositionTrade data={{}} />
+          <PositionTrade data={{}} />
         </SharedS.ExtraItem>
       </SharedS.Container>
     </>

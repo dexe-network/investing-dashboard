@@ -19,31 +19,29 @@ import PositionTrade from "components/PositionTrade"
 import { accordionSummaryVariants } from "motion/variants"
 import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
 import S from "./styled"
+import { usePoolContract } from "hooks/usePool"
 
 interface Props {
-  baseTokenAddress?: string
   position: IInvestorProposal
-  ticker?: string
-  descriptionURL?: string
-  poolAddress?: string
 }
 
-const InvestPositionCard: React.FC<Props> = ({
-  baseTokenAddress,
-  position,
-  ticker,
-
-  descriptionURL,
-  poolAddress,
-}) => {
-  const [, tokenData] = useERC20(position.pool.token)
-  // TODO: usePool to get descriptionURL
-  const [, poolData] = useERC20(position.pool.id)
-  const [, baseToken] = useERC20(baseTokenAddress)
+const InvestPositionCard: React.FC<Props> = ({ position }) => {
+  const [, poolInfo] = usePoolContract(position.pool.id)
+  const [, baseTokenData] = useERC20(poolInfo?.parameters.baseToken)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
-  const [{ poolMetadata }] = usePoolMetadata(poolAddress, descriptionURL)
+  const [{ poolMetadata }] = usePoolMetadata(
+    position.pool.id,
+    poolInfo?.parameters.descriptionURL
+  )
+
+  console.groupCollapsed("InvestPositionCard")
+  console.log("position", position)
+  console.log("baseTokenData", baseTokenData)
+  console.log("poolInfo", poolInfo)
+  console.log("poolMetadata", poolMetadata)
+  console.groupEnd()
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
   const markPriceUSD = useTokenPriceOutUSD({
@@ -91,7 +89,7 @@ const InvestPositionCard: React.FC<Props> = ({
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(
         position.pool.token,
-        baseTokenAddress,
+        baseTokenData?.address,
         amount,
         []
       )
@@ -99,7 +97,7 @@ const InvestPositionCard: React.FC<Props> = ({
     }
 
     getMarkPrice().catch(console.error)
-  }, [priceFeed, baseTokenAddress, position.pool.token])
+  }, [priceFeed, baseTokenData, position.pool.token])
 
   const onBuyMore = (e) => {
     e.preventDefault()
@@ -142,14 +140,14 @@ const InvestPositionCard: React.FC<Props> = ({
                 m="0"
                 size={24}
                 source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-                address={poolAddress}
+                address={position.pool.id}
               />
               <S.Amount>5</S.Amount>
-              <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
+              <S.PositionSymbol>{baseTokenData?.symbol}</S.PositionSymbol>
             </Flex>
             <Flex>
-              <S.FundSymbol>{poolData?.name}</S.FundSymbol>
-              <TokenIcon address={position.pool.token} m="0" size={24} />
+              <S.FundSymbol>{poolInfo?.name}</S.FundSymbol>
+              <TokenIcon address={baseTokenData?.address} m="0" size={24} />
             </Flex>
           </SharedS.Head>
 
@@ -157,13 +155,13 @@ const InvestPositionCard: React.FC<Props> = ({
             <BodyItem
               label="Entry Price"
               amount={ethers.utils.parseUnits("0.1")}
-              symbol={baseToken?.symbol}
+              symbol={baseTokenData?.symbol}
               amountUSD={ethers.utils.parseUnits("57")}
             />
             <BodyItem
               label={position.isClosed ? "Closed price" : "Current price"}
               amount={markPrice}
-              symbol={baseToken?.symbol}
+              symbol={baseTokenData?.symbol}
               amountUSD={markPriceUSD}
             />
             <BodyItem
@@ -186,9 +184,17 @@ const InvestPositionCard: React.FC<Props> = ({
           animate={showPositions ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
         >
-          <PositionTrade isBuyTrade={true} />
-          <PositionTrade />
-          <PositionTrade isBuyTrade={true} />
+          {position.vest && position.vest.length > 0 ? (
+            position.vest.map((v) => (
+              <PositionTrade
+                data={v}
+                key={v.id}
+                baseTokenSymbol={baseTokenData?.symbol}
+              />
+            ))
+          ) : (
+            <>No vests</>
+          )}
         </SharedS.ExtraItem>
         <SharedS.ExtraItem
           initial="hidden"
