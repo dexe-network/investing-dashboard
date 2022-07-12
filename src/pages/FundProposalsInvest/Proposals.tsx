@@ -21,7 +21,7 @@ const FundProposalsInvest = () => {
     navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
   }
 
-  if (!data) {
+  if (!data || !data.proposals) {
     return (
       <S.Content>
         <PulseSpinner />
@@ -29,8 +29,16 @@ const FundProposalsInvest = () => {
     )
   }
 
+  if (data && data.proposals && data.proposals.length === 0) {
+    return (
+      <S.Content>
+        <S.WithoutData>No proposals</S.WithoutData>
+      </S.Content>
+    )
+  }
+
   return (
-    <>
+    <S.Container>
       {data.proposals.map((proposal, index) => (
         <InvestProposalCard
           key={proposal.id}
@@ -39,7 +47,7 @@ const FundProposalsInvest = () => {
           onInvest={() => handleInvestCardClick(index)}
         />
       ))}
-    </>
+    </S.Container>
   )
 }
 
