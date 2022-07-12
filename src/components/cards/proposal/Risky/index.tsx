@@ -39,11 +39,6 @@ const RiskyProposalCard: FC<Props> = ({ proposal, onInvest }) => {
     poolInfo?.parameters.descriptionURL
   )
 
-  console.groupCollapsed("RiskyProposalCard")
-  console.log("proposal", proposal)
-  console.log("poolMetadata", poolMetadata)
-  console.groupEnd()
-
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
 
   // Check that current user is pool trader or not
