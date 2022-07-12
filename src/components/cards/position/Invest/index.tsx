@@ -36,13 +36,6 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
     poolInfo?.parameters.descriptionURL
   )
 
-  console.groupCollapsed("InvestPositionCard")
-  console.log("position", position)
-  console.log("baseTokenData", baseTokenData)
-  console.log("poolInfo", poolInfo)
-  console.log("poolMetadata", poolMetadata)
-  console.groupEnd()
-
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
   const markPriceUSD = useTokenPriceOutUSD({
     tokenAddress: position.pool.token,
