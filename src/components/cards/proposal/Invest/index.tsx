@@ -4,7 +4,6 @@ import { format } from "date-fns"
 
 import { expandTimestamp, normalizeBigNumber } from "utils"
 import { useActiveWeb3React } from "hooks"
-import { useERC20 } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
 
 import { Flex } from "theme"
@@ -25,11 +24,10 @@ import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 interface Props {
   proposal: any
-  poolAddress?: string
   onInvest: () => void
 }
 
-const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
+const InvestProposalCard: FC<Props> = ({ proposal, onInvest }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
   const [openExtra, setOpenExtra] = useState<boolean>(false)
 
@@ -153,7 +151,11 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
             ) : (
               <Flex>
                 <S.FundSymbol>{poolInfo?.ticker}</S.FundSymbol>
-                <TokenIcon address={proposal.investPool.id} m="0" size={24} />
+                <TokenIcon
+                  address={proposal.investPool.baseToken}
+                  m="0"
+                  size={24}
+                />
               </Flex>
             )}
           </S.Head>

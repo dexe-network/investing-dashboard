@@ -43,7 +43,6 @@ const FundProposalsInvest = () => {
         <InvestProposalCard
           key={proposal.id}
           proposal={proposal}
-          poolAddress={data.id}
           onInvest={() => handleInvestCardClick(index)}
         />
       ))}

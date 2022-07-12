@@ -48,7 +48,7 @@ const InvestmentInvestProposals = () => {
   if (activePools && activePools.lenght === 0) {
     return (
       <S.Content>
-        <span>There are no invest proposals</span>
+        <S.WithoutData>There are no invest proposals</S.WithoutData>
       </S.Content>
     )
   }

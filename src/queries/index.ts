@@ -316,6 +316,18 @@ const InvestorRiskyPositionsQuery = `
   }
 `
 
+// lastSupply(first: 100) {
+//   id
+//   timestamp
+//   dividendsTokens
+//   amountDividendsTokens
+// }
+// lastWithdraw(first: 100) {
+//   id
+//   timestamp
+//   amountBase
+// }
+
 const INVESTOR_INVEST_PROPOSAL = `
   id
   timestampLimit
@@ -325,17 +337,7 @@ const INVESTOR_INVEST_PROPOSAL = `
   totalUSDSupply
   firstSupplyTimestamp
   APR
-  lastSupply {
-    id
-    timestamp 
-    dividendsTokens 
-    amountDividendsTokens 
-  }
-  lastWithdraw {
-    id
-    timestamp
-    amountBase
-  }
+  
   investPool {
     id
     baseToken

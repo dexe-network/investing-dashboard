@@ -47,7 +47,6 @@ const InvestmentInvestProposalsList: FC<IProps> = ({
           <InvestProposalCard
             key={p.id}
             proposal={p}
-            poolAddress={p.investPool.id}
             onInvest={() => console.log("onInvest")}
           />
         ))}
