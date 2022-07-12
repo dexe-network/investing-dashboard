@@ -1,11 +1,14 @@
 import { FC, useMemo, useState } from "react"
 import { AnimatePresence } from "framer-motion"
+import { format } from "date-fns"
 
+import { expandTimestamp, normalizeBigNumber } from "utils"
 import { useActiveWeb3React } from "hooks"
 import { useERC20 } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
 
 import { Flex } from "theme"
+import Icon from "components/Icon"
 import TokenIcon from "components/TokenIcon"
 import IconButton from "components/IconButton"
 import ReadMore from "components/ReadMore"
@@ -18,25 +21,46 @@ import BodyInvestor from "./BodyInvestor"
 
 import settingsIcon from "assets/icons/settings.svg"
 import settingsGreenIcon from "assets/icons/settings-green.svg"
+import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 
 interface Props {
   proposal: any
-  poolAddress: string
+  poolAddress?: string
   onInvest: () => void
 }
 
 const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
-  const { account } = useActiveWeb3React()
-  const [, poolInfo] = usePoolContract(poolAddress)
-
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
   const [openExtra, setOpenExtra] = useState<boolean>(false)
+
+  const { account } = useActiveWeb3React()
+  const [, poolInfo] = usePoolContract(proposal.investPool.id)
+
+  const [{ poolMetadata }] = usePoolMetadata(
+    proposal.investPool.id,
+    poolInfo?.parameters.descriptionURL
+  )
 
   // Check that current user is pool trader or not
   const isTrader = useMemo(() => {
     if (!account || !poolInfo) return false
     return account === poolInfo?.parameters.trader
   }, [account, poolInfo])
+
+  const maxSizeLP = useMemo(() => {
+    if (!proposal.investLPLimit) return "0"
+    return normalizeBigNumber(proposal.investLPLimit, 18, 6)
+  }, [proposal])
+
+  const APR = useMemo(() => {
+    if (!proposal.APR) return "0"
+    return normalizeBigNumber(proposal.APR, 18, 6)
+  }, [proposal])
+
+  const expirationDate = useMemo(() => {
+    if (!proposal.timestampLimit) return "0"
+    return format(expandTimestamp(proposal.timestampLimit), "MMM dd, y HH:mm")
+  }, [proposal])
 
   // Actions
   const actions = useMemo(() => {
@@ -95,14 +119,19 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
         <S.Card onClick={() => setOpenExtra(!openExtra)}>
           <S.Head isTrader={isTrader}>
             <Flex>
-              <TokenIcon m="0" size={24} />
+              <Icon
+                size={24}
+                m="0"
+                source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+                address={proposal.investPool.id}
+              />
               <S.Title>1/JBR</S.Title>
             </Flex>
             {isTrader ? (
               <>
                 <Flex>
                   <S.Status active={!proposal.closed}>
-                    {!proposal.closed ? "Open investing" : "Closed"}
+                    {!proposal.closed ? "Open investing" : "Closed investing"}
                   </S.Status>
                   <Flex m="0 0 0 4px">
                     <IconButton
@@ -123,16 +152,24 @@ const InvestProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
               </>
             ) : (
               <Flex>
-                <S.FundSymbol>FUND NAME</S.FundSymbol>
-                <TokenIcon address={proposal.positionToken} m="0" size={24} />
+                <S.FundSymbol>{poolInfo?.ticker}</S.FundSymbol>
+                <TokenIcon address={proposal.investPool.id} m="0" size={24} />
               </Flex>
             )}
           </S.Head>
           <S.Body>
             {isTrader ? (
-              <BodyTrader />
+              <BodyTrader
+                maxSizeLP={maxSizeLP}
+                apr={APR}
+                expirationDate={expirationDate}
+              />
             ) : (
-              <BodyInvestor invested={proposal.invested ?? false} />
+              <BodyInvestor
+                invested={proposal.invested ?? false}
+                apr={APR}
+                expirationDate={expirationDate}
+              />
             )}
           </S.Body>
           <S.ReadMoreContainer>
