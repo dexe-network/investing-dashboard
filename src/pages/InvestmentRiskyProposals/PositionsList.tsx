@@ -50,9 +50,9 @@ const InvestmentRiskyPositionsList: FC<IProps> = ({ activePools, closed }) => {
   if (positions && positions.length === 0) {
     return (
       <S.Content>
-        <div style={{ color: "white", textAlign: "center" }}>
+        <S.WithoutData>
           No {closed ? "closed" : "open"} positions yet
-        </div>
+        </S.WithoutData>
       </S.Content>
     )
   }

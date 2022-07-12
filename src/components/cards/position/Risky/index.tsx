@@ -4,7 +4,7 @@ import { useSelector } from "react-redux"
 import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
-import { IPosition, IInvestorRiskyPosition } from "constants/interfaces_v2"
+import { IPosition } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { usePoolContract } from "hooks/usePool"
@@ -21,28 +21,26 @@ import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
 import S from "./styled"
 
 interface IPositionCard extends IPosition {
-  proposalToken?: string
+  token?: string
+  pool: {
+    id: string
+    baseToken: string
+  }
 }
 
 interface Props {
-  baseToken?: string
   position: IPositionCard
-  poolAddress?: string
 }
 
-const RiskyPositionCard: React.FC<Props> = ({
-  baseToken,
-  position,
-  poolAddress,
-}) => {
-  const [, tokenData] = useERC20(position?.proposalToken)
-  const [, baseTokenData] = useERC20(baseToken)
+const RiskyPositionCard: React.FC<Props> = ({ position }) => {
+  const [, tokenData] = useERC20(position?.token)
+  const [, baseTokenData] = useERC20(position.pool.baseToken)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
-  const [, poolInfo] = usePoolContract(poolAddress)
+  const [, poolInfo] = usePoolContract(position.pool.id)
 
   const [{ poolMetadata }] = usePoolMetadata(
-    poolAddress,
+    position.pool.id,
     poolInfo?.parameters.descriptionURL
   )
 
@@ -74,7 +72,7 @@ const RiskyPositionCard: React.FC<Props> = ({
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(
         position.positionToken,
-        baseToken,
+        position.pool.baseToken,
         amount,
         []
       )
@@ -82,7 +80,7 @@ const RiskyPositionCard: React.FC<Props> = ({
     }
 
     getMarkPrice().catch(console.error)
-  }, [priceFeed, baseToken, position.positionToken])
+  }, [priceFeed, position.pool.baseToken, position.positionToken])
 
   const onBuyMore = (e) => {
     e.preventDefault()
@@ -132,7 +130,7 @@ const RiskyPositionCard: React.FC<Props> = ({
                 m="0"
                 size={24}
                 source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-                address={poolAddress}
+                address={position.pool.id}
               />
             </Flex>
           </SharedS.Head>
@@ -167,9 +165,9 @@ const RiskyPositionCard: React.FC<Props> = ({
           animate={showPositions ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
         >
-          <PositionTrade data={{}} />
-          <PositionTrade data={{}} />
-          <PositionTrade data={{}} />
+          <PositionTrade data={{ timestamp: new Date().valueOf() }} />
+          <PositionTrade data={{ timestamp: new Date().valueOf() }} />
+          <PositionTrade data={{ timestamp: new Date().valueOf() }} />
         </SharedS.ExtraItem>
       </SharedS.Container>
     </>

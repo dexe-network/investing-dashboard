@@ -20,6 +20,14 @@ const Styled = {
     align-items: center;
     justify-content: center;
   `,
+  WithoutData: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 16px;
+    color: #e4f2ff;
+  `,
 }
 
 export default Styled

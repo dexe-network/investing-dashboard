@@ -29,9 +29,7 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
   if (data && data.length === 0) {
     return (
       <S.Content>
-        <div style={{ color: "white", textAlign: "center" }}>
-          No proposal yet
-        </div>
+        <S.WithoutData>No proposal yet</S.WithoutData>
       </S.Content>
     )
   }
