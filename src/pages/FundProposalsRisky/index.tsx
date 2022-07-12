@@ -53,8 +53,16 @@ const FundProposalsRisky: FC = () => {
   }
 
   const open = <Proposals data={data.proposals} />
-  const positions = <Positions data={data.proposals} closed={false} />
-  const closed = <Positions data={data.proposals} closed />
+  const positions = (
+    <Positions
+      data={data.proposals}
+      closed={false}
+      baseToken={data.baseToken}
+    />
+  )
+  const closed = (
+    <Positions data={data.proposals} closed baseToken={data.baseToken} />
+  )
 
   return (
     <>

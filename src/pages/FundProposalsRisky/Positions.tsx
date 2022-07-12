@@ -9,9 +9,10 @@ import { PulseSpinner } from "react-spinners-kit"
 interface IProps {
   data: any[]
   closed: boolean
+  baseToken: string
 }
 
-const FundPositionsRisky: FC<IProps> = ({ data, closed }) => {
+const FundPositionsRisky: FC<IProps> = ({ data, closed, baseToken }) => {
   const { poolAddress } = useParams()
 
   const positions = useMemo(() => {
@@ -19,7 +20,9 @@ const FundPositionsRisky: FC<IProps> = ({ data, closed }) => {
 
     return data.reduce((acc, p) => {
       if (p.positions.length) {
-        const positions = p.positions.filter((_p) => _p.isClosed === closed)
+        const positions = p.positions
+          .filter((_p) => _p.isClosed === closed)
+          .map((_p) => ({ ..._p, proposalToken: p.token }))
         return [...acc, ...positions]
       }
       return acc
@@ -37,7 +40,12 @@ const FundPositionsRisky: FC<IProps> = ({ data, closed }) => {
   return (
     <>
       {positions.map((p) => (
-        <RiskyPositionCard key={p.id} position={p} poolAddress={poolAddress} />
+        <RiskyPositionCard
+          key={p.id}
+          position={p}
+          poolAddress={poolAddress}
+          baseToken={baseToken}
+        />
       ))}
     </>
   )
