@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, MouseEvent } from "react"
 
 const MAX_LENGTH = 113
 
@@ -10,7 +10,7 @@ interface IValues {
 }
 interface IMethods {
   setContent: (content: string) => void
-  toggle: () => void
+  toggle: (e: MouseEvent<HTMLElement>) => void
 }
 
 export default function useReadMore(
@@ -42,7 +42,8 @@ export default function useReadMore(
     setInView(full.substring(0, maxLen))
   }
 
-  const toggle = () => {
+  const toggle = (e) => {
+    e.stopPropagation()
     if (isExpand) {
       setIsExpand(false)
       showPart()
