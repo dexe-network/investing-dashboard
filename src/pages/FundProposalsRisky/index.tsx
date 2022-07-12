@@ -38,9 +38,17 @@ const FundProposalsRisky: FC = () => {
 
   if (!data) {
     return (
-      <S.PageLoading full ai="center" jc="center">
+      <S.Content full ai="center" jc="center">
         <PulseSpinner />
-      </S.PageLoading>
+      </S.Content>
+    )
+  }
+
+  if (data && data.proposals && data.proposals.length === 0) {
+    return (
+      <S.Content full ai="center" jc="center">
+        No proposals
+      </S.Content>
     )
   }
 
@@ -51,13 +59,13 @@ const FundProposalsRisky: FC = () => {
   return (
     <>
       <RouteTabs tabs={tabs} />
-      <S.Content>
+      <S.Container>
         <Routes>
           <Route path="open" element={open}></Route>
           <Route path="positions" element={positions}></Route>
           <Route path="closed" element={closed}></Route>
         </Routes>
-      </S.Content>
+      </S.Container>
     </>
   )
 }

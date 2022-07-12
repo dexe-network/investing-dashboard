@@ -2,7 +2,7 @@ import styled from "styled-components"
 import { Flex } from "theme"
 
 const Styled = {
-  Content: styled.div`
+  Container: styled.div`
     height: calc(100vh - 174px);
     padding: 16px;
     position: relative;
@@ -13,7 +13,7 @@ const Styled = {
     }
   `,
 
-  PageLoading: styled(Flex)`
+  Content: styled(Flex)`
     height: calc(100vh - 128px);
 
     @media all and (display-mode: standalone) {

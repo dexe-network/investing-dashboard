@@ -9,10 +9,6 @@ const FundProposalsRisky = ({ data }) => {
     navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
   }
 
-  if (!data) {
-    return <>Loading</>
-  }
-
   return (
     <>
       {data.map((proposal, index) => (

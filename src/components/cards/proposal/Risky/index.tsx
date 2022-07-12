@@ -9,7 +9,7 @@ import { IRiskyProposal } from "constants/interfaces_v2"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
-import Button from "components/Button"
+import Button, { SecondaryButton } from "components/Button"
 import TokenIcon from "components/TokenIcon"
 import IconButton from "components/IconButton"
 import ExternalLink from "components/ExternalLink"
@@ -19,6 +19,9 @@ import RiskyCardSettings from "./Settings"
 
 import settingsIcon from "assets/icons/settings.svg"
 import settingsGreenIcon from "assets/icons/settings-green.svg"
+import { expandTimestamp, normalizeBigNumber } from "utils"
+import { format } from "date-fns"
+import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 
 interface Props {
   proposal: IRiskyProposal
@@ -38,17 +41,73 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
 
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
 
-  const active = true
-
   // Check that current user is pool trader or not
   const isTrader = useMemo(() => {
     if (!account || !poolInfo) return false
     return account === poolInfo?.parameters.trader
   }, [account, poolInfo])
 
+  const proposalSymbol = useMemo(() => {
+    if (!proposalTokenData || !proposalTokenData.symbol) return ""
+    return proposalTokenData.symbol
+  }, [proposalTokenData])
+
   const lpPercentage = useMemo(() => {
     return 76
   }, [])
+
+  const maxSizeLP = useMemo(() => {
+    if (!proposal || !proposal.maxTokenPriceLimit) return "0"
+
+    return normalizeBigNumber(proposal.maxTokenPriceLimit, 18, 6)
+  }, [proposal])
+
+  const youSizeLP = useMemo(() => {
+    if (!proposal || !proposal.investLPLimit) return "0"
+
+    return normalizeBigNumber(proposal.investLPLimit, 18, 6)
+  }, [proposal])
+
+  const expirationDate = useMemo(() => {
+    if (!proposal || !proposal.timestampLimit)
+      return { value: "0", completed: false }
+
+    const expandedTimestampLimit = expandTimestamp(proposal.timestampLimit)
+    const currentTimestamp = new Date().valueOf()
+
+    return {
+      value: format(expandedTimestampLimit, "MMM dd, y HH:mm"),
+      completed:
+        currentTimestamp - expandTimestamp(proposal.timestampLimit) > 0,
+    }
+  }, [proposal])
+
+  const positionSize = useMemo(() => {
+    if (!proposal || !proposal.positions || !proposal.positions.length)
+      return "0"
+
+    const sizeFixed = proposal.positions.reduce(
+      (acc, p) =>
+        acc.addUnsafe(FixedNumber.from(p.totalPositionOpenVolume, 18)),
+      FixedNumber.from("0", 18)
+    )
+
+    return normalizeBigNumber(BigNumber.from(sizeFixed), 18, 6)
+  }, [proposal])
+
+  const active = useMemo(() => {
+    return !expirationDate.completed
+  }, [expirationDate])
+
+  const InvestButton = active ? (
+    <Button full size="small" onClick={onInvest}>
+      {isTrader ? "Terminal" : "Stake LP"}
+    </Button>
+  ) : (
+    <SecondaryButton full size="small">
+      {isTrader ? "Terminal" : "Stake LP"}
+    </SecondaryButton>
+  )
 
   return (
     <>
@@ -56,9 +115,7 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
         <S.Head isTrader={isTrader}>
           <Flex>
             <TokenIcon address={proposal.token} m="0" size={24} />
-            <S.Title>
-              {proposalTokenData?.symbol} for 0.0013 WBNB or less
-            </S.Title>
+            <S.Title>{proposalSymbol} for 0.0013 WBNB or less</S.Title>
           </Flex>
           {isTrader ? (
             <>
@@ -95,29 +152,33 @@ const RiskyProposalCard: FC<Props> = ({ proposal, poolAddress, onInvest }) => {
         <S.Body>
           <BodyItem
             label={isTrader ? "Max size" : "Proposal size"}
-            amount={"40 LP"}
+            amount={`${maxSizeLP} LP`}
           />
-          <BodyItem label="Your size" amount={"0 LP"} />
+          <BodyItem label="Your size" amount={`${youSizeLP} LP`} />
           <BodyItem label="Fullness" amount={"35 LP"} />
           <BodyItem
             label="Max. Invest Price"
             amount={"0.0013"}
-            symbol={"WBNB"}
+            symbol={proposalSymbol}
           />
-          <BodyItem label="Current price" amount={"0.00129"} symbol={"WBNB"} />
           <BodyItem
-            label="Expiration date"
-            amount={"JUN 20,2022  20:00"}
+            label="Current price"
+            amount={"0.00129"}
+            symbol={proposalSymbol}
+          />
+          <BodyItem
             fz={"11px"}
-            completed
+            label="Expiration date"
+            amount={expirationDate.value}
+            completed={expirationDate.completed}
           />
           <BodyItem label="Investors" amount={"299"} symbol={"/ 1000"} />
-          <BodyItem label="Position size" amount={"20"} symbol={"WBNB"} />
-          <Flex full>
-            <Button full size="small" onClick={onInvest}>
-              {isTrader ? "Terminal" : "Stake LP"}
-            </Button>
-          </Flex>
+          <BodyItem
+            label="Position size"
+            amount={"20"}
+            symbol={proposalSymbol}
+          />
+          <Flex full>{InvestButton}</Flex>
         </S.Body>
         {!isTrader && (
           <S.Footer>

@@ -18,7 +18,7 @@ const FundProposals = () => {
   const traderPoolRegistry = useTraderPoolRegistryContract()
 
   useEffect(() => {
-    if (!traderPoolRegistry) return
+    if (!traderPoolRegistry || !poolAddress) return
     ;(async () => {
       const isBase = await traderPoolRegistry.isBasicPool(poolAddress)
       setPoolType(isBase ? "BASIC_POOL" : "INVEST_POOL")

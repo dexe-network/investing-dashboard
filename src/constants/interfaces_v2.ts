@@ -150,12 +150,13 @@ export interface RiskyProposal {
 export interface IRiskyProposal {
   id: string
   token: string
-  timestampLimit: BigNumber
+  timestampLimit: number
   investLPLimit: BigNumber
   maxTokenPriceLimit: BigNumber
   basicPool: {
     id: string
   }
+  positions?: any[]
 }
 
 export interface IRiskyProposalQuery {
@@ -233,13 +234,14 @@ export interface IInvestorInvestedPools {
 export interface IInvestorRiskyProposal {
   id: string
   token: string
-  timestampLimit: BigNumber
+  timestampLimit: number
   investLPLimit: BigNumber
   maxTokenPriceLimit: BigNumber
   basicPool: {
     id: string
     baseToken: string
   }
+  positions?: any[]
 }
 
 export interface IInvestorRiskyPosition {

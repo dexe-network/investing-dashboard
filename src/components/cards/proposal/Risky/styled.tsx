@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { ReactNode, FC, useMemo } from "react"
 import styled, { css } from "styled-components"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -167,9 +167,9 @@ export const BodyItemStyled = {
 }
 
 interface IBodyItemProps {
-  label: string
-  amount: string
-  symbol?: string
+  label: ReactNode
+  amount: ReactNode
+  symbol?: ReactNode
   fz?: string
   completed?: boolean
 }
