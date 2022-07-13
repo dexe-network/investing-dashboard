@@ -106,6 +106,11 @@ export const BodyItem: FC<IBodyItemProps> = ({
     return normalizeBigNumber(pnl, 18, 2)
   }, [pnl])
 
+  const stablePrice = useMemo(() => {
+    if (!amountUSD) return null
+    return normalizeBigNumber(amountUSD, 18, 2)
+  }, [amountUSD])
+
   return (
     <Flex dir="column" ai="flex-start">
       <BodyItemStyled.Label>{label}</BodyItemStyled.Label>
@@ -119,7 +124,8 @@ export const BodyItem: FC<IBodyItemProps> = ({
         )}
       </Flex>
       <BodyItemStyled.StablePrice>
-        {pnl && "+"}${normalizeBigNumber(amountUSD, 18, 2)}
+        {pnl && (Number(stablePrice) > 0 ? "+" : "-")}$
+        {Math.abs(Number(stablePrice))}
       </BodyItemStyled.StablePrice>
     </Flex>
   )
