@@ -28,6 +28,14 @@ const Styled = {
       height: calc(100vh - 197px);
     }
   `,
+  WithoutData: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 16px;
+    color: #e4f2ff;
+  `,
 }
 
 export default Styled

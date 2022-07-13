@@ -47,7 +47,7 @@ const FundProposalsRisky: FC = () => {
   if (data && data.proposals && data.proposals.length === 0) {
     return (
       <S.Content full ai="center" jc="center">
-        No proposals
+        <S.WithoutData>No proposals</S.WithoutData>
       </S.Content>
     )
   }
