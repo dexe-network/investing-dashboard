@@ -315,13 +315,14 @@ export interface OwnedPools {
 }
 
 export interface IExchange {
+  id: string
   fromToken: string
   toToken: string
-  fromVolume: string
-  toVolume: string
-  day: {
-    day: number
-  }
+  fromVolume: BigNumber
+  toVolume: BigNumber
+  usdVolume: BigNumber
+  timestamp: BigNumber
+  opening: boolean
 }
 
 export interface IPosition {

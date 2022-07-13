@@ -178,9 +178,17 @@ const PoolPositionCard: React.FC<Props> = ({
           variants={accordionSummaryVariants}
           animate={showPositions ? "visible" : "hidden"}
         >
-          <PositionTrade data={{}} />
-          <PositionTrade data={{}} />
-          <PositionTrade data={{}} />
+          {position.exchanges && position.exchanges.length > 0 ? (
+            position.exchanges.map((e) => (
+              <PositionTrade
+                key={e.id}
+                data={e}
+                baseTokenSymbol={baseToken?.symbol}
+              />
+            ))
+          ) : (
+            <>No trades</>
+          )}
         </SharedS.ExtraItem>
       </SharedS.Container>
     </>

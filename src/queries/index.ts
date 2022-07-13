@@ -113,10 +113,14 @@ const PoolsQueryByTypeWithSort = `
 
 // Basic pool positions
 const POSITION_EXCHANGE = `
+  id
   fromToken
   toToken
   fromVolume
   toVolume
+  usdVolume
+  timestamp
+  opening
 `
 
 const POSITION = `
