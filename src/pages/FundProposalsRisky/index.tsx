@@ -21,6 +21,10 @@ const FundProposalsRisky: FC = () => {
 
   const data = useRiskyProposals(poolAddress)
 
+  console.groupCollapsed("FundProposalsRisky")
+  console.log("data", data)
+  console.groupEnd()
+
   const tabs: ITab[] = [
     {
       title: "Risk proposals",
@@ -44,7 +48,7 @@ const FundProposalsRisky: FC = () => {
     )
   }
 
-  if (data && data.proposals && data.proposals.length === 0) {
+  if (data && data.length === 0) {
     return (
       <S.Content full ai="center" jc="center">
         <S.WithoutData>No proposals</S.WithoutData>
@@ -52,9 +56,9 @@ const FundProposalsRisky: FC = () => {
     )
   }
 
-  const open = <Proposals data={data.proposals} />
-  const positions = <Positions data={data.proposals} closed={false} />
-  const closed = <Positions data={data.proposals} closed />
+  const open = <Proposals data={data} poolAddress={poolAddress} />
+  // const positions = <Positions data={data.proposals} closed={false} />
+  // const closed = <Positions data={data.proposals} closed />
 
   return (
     <>
@@ -62,8 +66,8 @@ const FundProposalsRisky: FC = () => {
       <S.Container>
         <Routes>
           <Route path="open" element={open}></Route>
-          <Route path="positions" element={positions}></Route>
-          <Route path="closed" element={closed}></Route>
+          {/* <Route path="positions" element={positions}></Route>
+          <Route path="closed" element={closed}></Route> */}
         </Routes>
       </S.Container>
     </>

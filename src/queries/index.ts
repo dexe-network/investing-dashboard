@@ -177,6 +177,7 @@ const RISKY_PROPOSAL = `
   maxTokenPriceLimit
   basicPool {
     id
+    baseToken
   }
   exchanges(first: 100) {
     ${RISKY_PROPOSAL_EXCHANGE}

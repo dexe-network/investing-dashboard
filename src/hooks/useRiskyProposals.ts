@@ -6,7 +6,7 @@ import { TraderPool, TraderPoolRiskyProposal } from "abi"
 import useContract from "hooks/useContract"
 import { RiskyProposalsQuery } from "queries"
 
-function useRiskyProposals(address?: string) {
+export function useRiskyProposalsGraph(address?: string) {
   const [response, executeQuery] = useQuery<{
     basicPool: IRiskyProposalQuery
   }>({
@@ -17,7 +17,7 @@ function useRiskyProposals(address?: string) {
   return response.data?.basicPool
 }
 
-function useRiskyProposals_Deprecated(poolAddress?: string): RiskyProposal[] {
+export function useRiskyProposals(poolAddress?: string): RiskyProposal[] {
   const [proposalAddress, setProposalAddress] = useState("")
   const [proposals, setProposals] = useState<RiskyProposal[]>([])
 
@@ -39,6 +39,7 @@ function useRiskyProposals_Deprecated(poolAddress?: string): RiskyProposal[] {
     if (!traderPoolRiskyProposal) return
     ;(async () => {
       const data = await traderPoolRiskyProposal.getProposalInfos(0, 100)
+      console.log("data", data)
       setProposals(data)
     })()
   }, [traderPoolRiskyProposal])

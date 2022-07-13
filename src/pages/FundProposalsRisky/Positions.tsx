@@ -18,7 +18,11 @@ const FundPositionsRisky: FC<IProps> = ({ data, closed }) => {
       if (p.positions.length) {
         const positions = p.positions
           .filter((_p) => _p.isClosed === closed)
-          .map((_p) => ({ ..._p, proposalToken: p.token }))
+          .map((_p) => ({
+            ..._p,
+            proposalToken: p.token,
+            pool: p.basicPool,
+          }))
         return [...acc, ...positions]
       }
       return acc

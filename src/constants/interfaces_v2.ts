@@ -135,7 +135,7 @@ interface RiskyProposalInfo {
   balanceBase: BigNumber
   balancePosition: BigNumber
   lpLocked: BigNumber
-  propoosalLimits: RiskyProposalLimits
+  proposalLimits: RiskyProposalLimits
   token: string
   tokenDecimals: BigNumber
 }
@@ -143,8 +143,10 @@ interface RiskyProposalInfo {
 export interface RiskyProposal {
   lp2Supply: BigNumber
   proposalInfo: RiskyProposalInfo
+  positionTokenPrice: BigNumber
   totalProposalBase: BigNumber
-  totalProposalUSD
+  totalProposalUSD: BigNumber
+  totalInvestors: BigNumber
 }
 
 export interface IRiskyProposal {
