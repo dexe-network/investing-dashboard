@@ -136,15 +136,17 @@ const POSITION = `
   exchanges {
     ${POSITION_EXCHANGE}
   }
+  traderPool {
+    trader
+    ticker
+    baseToken
+    descriptionURL
+  }
 `
 
 const BasicPositionsQuery = `
   query ($address: String!, $closed: Boolean!) {
     traderPool(id: $address) {
-      baseToken
-      descriptionURL
-      ticker
-      trader
       positions(first: 100, where: { closed: $closed }) {
         ${POSITION}
       }

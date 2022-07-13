@@ -5,6 +5,8 @@ import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
+import { normalizeBigNumber } from "utils"
+import { useActiveWeb3React } from "hooks"
 import { IPosition } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
@@ -17,24 +19,23 @@ import TokenIcon from "components/TokenIcon"
 import { accordionSummaryVariants } from "motion/variants"
 import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
 import S from "./styled"
-import { normalizeBigNumber } from "utils"
 
 interface Props {
-  baseTokenAddress?: string
   position: IPosition
-  isTrader: boolean
 }
 
-const PoolPositionCard: React.FC<Props> = ({
-  baseTokenAddress,
-  position,
-  isTrader,
-}) => {
-  const [, baseToken] = useERC20(baseTokenAddress)
+const PoolPositionCard: React.FC<Props> = ({ position }) => {
+  const { account } = useActiveWeb3React()
+  const [, baseToken] = useERC20(position.traderPool.baseToken)
   const [, positionTokenData] = useERC20(position.positionToken)
 
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
+
+  const isTrader = useMemo(() => {
+    if (!account || !position) return false
+    return account === position.traderPool.trader
+  }, [account, position])
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
   const markPriceUSD = useTokenPriceOutUSD({
@@ -98,7 +99,7 @@ const PoolPositionCard: React.FC<Props> = ({
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(
         position.positionToken,
-        baseTokenAddress,
+        position.traderPool.baseToken,
         position.totalPositionOpenVolume,
         []
       )
@@ -106,7 +107,12 @@ const PoolPositionCard: React.FC<Props> = ({
     }
 
     getMarkPrice().catch(console.error)
-  }, [priceFeed, baseTokenAddress, position.positionToken, position])
+  }, [
+    priceFeed,
+    position.traderPool.baseToken,
+    position.positionToken,
+    position,
+  ])
 
   const onBuyMore = (e) => {
     e.preventDefault()

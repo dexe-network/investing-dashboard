@@ -336,12 +336,15 @@ export interface IPosition {
   totalPositionOpenVolume: BigNumber
   totalPositionCloseVolume: BigNumber
   exchanges: IExchange[]
+  traderPool: {
+    ticker: string
+    trader: string
+    baseToken: string
+    descriptionURL: string
+  }
 }
 
 export interface IPositionQuery {
-  baseToken: string
-  ticker: string
-  descriptionURL: string
   positions: IPosition[]
 }
 
