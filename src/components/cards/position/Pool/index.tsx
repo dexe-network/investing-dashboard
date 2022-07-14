@@ -206,6 +206,7 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
               amount={pnlBase}
               pnl={pnlPercentage}
               amountUSD={pnlUSD}
+              ai="flex-end"
             />
           </SharedS.Body>
         </SharedS.Card>
