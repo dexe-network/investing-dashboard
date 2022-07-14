@@ -197,11 +197,12 @@ function Trader(props: Props) {
           <SecondaryButton
             fz={14}
             full
-            onClick={() =>
+            onClick={
+              () =>
+                navigate(`/withdraw-investment-proposal/${poolData.id}/${0}`)
               // navigate(
               //   `/pool/swap/${poolType}/${poolData.id}/${poolData.baseToken}/0x`
               // )
-              navigate(`/invest-investment-proposal/${poolData.id}/${0}`)
             }
           >
             Open new trade

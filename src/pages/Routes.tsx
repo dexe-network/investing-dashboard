@@ -30,6 +30,9 @@ const CreateInvestmentProposal = lazy(
 const InvestInvestmentProposal = lazy(
   () => import("pages/InvestInvestmentProposal")
 )
+const WithdrawInvestmentProposal = lazy(
+  () => import("pages/WithdrawInvestmentProposal")
+)
 // const Insurance = lazy(() => import("pages/Insurance"))
 
 const PrivacyPolicy = lazy(() => import("pages/PrivacyPolicy"))
@@ -115,6 +118,10 @@ export default function Routes() {
                     <Route
                       path="invest-investment-proposal/:poolAddress/:proposalId"
                       element={<InvestInvestmentProposal />}
+                    />
+                    <Route
+                      path="withdraw-investment-proposal/:poolAddress/:proposalId"
+                      element={<WithdrawInvestmentProposal />}
                     />
                     <Route path="create-fund" element={<CreateFund />} />
                     <Route path="success/:poolAddress" element={<Success />} />
