@@ -30,7 +30,7 @@ export function useInvestProposal(
     ;(async () => {
       try {
         const data = await traderPoolInvestProposal.getProposalInfos(
-          index,
+          parseFloat(index),
           parseFloat(index) + 1
         )
         setProposal(data[0])

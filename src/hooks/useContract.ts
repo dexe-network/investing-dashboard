@@ -9,6 +9,7 @@ import {
   PriceFeed,
   TraderPoolRegistry,
   InvestTraderPool,
+  UserRegistry,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -20,6 +21,7 @@ import { useSelector } from "react-redux"
 import {
   selectPriceFeedAddress,
   selectTraderPoolRegistryAddress,
+  selectUserRegistryAddress,
 } from "state/contracts/selectors"
 
 const provider = new ethers.providers.JsonRpcProvider(
@@ -190,4 +192,11 @@ export function useInvestProposalContract(
   const proposalPool = useContract(proposalAddress, TraderPoolInvestProposal)
 
   return [proposalPool, proposalAddress]
+}
+
+export function useUserRegistryContract(): Contract | null {
+  const userRegistryAddress = useSelector(selectUserRegistryAddress)
+  const userRegistry = useContract(userRegistryAddress, UserRegistry)
+
+  return userRegistry
 }

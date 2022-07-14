@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom"
 import { useWeb3React } from "@web3-react/core"
 import { useSelector } from "react-redux"
-import { Insurance, UserRegistry } from "abi"
+import { Insurance } from "abi"
 
 import { PulseSpinner } from "react-spinners-kit"
 import Avatar from "components/Avatar"
@@ -11,11 +11,8 @@ import Header from "components/Header/Layout"
 import IconButton from "components/IconButton"
 import TransactionHistory from "components/TransactionHistory"
 
-import {
-  selectInsuranceAddress,
-  selectUserRegistryAddress,
-} from "state/contracts/selectors"
-import useContract from "hooks/useContract"
+import { selectInsuranceAddress } from "state/contracts/selectors"
+import useContract, { useUserRegistryContract } from "hooks/useContract"
 import useCopyClipboard from "hooks/useCopyClipboard"
 
 import getExplorerLink, { ExplorerDataType } from "utils/getExplorerLink"
@@ -89,8 +86,7 @@ const useUserSettings = (): [
   const [userAvatarInitial, setUserAvatarInitial] = useState("")
   const [assets, setAssets] = useState<string[]>([])
   const [profileURL, setProfileURL] = useState<string | null>(null)
-  const userRegistryAddress = useSelector(selectUserRegistryAddress)
-  const userRegistry = useContract(userRegistryAddress, UserRegistry)
+  const userRegistry = useUserRegistryContract()
 
   const [{ userMetadata }] = useUserMetadata(profileURL)
 
@@ -203,16 +199,16 @@ export default function Wallet() {
     { setTxFiler, setTxListExpanded },
   ] = useTransactionHistory()
 
+  const fetchInsuranceBalance = useCallback(async () => {
+    const userInsurance = await insurance?.getInsurance(account)
+    setInsuranceAmount(userInsurance[1])
+  }, [account, insurance])
+
   useEffect(() => {
     if (!insurance) return
 
     fetchInsuranceBalance().catch(console.error)
-  }, [insurance])
-
-  const fetchInsuranceBalance = async () => {
-    const userInsurance = await insurance?.getInsurance(account)
-    setInsuranceAmount(userInsurance[1])
-  }
+  }, [insurance, fetchInsuranceBalance])
 
   const handleLogout = () => {
     deactivate()
