@@ -34,7 +34,7 @@ const getNormalizedFile = (file) => {
 
 interface Props {
   url?: string
-  address?: string
+  address?: string | null
   size?: number
   m?: string
   showUploader?: boolean
