@@ -118,7 +118,6 @@ const CreateFund: FC = () => {
 
   const handleTokenSelect = (token: Token) => {
     handleChange("baseToken", token)
-    setModalState(false)
   }
 
   const handlePoolCreate = useCallback(async () => {

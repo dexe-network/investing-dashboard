@@ -18,11 +18,16 @@ const TokenSelect: FC<Props> = ({ isOpen, onClose, onSelect }) => {
   const [q, setQuery] = useState("")
   const whitelisted = useSelector(selectWhitelist)
 
+  const selectWithClose = (token: Token) => {
+    onSelect(token)
+    onClose()
+  }
+
   return (
     <Modal isOpen={isOpen} toggle={onClose} title="Select basic token">
       <TokensList
         query={q}
-        onSelect={onSelect}
+        onSelect={selectWithClose}
         handleChange={setQuery}
         tokens={whitelisted}
       />

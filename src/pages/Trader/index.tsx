@@ -199,7 +199,9 @@ function Trader(props: Props) {
             full
             onClick={
               () =>
-                navigate(`/withdraw-investment-proposal/${poolData.id}/${0}`)
+                navigate(
+                  `/pay-dividends-investment-proposal/${poolData.id}/${0}`
+                )
               // navigate(
               //   `/pool/swap/${poolType}/${poolData.id}/${poolData.baseToken}/0x`
               // )
