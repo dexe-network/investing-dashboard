@@ -118,7 +118,7 @@ interface PoolParameters {
   trader: string
   baseTokenDecimals: BigNumber
   commissionPercentage: BigNumber
-  comissionPeriod: number
+  commissionPeriod: number
   descriptionURL: string
   minimalInvestment: BigNumber
   privatePool: boolean

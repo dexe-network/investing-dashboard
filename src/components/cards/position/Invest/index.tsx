@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from "react"
-import { BigNumber, ethers } from "ethers"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { ethers } from "ethers"
 import { useSelector } from "react-redux"
 import { AnimatePresence } from "framer-motion"
+import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 
 import { PriceFeed } from "abi"
 import { IInvestorProposal } from "constants/interfaces_v2"
@@ -9,6 +10,9 @@ import useContract, { useERC20 } from "hooks/useContract"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { selectPriceFeedAddress } from "state/contracts/selectors"
+import { usePoolContract } from "hooks/usePool"
+import { normalizeBigNumber } from "utils"
+import { percentageOfBignumbers } from "utils/formulas"
 
 import { Flex } from "theme"
 import Icon from "components/Icon"
@@ -19,7 +23,6 @@ import PositionTrade from "components/PositionTrade"
 import { accordionSummaryVariants } from "motion/variants"
 import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
 import S from "./styled"
-import { usePoolContract } from "hooks/usePool"
 
 interface Props {
   position: IInvestorProposal
@@ -27,7 +30,7 @@ interface Props {
 
 const InvestPositionCard: React.FC<Props> = ({ position }) => {
   const [, poolInfo] = usePoolContract(position.pool.id)
-  const [, baseTokenData] = useERC20(poolInfo?.parameters.baseToken)
+  const [, baseTokenData] = useERC20(position.pool.token)
   const priceFeedAddress = useSelector(selectPriceFeedAddress)
   const priceFeed = useContract(priceFeedAddress, PriceFeed)
 
@@ -71,6 +74,100 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
     }
     setShowComission(!showComission)
   }, [showComission, showPositions])
+
+  const positionOpenLPAmount = useMemo(() => {
+    if (!position.totalLPInvestVolume || !position.totalLPDivestVolume) {
+      return "0"
+    }
+
+    if (position.isClosed) {
+      return normalizeBigNumber(position.totalLPInvestVolume, 18, 6)
+    } else {
+      const investFixed = FixedNumber.fromValue(
+        position.totalLPInvestVolume,
+        18
+      )
+      const divestFixed = FixedNumber.fromValue(
+        position.totalLPDivestVolume,
+        18
+      )
+      const res = investFixed.subUnsafe(divestFixed)
+
+      return normalizeBigNumber(ethers.utils.parseEther(res._value), 18, 6)
+    }
+  }, [position])
+
+  const entryPriceBase = useMemo(() => {
+    if (!position || !position.vest) return BigNumber.from("0")
+
+    return BigNumber.from("0")
+  }, [position])
+
+  const entryPriceUSD = useMemo(() => {
+    if (!position || !position.vest) return BigNumber.from("0")
+
+    return BigNumber.from("0")
+  }, [position])
+
+  const pnlBase = useMemo(() => {
+    // if (!markPrice || !entryPriceBase) return BigNumber.from("0")
+
+    // const _markPriceFixed = FixedNumber.fromValue(markPrice, 18)
+    // const _entryPriceBaseFixed = FixedNumber.fromValue(entryPriceBase, 18)
+
+    // const res = _markPriceFixed.subUnsafe(_entryPriceBaseFixed)
+
+    // return ethers.utils.parseEther(res._value)
+    return BigNumber.from("0")
+  }, [markPrice, entryPriceBase])
+
+  const pnlPercentage = useMemo(() => {
+    // if (!markPrice || !entryPriceBase) return BigNumber.from("0")
+
+    // const percentage = percentageOfBignumbers(markPrice, entryPriceBase)
+
+    // const resultFixed = FixedNumber.fromValue(percentage, 18).subUnsafe(
+    //   FixedNumber.from("100", 18)
+    // )
+
+    // return ethers.utils.parseEther(resultFixed._value)
+    return BigNumber.from("0")
+  }, [markPrice, entryPriceBase])
+
+  const pnlUSD = useMemo(() => {
+    // if (!markPriceUSD || !entryPriceUSD) return BigNumber.from("0")
+
+    // const _markPriceFixed = FixedNumber.fromValue(markPriceUSD, 18)
+    // const _entryPriceUSDFixed = FixedNumber.fromValue(entryPriceUSD, 18)
+
+    // const res = _markPriceFixed.subUnsafe(_entryPriceUSDFixed)
+
+    // return ethers.utils.parseEther(res._value)
+    return BigNumber.from("0")
+  }, [markPriceUSD, entryPriceUSD])
+
+  const commissionPercentage = useMemo(() => {
+    if (!poolInfo) return "0"
+
+    return normalizeBigNumber(poolInfo.parameters.commissionPercentage, 25, 0)
+  }, [poolInfo])
+
+  const commissionPeriod = useMemo(() => {
+    if (!poolInfo || !poolInfo.parameters) {
+      return ""
+    }
+
+    switch (poolInfo.parameters.commissionPeriod) {
+      case 0:
+        return "1"
+      case 1:
+        return "3"
+      case 2:
+        return "12"
+      default:
+        return ""
+    }
+  }, [poolInfo])
 
   // get mark price
   useEffect(() => {
@@ -135,11 +232,11 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
                 source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
                 address={position.pool.id}
               />
-              <S.Amount>5</S.Amount>
-              <S.PositionSymbol>{baseTokenData?.symbol}</S.PositionSymbol>
+              <S.Amount>{positionOpenLPAmount}</S.Amount>
+              <S.PositionSymbol>{poolInfo?.ticker}</S.PositionSymbol>
             </Flex>
             <Flex>
-              <S.FundSymbol>{poolInfo?.name}</S.FundSymbol>
+              <S.FundSymbol>{baseTokenData?.symbol}</S.FundSymbol>
               <TokenIcon address={baseTokenData?.address} m="0" size={24} />
             </Flex>
           </SharedS.Head>
@@ -147,9 +244,9 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
           <SharedS.Body>
             <BodyItem
               label="Entry Price"
-              amount={ethers.utils.parseUnits("0.1")}
+              amount={entryPriceBase}
               symbol={baseTokenData?.symbol}
-              amountUSD={ethers.utils.parseUnits("57")}
+              amountUSD={entryPriceUSD}
             />
             <BodyItem
               label={position.isClosed ? "Closed price" : "Current price"}
@@ -158,10 +255,11 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
               amountUSD={markPriceUSD}
             />
             <BodyItem
-              label="P&L LP"
-              amount={ethers.utils.parseUnits("0.0012")}
-              pnl={ethers.utils.parseUnits("0.38")}
-              amountUSD={ethers.utils.parseUnits("30")}
+              label={`P&L ${baseTokenData?.symbol ?? ""}`}
+              amount={pnlBase}
+              pnl={pnlPercentage}
+              amountUSD={pnlUSD}
+              ai="flex-end"
             />
           </SharedS.Body>
         </SharedS.Card>
@@ -195,7 +293,10 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
           variants={accordionSummaryVariants}
           p="16px"
         >
-          <AmountRow title="3 month Performance Fee" value="30%" />
+          <AmountRow
+            title={`${commissionPeriod} month Performance Fee`}
+            value={`${commissionPercentage}%`}
+          />
           <AmountRow m="14px 0 0" title="Performance Fee" value="$22k" />
           <AmountRow
             m="14px 0 0"

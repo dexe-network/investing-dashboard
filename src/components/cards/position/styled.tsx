@@ -70,7 +70,7 @@ export const BodyItemStyled = {
     font-weight: 600;
     line-height: 100%;
     letter-spacing: 0.01em;
-    margin-right: 4px;
+    margin-left: 4px;
     font-size: 12px;
     color: ${(props) => (props.positive ? "#83e5ca" : "#DB6D6D")};
   `,
