@@ -157,7 +157,12 @@ const BasicPositionsQuery = `
 // Pool risky proposals
 const RISKY_PROPOSAL_EXCHANGE = `
   id
-  day
+  timestamp
+  fromToken
+  toToken
+  fromVolume
+  toVolume
+  usdVolume
 `
 const RISKY_PROPOSAL_POSITION = `
   id
@@ -172,27 +177,30 @@ const RISKY_PROPOSAL_POSITION = `
 const RISKY_PROPOSAL = `
   id
   token
-  timestampLimit
-  investLPLimit
-  maxTokenPriceLimit
   basicPool {
     id
     baseToken
   }
-  exchanges(first: 100) {
-    ${RISKY_PROPOSAL_EXCHANGE}
-  }
-  positions(first: 100) {
+  positions(first: 100, where: {isClosed: $closed}) {
     ${RISKY_PROPOSAL_POSITION}
   }
 `
 
 const RiskyProposalsQuery = `
-  query ($address: String!) {
+  query ($address: String!, $closed: Boolean!) {
     basicPool(id: $address) {
-      baseToken
       proposals(first: 100) {
         ${RISKY_PROPOSAL}
+      }
+    }
+  }
+`
+
+const RiskyProposalExchangesQuery = `
+  query ($address: String!) {
+    proposalExchangeHistories(where: {proposal_: {basicPool: $address}}) {
+      exchanges(first: 100) {
+        ${RISKY_PROPOSAL_EXCHANGE}
       }
     }
   }
@@ -425,5 +433,6 @@ export {
   InvestorRiskyPositionsQuery,
   InvestorInvestProposalsQuery,
   InvestorNewInvestProposalsQuery,
+  RiskyProposalExchangesQuery,
   getPoolsQueryVariables,
 }

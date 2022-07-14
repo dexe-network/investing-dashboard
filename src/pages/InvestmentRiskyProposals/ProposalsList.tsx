@@ -37,13 +37,15 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
   return (
     <>
       <S.List>
-        {(data || []).map((p) => (
+        <S.WithoutData>proposals will be here soon</S.WithoutData>
+
+        {/* {(data || []).map((p) => (
           <RiskyProposalCard
             key={p.id}
             proposal={p}
             onInvest={() => console.log("onInvest")}
           />
-        ))}
+        ))} */}
       </S.List>
     </>
   )

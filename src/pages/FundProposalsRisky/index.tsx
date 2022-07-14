@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { Routes, Route, useParams } from "react-router-dom"
-import { createClient, Provider as GraphProvider } from "urql"
 import { PulseSpinner } from "react-spinners-kit"
 
 import { ITab } from "constants/interfaces"
@@ -12,18 +11,10 @@ import Positions from "./Positions"
 import S from "./styled"
 import useRiskyProposals from "hooks/useRiskyProposals"
 
-const poolClient = createClient({
-  url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
-})
-
 const FundProposalsRisky: FC = () => {
   const { poolAddress } = useParams()
 
   const data = useRiskyProposals(poolAddress)
-
-  console.groupCollapsed("FundProposalsRisky")
-  console.log("data", data)
-  console.groupEnd()
 
   const tabs: ITab[] = [
     {
@@ -57,8 +48,8 @@ const FundProposalsRisky: FC = () => {
   }
 
   const open = <Proposals data={data} poolAddress={poolAddress} />
-  // const positions = <Positions data={data.proposals} closed={false} />
-  // const closed = <Positions data={data.proposals} closed />
+  const positions = <Positions closed={false} poolAddress={poolAddress} />
+  const closed = <Positions closed={true} poolAddress={poolAddress} />
 
   return (
     <>
@@ -66,20 +57,12 @@ const FundProposalsRisky: FC = () => {
       <S.Container>
         <Routes>
           <Route path="open" element={open}></Route>
-          {/* <Route path="positions" element={positions}></Route>
-          <Route path="closed" element={closed}></Route> */}
+          <Route path="positions" element={positions}></Route>
+          <Route path="closed" element={closed}></Route>
         </Routes>
       </S.Container>
     </>
   )
 }
 
-const FundProposalsRiskyWithPorvider = () => {
-  return (
-    <GraphProvider value={poolClient}>
-      <FundProposalsRisky />
-    </GraphProvider>
-  )
-}
-
-export default FundProposalsRiskyWithPorvider
+export default FundProposalsRisky

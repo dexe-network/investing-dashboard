@@ -149,21 +149,46 @@ export interface RiskyProposal {
   totalInvestors: BigNumber
 }
 
-export interface IRiskyProposal {
+export interface IRiskyPosition {
   id: string
+  isClosed: boolean
+  totalBaseOpenVolume: BigNumber
+  totalBaseCloseVolume: BigNumber
+  totalPositionOpenVolume: BigNumber
+  totalPositionCloseVolume: BigNumber
+  totalUSDOpenVolume: BigNumber
+  totalUSDCloseVolume: BigNumber
+}
+
+export interface IRiskyProposal {
   token: string
-  timestampLimit: number
-  investLPLimit: BigNumber
-  maxTokenPriceLimit: BigNumber
   basicPool: {
     id: string
+    baseToken: string
   }
-  positions?: any[]
+  positions: IRiskyPosition[]
 }
 
 export interface IRiskyProposalQuery {
-  baseToken: string
   proposals: IRiskyProposal[]
+}
+
+export interface IRiskyPositionCard extends IRiskyPosition {
+  token?: string
+  pool: {
+    id: string
+    baseToken: string
+  }
+}
+
+export interface IRiskyPositionExchanges {
+  id: string
+  timestamp: BigNumber
+  fromToken: string
+  toToken: string
+  fromVolume: BigNumber
+  toVolume: BigNumber
+  usdVolume: BigNumber
 }
 
 // Invest proposals

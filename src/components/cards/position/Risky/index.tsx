@@ -4,7 +4,7 @@ import { useSelector } from "react-redux"
 import { AnimatePresence } from "framer-motion"
 
 import { PriceFeed } from "abi"
-import { IPosition } from "constants/interfaces_v2"
+import { IRiskyPositionCard } from "constants/interfaces_v2"
 import useContract, { useERC20 } from "hooks/useContract"
 import useTokenPriceOutUSD from "hooks/useTokenPriceOutUSD"
 import { usePoolContract } from "hooks/usePool"
@@ -20,16 +20,8 @@ import { accordionSummaryVariants } from "motion/variants"
 import SharedS, { BodyItem, Actions } from "components/cards/position/styled"
 import S from "./styled"
 
-interface IPositionCard extends IPosition {
-  token?: string
-  pool: {
-    id: string
-    baseToken: string
-  }
-}
-
 interface Props {
-  position: IPositionCard
+  position: IRiskyPositionCard
 }
 
 const RiskyPositionCard: React.FC<Props> = ({ position }) => {
@@ -46,7 +38,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
 
   const [markPrice, setMarkPrice] = useState(BigNumber.from(0))
   const markPriceUSD = useTokenPriceOutUSD({
-    tokenAddress: position.positionToken,
+    tokenAddress: position.token,
   })
 
   const [openExtra, setOpenExtra] = useState<boolean>(false)
@@ -71,7 +63,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
 
       // without extended
       const price = await priceFeed.getNormalizedExtendedPriceOut(
-        position.positionToken,
+        position.token,
         position.pool.baseToken,
         amount,
         []
@@ -80,7 +72,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
     }
 
     getMarkPrice().catch(console.error)
-  }, [priceFeed, position.pool.baseToken, position.positionToken])
+  }, [priceFeed, position.pool.baseToken, position.token])
 
   const onBuyMore = (e) => {
     e.preventDefault()
@@ -118,7 +110,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
               <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
               <S.FundSymbol>/{baseTokenData?.symbol}</S.FundSymbol>
             </Flex>
-            {!position.closed && (
+            {!position.isClosed && (
               <Flex>
                 <S.Amount>5 LP</S.Amount>
                 <S.FundSymbol>/10 LP</S.FundSymbol>
@@ -141,7 +133,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
               amountUSD={ethers.utils.parseUnits("57")}
             />
             <BodyItem
-              label={position.closed ? "Closed price" : "Current price"}
+              label={position.isClosed ? "Closed price" : "Current price"}
               amount={markPrice}
               amountUSD={markPriceUSD}
             />
@@ -155,7 +147,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
         </SharedS.Card>
 
         <AnimatePresence>
-          {!position.closed && (
+          {!position.isClosed && (
             <Actions visible={openExtra} actions={actions} />
           )}
         </AnimatePresence>

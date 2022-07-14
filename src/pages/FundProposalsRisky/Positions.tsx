@@ -1,33 +1,39 @@
 import { FC, useMemo } from "react"
 import { PulseSpinner } from "react-spinners-kit"
+import { createClient, Provider as GraphProvider } from "urql"
 
-import RiskyPositionCard from "components/cards/position/Risky"
-
+import useRiskyPositions from "hooks/useRiskyPositions"
+import RiskyPositionPoolCard from "components/cards/position/PoolRisky"
+import { IRiskyPositionCard } from "constants/interfaces_v2"
 import S from "./styled"
 
+const poolClient = createClient({
+  url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
+})
+
 interface IProps {
-  data: any[]
+  poolAddress: string
   closed: boolean
 }
 
-const FundPositionsRisky: FC<IProps> = ({ data, closed }) => {
-  const positions = useMemo(() => {
-    if (!data) return null
+const FundPositionsRisky: FC<IProps> = ({ poolAddress, closed }) => {
+  const proposals = useRiskyPositions(poolAddress, closed)
 
-    return data.reduce((acc, p) => {
-      if (p.positions.length) {
-        const positions = p.positions
-          .filter((_p) => _p.isClosed === closed)
-          .map((_p) => ({
-            ..._p,
-            proposalToken: p.token,
-            pool: p.basicPool,
-          }))
+  const positions = useMemo<IRiskyPositionCard[] | null>(() => {
+    if (!proposals) return null
+
+    return proposals.reduce<IRiskyPositionCard[]>((acc, p) => {
+      if (p.positions && p.positions.length) {
+        const positions = p?.positions.map((_p) => ({
+          ..._p,
+          token: p.token,
+          pool: p.basicPool,
+        }))
         return [...acc, ...positions]
       }
       return acc
     }, [])
-  }, [data, closed])
+  }, [proposals])
 
   if (!positions) {
     return (
@@ -37,13 +43,29 @@ const FundPositionsRisky: FC<IProps> = ({ data, closed }) => {
     )
   }
 
+  if (positions && positions.length === 0) {
+    return (
+      <S.ListLoading full ai="center" jc="center">
+        <S.WithoutData>No positions</S.WithoutData>
+      </S.ListLoading>
+    )
+  }
+
   return (
     <>
       {positions.map((p) => (
-        <RiskyPositionCard key={p.id} position={p} />
+        <RiskyPositionPoolCard key={p.id} position={p} />
       ))}
     </>
   )
 }
 
-export default FundPositionsRisky
+const FundPositionssRiskyWithPorvider = (props) => {
+  return (
+    <GraphProvider value={poolClient}>
+      <FundPositionsRisky {...props} />
+    </GraphProvider>
+  )
+}
+
+export default FundPositionssRiskyWithPorvider

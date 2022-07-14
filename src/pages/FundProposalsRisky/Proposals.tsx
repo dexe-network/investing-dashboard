@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router-dom"
+import { PulseSpinner } from "react-spinners-kit"
 
 import RiskyProposalTraderCard from "components/cards/proposal/RiskyTrader"
 import { usePoolContract } from "hooks/usePool"
+
+import S from "./styled"
 
 const FundProposalsRisky = ({ data, poolAddress }) => {
   const navigate = useNavigate()
@@ -12,7 +15,11 @@ const FundProposalsRisky = ({ data, poolAddress }) => {
   }
 
   if (!poolInfo) {
-    return <>Loading</>
+    return (
+      <S.ListLoading full ai="center" jc="center">
+        <PulseSpinner />
+      </S.ListLoading>
+    )
   }
 
   return (

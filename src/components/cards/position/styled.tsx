@@ -92,6 +92,7 @@ interface IBodyItemProps {
   symbol?: string
   pnl?: BigNumber
   amountUSD: BigNumber
+  ai?: string
 }
 
 export const BodyItem: FC<IBodyItemProps> = ({
@@ -100,6 +101,7 @@ export const BodyItem: FC<IBodyItemProps> = ({
   symbol,
   pnl,
   amountUSD,
+  ai,
 }) => {
   const normalizedPnl = useMemo(() => {
     if (!pnl) return null
@@ -112,7 +114,7 @@ export const BodyItem: FC<IBodyItemProps> = ({
   }, [amountUSD])
 
   return (
-    <Flex dir="column" ai="flex-start">
+    <Flex full dir="column" ai={ai ?? "flex-start"}>
       <BodyItemStyled.Label>{label}</BodyItemStyled.Label>
       <Flex>
         <Amount value={normalizeBigNumber(amount, 18, 4)} symbol={symbol} />
