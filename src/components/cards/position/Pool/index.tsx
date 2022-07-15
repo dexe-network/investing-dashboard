@@ -106,7 +106,8 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
   }, [markPriceBase, entryPriceBase])
 
   const pnlPercentage = useMemo(() => {
-    if (!markPriceBase || !entryPriceBase) return BigNumber.from("0")
+    if (!markPriceBase || !entryPriceBase)
+      return { value: BigNumber.from("0"), normalized: "0" }
 
     const percentage = percentageOfBignumbers(markPriceBase, entryPriceBase)
 
@@ -114,7 +115,12 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
       FixedNumber.from("100", 18)
     )
 
-    return ethers.utils.parseEther(resultFixed._value)
+    const resultBig = ethers.utils.parseEther(resultFixed._value)
+
+    return {
+      value: resultBig,
+      normalized: normalizeBigNumber(resultBig, 18, 2),
+    }
   }, [markPriceBase, entryPriceBase])
 
   const pnlUSD = useMemo(() => {
@@ -186,25 +192,31 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
               <S.Amount>{positionOpenBaseAmount}</S.Amount>
               <S.PositionSymbol>{positionTokenData?.symbol}</S.PositionSymbol>
             </Flex>
+            <Flex>
+              <SharedS.PNL amount={+pnlPercentage.normalized}>
+                {pnlPercentage.normalized}%
+              </SharedS.PNL>
+            </Flex>
           </SharedS.Head>
 
           <SharedS.Body>
             <BodyItem
-              label="Entry Price"
+              label={"Entry Price " + baseToken?.symbol}
               amount={entryPriceBase}
-              symbol={baseToken?.symbol}
               amountUSD={entryPriceUSD}
             />
             <BodyItem
-              label={position.closed ? "Closed price" : "Current price"}
+              label={
+                (position.closed ? "Closed price " : "Current price ") +
+                baseToken?.symbol
+              }
               amount={markPriceBase}
-              symbol={baseToken?.symbol}
               amountUSD={markPriceUSD}
             />
             <BodyItem
-              label="P&L"
+              label={"P&L " + baseToken?.symbol}
               amount={pnlBase}
-              pnl={pnlPercentage}
+              pnl={pnlPercentage.value}
               amountUSD={pnlUSD}
               ai="flex-end"
             />

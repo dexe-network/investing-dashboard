@@ -8,6 +8,16 @@ import { Flex, GradientBorder } from "theme"
 import { accordionSummaryVariants } from "motion/variants"
 import Amount from "components/Amount"
 
+const getPnlColor = (amount) => {
+  if (amount > 0) {
+    return "#83e5ca"
+  } else if (amount < 0) {
+    return "#DB6D6D"
+  } else {
+    return "#616d8b"
+  }
+}
+
 const Styled = {
   Container: styled.div`
     margin-bottom: 18px;
@@ -48,6 +58,16 @@ const Styled = {
       background: #181e2c;
     }
   `,
+  PNL: styled.div<{ amount?: number }>`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    line-height: 100%;
+    letter-spacing: 0.01em;
+    margin-left: 4px;
+    font-size: 12px;
+    color: ${(props) => getPnlColor(props.amount)};
+  `,
 }
 
 export default Styled
@@ -86,6 +106,16 @@ export const BodyItemStyled = {
   `,
 }
 
+const getAmountSymbol = (amount) => {
+  if (amount > 0) {
+    return "+"
+  } else if (amount < 0) {
+    return "-"
+  } else {
+    return null
+  }
+}
+
 interface IBodyItemProps {
   label: string
   amount: BigNumber
@@ -103,11 +133,6 @@ export const BodyItem: FC<IBodyItemProps> = ({
   amountUSD,
   ai,
 }) => {
-  const normalizedPnl = useMemo(() => {
-    if (!pnl) return null
-    return normalizeBigNumber(pnl, 18, 2)
-  }, [pnl])
-
   const stablePrice = useMemo(() => {
     if (!amountUSD) return null
     return normalizeBigNumber(amountUSD, 18, 2)
@@ -117,16 +142,18 @@ export const BodyItem: FC<IBodyItemProps> = ({
     <Flex full dir="column" ai={ai ?? "flex-start"}>
       <BodyItemStyled.Label>{label}</BodyItemStyled.Label>
       <Flex>
-        <Amount value={normalizeBigNumber(amount, 18, 4)} symbol={symbol} />
-        {pnl && (
-          <BodyItemStyled.PNL positive={Number(normalizedPnl) > 0}>
-            &nbsp;{Number(normalizedPnl) > 0 && "+"}
-            {normalizedPnl}%
-          </BodyItemStyled.PNL>
-        )}
+        <Amount
+          value={
+            <>
+              {pnl && getAmountSymbol(Number(stablePrice))}
+              {Math.abs(Number(normalizeBigNumber(amount, 18, 4)))}
+            </>
+          }
+          symbol={symbol}
+        />
       </Flex>
       <BodyItemStyled.StablePrice>
-        {pnl && (Number(stablePrice) > 0 ? "+" : "-")}$
+        {pnl && getAmountSymbol(Number(stablePrice))}$
         {Math.abs(Number(stablePrice))}
       </BodyItemStyled.StablePrice>
     </Flex>
