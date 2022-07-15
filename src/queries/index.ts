@@ -55,8 +55,6 @@ const POOL = `
   admins
   privateInvestors {
     id
-    insurance
-    claimedAmount
     activePools
     allPools
   }

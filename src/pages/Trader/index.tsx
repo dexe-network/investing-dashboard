@@ -164,7 +164,7 @@ function Trader(props: Props) {
       const investors = await traderPool?.totalInvestors()
 
       const limit = +ethers.utils.formatEther(investors) + 1
-      const fees = await traderPool?.getReinvestCommissions(0, limit)
+      const fees = await traderPool?.getReinvestCommissions([0, limit])
 
       const commission = formatBigNumber(fees.traderBaseCommission, 18, 0)
       setPerformanceFeeExist(Number(commission) > 0)

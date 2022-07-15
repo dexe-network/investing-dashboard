@@ -116,7 +116,7 @@ const FundDetailsFee: FC = () => {
     if (!traderPool) return
     ;(async () => {
       try {
-        const commissions = await traderPool.getReinvestCommissions(0, 1)
+        const commissions = await traderPool.getReinvestCommissions([0, 1])
 
         if (commissions.dexeBaseCommission) {
           const platformCommission = formatBigNumber(
