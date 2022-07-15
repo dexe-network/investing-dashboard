@@ -1,6 +1,6 @@
 import { useQuery } from "urql"
-import { IInvestorRiskyProposal } from "constants/interfaces_v2"
 import { InvestorRiskyProposalsQuery } from "queries"
+import { IInvestorRiskyProposal } from "constants/interfaces_v2"
 
 function useInvestorRiskyProposals(poolAddressList?: string[]) {
   const [response, executeQuery] = useQuery<{

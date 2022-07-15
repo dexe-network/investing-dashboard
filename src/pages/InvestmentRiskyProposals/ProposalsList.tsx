@@ -4,7 +4,7 @@ import { PulseSpinner } from "react-spinners-kit"
 
 import useInvestorRiskyProposals from "hooks/useInvestorRiskyProposals"
 
-import RiskyProposalCard from "components/cards/proposal/Risky"
+import RiskyProposalInvestorCard from "components/cards/proposal/RiskyInvestor"
 import S from "./styled"
 
 const poolsClient = createClient({
@@ -37,15 +37,13 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
   return (
     <>
       <S.List>
-        <S.WithoutData>proposals will be here soon</S.WithoutData>
-
-        {/* {(data || []).map((p) => (
-          <RiskyProposalCard
+        {data.map((p) => (
+          <RiskyProposalInvestorCard
             key={p.id}
             proposal={p}
             onInvest={() => console.log("onInvest")}
           />
-        ))} */}
+        ))}
       </S.List>
     </>
   )
