@@ -128,6 +128,11 @@ export default [
   {
     inputs: [
       {
+        internalType: "bool",
+        name: "withValidators",
+        type: "bool",
+      },
+      {
         components: [
           {
             components: [
@@ -298,6 +303,11 @@ export default [
             internalType: "uint256",
             name: "feePercentage",
             type: "uint256",
+          },
+          {
+            internalType: "string",
+            name: "descriptionURL",
+            type: "string",
           },
         ],
         internalType: "struct IPoolFactory.GovPoolDeployParams",
