@@ -157,9 +157,24 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
           animate={showPositions ? "visible" : "hidden"}
           variants={accordionSummaryVariants}
         >
-          <PositionTrade data={{ timestamp: new Date().valueOf() }} />
-          <PositionTrade data={{ timestamp: new Date().valueOf() }} />
-          <PositionTrade data={{ timestamp: new Date().valueOf() }} />
+          <PositionTrade
+            isBuy={false}
+            timestamp={String(new Date().valueOf())}
+            amount={BigNumber.from("0")}
+            data={{}}
+          />
+          <PositionTrade
+            isBuy={false}
+            timestamp={String(new Date().valueOf())}
+            amount={BigNumber.from("0")}
+            data={{}}
+          />
+          <PositionTrade
+            isBuy={false}
+            timestamp={String(new Date().valueOf())}
+            amount={BigNumber.from("0")}
+            data={{}}
+          />
         </SharedS.ExtraItem>
       </SharedS.Container>
     </>

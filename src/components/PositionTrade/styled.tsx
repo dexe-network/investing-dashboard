@@ -2,8 +2,11 @@ import styled from "styled-components"
 import { Flex } from "theme"
 
 export const Styled = {
-  Container: styled(Flex)`
+  Container: styled.a`
+    display: block;
     width: 100%;
+    text-decoration: none;
+    color: initial;
 
     &:not(:first-child) {
       border-top: 1px solid #1d2635;
@@ -14,7 +17,6 @@ export const Styled = {
     grid-template-columns: 0.5fr 0.25fr 0.25fr;
     gap: 18px;
     width: 100%;
-    align-items: flex-start;
     padding: 12px 15px;
   `,
   Item: styled(Flex)`
@@ -22,8 +24,13 @@ export const Styled = {
     flex: 0 1 auto;
     flex-direction: column;
     align-items: flex-start;
+    &:last-child {
+      text-align: right;
+    }
   `,
   Label: styled.div`
+    display: flex;
+    align-items: center;
     width: 100%;
     margin-bottom: 4px;
     font-family: "Gilroy";
@@ -51,6 +58,12 @@ export const Styled = {
     line-height: 16px;
     letter-spacing: 0.03em;
     color: ${(props) => (props.isBuy ? "#9AE2CB" : "#DB6D6D")};
+  `,
+  ExternalLinkIcon: styled.img`
+    width: 12px;
+    height: 12px;
+    margin-left: 3px;
+    transform: translateY(-1px);
   `,
 }
 

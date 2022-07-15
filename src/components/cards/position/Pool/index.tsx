@@ -240,6 +240,9 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
                 key={e.id}
                 data={e}
                 baseTokenSymbol={baseToken?.symbol}
+                timestamp={ethers.utils.formatEther(e.timestamp)}
+                isBuy={e.opening}
+                amount={e.opening ? e.toVolume : e.fromVolume}
               />
             ))
           ) : (

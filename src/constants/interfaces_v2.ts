@@ -225,7 +225,7 @@ export interface IInvestProposalQuery {
 export interface IInvestorProposalVest {
   id: string
   isInvest: boolean
-  timestamp: BigNumber
+  timestamp: string
   volumeBase: BigNumber
   volumeLP: BigNumber
   volumeUSD: BigNumber

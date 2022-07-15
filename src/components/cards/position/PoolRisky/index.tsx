@@ -217,7 +217,15 @@ const RiskyPositionPoolCard: React.FC<Props> = ({ position }) => {
           variants={accordionSummaryVariants}
         >
           {exchanges && exchanges.length ? (
-            exchanges.map((e) => <PositionTrade data={e} key={e.id} />)
+            exchanges.map((e) => (
+              <PositionTrade
+                data={e}
+                key={e.id}
+                timestamp={ethers.utils.formatEther(e.timestamp)}
+                isBuy={false}
+                amount={!false ? e.toVolume : e.fromVolume}
+              />
+            ))
           ) : (
             <Flex full jc="center" p="12px 0">
               <S.WitoutData>No trades</S.WitoutData>
