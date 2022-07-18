@@ -60,6 +60,37 @@ export default [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "traderLpClaimed",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "traderBaseClaimed",
+        type: "uint256",
+      },
+    ],
+    name: "CommissionClaimed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "string",
         name: "descriptionURL",
         type: "string",
@@ -149,6 +180,12 @@ export default [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "address[]",
         name: "admins",
         type: "address[]",
@@ -168,6 +205,12 @@ export default [
     inputs: [
       {
         indexed: false,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "address[]",
         name: "privateInvestors",
         type: "address[]",
@@ -180,44 +223,6 @@ export default [
       },
     ],
     name: "ModifiedPrivateInvestors",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "trader",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "lpMinted",
-        type: "uint256",
-      },
-    ],
-    name: "TraderCommissionMinted",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "address",
-        name: "investor",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "lpPaid",
-        type: "uint256",
-      },
-    ],
-    name: "TraderCommissionPaid",
     type: "event",
   },
   {
@@ -377,6 +382,25 @@ export default [
         internalType: "uint256",
         name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "investor",
+        type: "address",
+      },
+    ],
+    name: "canRemovePrivateInvestor",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -900,14 +924,9 @@ export default [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "offset",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "limit",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "offsetLimits",
+        type: "uint256[]",
       },
     ],
     name: "getReinvestCommissions",
@@ -998,6 +1017,16 @@ export default [
           {
             internalType: "uint256",
             name: "poolBaseShare",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "owedBaseCommission",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "owedLPCommission",
             type: "uint256",
           },
         ],
@@ -1223,14 +1252,9 @@ export default [
   {
     inputs: [
       {
-        internalType: "uint256",
-        name: "offset",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "limit",
-        type: "uint256",
+        internalType: "uint256[]",
+        name: "offsetLimits",
+        type: "uint256[]",
       },
       {
         internalType: "uint256",

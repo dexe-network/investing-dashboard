@@ -40,8 +40,6 @@ export interface User {
 
 export interface Investor {
   id: string
-  insurance: BigNumber
-  claimedAmount: BigNumber
   activePools: string[]
   allPools: string[]
 }

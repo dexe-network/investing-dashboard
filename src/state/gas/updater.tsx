@@ -38,7 +38,10 @@ const GasPriceUpdater: FC = () => {
     const result = await trackerByChain[chainId]()
 
     if (result) {
-      dispatch(updateGasData({ chainId, response: result }))
+      const gasData =
+        chainId === 97 ? { ...result, ProposeGasPrice: "10" } : result
+
+      dispatch(updateGasData({ chainId, response: gasData }))
     }
   }, [chainId, dispatch, trackerByChain])
 
