@@ -1,6 +1,6 @@
 import { createAction } from "@reduxjs/toolkit"
 
-import { IPoolMetadata, IUserMetadata } from "./types"
+import { IInvestProposalMetadata, IPoolMetadata, IUserMetadata } from "./types"
 
 interface IAddPool extends IPoolMetadata {
   poolId: string
@@ -25,4 +25,7 @@ export const removeUser = createAction<{ params: { hash: string } }>(
   "ipfs/remove-user"
 )
 
-// TODO: proposals
+// Add proposal data
+export const addProposal = createAction<{
+  params: { hash: string; poolId: string; data: IInvestProposalMetadata }
+}>("ipfs/add-proposal")

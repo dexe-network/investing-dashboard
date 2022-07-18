@@ -1,7 +1,13 @@
 import { createReducer } from "@reduxjs/toolkit"
 
 import { IInvestProposalMetadata, IPoolMetadata, IUserMetadata } from "./types"
-import { addPool, removePool, addUser, removeUser } from "./actions"
+import {
+  addPool,
+  removePool,
+  addUser,
+  removeUser,
+  addProposal,
+} from "./actions"
 
 export interface IpfsMetadataState {
   user: IUserMetadata | null
@@ -50,6 +56,16 @@ export default createReducer(initialState, (builder) =>
           ...userMeta,
           hash,
         }
+      }
+    })
+    .addCase(addProposal, (state, { payload: { params } }) => {
+      const { hash, poolId, data } = params
+
+      state.proposals = {
+        ...state.proposals,
+        [poolId]: {
+          [hash]: data,
+        },
       }
     })
     .addCase(removeUser, (state) => {

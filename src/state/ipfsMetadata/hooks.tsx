@@ -12,7 +12,7 @@ import {
   selectPoolMetadata,
   selectUserMetadata,
 } from "./selectors"
-import { addPool, addUser } from "./actions"
+import { addPool, addProposal, addUser } from "./actions"
 import { IInvestProposalMetadata, IUserMetadata } from "./types"
 
 export function usePoolMetadata(poolId, hash) {
@@ -96,14 +96,14 @@ export function useInvestProposalMetadata(
       setLoading(true)
       const data = await parseInvestProposalData(hash)
       if (data) {
-        dispatch(addUser({ params: { hash, ...data } }))
+        dispatch(addProposal({ params: { hash, poolId, data } }))
       }
       setLoading(false)
     } catch (error) {
       console.error(error)
       setLoading(false)
     }
-  }, [dispatch, hash])
+  }, [dispatch, hash, poolId])
 
   useEffect(() => {
     if (!hash) return
