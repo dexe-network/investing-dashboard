@@ -246,7 +246,9 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
               />
             ))
           ) : (
-            <>No trades</>
+            <Flex full jc="center" p="12px 0">
+              <SharedS.WitoutData>No trades</SharedS.WitoutData>
+            </Flex>
           )}
         </SharedS.ExtraItem>
       </SharedS.Container>

@@ -29,8 +29,6 @@ export const Styled = {
     }
   `,
   Label: styled.div`
-    display: flex;
-    align-items: center;
     width: 100%;
     margin-bottom: 4px;
     font-family: "Gilroy";
@@ -63,7 +61,7 @@ export const Styled = {
     width: 12px;
     height: 12px;
     margin-left: 3px;
-    transform: translateY(-1px);
+    transform: translateY(2px);
   `,
 }
 

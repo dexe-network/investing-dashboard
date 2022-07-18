@@ -80,7 +80,7 @@ const PositionTrade: React.FC<Props> = ({
   }, [data.fromVolume, data.toVolume, isBuy, priceBase])
 
   const _priceUsd = useMemo(() => {
-    if (priceUsd) return normalizeBigNumber(priceUsd, 18, 6)
+    if (priceUsd) return normalizeBigNumber(priceUsd, 18, 2)
     if (!data || !data.usdVolume) return "0"
 
     const usdVolumeFixed = FixedNumber.fromValue(data.usdVolume, 18)
@@ -124,7 +124,7 @@ const PositionTrade: React.FC<Props> = ({
           </S.Value>
         </S.Item>
         <S.Item>
-          <S.Label>Price {baseTokenSymbol ?? ""}</S.Label>
+          <S.Label>Price ({baseTokenSymbol ?? ""})</S.Label>
           <S.Value>{priceBaseToken}</S.Value>
         </S.Item>
         <S.Item>

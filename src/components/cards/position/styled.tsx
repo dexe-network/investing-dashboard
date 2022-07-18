@@ -35,8 +35,9 @@ const Styled = {
   `,
   Head: styled(Flex)`
     width: 100%;
-    justify-content: space-between;
     padding: 8px 16px;
+    justify-content: space-between;
+    flex-wrap: wrap;
     border-bottom: 1px solid #1d2635;
   `,
   Body: styled.div`
@@ -67,6 +68,16 @@ const Styled = {
     margin-left: 4px;
     font-size: 12px;
     color: ${(props) => getPnlColor(props.amount)};
+    transform: translateY(2px);
+  `,
+  WitoutData: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 100%;
+    color: #e4f2ff;
+    margin-right: 4px;
   `,
 }
 

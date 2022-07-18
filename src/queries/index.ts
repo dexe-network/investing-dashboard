@@ -371,6 +371,23 @@ const InvestorNewInvestProposalsQuery = `
   }
 `
 
+// Fund fee history
+const FundFeeHistoryQuery = `
+  query($address: String!) {
+    feeHistories(first: 100, where: {traderPool_: {id: $address}}) {
+      id
+      PNL
+      day
+      fundProfit
+      perfomanceFee
+      traderPool {
+        id
+        baseToken
+      }
+    }
+  }
+`
+
 const getPoolsQueryVariables = (
   isAllPools: boolean,
   filters: ITopMembersFilters,
@@ -432,5 +449,6 @@ export {
   InvestorInvestProposalsQuery,
   InvestorNewInvestProposalsQuery,
   RiskyProposalExchangesQuery,
+  FundFeeHistoryQuery,
   getPoolsQueryVariables,
 }

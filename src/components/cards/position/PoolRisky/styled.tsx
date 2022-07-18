@@ -30,16 +30,6 @@ const Styled = {
     transform: translateY(2px);
     margin-right: 4px;
   `,
-
-  WitoutData: styled.div`
-    font-family: "Gilroy";
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    line-height: 100%;
-    color: #e4f2ff;
-    margin-right: 4px;
-  `,
 }
 
 export default Styled

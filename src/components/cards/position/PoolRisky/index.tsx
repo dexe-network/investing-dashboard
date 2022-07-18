@@ -228,7 +228,7 @@ const RiskyPositionPoolCard: React.FC<Props> = ({ position }) => {
             ))
           ) : (
             <Flex full jc="center" p="12px 0">
-              <S.WitoutData>No trades</S.WitoutData>
+              <SharedS.WitoutData>No trades</SharedS.WitoutData>
             </Flex>
           )}
         </SharedS.ExtraItem>
