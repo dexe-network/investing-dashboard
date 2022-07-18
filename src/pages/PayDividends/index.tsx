@@ -72,6 +72,14 @@ function PayDividends() {
   }
 
   const button = useMemo(() => {
+    if (!from.address) {
+      return (
+        <SecondaryButton theme="disabled" size="large" fz={22} full>
+          Select token
+        </SecondaryButton>
+      )
+    }
+
     if (fromAmount === "0" || toAmount === "0") {
       return (
         <SecondaryButton
@@ -81,7 +89,7 @@ function PayDividends() {
           fz={22}
           full
         >
-          Enter amount to pay
+          Enter amount
         </SecondaryButton>
       )
     }
@@ -97,7 +105,7 @@ function PayDividends() {
         Pay dividends
       </Button>
     )
-  }, [direction, fromAmount, handleSubmit, toAmount])
+  }, [direction, from.address, fromAmount, handleSubmit, toAmount])
 
   const lastDividends = useMemo(() => {
     return (

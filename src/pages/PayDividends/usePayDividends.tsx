@@ -6,6 +6,7 @@ import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 
 import Avatar from "components/Avatar"
+import Icon from "components/Icon"
 
 import { useTransactionAdder } from "state/transactions/hooks"
 import { TransactionType } from "state/transactions/types"
@@ -17,15 +18,6 @@ import {
 import { SwapDirection } from "constants/types"
 
 import { divideBignumbers, multiplyBignumbers } from "utils/formulas"
-
-import {
-  IDivestAmounts,
-  IProposalInvestTokens,
-} from "interfaces/ITraderPoolRiskyProposal"
-import {
-  IDivestAmountsAndCommissions,
-  IPoolInvestTokens,
-} from "interfaces/ITraderPool"
 
 import useAlert, { AlertType } from "hooks/useAlert"
 import { useRiskyProposal } from "hooks/useRiskyProposals"
@@ -119,7 +111,11 @@ const usePayDividends = (
   const proposal = useInvestProposal(poolAddress, proposalId)
   const [, poolInfo] = usePoolContract(poolAddress)
   const [, baseToken] = useERC20(poolInfo?.parameters.baseToken)
-  const [, dividendToken] = useERC20(dividendTokenAddress)
+  const [dividendTokenContract, dividendToken] = useERC20(dividendTokenAddress)
+  const [{ poolMetadata }] = usePoolMetadata(
+    poolAddress,
+    poolInfo?.parameters.descriptionURL
+  )
 
   const { priceUSD: poolPriceUSD, priceBase: poolPriceBase } =
     usePoolPrice(poolAddress)
@@ -146,11 +142,18 @@ const usePayDividends = (
         price: outPrice,
         symbol: "1/JBR",
         decimals: 18,
-        icon: undefined,
+        icon: (
+          <Icon
+            size={24}
+            source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
+            address={poolAddress}
+          />
+        ),
         info: {},
       },
     }
   }, [
+    poolAddress,
     dividendToken,
     fromAmount,
     fromBalance,
@@ -158,23 +161,19 @@ const usePayDividends = (
     toAmount,
     toBalance,
     outPrice,
+    poolMetadata,
   ])
 
   const handleDividendTokenSelect = useCallback((token: Token) => {
     setDividendTokenAddress(token.address)
   }, [])
 
-  const getLPBalance = useCallback(async () => {
-    if (!traderPool || !account) return
+  const getWalletBalance = useCallback(async () => {
+    if (!account || !dividendTokenContract) return
 
-    const lpAvailable: BigNumber = await traderPool?.balanceOf(account)
-
-    if (direction === "deposit") {
-      setFromBalance(lpAvailable)
-    } else {
-      setToBalance(lpAvailable)
-    }
-  }, [account, direction, traderPool])
+    const balance: BigNumber = await dividendTokenContract.balanceOf(account)
+    setFromBalance(balance)
+  }, [account, dividendTokenContract])
 
   const getLP2Balance = useCallback(async () => {
     if (!proposalPool || !account) return
@@ -234,19 +233,19 @@ const usePayDividends = (
   // get LP2 balance
   // update amounts
   useEffect(() => {
-    getLPBalance().catch(console.error)
+    getWalletBalance().catch(console.error)
     getLP2Balance().catch(console.error)
-  }, [direction, getLP2Balance, getLPBalance])
+  }, [direction, getLP2Balance, getWalletBalance])
 
   // balance updater for both LP and LP2
   useEffect(() => {
     const interval = setInterval(() => {
-      getLPBalance().catch(console.error)
+      getWalletBalance().catch(console.error)
       getLP2Balance().catch(console.error)
     }, Number(process.env.REACT_APP_UPDATE_INTERVAL))
 
     return () => clearInterval(interval)
-  }, [getLPBalance, getLP2Balance])
+  }, [getWalletBalance, getLP2Balance])
 
   return [
     {
