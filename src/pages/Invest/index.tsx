@@ -13,6 +13,7 @@ import Header from "components/Header/Layout"
 import TransactionError from "modals/TransactionError"
 import TokenIcon from "components/TokenIcon"
 import SwapPrice from "components/SwapPrice"
+import Token from "components/Token"
 
 import { useERC20 } from "hooks/useContract"
 
@@ -41,23 +42,6 @@ import useInvest from "./useInvest"
 const poolsClient = createClient({
   url: process.env.REACT_APP_ALL_POOLS_API_URL || "",
 })
-
-const Position = ({ position }) => {
-  const [, data] = useERC20(position.address)
-
-  return (
-    <InfoRow>
-      <Flex>
-        <TokenIcon address={position.address} size={15} />
-        <InfoGrey>{data?.name}</InfoGrey>
-      </Flex>
-      <Flex gap="4">
-        <InfoWhite>{fromBig(cutDecimalPlaces(position.amount))}</InfoWhite>
-        <InfoGrey>{data?.symbol}</InfoGrey>
-      </Flex>
-    </InfoRow>
-  )
-}
 
 const Invest = () => {
   const { poolAddress } = useParams<{
@@ -208,7 +192,7 @@ const Invest = () => {
 
   const positions = useMemo(() => {
     return info.fundPositions.positions.map((p) => (
-      <Position key={p.address} position={p} />
+      <Token key={p.address} data={p} />
     ))
   }, [info])
 

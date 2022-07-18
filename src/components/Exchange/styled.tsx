@@ -351,6 +351,14 @@ export const AngleIcon = styled(motion.img)`
   transform: translate(2px, -1px);
 `
 
+const DropdownContainer = styled(Flex)`
+  flex-direction: column;
+  padding: 0 16px 0 0;
+  width: 100%;
+  box-sizing: border-box;
+  gap: 12px;
+`
+
 const iconVariants = {
   visible: {
     transform: `translate(2px, -1px) rotate(0deg)`,
@@ -382,17 +390,13 @@ export const InfoDropdown: FC<DropdownProps> = ({ left, right, children }) => {
           />
         </Flex>
       </InfoRow>
-      <Flex
+      <DropdownContainer
         initial="hidden"
         variants={dropdownVariants}
         animate={isOpen ? "visible" : "hidden"}
-        dir="column"
-        p="0 16px 0 0"
-        full
-        gap="12"
       >
         {children}
-      </Flex>
+      </DropdownContainer>
     </>
   )
 }
