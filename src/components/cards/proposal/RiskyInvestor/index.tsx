@@ -1,10 +1,10 @@
-import { FC, useMemo, useCallback } from "react"
+import { FC, useMemo, useCallback, useState, useEffect } from "react"
 import { format } from "date-fns"
 import { useNavigate } from "react-router-dom"
 import { BigNumber, FixedNumber } from "@ethersproject/bignumber"
 
 import { useActiveWeb3React } from "hooks"
-import { useERC20 } from "hooks/useContract"
+import { useERC20, useRiskyProposalContract } from "hooks/useContract"
 import { usePoolContract } from "hooks/usePool"
 import { RiskyProposal } from "constants/interfaces_v2"
 import { usePoolMetadata } from "state/ipfsMetadata/hooks"
@@ -21,15 +21,23 @@ import Button, { SecondaryButton } from "components/Button"
 import S, { BodyItem, TraderLPSize, TraderRating } from "./styled"
 
 interface Props {
-  proposal: any
+  proposal: RiskyProposal
+  poolAddress: string
+  proposalId: number
   onInvest: () => void
 }
 
-const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
+const RiskyProposalInvestorCard: FC<Props> = ({
+  proposal,
+  poolAddress,
+  proposalId,
+  onInvest,
+}) => {
   const navigate = useNavigate()
-  const { chainId } = useActiveWeb3React()
-  const [, proposalTokenData] = useERC20(proposal.token)
-  const [, poolInfo] = usePoolContract(proposal.basicPool.id)
+  const { account, chainId } = useActiveWeb3React()
+  const [, proposalTokenData] = useERC20(proposal.proposalInfo.token)
+  const [, poolInfo] = usePoolContract(poolAddress)
+  const [proposalPool] = useRiskyProposalContract(poolAddress)
 
   // console.groupCollapsed("RiskyProposalInvestorCard")
   // console.log("proposal", proposal)
@@ -38,9 +46,11 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
   // console.groupEnd()
 
   const [{ poolMetadata }] = usePoolMetadata(
-    proposal.basicPool.id,
+    poolAddress,
     poolInfo?.parameters.descriptionURL
   )
+
+  const [youSizeLP, setYouSizeLP] = useState<BigNumber>(BigNumber.from("0"))
 
   const proposalSymbol = useMemo(() => {
     if (!proposalTokenData || !proposalTokenData.symbol) return ""
@@ -52,42 +62,92 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
   }, [])
 
   const maxSizeLP = useMemo(() => {
-    if (!proposal || !proposal.maxTokenPriceLimit) return "0"
+    if (!proposal || !proposal?.proposalInfo.proposalLimits.investLPLimit) {
+      return "0"
+    }
 
-    return normalizeBigNumber(proposal.maxTokenPriceLimit, 18, 6)
+    return normalizeBigNumber(
+      proposal.proposalInfo.proposalLimits.investLPLimit,
+      18,
+      2
+    )
   }, [proposal])
 
-  const youSizeLP = useMemo(() => {
-    if (!proposal || !proposal.investLPLimit) return "0"
+  const fullness = useMemo(() => {
+    if (
+      !proposal?.proposalInfo?.proposalLimits?.investLPLimit ||
+      !proposal.proposalInfo.lpLocked
+    ) {
+      return { value: "0", completed: false }
+    }
 
-    return normalizeBigNumber(proposal.investLPLimit, 18, 6)
+    return {
+      value: normalizeBigNumber(proposal.proposalInfo.lpLocked, 18, 2),
+      completed: proposal.proposalInfo.lpLocked.eq(
+        proposal.proposalInfo.proposalLimits.investLPLimit
+      ),
+    }
+  }, [
+    proposal.proposalInfo.lpLocked,
+    proposal.proposalInfo.proposalLimits.investLPLimit,
+  ])
+
+  const maxInvestPrice = useMemo(() => {
+    if (
+      !proposal ||
+      !proposal?.proposalInfo.proposalLimits.maxTokenPriceLimit
+    ) {
+      return { value: "0", completed: false }
+    }
+
+    return {
+      value: normalizeBigNumber(
+        proposal.proposalInfo.proposalLimits.maxTokenPriceLimit,
+        18,
+        2
+      ),
+      completed: proposal.positionTokenPrice.gte(
+        proposal.proposalInfo.proposalLimits.maxTokenPriceLimit
+      ),
+    }
+  }, [proposal])
+
+  const currentPrice = useMemo(() => {
+    if (!proposal || !proposal?.positionTokenPrice) {
+      return "0"
+    }
+
+    return normalizeBigNumber(proposal.positionTokenPrice, 18, 2)
   }, [proposal])
 
   const expirationDate = useMemo(() => {
-    if (!proposal || !proposal.timestampLimit)
-      return { value: "0", completed: false }
+    if (!proposal) return { value: "0", completed: false }
 
-    const expandedTimestampLimit = expandTimestamp(proposal.timestampLimit)
+    const expandedTimestampLimit = expandTimestamp(
+      Number(proposal.proposalInfo.proposalLimits.timestampLimit.toString())
+    )
     const currentTimestamp = new Date().valueOf()
 
     return {
       value: format(expandedTimestampLimit, "MMM dd, y HH:mm"),
-      completed:
-        currentTimestamp - expandTimestamp(proposal.timestampLimit) > 0,
+      completed: currentTimestamp - expandedTimestampLimit > 0,
     }
   }, [proposal])
 
-  const positionSize = useMemo(() => {
-    if (!proposal || !proposal.positions || !proposal.positions.length)
+  const investors = useMemo(() => {
+    if (!proposal || !proposal?.totalInvestors) {
       return "0"
+    }
 
-    const sizeFixed = proposal.positions.reduce(
-      (acc, p) =>
-        acc.addUnsafe(FixedNumber.from(p.totalPositionOpenVolume, 18)),
-      FixedNumber.from("0", 18)
-    )
+    return proposal?.totalInvestors.toString()
+  }, [proposal])
 
-    return normalizeBigNumber(BigNumber.from(sizeFixed), 18, 6)
+  const positionSize = useMemo(() => {
+    if (!proposal || !proposal?.proposalInfo.balancePosition) {
+      return "0"
+    }
+
+    return normalizeBigNumber(proposal.proposalInfo.balancePosition, 18, 6)
   }, [proposal])
 
   const active = useMemo(() => {
@@ -97,10 +157,19 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
   const navigateToPool = useCallback(
     (e) => {
       e.stopPropagation()
-      navigate(`/pool/profile/BASIC_POOL/${proposal.basicPool.id}`)
+      navigate(`/pool/profile/BASIC_POOL/${poolAddress}`)
     },
-    [navigate, proposal.basicPool.id]
+    [navigate, poolAddress]
   )
+
+  useEffect(() => {
+    if (!proposalPool) return
+    ;(async () => {
+      const balance = await proposalPool?.balanceOf(account, proposalId + 1)
+
+      setYouSizeLP(balance)
+    })()
+  }, [account, proposalId, proposalPool])
 
   const InvestButton = active ? (
     <Button full size="small" onClick={onInvest}>
@@ -117,7 +186,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
       <S.Container>
         <S.Head>
           <Flex>
-            <TokenIcon address={proposal.token} m="0" size={24} />
+            <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
             <Flex ai="center">
               <S.Title>{proposalSymbol}</S.Title>
               <TraderRating rating={20} />
@@ -139,16 +208,28 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
         </S.Head>
         <S.Body>
           <BodyItem label="Proposal size" amount={`${maxSizeLP} LP`} />
-          <BodyItem label="Your size" amount={`${youSizeLP} LP`} />
-          <BodyItem label="Fullness" amount={"35 LP"} />
+          <BodyItem
+            label="Your size"
+            amount={`${normalizeBigNumber(
+              BigNumber.from(youSizeLP),
+              18,
+              2
+            )} LP`}
+          />
+          <BodyItem
+            label="Fullness"
+            amount={`${fullness.value} LP`}
+            completed={fullness.completed}
+          />
           <BodyItem
             label="Max. Invest Price"
-            amount={"0.0013"}
+            amount={maxInvestPrice.value}
+            completed={maxInvestPrice.completed}
             symbol={proposalSymbol}
           />
           <BodyItem
             label="Current price"
-            amount={"0.00129"}
+            amount={currentPrice}
             symbol={proposalSymbol}
           />
           <BodyItem
@@ -157,10 +238,10 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
             amount={expirationDate.value}
             completed={expirationDate.completed}
           />
-          <BodyItem label="Investors" amount={"299"} symbol={"/ 1000"} />
+          <BodyItem label="Investors" amount={investors} symbol={"/ 1000"} />
           <BodyItem
             label="Position size"
-            amount={"20"}
+            amount={positionSize}
             symbol={proposalSymbol}
           />
           <Flex full>{InvestButton}</Flex>
@@ -172,7 +253,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
                 size={24}
                 m="0"
                 source={poolMetadata?.assets[poolMetadata?.assets.length - 1]}
-                address={proposal.basicPool.id}
+                address={poolAddress}
               />
             </S.FundIconContainer>
             <Flex dir="column" ai="flex-start" m="0 0 0 4px">
@@ -188,7 +269,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({ proposal, onInvest }) => {
                 color="#2680EB"
                 href={getExplorerLink(
                   chainId,
-                  proposal.token,
+                  proposal.proposalInfo.token,
                   ExplorerDataType.ADDRESS
                 )}
               >

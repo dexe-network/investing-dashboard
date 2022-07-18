@@ -1,24 +1,18 @@
 import { FC } from "react"
-import { createClient, Provider as GraphProvider } from "urql"
 import { PulseSpinner } from "react-spinners-kit"
 
 import useInvestorRiskyProposals from "hooks/useInvestorRiskyProposals"
-
 import RiskyProposalInvestorCard from "components/cards/proposal/RiskyInvestor"
 import S from "./styled"
-
-const poolsClient = createClient({
-  url: process.env.REACT_APP_BASIC_POOLS_API_URL || "",
-})
 
 interface IProps {
   activePools: string[]
 }
 
 const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
-  const data = useInvestorRiskyProposals(activePools)
+  const [proposals, fetched] = useInvestorRiskyProposals(activePools)
 
-  if (!data) {
+  if (!fetched) {
     return (
       <S.Content>
         <PulseSpinner />
@@ -26,7 +20,7 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
     )
   }
 
-  if (data && data.length === 0) {
+  if (fetched && proposals && proposals.length === 0) {
     return (
       <S.Content>
         <S.WithoutData>No proposal yet</S.WithoutData>
@@ -37,10 +31,12 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
   return (
     <>
       <S.List>
-        {data.map((p) => (
+        {proposals.map((p, i) => (
           <RiskyProposalInvestorCard
-            key={p.id}
-            proposal={p}
+            key={p.poolAddress + i}
+            proposal={p.proposal}
+            proposalId={i}
+            poolAddress={p.poolAddress}
             onInvest={() => console.log("onInvest")}
           />
         ))}
@@ -49,12 +45,4 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
   )
 }
 
-const InvestmentRiskyProposalsListWithProvider = (props) => {
-  return (
-    <GraphProvider value={poolsClient}>
-      <InvestmentRiskyProposalsList {...props} />
-    </GraphProvider>
-  )
-}
-
-export default InvestmentRiskyProposalsListWithProvider
+export default InvestmentRiskyProposalsList

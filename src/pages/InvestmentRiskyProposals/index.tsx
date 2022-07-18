@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react"
+import { useMemo } from "react"
 import { Routes, Route } from "react-router-dom"
 import { createClient, Provider as GraphProvider } from "urql"
 import { PulseSpinner } from "react-spinners-kit"
@@ -9,7 +9,6 @@ import RiskyPositionsList from "./PositionsList"
 
 import { ITab } from "constants/interfaces"
 import { useActiveWeb3React } from "hooks"
-import { useRiskyProposalContract } from "hooks/useContract"
 import useInvestorProposalPools from "hooks/useInvestorProposalPools"
 
 import S from "./styled"
@@ -22,49 +21,12 @@ const poolsClient = createClient({
 const InvestmentRiskyProposals = () => {
   const { account } = useActiveWeb3React()
 
-  const [activePoolId, setActivePoolId] = useState<any>(undefined)
-  const [activePool, setActivePool] = useState<any>(undefined)
-
-  const [proposals, setProposals] = useState<any[]>([])
-
   const preparedAccount = useMemo(() => {
     if (!account) return
     return String(account).toLowerCase()
   }, [account])
 
   const activePools = useInvestorProposalPools(preparedAccount, "BASIC_POOL")
-
-  console.log("activePools", activePools)
-  console.log("activePool", activePool)
-  const [riskyProposalContract] = useRiskyProposalContract(activePool)
-
-  useEffect(() => {
-    if (activePools.length > 0) {
-      setActivePoolId(0)
-      setActivePool(activePools[0])
-    }
-  }, [activePools])
-
-  useEffect(() => {
-    console.log("useEffect -> riskyProposalContract", riskyProposalContract)
-    if (!riskyProposalContract) {
-      return
-    }
-
-    ;(async () => {
-      const data = await riskyProposalContract.getProposalInfos(0, 100)
-      console.log("data", data)
-      setProposals([...proposals, ...data])
-
-      const newIndex = activePoolId + 1
-      if (!!activePools[newIndex]) {
-        setActivePoolId(newIndex)
-        setActivePool(activePools[newIndex])
-      }
-    })()
-  }, [activePoolId, activePools, riskyProposalContract])
-
-  console.log("proposals", proposals)
 
   const tabs: ITab[] = [
     {
@@ -104,19 +66,19 @@ const InvestmentRiskyProposals = () => {
         <Route
           path="open"
           element={<RiskyProposalsList activePools={activePools} />}
-        ></Route>
+        />
         <Route
           path="positions"
           element={
             <RiskyPositionsList activePools={activePools} closed={false} />
           }
-        ></Route>
+        />
         <Route
           path="closed"
           element={
             <RiskyPositionsList activePools={activePools} closed={true} />
           }
-        ></Route>
+        />
       </Routes>
     </>
   )

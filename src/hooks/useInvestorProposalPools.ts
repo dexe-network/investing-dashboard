@@ -12,7 +12,7 @@ function useInvestorProposalPools(address?: string, poolType?: string) {
 
   return response.data?.investors[0]
     ? response.data?.investors[0].activePools.map((p) => p.id)
-    : []
+    : undefined
 }
 
 export default useInvestorProposalPools
