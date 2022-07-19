@@ -39,12 +39,6 @@ const RiskyProposalInvestorCard: FC<Props> = ({
   const [, poolInfo] = usePoolContract(poolAddress)
   const [proposalPool] = useRiskyProposalContract(poolAddress)
 
-  // console.groupCollapsed("RiskyProposalInvestorCard")
-  // console.log("proposal", proposal)
-  // console.log("proposalTokenData", proposalTokenData)
-  // console.log("poolInfo", poolInfo)
-  // console.groupEnd()
-
   const [{ poolMetadata }] = usePoolMetadata(
     poolAddress,
     poolInfo?.parameters.descriptionURL
@@ -165,7 +159,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({
   useEffect(() => {
     if (!proposalPool) return
     ;(async () => {
-      const balance = await proposalPool?.balanceOf(account, proposalId + 1)
+      const balance = await proposalPool?.balanceOf(account, proposalId)
 
       setYouSizeLP(balance)
     })()
