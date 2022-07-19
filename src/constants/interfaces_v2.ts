@@ -173,6 +173,7 @@ export interface IRiskyProposalQuery {
 
 export interface IRiskyPositionCard extends IRiskyPosition {
   token?: string
+  proposal?: string
   pool: {
     id: string
     baseToken: string

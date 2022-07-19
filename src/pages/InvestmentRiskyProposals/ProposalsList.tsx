@@ -37,7 +37,6 @@ const InvestmentRiskyProposalsList: FC<IProps> = ({ activePools }) => {
             proposal={p.proposal}
             proposalId={i}
             poolAddress={p.poolAddress}
-            onInvest={() => console.log("onInvest")}
           />
         ))}
       </S.List>

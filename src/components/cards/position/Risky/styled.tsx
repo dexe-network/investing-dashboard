@@ -30,6 +30,27 @@ const Styled = {
     transform: translateY(2px);
     margin-right: 4px;
   `,
+
+  Symbols: styled.div`
+    position: relative;
+    width: 41px;
+    height: 26px;
+  `,
+
+  SymbolItem: styled.div`
+    position: absolute;
+
+    &:nth-child(1) {
+      z-index: 1;
+      left: 0;
+      top: 1px;
+    }
+    &:nth-child(2) {
+      z-index: 2;
+      right: 0;
+      top: 0;
+    }
+  `,
 }
 
 export default Styled

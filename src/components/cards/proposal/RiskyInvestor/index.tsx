@@ -24,14 +24,12 @@ interface Props {
   proposal: RiskyProposal
   poolAddress: string
   proposalId: number
-  onInvest: () => void
 }
 
 const RiskyProposalInvestorCard: FC<Props> = ({
   proposal,
   poolAddress,
   proposalId,
-  onInvest,
 }) => {
   const navigate = useNavigate()
   const { account, chainId } = useActiveWeb3React()
@@ -155,6 +153,9 @@ const RiskyProposalInvestorCard: FC<Props> = ({
     },
     [navigate, poolAddress]
   )
+  const onInvest = () => {
+    navigate(`/invest-risky-proposal/${poolAddress}/${proposalId}`)
+  }
 
   useEffect(() => {
     if (!proposalPool) return

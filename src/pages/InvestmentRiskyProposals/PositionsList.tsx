@@ -60,7 +60,7 @@ const InvestmentRiskyPositionsList: FC<IProps> = ({ activePools, closed }) => {
   return (
     <>
       <S.List>
-        {(positions || []).map((p) => (
+        {positions.map((p) => (
           <RiskyPositionCard key={p.id} position={p} />
         ))}
       </S.List>
