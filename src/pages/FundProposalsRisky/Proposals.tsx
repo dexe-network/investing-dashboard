@@ -10,10 +10,6 @@ const FundProposalsRisky = ({ data, poolAddress }) => {
   const navigate = useNavigate()
   const [, poolInfo] = usePoolContract(poolAddress)
 
-  const handleRiskyCardClick = (poolAddress, index) => {
-    navigate(`/invest-risky-proposal/${poolAddress}/${index}`)
-  }
-
   if (!poolInfo) {
     return (
       <S.ListLoading full ai="center" jc="center">
@@ -31,7 +27,6 @@ const FundProposalsRisky = ({ data, poolAddress }) => {
           proposalId={index}
           poolAddress={poolAddress}
           poolInfo={poolInfo}
-          onInvest={() => handleRiskyCardClick(proposal.basicPool.id, index)}
         />
       ))}
     </>

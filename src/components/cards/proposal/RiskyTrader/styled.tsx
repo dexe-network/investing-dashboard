@@ -34,7 +34,7 @@ const Styled = {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 16px 8px;
+    gap: 16px 5px;
   `,
   Title: styled.div`
     font-family: "Gilroy";
@@ -114,6 +114,16 @@ const Styled = {
       height: inherit;
       z-index: 1000;
     }
+  `,
+  AddButton: styled.div`
+    font-family: "Gilroy";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 11px;
+    line-height: 100%;
+    color: #2680eb;
+    white-space: nowrap;
+    cursor: poiner;
   `,
 }
 

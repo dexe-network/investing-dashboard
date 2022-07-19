@@ -1,5 +1,6 @@
 import { FC, useEffect, useMemo, useState } from "react"
 import { format } from "date-fns"
+import { useNavigate } from "react-router-dom"
 import { BigNumber } from "@ethersproject/bignumber"
 
 import { useActiveWeb3React } from "hooks"
@@ -20,7 +21,6 @@ import settingsGreenIcon from "assets/icons/settings-green.svg"
 
 interface Props {
   proposal: RiskyProposal
-  onInvest: () => void
   poolInfo: PoolInfo
   proposalId: number
   poolAddress: string
@@ -28,11 +28,11 @@ interface Props {
 
 const RiskyProposalTraderCard: FC<Props> = ({
   proposal,
-  onInvest,
   poolInfo,
   proposalId,
   poolAddress,
 }) => {
+  const navigate = useNavigate()
   const { account } = useActiveWeb3React()
   const [, proposalTokenData] = useERC20(proposal.proposalInfo.token)
   const [, baseTokenData] = useERC20(poolInfo.parameters.baseToken)
@@ -160,6 +160,14 @@ const RiskyProposalTraderCard: FC<Props> = ({
     })()
   }, [account, proposalId, proposalPool])
 
+  const onAddMore = (e) => {
+    e.stopPropagation()
+    navigate(`/invest-risky-proposal/${poolAddress}/${proposalId}`)
+  }
+  const onInvest = () => {
+    navigate(`/invest-risky-proposal/${poolAddress}/${proposalId}`)
+  }
+
   const InvestButton = active ? (
     <Button full size="small" onClick={onInvest}>
       Terminal
@@ -202,30 +210,29 @@ const RiskyProposalTraderCard: FC<Props> = ({
           />
         </S.Head>
         <S.Body>
-          <BodyItem label="Max size" amount={`${maxSizeLP} LP`} />
+          <BodyItem label="Max size (LP)" amount={maxSizeLP} />
           <BodyItem
-            label="Your size"
-            amount={`${normalizeBigNumber(
-              BigNumber.from(traderSizeLP),
-              18,
-              2
-            )} LP`}
+            label={
+              <Flex>
+                <span>Your size (LP)</span>
+                <S.AddButton onClick={onAddMore}>+ Add</S.AddButton>
+              </Flex>
+            }
+            amount={normalizeBigNumber(BigNumber.from(traderSizeLP), 18, 2)}
           />
           <BodyItem
-            label="Fullness"
-            amount={`${fullness.value} LP`}
+            label="Fullness (LP)"
+            amount={fullness.value}
             completed={fullness.completed}
           />
           <BodyItem
-            label="Max. Invest Price"
+            label={`Max. Invest Price (${proposalSymbol})`}
             amount={maxInvestPrice.value}
-            symbol={proposalSymbol}
             completed={maxInvestPrice.completed}
           />
           <BodyItem
-            label="Current price"
+            label={`Current price (${proposalSymbol})`}
             amount={currentPrice}
-            symbol={proposalSymbol}
           />
           <BodyItem
             fz={"11px"}
@@ -239,9 +246,8 @@ const RiskyProposalTraderCard: FC<Props> = ({
             symbol={`/ ${maxInvestors}`}
           />
           <BodyItem
-            label="Position size"
+            label={`Position size (${proposalSymbol})`}
             amount={positionSize}
-            symbol={proposalSymbol}
           />
           <Flex full>{InvestButton}</Flex>
         </S.Body>
