@@ -13,6 +13,7 @@ import { useRiskyProposal } from "hooks/useRiskyProposals"
 import { usePoolContract } from "hooks/usePool"
 import { useERC20, usePriceFeedContract } from "hooks/useContract"
 import { multiplyBignumbers } from "utils/formulas"
+import useGasTracker from "state/gas/hooks"
 
 export interface UseSwapRiskyParams {
   poolAddress?: string
@@ -57,6 +58,9 @@ const useSwapRiskyProposal = ({
   const [toPrice, setToPrice] = useState(BigNumber.from("0"))
   const [oneTokenCost, setTokenCost] = useState(BigNumber.from("0"))
   const [oneUSDCost, setUSDCost] = useState(BigNumber.from("0"))
+  const [lastChangedField, setLastChangedField] = useState<"from" | "to">(
+    "from"
+  )
 
   const [proposalInfo, proposalPool] = useRiskyProposal(poolAddress, proposalId)
   const [, poolInfo] = usePoolContract(poolAddress)
@@ -64,6 +68,8 @@ const useSwapRiskyProposal = ({
 
   const [, baseToken] = useERC20(poolInfo?.parameters.baseToken)
   const [, positionToken] = useERC20(proposalInfo?.proposalInfo.token)
+
+  const [gasTrackerResponse, getGasPrice] = useGasTracker()
 
   const form = useMemo(() => {
     if (direction === "withdraw") {
@@ -116,64 +122,35 @@ const useSwapRiskyProposal = ({
     toPrice,
   ])
 
-  const exchangeFromExact = useCallback(
-    async (from, amount) => {
+  const getExchangeAmount = useCallback(
+    async (from, amount, field) => {
       return (
         await proposalPool?.getExchangeAmount(
           Number(proposalId) + 1,
           from,
           amount,
           [],
-          ExchangeType.FROM_EXACT
+          field
         )
       )[0]
     },
     [proposalPool, proposalId]
   )
 
-  const exchangeFromExactProposal = useCallback(
-    async (from, amount) => {
-      const amountOut = await exchangeFromExact(from, amount)
+  const exchange = useCallback(
+    async (from, amount, field) => {
+      const amountOut = getExchangeAmount(from, amount, field)
+
       return await proposalPool?.exchange(
         Number(proposalId) + 1,
         from,
         amount,
         amountOut,
         [],
-        ExchangeType.FROM_EXACT
+        field
       )
     },
-    [exchangeFromExact, proposalPool, proposalId]
-  )
-
-  const exchangeToExact = useCallback(
-    async (from, amount) => {
-      return (
-        await proposalPool?.getExchangeAmount(
-          Number(proposalId) + 1,
-          from,
-          amount,
-          [],
-          ExchangeType.TO_EXACT
-        )
-      )[0]
-    },
-    [proposalPool, proposalId]
-  )
-
-  const exchangeToExactProposal = useCallback(
-    async (from, amount) => {
-      const amountOut = exchangeToExact(from, amount)
-      await proposalPool?.exchange(
-        Number(proposalId) + 1,
-        from,
-        amount,
-        amountOut,
-        [],
-        ExchangeType.TO_EXACT
-      )
-    },
-    [exchangeToExact, proposalId, proposalPool]
+    [getExchangeAmount, proposalId, proposalPool]
   )
 
   const handleFromChange = useCallback(
@@ -181,9 +158,14 @@ const useSwapRiskyProposal = ({
       if (!proposalPool || !priceFeed) return
 
       const amount = BigNumber.from(v)
+      setLastChangedField("from")
       setFromAmount(v)
       try {
-        const amountOut = await exchangeFromExact(form.from.address, amount)
+        const amountOut = await getExchangeAmount(
+          form.from.address,
+          amount,
+          ExchangeType.FROM_EXACT
+        )
 
         const fromPrice = await priceFeed.getNormalizedPriceOutUSD(
           form.from.address,
@@ -204,7 +186,7 @@ const useSwapRiskyProposal = ({
     [
       proposalPool,
       priceFeed,
-      exchangeFromExact,
+      getExchangeAmount,
       form.from.address,
       form.to.address,
     ]
@@ -215,9 +197,14 @@ const useSwapRiskyProposal = ({
       if (!proposalPool || !priceFeed) return
 
       const amount = BigNumber.from(v)
+      setLastChangedField("to")
       setToAmount(v)
       try {
-        const amountOut = await exchangeToExact(form.from.address, amount)
+        const amountOut = await getExchangeAmount(
+          form.from.address,
+          amount,
+          ExchangeType.TO_EXACT
+        )
 
         const fromPrice = await priceFeed.getNormalizedPriceOutUSD(
           form.from.address,
@@ -237,9 +224,9 @@ const useSwapRiskyProposal = ({
       }
     },
     [
-      exchangeToExact,
       form.from.address,
       form.to.address,
+      getExchangeAmount,
       priceFeed,
       proposalPool,
     ]
@@ -258,12 +245,59 @@ const useSwapRiskyProposal = ({
     [form.from.decimals, fromBalance, handleFromChange]
   )
 
-  const estimateGas = useCallback(() => {}, [])
+  const estimateGas = useCallback(async () => {
+    if (!proposalPool) return
+
+    if (lastChangedField === "from") {
+      const amount = BigNumber.from(fromAmount)
+      const amountOut = await getExchangeAmount(
+        form.from.address,
+        amount,
+        ExchangeType.FROM_EXACT
+      )
+      return proposalPool.estimateGas.exchange(
+        Number(proposalId) + 1,
+        form.from.address,
+        amount,
+        amountOut,
+        [],
+        ExchangeType.FROM_EXACT
+      )
+    }
+
+    const amount = BigNumber.from(toAmount)
+    const amountOut = await getExchangeAmount(
+      form.from.address,
+      amount,
+      ExchangeType.TO_EXACT
+    )
+    return proposalPool.estimateGas.exchange(
+      Number(proposalId) + 1,
+      form.from.address,
+      amount,
+      amountOut,
+      [],
+      ExchangeType.TO_EXACT
+    )
+  }, [
+    form.from.address,
+    fromAmount,
+    getExchangeAmount,
+    lastChangedField,
+    proposalId,
+    proposalPool,
+    toAmount,
+  ])
+
   const handleSubmit = useCallback(() => {}, [])
 
   const updateSwapPrice = useCallback(
     async (address, amount) => {
-      const amountOut = await exchangeFromExact(address, amount)
+      const amountOut = await getExchangeAmount(
+        address,
+        amount,
+        ExchangeType.FROM_EXACT
+      )
 
       const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
         address,
@@ -272,7 +306,7 @@ const useSwapRiskyProposal = ({
       setTokenCost(amountOut)
       setUSDCost(fromPrice[0])
     },
-    [exchangeFromExact, priceFeed]
+    [getExchangeAmount, priceFeed]
   )
 
   // set balances
@@ -286,17 +320,39 @@ const useSwapRiskyProposal = ({
   // fetch swap price
   useEffect(() => {
     if (direction === "deposit") {
+      if (!form.to.address) return
+
       updateSwapPrice(form.to.address, ethers.utils.parseEther("1")).catch(
         console.log
       )
     }
 
     if (direction === "withdraw") {
+      if (!form.from.address) return
+
       updateSwapPrice(form.from.address, ethers.utils.parseEther("1")).catch(
         console.log
       )
     }
   }, [direction, form.from.address, form.to.address, updateSwapPrice])
+
+  // estimate gas price
+  useEffect(() => {
+    const amount = BigNumber.from(fromAmount)
+    if (amount.isZero()) return
+    ;(async () => {
+      try {
+        const gasPrice = await estimateGas()
+
+        if (!gasPrice) return
+
+        const gas = getGasPrice(gasPrice.toNumber())
+        setGasPrice(gas)
+      } catch (e) {
+        console.log(e)
+      }
+    })()
+  }, [estimateGas, fromAmount, getGasPrice])
 
   return [
     form,
