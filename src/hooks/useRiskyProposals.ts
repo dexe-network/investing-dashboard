@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { RiskyProposal } from "constants/interfaces_v2"
 import { useRiskyProposalContract } from "hooks/useContract"
+import { Contract } from "ethers"
 
 function useRiskyProposals(poolAddress?: string): RiskyProposal[] {
   const [proposals, setProposals] = useState<RiskyProposal[]>([])
@@ -21,7 +22,7 @@ function useRiskyProposals(poolAddress?: string): RiskyProposal[] {
 export function useRiskyProposal(
   poolAddress?: string,
   index?: string
-): RiskyProposal | undefined {
+): [RiskyProposal | undefined, Contract | null] {
   const [proposal, setProposal] = useState<RiskyProposal | undefined>()
   const [traderPoolRiskyProposal] = useRiskyProposalContract(poolAddress)
 
@@ -36,7 +37,7 @@ export function useRiskyProposal(
     })()
   }, [index, traderPoolRiskyProposal])
 
-  return proposal
+  return [proposal, traderPoolRiskyProposal]
 }
 
 export default useRiskyProposals
