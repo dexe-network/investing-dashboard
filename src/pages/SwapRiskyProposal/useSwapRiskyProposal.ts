@@ -289,7 +289,49 @@ const useSwapRiskyProposal = ({
     toAmount,
   ])
 
-  const handleSubmit = useCallback(() => {}, [])
+  const handleSubmit = useCallback(async () => {
+    if (!proposalPool) return
+
+    if (lastChangedField === "from") {
+      const amount = BigNumber.from(fromAmount)
+      const amountOut = await getExchangeAmount(
+        form.from.address,
+        amount,
+        ExchangeType.FROM_EXACT
+      )
+      await proposalPool.exchange(
+        Number(proposalId) + 1,
+        form.from.address,
+        amount,
+        amountOut,
+        [],
+        ExchangeType.FROM_EXACT
+      )
+    } else {
+      const amount = BigNumber.from(toAmount)
+      const amountOut = await getExchangeAmount(
+        form.from.address,
+        amount,
+        ExchangeType.TO_EXACT
+      )
+      await proposalPool.exchange(
+        Number(proposalId) + 1,
+        form.from.address,
+        amount,
+        amountOut,
+        [],
+        ExchangeType.TO_EXACT
+      )
+    }
+  }, [
+    form.from.address,
+    fromAmount,
+    getExchangeAmount,
+    lastChangedField,
+    proposalId,
+    proposalPool,
+    toAmount,
+  ])
 
   const updateSwapPrice = useCallback(
     async (address, amount) => {
