@@ -13,8 +13,9 @@ import Button, { SecondaryButton } from "components/Button"
 import TokenIcon from "components/TokenIcon"
 import IconButton from "components/IconButton"
 
-import S, { BodyItem } from "./styled"
+import S from "./styled"
 import RiskyCardSettings from "./Settings"
+import SharedS, { BodyItem } from "components/cards/proposal/styled"
 
 import settingsIcon from "assets/icons/settings.svg"
 import settingsGreenIcon from "assets/icons/settings-green.svg"
@@ -180,14 +181,14 @@ const RiskyProposalTraderCard: FC<Props> = ({
 
   return (
     <>
-      <S.Container>
-        <S.Head>
+      <SharedS.Card>
+        <SharedS.Head p="8px 8px 7px 16px">
           <Flex>
             <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
-            <S.Title>
+            <SharedS.Title>
               {proposalSymbol}
               <span>/{baseTokenData?.symbol}</span>
-            </S.Title>
+            </SharedS.Title>
           </Flex>
 
           <Flex>
@@ -208,8 +209,8 @@ const RiskyProposalTraderCard: FC<Props> = ({
             visible={isSettingsOpen}
             setVisible={setIsSettingsOpen}
           />
-        </S.Head>
-        <S.Body>
+        </SharedS.Head>
+        <SharedS.Body>
           <BodyItem label="Max size (LP)" amount={maxSizeLP} />
           <BodyItem
             label={
@@ -224,6 +225,7 @@ const RiskyProposalTraderCard: FC<Props> = ({
             label="Fullness (LP)"
             amount={fullness.value}
             completed={fullness.completed}
+            ai="flex-end"
           />
           <BodyItem
             label={`Max. Invest Price (${proposalSymbol})`}
@@ -239,6 +241,7 @@ const RiskyProposalTraderCard: FC<Props> = ({
             label="Expiration date"
             amount={expirationDate.value}
             completed={expirationDate.completed}
+            ai="flex-end"
           />
           <BodyItem
             label="Investors"
@@ -250,8 +253,8 @@ const RiskyProposalTraderCard: FC<Props> = ({
             amount={positionSize}
           />
           <Flex full>{InvestButton}</Flex>
-        </S.Body>
-      </S.Container>
+        </SharedS.Body>
+      </SharedS.Card>
     </>
   )
 }

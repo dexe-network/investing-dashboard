@@ -18,7 +18,8 @@ import TokenIcon from "components/TokenIcon"
 import ExternalLink from "components/ExternalLink"
 import Button, { SecondaryButton } from "components/Button"
 
-import S, { BodyItem, TraderLPSize, TraderRating } from "./styled"
+import S, { TraderLPSize, TraderRating } from "./styled"
+import SharedS, { BodyItem } from "components/cards/proposal/styled"
 
 interface Props {
   proposal: RiskyProposal
@@ -178,12 +179,12 @@ const RiskyProposalInvestorCard: FC<Props> = ({
 
   return (
     <>
-      <S.Container>
-        <S.Head>
+      <SharedS.Card>
+        <SharedS.Head>
           <Flex>
             <TokenIcon address={proposal.proposalInfo.token} m="0" size={24} />
             <Flex ai="center">
-              <S.Title>{proposalSymbol}</S.Title>
+              <SharedS.Title>{proposalSymbol}</SharedS.Title>
               <TraderRating rating={20} />
               <Flex m="0 0 -5px">
                 <Tooltip id="risky-proposal-rating-info" size="small">
@@ -200,8 +201,8 @@ const RiskyProposalInvestorCard: FC<Props> = ({
               size={24}
             />
           </Flex>
-        </S.Head>
-        <S.Body>
+        </SharedS.Head>
+        <SharedS.Body>
           <BodyItem label="Proposal size" amount={`${maxSizeLP} LP`} />
           <BodyItem
             label="Your size"
@@ -215,6 +216,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({
             label="Fullness"
             amount={`${fullness.value} LP`}
             completed={fullness.completed}
+            ai="flex-end"
           />
           <BodyItem
             label="Max. Invest Price"
@@ -232,6 +234,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({
             label="Expiration date"
             amount={expirationDate.value}
             completed={expirationDate.completed}
+            ai="flex-end"
           />
           <BodyItem label="Investors" amount={investors} symbol={"/ 1000"} />
           <BodyItem
@@ -240,7 +243,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({
             symbol={proposalSymbol}
           />
           <Flex full>{InvestButton}</Flex>
-        </S.Body>
+        </SharedS.Body>
         <S.Footer>
           <Flex>
             <S.FundIconContainer>
@@ -273,7 +276,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({
             )}
           </div>
         </S.Footer>
-      </S.Container>
+      </SharedS.Card>
     </>
   )
 }
