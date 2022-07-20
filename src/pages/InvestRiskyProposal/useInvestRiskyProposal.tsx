@@ -111,7 +111,7 @@ const useInvestRiskyProposal = (
   const traderPool = useTraderPoolContract(poolAddress)
   const basicPool = useBasicPoolContract(poolAddress)
   const [proposalPool] = useRiskyProposalContract(poolAddress)
-  const proposal = useRiskyProposal(poolAddress, proposalId)
+  const [proposal] = useRiskyProposal(poolAddress, proposalId)
   const [, poolInfo] = usePoolContract(poolAddress)
   const [{ poolMetadata }] = usePoolMetadata(
     poolAddress,
