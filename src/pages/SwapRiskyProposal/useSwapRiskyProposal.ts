@@ -1,10 +1,18 @@
-import { useCallback, useMemo, useState, Dispatch, SetStateAction } from "react"
+import {
+  useCallback,
+  useMemo,
+  useState,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+} from "react"
 import { ExchangeForm, ExchangeType } from "constants/interfaces_v2"
 import { SwapDirection } from "constants/types"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { useRiskyProposal } from "hooks/useRiskyProposals"
 import { usePoolContract } from "hooks/usePool"
-import { useERC20 } from "hooks/useContract"
+import { useERC20, usePriceFeedContract } from "hooks/useContract"
+import { multiplyBignumbers } from "utils/formulas"
 
 export interface UseSwapRiskyParams {
   poolAddress?: string
@@ -50,11 +58,12 @@ const useSwapRiskyProposal = ({
   const [oneTokenCost, setTokenCost] = useState(BigNumber.from("0"))
   const [oneUSDCost, setUSDCost] = useState(BigNumber.from("0"))
 
-  const riskyInfo = useRiskyProposal(poolAddress, proposalId)
+  const [proposalInfo, proposalPool] = useRiskyProposal(poolAddress, proposalId)
   const [, poolInfo] = usePoolContract(poolAddress)
+  const priceFeed = usePriceFeedContract()
 
   const [, baseToken] = useERC20(poolInfo?.parameters.baseToken)
-  const [, positionToken] = useERC20(riskyInfo?.proposalInfo.token)
+  const [, positionToken] = useERC20(proposalInfo?.proposalInfo.token)
 
   const form = useMemo(() => {
     if (direction === "withdraw") {
@@ -107,11 +116,187 @@ const useSwapRiskyProposal = ({
     toPrice,
   ])
 
-  const handleFromChange = useCallback(() => {}, [])
-  const handleToChange = useCallback(() => {}, [])
-  const handlePercentageChange = useCallback(() => {}, [])
+  const exchangeFromExact = useCallback(
+    async (from, amount) => {
+      return (
+        await proposalPool?.getExchangeAmount(
+          Number(proposalId) + 1,
+          from,
+          amount,
+          [],
+          ExchangeType.FROM_EXACT
+        )
+      )[0]
+    },
+    [proposalPool, proposalId]
+  )
+
+  const exchangeFromExactProposal = useCallback(
+    async (from, amount) => {
+      const amountOut = await exchangeFromExact(from, amount)
+      return await proposalPool?.exchange(
+        Number(proposalId) + 1,
+        from,
+        amount,
+        amountOut,
+        [],
+        ExchangeType.FROM_EXACT
+      )
+    },
+    [exchangeFromExact, proposalPool, proposalId]
+  )
+
+  const exchangeToExact = useCallback(
+    async (from, amount) => {
+      return (
+        await proposalPool?.getExchangeAmount(
+          Number(proposalId) + 1,
+          from,
+          amount,
+          [],
+          ExchangeType.TO_EXACT
+        )
+      )[0]
+    },
+    [proposalPool, proposalId]
+  )
+
+  const exchangeToExactProposal = useCallback(
+    async (from, amount) => {
+      const amountOut = exchangeToExact(from, amount)
+      await proposalPool?.exchange(
+        Number(proposalId) + 1,
+        from,
+        amount,
+        amountOut,
+        [],
+        ExchangeType.TO_EXACT
+      )
+    },
+    [exchangeToExact, proposalId, proposalPool]
+  )
+
+  const handleFromChange = useCallback(
+    async (v: string) => {
+      if (!proposalPool || !priceFeed) return
+
+      const amount = BigNumber.from(v)
+      setFromAmount(v)
+      try {
+        const amountOut = await exchangeFromExact(form.from.address, amount)
+
+        const fromPrice = await priceFeed.getNormalizedPriceOutUSD(
+          form.from.address,
+          amount
+        )
+        const toPrice = await priceFeed.getNormalizedPriceOutUSD(
+          form.to.address,
+          amountOut
+        )
+
+        setToAmount(amountOut.toString())
+        setFromPrice(fromPrice[0])
+        setToPrice(toPrice[0])
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    [
+      proposalPool,
+      priceFeed,
+      exchangeFromExact,
+      form.from.address,
+      form.to.address,
+    ]
+  )
+
+  const handleToChange = useCallback(
+    async (v: string) => {
+      if (!proposalPool || !priceFeed) return
+
+      const amount = BigNumber.from(v)
+      setToAmount(v)
+      try {
+        const amountOut = await exchangeToExact(form.from.address, amount)
+
+        const fromPrice = await priceFeed.getNormalizedPriceOutUSD(
+          form.from.address,
+          amountOut
+        )
+        console.log(fromPrice[0].toString())
+        const toPrice = await priceFeed.getNormalizedPriceOutUSD(
+          form.to.address,
+          amount
+        )
+
+        setFromAmount(amountOut.toString())
+        setFromPrice(fromPrice[0])
+        setToPrice(toPrice[0])
+      } catch (e) {
+        console.log(e)
+      }
+    },
+    [
+      exchangeToExact,
+      form.from.address,
+      form.to.address,
+      priceFeed,
+      proposalPool,
+    ]
+  )
+
+  const handlePercentageChange = useCallback(
+    (percent: BigNumber) => {
+      if (!form.from.decimals) return
+
+      const from = multiplyBignumbers(
+        [fromBalance, form.from.decimals],
+        [percent, 18]
+      )
+      handleFromChange(from.toString())
+    },
+    [form.from.decimals, fromBalance, handleFromChange]
+  )
+
   const estimateGas = useCallback(() => {}, [])
   const handleSubmit = useCallback(() => {}, [])
+
+  const updateSwapPrice = useCallback(
+    async (address, amount) => {
+      const amountOut = await exchangeFromExact(address, amount)
+
+      const fromPrice = await priceFeed?.getNormalizedPriceOutUSD(
+        address,
+        amount
+      )
+      setTokenCost(amountOut)
+      setUSDCost(fromPrice[0])
+    },
+    [exchangeFromExact, priceFeed]
+  )
+
+  // set balances
+  useEffect(() => {
+    if (!proposalInfo) return
+
+    setFromBalance(proposalInfo.proposalInfo.balanceBase)
+    setToBalance(proposalInfo.proposalInfo.balancePosition)
+  }, [proposalInfo])
+
+  // fetch swap price
+  useEffect(() => {
+    if (direction === "deposit") {
+      updateSwapPrice(form.to.address, ethers.utils.parseEther("1")).catch(
+        console.log
+      )
+    }
+
+    if (direction === "withdraw") {
+      updateSwapPrice(form.from.address, ethers.utils.parseEther("1")).catch(
+        console.log
+      )
+    }
+  }, [direction, form.from.address, form.to.address, updateSwapPrice])
 
   return [
     form,
