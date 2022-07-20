@@ -49,6 +49,12 @@ const RiskyPositionPoolCard: React.FC<Props> = ({ position }) => {
     setShowPositions(!showPositions)
   }, [showPositions])
 
+  const baseTokenSymbol = useMemo(() => {
+    if (!baseTokenData || !baseTokenData?.symbol) return ""
+
+    return baseTokenData.symbol
+  }, [baseTokenData])
+
   const positionOpenBaseAmount = useMemo(() => {
     if (!position || !position.totalPositionOpenVolume) return "0"
 
@@ -175,28 +181,28 @@ const RiskyPositionPoolCard: React.FC<Props> = ({ position }) => {
         <SharedS.Card onClick={toggleExtraContent}>
           <SharedS.Head>
             <Flex>
-              <TokenIcon address={tokenData?.address} m="0" size={24} />
+              <TokenIcon address={tokenData?.address ?? ""} m="0" size={24} />
               <S.Amount>{positionOpenBaseAmount}</S.Amount>
-              <S.PositionSymbol>{tokenData?.symbol}</S.PositionSymbol>
-              <S.FundSymbol>/{baseTokenData?.symbol}</S.FundSymbol>
+              <S.PositionSymbol>{tokenData?.symbol ?? ""}</S.PositionSymbol>
+              <S.FundSymbol>/{baseTokenSymbol}</S.FundSymbol>
             </Flex>
           </SharedS.Head>
           <SharedS.Body>
             <BodyItem
-              label={`Entry Price ${baseTokenData?.symbol}`}
+              label={`Entry Price ${baseTokenSymbol}`}
               amount={entryPriceBase}
               amountUSD={entryPriceUSD}
             />
             <BodyItem
               label={
                 (position.isClosed ? "Closed price " : "Current price ") +
-                baseTokenData?.symbol
+                baseTokenSymbol
               }
               amount={markPriceBase}
               amountUSD={markPriceUSD}
             />
             <BodyItem
-              label={`P&L ${baseTokenData?.symbol}`}
+              label={`P&L ${baseTokenSymbol}`}
               amount={pnlBase}
               pnl={pnlPercentage}
               amountUSD={pnlUSD}

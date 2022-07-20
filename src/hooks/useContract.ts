@@ -7,6 +7,7 @@ import {
   BasicTraderPool,
   PriceFeed,
   TraderPoolRegistry,
+  TraderPoolInvestProposal,
 } from "abi"
 import { getContract } from "utils/getContract"
 import { useActiveWeb3React } from "hooks"
@@ -148,6 +149,22 @@ export function useTraderPoolRegistryContract(): Contract | null {
   return useContract(traderPoolRegistryAddress, TraderPoolRegistry)
 }
 
+export function useProposalAddress(poolAddress) {
+  const [proposalAddress, setProposalAddress] = useState("")
+
+  const traderPool = useTraderPoolContract(poolAddress)
+
+  useEffect(() => {
+    if (!traderPool) return
+    ;(async () => {
+      const proposalAddress = await traderPool.proposalPoolAddress()
+      setProposalAddress(proposalAddress)
+    })()
+  }, [traderPool])
+
+  return proposalAddress
+}
+
 export function useRiskyProposalContract(
   poolAddress: string | undefined
 ): [Contract | null, string] {
@@ -168,4 +185,14 @@ export function useRiskyProposalContract(
   }, [traderPool])
 
   return [proposalPool, riskyProposalAddress]
+}
+
+export function useInvestProposalContract(
+  poolAddress: string | undefined
+): [Contract | null, string] {
+  const proposalAddress = useProposalAddress(poolAddress)
+
+  const proposalPool = useContract(proposalAddress, TraderPoolInvestProposal)
+
+  return [proposalPool, proposalAddress]
 }

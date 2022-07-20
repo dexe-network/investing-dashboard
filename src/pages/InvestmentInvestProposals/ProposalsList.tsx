@@ -42,15 +42,11 @@ const InvestmentInvestProposalsList: FC<IProps> = ({
 
   return (
     <>
-      <S.List>
-        {(data || []).map((p) => (
-          <InvestProposalCard
-            key={p.id}
-            proposal={p}
-            onInvest={() => console.log("onInvest")}
-          />
+      {/* <S.List>
+        {data.map((p, i) => (
+          <InvestProposalCard key={p.id} proposal={p} proposalId={i} />
         ))}
-      </S.List>
+      </S.List> */}
     </>
   )
 }

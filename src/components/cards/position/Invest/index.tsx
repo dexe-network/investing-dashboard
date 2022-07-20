@@ -452,7 +452,7 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
               </SharedS.PNL>
             </Flex>
             <Flex>
-              <S.FundSymbol>{baseTokenData?.symbol}</S.FundSymbol>
+              <S.FundSymbol>{baseTokenSymbol}</S.FundSymbol>
               <TokenIcon address={baseTokenData?.address} m="0" size={24} />
             </Flex>
           </SharedS.Head>
@@ -502,7 +502,7 @@ const InvestPositionCard: React.FC<Props> = ({ position }) => {
                 amount={v.volumeBase}
                 priceBase={v.volumeLP}
                 priceUsd={v.volumeUSD}
-                baseTokenSymbol={baseTokenData?.symbol}
+                baseTokenSymbol={baseTokenSymbol}
                 data={v}
               />
             ))

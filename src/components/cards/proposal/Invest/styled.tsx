@@ -1,10 +1,6 @@
-import { FC } from "react"
 import styled from "styled-components"
 
 import { Flex, GradientBorder } from "theme"
-import Amount from "components/Amount"
-
-import checkGreenIcon from "assets/icons/green-check.svg"
 
 const Styled = {
   Container: styled.div`
@@ -32,8 +28,8 @@ const Styled = {
     width: 100%;
     padding: 12px 14px 16px 16px;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px 8px;
+    grid-template-columns: 0.3fr 0.35fr 0.35fr;
+    gap: 16px 6px;
   `,
   Title: styled.div`
     font-family: "Gilroy";
@@ -155,49 +151,3 @@ export const SettingsStyled = {
     gap: 16px;
   `,
 }
-
-// Body item
-export const BodyItemStyled = {
-  Container: styled(Flex)`
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: flex-start;
-  `,
-  Label: styled(Flex)`
-    min-height: 16px;
-    align-items: center;
-    margin-bottom: 2px;
-    font-family: "Gilroy";
-    font-style: normal;
-    font-weight: 400;
-    font-size: 11px;
-    line-height: 100%;
-    letter-spacing: 0.03em;
-    color: #616d8b;
-  `,
-}
-
-interface IBodyItemProps {
-  label: string
-  amount: string
-  symbol?: string
-  fz?: string
-  completed?: boolean
-}
-
-export const BodyItem: FC<IBodyItemProps> = ({
-  label,
-  amount,
-  symbol,
-  fz,
-  completed = false,
-}) => (
-  <BodyItemStyled.Container>
-    <BodyItemStyled.Label>
-      {label}
-      {completed && <img src={checkGreenIcon} />}
-    </BodyItemStyled.Label>
-    <Amount value={amount} symbol={symbol} fz={fz} />
-  </BodyItemStyled.Container>
-)

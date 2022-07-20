@@ -1,7 +1,9 @@
+import { MouseEvent } from "react"
+
 export type ButtonThemeType = "primary" | "warn" | "disabled"
 
 export interface ButtonBaseProps {
-  onClick?: () => void
+  onClick?: (e?: MouseEvent<HTMLButtonElement>) => void
   theme?: ButtonThemeType
 }
 

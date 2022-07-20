@@ -20,6 +20,11 @@ const InvestCardSettings: FC<Props> = ({ visible, setVisible }) => {
   const [isDateOpen, setDateOpen] = useState(false)
   const [timestampLimit, setTimestampLimit] = useState(new Date().valueOf())
 
+  const onClose = (e) => {
+    e.stopPropagation()
+    setVisible(false)
+  }
+
   return (
     <S.Container
       initial="hidden"
@@ -70,7 +75,7 @@ const InvestCardSettings: FC<Props> = ({ visible, setVisible }) => {
           <S.InputType> 1/JBR</S.InputType>
         </S.Row>
         <S.ButtonGroup>
-          <SecondaryButton full size="small" onClick={() => setVisible(false)}>
+          <SecondaryButton full size="small" onClick={onClose}>
             Сancel
           </SecondaryButton>
           <Button full size="small">

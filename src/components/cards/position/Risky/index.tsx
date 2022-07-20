@@ -44,12 +44,6 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
     poolInfo?.parameters.descriptionURL
   )
 
-  console.groupCollapsed("RiskyPositionCard")
-  console.log("position", position)
-  console.log("positionTokenData", positionTokenData)
-  console.log("baseTokenData", baseTokenData)
-  console.groupEnd()
-
   const [markPriceOpen, setMarkPriceOpen] = useState(BigNumber.from(0))
   const markPriceOpenUSD = useTokenPriceOutUSD({
     tokenAddress: position.token,
@@ -358,7 +352,7 @@ const RiskyPositionCard: React.FC<Props> = ({ position }) => {
                 <S.Amount>({positionOpenBaseAmount} LP)</S.Amount>
               )}
               {position.isClosed && (
-                <S.FundSymbol>/{baseTokenData?.symbol}</S.FundSymbol>
+                <S.FundSymbol>/{baseTokenData?.symbol ?? ""}</S.FundSymbol>
               )}
               <SharedS.PNL amount={+pnlPercentage.normalized}>
                 {Number(pnlPercentage.normalized) > 0 && "+"}

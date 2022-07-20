@@ -194,7 +194,7 @@ const RiskyProposalInvestorCard: FC<Props> = ({
             </Flex>
           </Flex>
           <Flex onClick={navigateToPool}>
-            <S.Ticker>{poolInfo?.ticker}</S.Ticker>
+            <S.Ticker>{poolInfo?.ticker ?? ""}</S.Ticker>
             <TokenIcon
               address={poolInfo?.parameters.baseToken}
               m="0 0 0 4px"

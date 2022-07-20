@@ -1,25 +1,46 @@
 import { FC } from "react"
 
-import { BodyItem } from "./styled"
+import { BodyItem } from "components/cards/proposal/styled"
 
 interface Props {
+  ticker: string
+
+  supply: string
+  youSizeLP: string
   maxSizeLP: string
-  apr: string
+
+  totalInvestors: string
   expirationDate: string
+
+  apr: string
 }
 
-const BodyTrader: FC<Props> = ({ maxSizeLP, apr, expirationDate }) => {
+const BodyTrader: FC<Props> = ({
+  ticker,
+
+  supply,
+  youSizeLP,
+  maxSizeLP,
+  apr,
+  totalInvestors,
+  expirationDate,
+}) => {
   return (
     <>
-      <BodyItem label="Supply" amount={"90k"} symbol={"1/JBR"} />
-      <BodyItem label="Your size" amount={"47k"} symbol={"1/JBR"} />
-      <BodyItem label="Max Size" amount={maxSizeLP} symbol={"1/JBR"} />
+      <BodyItem label={"Supply " + ticker} amount={supply} />
+      <BodyItem label={"Your size " + ticker} amount={youSizeLP} />
+      <BodyItem label={"Max Size " + ticker} amount={maxSizeLP} ai="flex-end" />
       <BodyItem label="APR" amount={`${apr} %`} />
-      <BodyItem label="Total dividends" amount={"~999k"} symbol={"USDT"} />
-      <BodyItem label="Dividends avail." amount={"~88k"} symbol={"USDT"} />
-      <BodyItem label="Investors" amount={"999/"} symbol={"1000"} />
+      <BodyItem label="Dividends avail. ($)" amount={"~88k"} />
+      <BodyItem label="Total dividends  ($)" amount={"~999k"} ai="flex-end" />
+      <BodyItem label="Investors" amount={`${totalInvestors}/`} symbol="1000" />
       <BodyItem label="Price OTC" amount={"-"} />
-      <BodyItem label="Expiration date" amount={expirationDate} fz="11px" />
+      <BodyItem
+        label="Expiration date"
+        amount={expirationDate}
+        fz="11px"
+        ai="flex-end"
+      />
     </>
   )
 }

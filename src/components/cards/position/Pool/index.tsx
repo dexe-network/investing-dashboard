@@ -60,6 +60,12 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
     setShowPositions(!showPositions)
   }, [showPositions])
 
+  const baseTokenSymbol = useMemo(() => {
+    if (!baseToken || !baseToken?.symbol) return ""
+
+    return baseToken.symbol
+  }, [baseToken])
+
   const positionOpenBaseAmount = useMemo(() => {
     if (!position || !position.totalPositionOpenVolume) return "0"
 
@@ -190,7 +196,9 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
             <Flex>
               <TokenIcon address={position.positionToken} m="0" size={24} />
               <S.Amount>{positionOpenBaseAmount}</S.Amount>
-              <S.PositionSymbol>{positionTokenData?.symbol}</S.PositionSymbol>
+              <S.PositionSymbol>
+                {positionTokenData?.symbol ?? ""}
+              </S.PositionSymbol>
             </Flex>
             <Flex>
               <SharedS.PNL amount={+pnlPercentage.normalized}>
@@ -201,20 +209,20 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
 
           <SharedS.Body>
             <BodyItem
-              label={"Entry Price " + baseToken?.symbol}
+              label={"Entry Price " + baseTokenSymbol}
               amount={entryPriceBase}
               amountUSD={entryPriceUSD}
             />
             <BodyItem
               label={
                 (position.closed ? "Closed price " : "Current price ") +
-                baseToken?.symbol
+                baseTokenSymbol
               }
               amount={markPriceBase}
               amountUSD={markPriceUSD}
             />
             <BodyItem
-              label={"P&L " + baseToken?.symbol}
+              label={"P&L " + baseTokenSymbol}
               amount={pnlBase}
               pnl={pnlPercentage.value}
               amountUSD={pnlUSD}
@@ -239,7 +247,7 @@ const PoolPositionCard: React.FC<Props> = ({ position }) => {
               <PositionTrade
                 key={e.id}
                 data={e}
-                baseTokenSymbol={baseToken?.symbol}
+                baseTokenSymbol={baseTokenSymbol}
                 timestamp={ethers.utils.formatEther(e.timestamp)}
                 isBuy={e.opening}
                 amount={e.opening ? e.toVolume : e.fromVolume}
