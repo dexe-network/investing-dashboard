@@ -13,16 +13,16 @@ const poolsClient = createClient({
 
 interface IProps {
   activePools: string[]
-  invested: boolean
+  invested?: boolean
 }
 
 const InvestmentInvestProposalsList: FC<IProps> = ({
   activePools,
   invested,
 }) => {
-  const data = useInvestorInvestProposals(activePools, invested)
+  const [data, fetched] = useInvestorInvestProposals(activePools)
 
-  if (!data) {
+  if (!fetched) {
     return (
       <S.Content>
         <PulseSpinner />
@@ -30,7 +30,7 @@ const InvestmentInvestProposalsList: FC<IProps> = ({
     )
   }
 
-  if (data && data.length === 0) {
+  if (fetched && data && data.length === 0) {
     return (
       <S.Content>
         <div style={{ color: "white", textAlign: "center" }}>
@@ -42,11 +42,15 @@ const InvestmentInvestProposalsList: FC<IProps> = ({
 
   return (
     <>
-      {/* <S.List>
+      <S.List>
         {data.map((p, i) => (
-          <InvestProposalCard key={p.id} proposal={p} proposalId={i} />
+          <InvestProposalCard
+            key={p.poolAddress + i}
+            proposal={p.proposal}
+            poolAddress={p.poolAddress}
+          />
         ))}
-      </S.List> */}
+      </S.List>
     </>
   )
 }

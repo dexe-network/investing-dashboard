@@ -1,9 +1,14 @@
 import { useParams } from "react-router-dom"
 import { PulseSpinner } from "react-spinners-kit"
+import { createClient, Provider as GraphProvider } from "urql"
 
 import useInvestProposals from "hooks/useInvestmentProposals"
 import InvestProposalCard from "components/cards/proposal/Invest"
 import S from "./styled"
+
+const poolsClient = createClient({
+  url: process.env.REACT_APP_INVEST_POOLS_API_URL || "",
+})
 
 const FundProposalsInvest = () => {
   const { poolAddress } = useParams()
@@ -31,7 +36,6 @@ const FundProposalsInvest = () => {
       {proposals.map((proposal, index) => (
         <InvestProposalCard
           key={index}
-          proposalId={index}
           proposal={proposal}
           poolAddress={poolAddress}
         />
@@ -40,4 +44,12 @@ const FundProposalsInvest = () => {
   )
 }
 
-export default FundProposalsInvest
+const FundProposalsInvestWithProvider = (props) => {
+  return (
+    <GraphProvider value={poolsClient}>
+      <FundProposalsInvest {...props} />
+    </GraphProvider>
+  )
+}
+
+export default FundProposalsInvestWithProvider

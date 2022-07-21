@@ -6,18 +6,27 @@ import { BodyItem } from "components/cards/proposal/styled"
 interface Props {
   ticker: string
 
+  proposalSize: string
+  fullness: string
   supply: string
   expirationDate: string
-
+  yourBalance: string
+  dividendsAvailable: string
+  totalDividends: string
   invested: boolean
   apr: string
 }
 
 const BodyInvestor: FC<Props> = ({
   ticker,
+  proposalSize,
+  fullness,
   supply,
-  expirationDate,
   invested,
+  expirationDate,
+  yourBalance,
+  dividendsAvailable,
+  totalDividends,
   apr,
 }) => {
   return (
@@ -25,17 +34,20 @@ const BodyInvestor: FC<Props> = ({
       {invested ? (
         <>
           <BodyItem label={"Supply " + ticker} amount={supply} />
-          <BodyItem label="Fulness" amount={"90%"} />
+          <BodyItem label="Fulness" amount={`${fullness}%`} />
           <BodyItem
             label={"Your balance " + ticker}
-            amount={"10"}
+            amount={yourBalance}
             ai="flex-end"
           />
           <BodyItem label="APR" amount={`${apr} %`} />
-          <BodyItem label="Total dividends ($)" amount={"~999k"} />
+          <BodyItem
+            label="Total dividends ($)"
+            amount={`~${dividendsAvailable}`}
+          />
           <BodyItem
             label="Dividends avail. ($)"
-            amount={"~88k"}
+            amount={`~${totalDividends}`}
             ai="flex-end"
           />
           <BodyItem label="Custodian" amount={"-"} />
@@ -49,8 +61,8 @@ const BodyInvestor: FC<Props> = ({
         </>
       ) : (
         <>
-          <BodyItem label={"Proposal size " + ticker} amount={"40"} />
-          <BodyItem label="Fulness" amount={"90%"} />
+          <BodyItem label={"Proposal size " + ticker} amount={proposalSize} />
+          <BodyItem label="Fulness" amount={`${fullness}%`} />
           <BodyItem
             label="Expiration date"
             amount={expirationDate}

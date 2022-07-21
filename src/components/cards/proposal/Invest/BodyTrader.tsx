@@ -8,11 +8,12 @@ interface Props {
   supply: string
   youSizeLP: string
   maxSizeLP: string
+  apr: string
+  dividendsAvailable: string
+  totalDividends: string
 
   totalInvestors: string
   expirationDate: string
-
-  apr: string
 }
 
 const BodyTrader: FC<Props> = ({
@@ -22,6 +23,8 @@ const BodyTrader: FC<Props> = ({
   youSizeLP,
   maxSizeLP,
   apr,
+  dividendsAvailable,
+  totalDividends,
   totalInvestors,
   expirationDate,
 }) => {
@@ -31,8 +34,15 @@ const BodyTrader: FC<Props> = ({
       <BodyItem label={"Your size " + ticker} amount={youSizeLP} />
       <BodyItem label={"Max Size " + ticker} amount={maxSizeLP} ai="flex-end" />
       <BodyItem label="APR" amount={`${apr} %`} />
-      <BodyItem label="Dividends avail. ($)" amount={"~88k"} />
-      <BodyItem label="Total dividends  ($)" amount={"~999k"} ai="flex-end" />
+      <BodyItem
+        label="Dividends avail. ($)"
+        amount={`~${dividendsAvailable}`}
+      />
+      <BodyItem
+        label="Total dividends ($)"
+        amount={`~${totalDividends}`}
+        ai="flex-end"
+      />
       <BodyItem label="Investors" amount={`${totalInvestors}/`} symbol="1000" />
       <BodyItem label="Price OTC" amount={"-"} />
       <BodyItem

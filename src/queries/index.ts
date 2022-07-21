@@ -228,19 +228,12 @@ const INVEST_PROPOSAL = `
   totalUSDSupply
   firstSupplyTimestamp
   APR
-  investPool {
-    id
-  }
 `
 
-const InvestProposalsQuery = `
-  query ($address: String!) {
-    investPool(id: $address) {
-      id
-      baseToken
-      proposals(first: 100) {
-        ${INVEST_PROPOSAL}
-      }
+const InvestProposalQuery = `
+  query ($proposalId: String!) {
+    proposal(id: $proposalId) {
+      ${INVEST_PROPOSAL}
     }
   }
 `
@@ -441,7 +434,7 @@ export {
   PoolsQueryWithSort,
   PoolsQueryByTypeWithSort,
   RiskyProposalsQuery,
-  InvestProposalsQuery,
+  InvestProposalQuery,
   InvestorPositionsQuery,
   InvestorPoolsInvestedForQuery,
   InvestorRiskyProposalsQuery,
