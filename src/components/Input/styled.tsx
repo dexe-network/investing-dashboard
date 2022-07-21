@@ -7,12 +7,31 @@ const background = {
   grey: "#191F2C",
 }
 
-export const Container = styled(GradientBorder)<{ theme: "grey" | "black" }>`
+const height = {
+  normal: "50px",
+  small: "24px",
+}
+
+const padding = {
+  normal: "14px 16px",
+  small: "6px 8px",
+}
+
+const borderRadius = {
+  normal: "10px",
+  small: "15px",
+}
+
+export const Container = styled(GradientBorder)<{
+  theme: "grey" | "black"
+  size?: string
+}>`
   position: relative;
-  border-radius: 10px;
   width: 100%;
-  padding: 14px 16px;
-  min-height: 50px;
+  border-radius: ${(props) =>
+    props.size ? borderRadius[props.size] : borderRadius.normal};
+  padding: ${(props) => (props.size ? padding[props.size] : padding.normal)};
+  min-height: ${(props) => (props.size ? height[props.size] : height.normal)};
 
   &:after {
     background: ${({ theme }) => background[theme]};

@@ -49,6 +49,7 @@ interface Props {
   rightIcon?: ReactNode
   limit?: number
   theme?: "grey" | "black"
+  size?: "normal" | "small"
   onClick?: () => void
   onChange?: (value: string) => void
 }
@@ -64,6 +65,7 @@ const Input: FC<Props> = ({
   rightIcon,
   limit,
   theme = "black",
+  size = "normal",
   onClick,
   onChange,
 }) => {
@@ -104,7 +106,7 @@ const Input: FC<Props> = ({
   }
 
   return (
-    <Container theme={theme} onClick={handleClick}>
+    <Container theme={theme} onClick={handleClick} size={size}>
       {!!label && (
         <Label
           onClick={handleClick}

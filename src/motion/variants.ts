@@ -75,6 +75,7 @@ export const accordionSummaryVariants = {
   hidden: {
     opacity: 0,
     height: 0,
+    transition: { duration: 0 },
     transitionEnd: {
       display: "none",
     },

@@ -44,7 +44,7 @@ const SwapSummaryInput: React.FC<{ info: ExactInputSwapTransactionInfo }> = ({
 }) => {
   return (
     <>
-      Swap from
+      Swap from{" "}
       <FormattedCurrencyAmount
         rawAmount={info.inputCurrencyAmountRaw}
         rawCurrency={info.inputCurrencyId}
@@ -62,7 +62,7 @@ const SwapSummaryOutput: React.FC<{ info: ExactOutputSwapTransactionInfo }> = ({
 }) => {
   return (
     <>
-      Swap from
+      Swap from{" "}
       <FormattedCurrencyAmount
         rawAmount={info.outputCurrencyAmountRaw}
         rawCurrency={info.inputCurrencyId}

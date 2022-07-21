@@ -22,6 +22,7 @@ declare global {
       REACT_APP_ALL_POOLS_API_URL: string
       REACT_APP_BASIC_POOLS_API_URL: string
       REACT_APP_INVEST_POOLS_API_URL: string
+      REACT_APP_INVESTORS_API_URL: string
 
       REACT_APP_IPFS_PROJECT_ID: string
       REACT_APP_IPFS_PROJECT_SECRET: string
@@ -115,7 +116,7 @@ interface PoolParameters {
   trader: string
   baseTokenDecimals: BigNumber
   commissionPercentage: BigNumber
-  comissionPeriod: number
+  commissionPeriod: number
   descriptionURL: string
   minimalInvestment: BigNumber
   privatePool: boolean
@@ -132,7 +133,7 @@ interface RiskyProposalInfo {
   balanceBase: BigNumber
   balancePosition: BigNumber
   lpLocked: BigNumber
-  propoosalLimits: RiskyProposalLimits
+  proposalLimits: RiskyProposalLimits
   token: string
   tokenDecimals: BigNumber
 }
@@ -140,8 +141,212 @@ interface RiskyProposalInfo {
 export interface RiskyProposal {
   lp2Supply: BigNumber
   proposalInfo: RiskyProposalInfo
+  positionTokenPrice: BigNumber
   totalProposalBase: BigNumber
-  totalProposalUSD
+  totalProposalUSD: BigNumber
+  totalInvestors: BigNumber
+}
+
+export interface IRiskyPosition {
+  id: string
+  isClosed: boolean
+  totalBaseOpenVolume: BigNumber
+  totalBaseCloseVolume: BigNumber
+  totalPositionOpenVolume: BigNumber
+  totalPositionCloseVolume: BigNumber
+  totalUSDOpenVolume: BigNumber
+  totalUSDCloseVolume: BigNumber
+}
+
+export interface IRiskyProposal {
+  token: string
+  basicPool: {
+    id: string
+    baseToken: string
+  }
+  positions: IRiskyPosition[]
+}
+
+export interface IRiskyProposalQuery {
+  proposals: IRiskyProposal[]
+}
+
+export interface IRiskyPositionCard extends IRiskyPosition {
+  token?: string
+  proposal?: string
+  pool: {
+    id: string
+    baseToken: string
+  }
+}
+
+export interface IRiskyPositionExchanges {
+  id: string
+  timestamp: BigNumber
+  fromToken: string
+  toToken: string
+  fromVolume: BigNumber
+  toVolume: BigNumber
+  usdVolume: BigNumber
+}
+
+// Invest proposals
+export interface IInvestProposal {
+  id: string
+  timestampLimit: BigNumber
+  investLPLimit: BigNumber
+  leftTokens: string[]
+  leftAmounts: BigNumber[]
+  totalUSDSupply: BigNumber
+  firstSupplyTimestamp: BigNumber
+  APR: BigNumber
+  lastSupply: {
+    id: string
+    timestamp: BigNumber
+    dividendsTokens: string[]
+    amountDividendsTokens: BigNumber[]
+  }
+  lastWithdraw: {
+    id: string
+    timestamp: BigNumber
+    amountBase: BigNumber
+  }
+  investPool: {
+    id: string
+  }
+}
+
+export interface IInvestProposalQuery {
+  id: string
+  baseToken: string
+  proposals: IInvestProposal[]
+}
+
+// Investor proposals
+export interface IInvestorProposalVest {
+  id: string
+  isInvest: boolean
+  timestamp: string
+  volumeBase: BigNumber
+  volumeLP: BigNumber
+  volumeUSD: BigNumber
+}
+
+export interface IInvestorProposal {
+  id: string
+  isClosed: boolean
+  totalBaseInvestVolume: BigNumber
+  totalBaseDivestVolume: BigNumber
+  totalLPInvestVolume: BigNumber
+  totalLPDivestVolume: BigNumber
+  totalUSDInvestVolume: BigNumber
+  totalUSDDivestVolume: BigNumber
+  pool: {
+    id: string
+    type: string
+    token: string
+  }
+  vest: IInvestorProposalVest[]
+}
+
+// Investor proposals
+interface IInvestorInvestedPool {
+  id: string
+}
+export interface IInvestorInvestedPools {
+  activePools: IInvestorInvestedPool[]
+}
+
+export interface IInvestorRiskyProposal {
+  id: string
+  token: string
+  timestampLimit: number
+  investLPLimit: BigNumber
+  maxTokenPriceLimit: BigNumber
+  basicPool: {
+    id: string
+    baseToken: string
+  }
+  positions?: any[]
+}
+
+export interface IInvestorRiskyPosition {
+  id: string
+  isClosed: boolean
+  totalBaseOpenVolume: BigNumber
+  totalBaseCloseVolume: BigNumber
+  totalPositionOpenVolume: BigNumber
+  totalPositionCloseVolume: BigNumber
+  totalUSDOpenVolume: BigNumber
+  totalUSDCloseVolume: BigNumber
+}
+
+export interface IInvestorRiskyPositions {
+  id: string
+  token: string
+  basicPool: {
+    id: string
+    baseToken: string
+  }
+  positions: IInvestorRiskyPosition[]
+}
+
+export interface IInvestorInvestProposal {
+  id: string
+  timestampLimit: BigNumber
+  investLPLimit: BigNumber
+  leftTokens: BigNumber
+  leftAmounts: string[]
+  totalUSDSupply: BigNumber
+  firstSupplyTimestamp: BigNumber
+  APR: BigNumber
+  lastSupply: {
+    id: string
+    timestamp: BigNumber
+    dividendsTokens: string[]
+    amountDividendsTokens: BigNumber[]
+  }
+  lastWithdraw: {
+    id: string
+    timestamp: BigNumber
+    amountBase: BigNumber
+  }
+  investPool: {
+    id: string
+    baseToken: string
+  }
+}
+
+export interface IFundFeeHistory {
+  id: string
+  PNL: BigNumber
+  day: BigNumber
+  fundProfit: BigNumber
+  perfomanceFee: BigNumber
+  traderPool: {
+    id: string
+    baseToken: string
+  }
+}
+
+interface InvestProposalLimits {
+  timestampLimit: BigNumber
+  investLPLimit: BigNumber
+}
+
+interface InvestProposalInfo {
+  descriptionURL: string
+  proposalLimits: InvestProposalLimits
+  lpLocked: BigNumber
+  investedBase: BigNumber
+  newInvestedBase: BigNumber
+}
+
+export interface InvestProposal {
+  id: any
+  closed: any
+  proposalInfo: InvestProposalInfo
+  totalInvestors: BigNumber
 }
 
 /// @notice The struct that is returned from the TraderPoolView contract and stores information about the trader leverage
@@ -168,26 +373,36 @@ export interface OwnedPools {
 }
 
 export interface IExchange {
+  id: string
   fromToken: string
   toToken: string
-  fromVolume: string
-  toVolume: string
-  day: {
-    day: number
-  }
+  fromVolume: BigNumber
+  toVolume: BigNumber
+  usdVolume: BigNumber
+  timestamp: BigNumber
+  opening: boolean
 }
 
 export interface IPosition {
   closed: boolean
   id: string
   positionToken: string
+  totalUSDOpenVolume: BigNumber
+  totalUSDCloseVolume: BigNumber
+  totalBaseOpenVolume: BigNumber
+  totalBaseCloseVolume: BigNumber
+  totalPositionOpenVolume: BigNumber
+  totalPositionCloseVolume: BigNumber
   exchanges: IExchange[]
+  traderPool: {
+    ticker: string
+    trader: string
+    baseToken: string
+    descriptionURL: string
+  }
 }
 
 export interface IPositionQuery {
-  baseToken: string
-  ticker: string
-  descriptionURL: string
   positions: IPosition[]
 }
 

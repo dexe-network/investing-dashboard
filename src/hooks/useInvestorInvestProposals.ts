@@ -1,0 +1,77 @@
+import { useEffect, useMemo, useState } from "react"
+
+import { useActiveWeb3React } from "hooks"
+import { getContract } from "utils/getContract"
+import { InvestProposal } from "constants/interfaces_v2"
+import { TraderPool, TraderPoolInvestProposal } from "abi"
+
+interface IProposalData {
+  proposal: InvestProposal
+  poolAddress: string
+}
+
+function useInvestorInvestProposals(
+  activePools?: string[]
+): [IProposalData[], boolean] {
+  const { library, account } = useActiveWeb3React()
+  const [proposals, setProposals] = useState<any[]>([])
+  const [fetched, setFetched] = useState<boolean>(false)
+
+  const lastPool = useMemo(() => {
+    if (!activePools) return ""
+    return activePools[activePools.length - 1]
+  }, [activePools])
+
+  useEffect(() => {
+    if (
+      fetched ||
+      !activePools ||
+      activePools.length === 0 ||
+      !library ||
+      !account
+    ) {
+      return
+    }
+
+    ;(async () => {
+      try {
+        let payload: any[] = []
+
+        for (const poolAddress of activePools) {
+          const traderPool = await getContract(
+            poolAddress,
+            TraderPool,
+            library,
+            account
+          )
+          const proposalAddress = await traderPool.proposalPoolAddress()
+
+          const proposalPool = getContract(
+            proposalAddress,
+            TraderPoolInvestProposal,
+            library,
+            account
+          )
+
+          const data = await proposalPool.getProposalInfos(0, 100)
+
+          if (data && data.length > 0) {
+            const dataWithPoolAddress = data.map((proposal) => ({
+              poolAddress,
+              proposal,
+            }))
+            payload = [...payload, ...dataWithPoolAddress]
+          }
+          if (poolAddress === lastPool) setFetched(true)
+        }
+        setProposals(payload)
+      } catch (e) {
+        console.error(e)
+      }
+    })()
+  }, [account, activePools, fetched, lastPool, library, proposals])
+
+  return [proposals, fetched]
+}
+
+export default useInvestorInvestProposals

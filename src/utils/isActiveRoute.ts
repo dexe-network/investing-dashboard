@@ -11,22 +11,10 @@ const parseRouterParams = (path: string) => {
 const isActiveRoute = (path: string, source: string) => {
   if (path === source) return true
 
-  let isActive = false
   const pathSplited = path.split("/")
-
   const sourceParsed = parseRouterParams(source)
 
-  sourceParsed.map((s, i) => {
-    if (s === "") return
-
-    if (s === pathSplited[i]) {
-      isActive = true
-    } else {
-      isActive = false
-    }
-  })
-
-  return isActive
+  return sourceParsed.every((p, i) => p === pathSplited[i])
 }
 
 export default isActiveRoute

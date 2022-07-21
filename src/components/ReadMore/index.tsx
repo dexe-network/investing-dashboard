@@ -2,15 +2,16 @@ import { FC, useEffect } from "react"
 
 import useReadMore from "hooks/useReadMore"
 
-import { Link } from "./styled"
+import S from "./styled"
 
 interface IProps {
   content: string
+  maxLen?: number
 }
 
-const ReadMore: FC<IProps> = ({ content }) => {
+const ReadMore: FC<IProps> = ({ content, maxLen }) => {
   const [{ full, inView, isExpand, canToggle }, { setContent, toggle }] =
-    useReadMore()
+    useReadMore(maxLen)
 
   useEffect(() => {
     if (content && content.length > 0 && content !== full) {
@@ -19,12 +20,10 @@ const ReadMore: FC<IProps> = ({ content }) => {
   }, [content, full, setContent])
 
   return (
-    <>
+    <S.Container onClick={toggle}>
       {inView}
-      {canToggle && (
-        <Link onClick={toggle}> {isExpand ? "read less" : "read more"}</Link>
-      )}
-    </>
+      {canToggle && <S.Link> {isExpand ? "read less" : "read more"}</S.Link>}
+    </S.Container>
   )
 }
 
