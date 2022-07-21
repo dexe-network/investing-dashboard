@@ -51,7 +51,7 @@ const InvestmentRiskyProposals = () => {
     )
   }
 
-  if (activePools && activePools.lenght === 0) {
+  if (activePools && activePools.length === 0) {
     return (
       <S.Content>
         <S.WithoutData>There are no risky proposals</S.WithoutData>

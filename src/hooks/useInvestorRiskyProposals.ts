@@ -34,36 +34,40 @@ function useInvestorRiskyProposals(
     }
 
     ;(async () => {
-      let payload: any[] = []
+      try {
+        let payload: any[] = []
 
-      for (const poolAddress of activePools) {
-        const traderPool = await getContract(
-          poolAddress,
-          TraderPool,
-          library,
-          account
-        )
-        const proposalAddress = await traderPool.proposalPoolAddress()
+        for (const poolAddress of activePools) {
+          const traderPool = await getContract(
+            poolAddress,
+            TraderPool,
+            library,
+            account
+          )
+          const proposalAddress = await traderPool.proposalPoolAddress()
 
-        const proposalPool = getContract(
-          proposalAddress,
-          TraderPoolRiskyProposal,
-          library,
-          account
-        )
-        const data = await proposalPool.getProposalInfos(0, 100)
+          const proposalPool = getContract(
+            proposalAddress,
+            TraderPoolRiskyProposal,
+            library,
+            account
+          )
 
-        const dataWithPoolAddress = data.map((p) => ({
-          poolAddress,
-          proposal: p,
-        }))
+          const data = await proposalPool.getProposalInfos(0, 100)
 
-        if (data && data.length > 0) {
-          payload = [...payload, ...dataWithPoolAddress]
+          if (data && data.length > 0) {
+            const dataWithPoolAddress = data.map((proposal) => ({
+              poolAddress,
+              proposal,
+            }))
+            payload = [...payload, ...dataWithPoolAddress]
+          }
+          if (poolAddress === lastPool) setFetched(true)
         }
-        if (poolAddress === lastPool) setFetched(true)
+        setProposals(payload)
+      } catch (e) {
+        console.error(e)
       }
-      setProposals(payload)
     })()
   }, [account, activePools, fetched, lastPool, library, proposals])
 

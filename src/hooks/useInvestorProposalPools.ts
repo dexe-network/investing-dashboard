@@ -4,15 +4,17 @@ import { InvestorPoolsInvestedForQuery } from "queries"
 
 function useInvestorProposalPools(address?: string, poolType?: string) {
   const [response, executeQuery] = useQuery<{
-    investors: IInvestorInvestedPools
+    investors: IInvestorInvestedPools[]
   }>({
     query: InvestorPoolsInvestedForQuery,
     variables: { address, poolType },
   })
 
-  return response.data?.investors[0]
-    ? response.data?.investors[0].activePools.map((p) => p.id)
-    : undefined
+  if (response.data?.investors && response.data?.investors.length === 0) {
+    return []
+  }
+
+  return response.data?.investors[0].activePools.map((p) => p.id)
 }
 
 export default useInvestorProposalPools

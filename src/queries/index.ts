@@ -281,8 +281,8 @@ const InvestorPositionsQuery = `
 // Investor proposals
 const InvestorPoolsInvestedForQuery = `
   query ($address: String!, $poolType: String!) {
-    investors(where: { id: $address, allPools_: { type: $poolType }}) {
-      activePools { id }
+    investors(where: { id: $address }) {
+      activePools(where: { type: $poolType }) { id }
     }
   }
 `
