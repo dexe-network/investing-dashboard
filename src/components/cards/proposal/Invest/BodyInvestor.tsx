@@ -24,29 +24,6 @@ const BodyInvestor: FC<Props> = ({
     <>
       {invested ? (
         <>
-          <BodyItem label={"Proposal size " + ticker} amount={"40"} />
-          <BodyItem label="Fulness" amount={"90%"} />
-          <BodyItem
-            label="Expiration date"
-            amount={expirationDate}
-            fz="11px"
-            ai="flex-end"
-          />
-          <BodyItem label="Custodian" amount={"-"} />
-          <BodyItem label="LP price ($)" amount={"999,989"} />
-          <div>
-            <Button
-              full
-              size="small"
-              br="10px"
-              onClick={() => console.log("Stake LP")}
-            >
-              Stake LP
-            </Button>
-          </div>
-        </>
-      ) : (
-        <>
           <BodyItem label={"Supply " + ticker} amount={supply} />
           <BodyItem label="Fulness" amount={"90%"} />
           <BodyItem
@@ -69,6 +46,29 @@ const BodyInvestor: FC<Props> = ({
             fz="11px"
             ai="flex-end"
           />
+        </>
+      ) : (
+        <>
+          <BodyItem label={"Proposal size " + ticker} amount={"40"} />
+          <BodyItem label="Fulness" amount={"90%"} />
+          <BodyItem
+            label="Expiration date"
+            amount={expirationDate}
+            fz="11px"
+            ai="flex-end"
+          />
+          <BodyItem label="Custodian" amount={"-"} />
+          <BodyItem label="LP price ($)" amount={"999,989"} />
+          <div>
+            <Button
+              full
+              size="small"
+              br="10px"
+              onClick={() => console.log("Stake LP")}
+            >
+              Stake LP
+            </Button>
+          </div>
         </>
       )}
     </>

@@ -1,3 +1,9 @@
+/**
+ * InvestProposalCard
+ * The card used at "My investment" and invest pool positions pages
+ * @variable isTrader - check if user is Trader (if false - current user is investor)
+ */
+
 import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
@@ -43,6 +49,18 @@ const InvestProposalCard: FC<Props> = ({
     poolInfo?.parameters.descriptionURL
   )
 
+  // Check that current user is pool trader or not
+  const isTrader = useMemo(() => {
+    if (!account || !poolInfo) return false
+    return account === poolInfo?.parameters.trader
+  }, [account, poolInfo])
+
+  // Check that investor already invested in proposal
+  const invested = useMemo(() => {
+    if (!isTrader) return false
+    return false
+  }, [isTrader])
+
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false)
   const [openExtra, setOpenExtra] = useState<boolean>(false)
   const toggleSettings = useCallback(
@@ -55,13 +73,6 @@ const InvestProposalCard: FC<Props> = ({
 
   const [ticker, setTicker] = useState<string>("")
   const [description, setDescription] = useState<string>("")
-
-  // Check that current user is pool trader or not
-  const isTrader = useMemo(() => {
-    if (!account || !poolInfo) return false
-
-    return account === poolInfo?.parameters.trader
-  }, [account, poolInfo])
 
   const supply = useMemo(() => {
     if (!proposal || !proposal.proposalInfo.investedBase) {
@@ -241,7 +252,7 @@ const InvestProposalCard: FC<Props> = ({
               <BodyInvestor
                 ticker={ticker}
                 supply={supply}
-                invested={false}
+                invested={invested}
                 apr={APR}
                 expirationDate={expirationDate}
               />
