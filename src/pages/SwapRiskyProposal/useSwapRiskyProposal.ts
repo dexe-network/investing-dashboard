@@ -355,27 +355,24 @@ const useSwapRiskyProposal = ({
   useEffect(() => {
     if (!proposalInfo) return
 
-    setFromBalance(proposalInfo.proposalInfo.balanceBase)
-    setToBalance(proposalInfo.proposalInfo.balancePosition)
-  }, [proposalInfo])
-
-  // fetch swap price
-  useEffect(() => {
     if (direction === "deposit") {
-      if (!form.to.address) return
-
-      updateSwapPrice(form.to.address, ethers.utils.parseEther("1")).catch(
-        console.log
-      )
+      setFromBalance(proposalInfo.proposalInfo.balanceBase)
+      setToBalance(proposalInfo.proposalInfo.balancePosition)
     }
 
     if (direction === "withdraw") {
-      if (!form.from.address) return
-
-      updateSwapPrice(form.from.address, ethers.utils.parseEther("1")).catch(
-        console.log
-      )
+      setFromBalance(proposalInfo.proposalInfo.balancePosition)
+      setToBalance(proposalInfo.proposalInfo.balanceBase)
     }
+  }, [proposalInfo, direction])
+
+  // fetch swap price
+  useEffect(() => {
+    if (!form.to.address) return
+
+    updateSwapPrice(form.to.address, ethers.utils.parseEther("1")).catch(
+      console.log
+    )
   }, [direction, form.from.address, form.to.address, updateSwapPrice])
 
   // estimate gas price
@@ -390,9 +387,7 @@ const useSwapRiskyProposal = ({
 
         const gas = getGasPrice(gasPrice.toNumber())
         setGasPrice(gas)
-      } catch (e) {
-        console.log(e)
-      }
+      } catch (e) {}
     })()
   }, [estimateGas, fromAmount, getGasPrice])
 

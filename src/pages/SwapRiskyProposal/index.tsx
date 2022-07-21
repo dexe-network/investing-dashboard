@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react"
 import { Flex } from "theme"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, useLocation } from "react-router-dom"
 
 import SwapPrice from "components/SwapPrice"
 import IconButton from "components/IconButton"
@@ -37,6 +37,8 @@ import useSwapRiskyProposal, {
 
 const SwapRiskyProposal = () => {
   const params: UseSwapRiskyParams = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const [
     { from, to },
@@ -59,7 +61,24 @@ const SwapRiskyProposal = () => {
     },
   ] = useSwapRiskyProposal(params)
 
-  const handleDirectionChange = () => {}
+  const handleDirectionChange = useCallback(() => {
+    if (!location || !navigate) return
+
+    const { pathname } = location
+    const isDeposit = pathname.includes("/deposit")
+
+    if (isDeposit) {
+      navigate(
+        `/swap-risky-proposal/${params.poolAddress}/${params.proposalId}/withdraw`
+      )
+    }
+
+    if (!isDeposit) {
+      navigate(
+        `/swap-risky-proposal/${params.poolAddress}/${params.proposalId}/deposit`
+      )
+    }
+  }, [location, navigate, params])
 
   const button = useMemo(() => {
     if (from.amount === "0" || to.amount === "0") {
